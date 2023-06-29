@@ -1,45 +1,70 @@
-import { useFetchInstitutionsQuery } from "@/api";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-} from "@mui/material";
-import InstitutionEditButton from "./EditButton";
+  import { useFetchInstitutionsQuery, useEditInstitutionMutation } from "@/api";
+  import {
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    Button,
+  } from "@mui/material";
+  import InstitutionEditButton from "./EditButton";
+  import { EditInstitutionRequestPayload } from '@/types/institution';
 
-const InstitutionsTemplate = () => {
-  const { data: institutions } = useFetchInstitutionsQuery();
-  return (
-    <TableContainer>
-      <Table size="small">
-        <TableHead>
-          <TableRow>
-            <TableCell width="70px">Ativa</TableCell>
-            <TableCell width="122px">Sigla</TableCell>
-            <TableCell>Nome</TableCell>
-            <TableCell width="166px">CNPJ</TableCell>
-            <TableCell width="48px"></TableCell>
-          </TableRow>
-        </TableHead>
+  const InstitutionsTemplate = () => {
+    const { data: institutions } = useFetchInstitutionsQuery();
+    const [editInstitution] = useEditInstitutionMutation();
 
-        <TableBody>
-          {institutions?.map((institution) => (
-            <TableRow key={institution.id}>
-              <TableCell>-</TableCell>
-              <TableCell>{institution.acronym}</TableCell>
-              <TableCell>{institution.name}</TableCell>
-              <TableCell>{institution.cnpj}</TableCell>
-              <TableCell>
-                <InstitutionEditButton institutionId={institution.id} />
-              </TableCell>
+    const handleToggleActivation = async (institutionId: number, institutionActive: boolean, institutionName: string, institutionCnpj: string ) => {
+        const institutionToUpdate: EditInstitutionRequestPayload = {
+          id: institutionId,
+          is_active: !institutionActive ,
+          name: institutionName,
+          cnpj: institutionCnpj,
+        };
+
+        await editInstitution(institutionToUpdate);
+    };
+
+    return (
+      <TableContainer>
+        <Table size="small">
+          <TableHead>
+            <TableRow>
+              <TableCell width="70px">Ativa</TableCell>
+              <TableCell width="122px">Sigla</TableCell>
+              <TableCell>Nome</TableCell>
+              <TableCell width="166px">CNPJ</TableCell>
+              <TableCell width="48px"></TableCell>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
-  );
-};
+          </TableHead>
 
-export default InstitutionsTemplate;
+          <TableBody>
+            {institutions?.map((institution) => (
+              <TableRow key={institution.id} style={{
+                textDecoration: institution.isActive ? "none" : "line-through",
+                color: institution.isActive ? "inherit" : "#888888",
+              }}>
+                <TableCell>
+                  <Button
+                    variant="contained"
+                    color={institution.isActive ? "primary" : "secondary"}
+                    onClick={() => handleToggleActivation(institution.id, institution.isActive, institution.name, institution.cnpj)}>
+                      {institution.isActive ? "Ativado" : "Desativado"}
+                    </Button>
+                </TableCell>
+                <TableCell>{institution.acronym}</TableCell>
+                <TableCell>{institution.name}</TableCell>
+                <TableCell>{institution.cnpj}</TableCell>
+                <TableCell>
+                  <InstitutionEditButton institutionId={institution.id} />
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    );
+  };
+
+  export default InstitutionsTemplate;
