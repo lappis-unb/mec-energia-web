@@ -6,8 +6,9 @@
     TableContainer,
     TableHead,
     TableRow,
-    Button,
-  } from "@mui/material";
+    IconButton,
+  }  from "@mui/material";
+  import { FlashOn, FlashOff } from "@mui/icons-material";
   import InstitutionEditButton from "./EditButton";
   import { EditInstitutionRequestPayload } from '@/types/institution';
 
@@ -46,12 +47,13 @@
                 color: institution.isActive ? "inherit" : "#888888",
               }}>
                 <TableCell>
-                  <Button
-                    variant="contained"
+                  <IconButton
+                    onClick={() => handleToggleActivation(institution.id, institution.isActive, institution.name, institution.cnpj)}
                     color={institution.isActive ? "primary" : "secondary"}
+                >
                     onClick={() => handleToggleActivation(institution.id, institution.isActive, institution.name, institution.cnpj)}>
-                      {institution.isActive ? "Ativado" : "Desativado"}
-                    </Button>
+                      {institution.isActive ? <FlashOn /> : <FlashOff />}
+                    </IconButton>
                 </TableCell>
                 <TableCell>{institution.acronym}</TableCell>
                 <TableCell>{institution.name}</TableCell>
