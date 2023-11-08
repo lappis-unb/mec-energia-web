@@ -408,7 +408,7 @@ const TariffCreateEditForm = () => {
             decimalScale={2}
             decimalSeparator=","
             thousandSeparator={" "}
-            onValueChange={(values) => onChange(values.floatValue)}
+            onValueChange={(values) => onChange(values.floatValue ?? null)}
             onBlur={onBlur}
           />
         )}
@@ -448,7 +448,7 @@ const TariffCreateEditForm = () => {
             decimalScale={2}
             decimalSeparator=","
             thousandSeparator={" "}
-            onValueChange={(values) => onChange(values.floatValue)}
+            onValueChange={(values) => onChange(values.floatValue ?? null)}
             onBlur={onBlur}
           />
         )}
@@ -488,7 +488,7 @@ const TariffCreateEditForm = () => {
             decimalScale={2}
             decimalSeparator=","
             thousandSeparator={" "}
-            onValueChange={(values) => onChange(values.floatValue)}
+            onValueChange={(values) => onChange(values.floatValue ?? null)}
             onBlur={onBlur}
           />
         )}
@@ -534,7 +534,7 @@ const TariffCreateEditForm = () => {
             decimalScale={2}
             decimalSeparator=","
             thousandSeparator={" "}
-            onValueChange={(values) => onChange(values.floatValue)}
+            onValueChange={(values) => onChange(values.floatValue ?? null)}
             onBlur={onBlur}
           />
         )}
@@ -574,7 +574,7 @@ const TariffCreateEditForm = () => {
             decimalScale={2}
             decimalSeparator=","
             thousandSeparator={" "}
-            onValueChange={(values) => onChange(values.floatValue)}
+            onValueChange={(values) => onChange(values.floatValue ?? null)}
             onBlur={onBlur}
           />
         )}
@@ -617,7 +617,7 @@ const TariffCreateEditForm = () => {
             decimalScale={2}
             decimalSeparator=","
             thousandSeparator={" "}
-            onValueChange={(values) => onChange(values.floatValue)}
+            onValueChange={(values) => onChange(values.floatValue ?? null)}
             onBlur={onBlur}
           />
         )}
@@ -671,7 +671,7 @@ const TariffCreateEditForm = () => {
               decimalScale={2}
               decimalSeparator=","
               thousandSeparator={" "}
-              onValueChange={(values) => onChange(values.floatValue)}
+              onValueChange={(values) => onChange(values.floatValue ?? null)}
               onBlur={onBlur}
             />
           )}
@@ -717,7 +717,7 @@ const TariffCreateEditForm = () => {
               decimalScale={2}
               decimalSeparator=","
               thousandSeparator={" "}
-              onValueChange={(values) => onChange(values.floatValue)}
+              onValueChange={(values) => onChange(values.floatValue ?? null)}
               onBlur={onBlur}
             />
           )}
@@ -757,7 +757,7 @@ const TariffCreateEditForm = () => {
               decimalScale={2}
               decimalSeparator=","
               thousandSeparator={" "}
-              onValueChange={(values) => onChange(values.floatValue)}
+              onValueChange={(values) => onChange(values.floatValue ?? null)}
               onBlur={onBlur}
             />
           )}
@@ -803,7 +803,7 @@ const TariffCreateEditForm = () => {
               decimalScale={2}
               decimalSeparator=","
               thousandSeparator={" "}
-              onValueChange={(values) => onChange(values.floatValue)}
+              onValueChange={(values) => onChange(values.floatValue ?? null)}
               onBlur={onBlur}
             />
           )}
@@ -843,7 +843,7 @@ const TariffCreateEditForm = () => {
               decimalScale={2}
               decimalSeparator=","
               thousandSeparator={" "}
-              onValueChange={(values) => onChange(values.floatValue)}
+              onValueChange={(values) => onChange(values.floatValue ?? null)}
               onBlur={onBlur}
             />
           )}
