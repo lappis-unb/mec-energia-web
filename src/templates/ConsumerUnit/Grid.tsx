@@ -16,7 +16,7 @@ const ConsumerUnitsCardGrid = () => {
   } = useRouter();
 
   const { data: session } = useSession();
-  const { data: consumerUnitsData } = useFetchConsumerUnitsQuery(
+  const { data: consumerUnitsData, refetch } = useFetchConsumerUnitsQuery(
     session?.user.universityId ?? skipToken
   );
 
@@ -49,7 +49,8 @@ const ConsumerUnitsCardGrid = () => {
       .sort(({ isActive }) => (isActive ? -1 : 1)); // disabled last
 
     setConsumerUnits(sortedConsumerUnits);
-  }, [activeFilter, consumerUnitsData]);
+    refetch()
+  })
 
   return (
     <Box

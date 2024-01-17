@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 
@@ -17,12 +17,13 @@ const ConsumerUnitInvoiceContentFilter = () => {
   const dispatch = useDispatch();
   const consumerUnitId = useSelector(selectActiveConsumerUnitId);
   const { data: invoices } = useFetchInvoicesQuery(consumerUnitId ?? skipToken);
-  const { data: consumerUnit } = useGetConsumerUnitQuery(
+  const { data: consumerUnit, refetch } = useGetConsumerUnitQuery(
     consumerUnitId ?? skipToken
   );
   const invoiceActiveFilter = useSelector(
     selectConsumerUnitInvoiceActiveFilter
   );
+  const [pendingFilterLabel, setPendingFilterLabel] = useState("Pendentes")
 
   const invoicesFilters = useMemo(() => {
     if (!invoices) {
@@ -33,13 +34,12 @@ const ConsumerUnitInvoiceContentFilter = () => {
     return Object.keys(invoices).reverse();
   }, [invoices]);
 
-  const pendingFilterLabel = useMemo(() => {
-    if (!consumerUnit || consumerUnit.pendingEnergyBillsNumber <= 0) {
-      return "Pendentes";
-    }
 
-    return `Pendentes (${consumerUnit.pendingEnergyBillsNumber})`;
-  }, [consumerUnit]);
+  useEffect(() => {
+    const pending = consumerUnit?.pendingEnergyBillsNumber ?? -1
+    setPendingFilterLabel(pending <= 0 ? "Pendentes" : `Pendentes(${pending})`);
+    refetch()
+  })
 
   const handleFilterButtonClick = (filter: ConsumerUnitInvoiceFilter) => () => {
     dispatch(setConsumerUnitInvoiceActiveFilter(filter));
