@@ -8,6 +8,7 @@ export interface EditInstitutionForm {
   acronym: string;
   name: string;
   cnpj: string;
+  is_active: boolean;
 }
 
 export interface CreateInstitutionRequestPayload {
@@ -21,6 +22,7 @@ export interface GetInstitutionResponsePayload {
   name: string;
   cnpj: string;
   acronym?: string;
+  is_active: boolean;
   createdOn: Date;
 }
 
@@ -30,6 +32,7 @@ export interface EditInstitutionRequestPayload {
   name: string;
   cnpj: string;
   acronym?: string;
+  is_active: boolean;
   id: number;
 }
 
@@ -41,5 +44,6 @@ export type Institution = {
   cnpj: string;
 
   acronym?: string;
+  isActive: boolean;
   createdOn?: string;
 };
