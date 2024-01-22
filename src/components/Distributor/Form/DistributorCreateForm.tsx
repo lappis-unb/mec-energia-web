@@ -108,6 +108,7 @@ const DistributorCreateForm = () => {
 
   const hasEnoughCaracteresLength = (value: CreateDistributorForm["name"]) => {
     if (value.length < 3) return "Insira ao menos 3 caracteres";
+    if (value.length > 45) return "O máximo permitido é 45 caracteres";
     return true;
   };
 
