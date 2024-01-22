@@ -50,7 +50,7 @@
                   <IconButton
                     onClick={() => handleToggleActivation(institution.id, institution.isActive, institution.name, institution.cnpj)}
                     color={institution.isActive ? "primary" : "secondary"}
-                >
+                
                     onClick={() => handleToggleActivation(institution.id, institution.isActive, institution.name, institution.cnpj)}>
                       {institution.isActive ? <FlashOn /> : <FlashOff />}
                     </IconButton>
