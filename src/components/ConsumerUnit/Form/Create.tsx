@@ -129,13 +129,6 @@ const ConsumerUnitCreateForm = () => {
     return true;
   };
 
-  const hasEnoughCaracteresLength = (
-    value: CreateConsumerUnitForm["code"] | CreateConsumerUnitForm["name"]
-  ) => {
-    if (value.length < 3) return "Insira ao menos 3 caracteres";
-    return true;
-  };
-
   const isValueGreaterThenZero = (
     value:
       | CreateConsumerUnitForm["peakContractedDemandInKw"]
@@ -228,6 +221,10 @@ const ConsumerUnitCreateForm = () => {
     setShouldShowDistributorFormDialog(false);
   };
 
+  const hasEnoughCaracteresLength = (value: string) => {
+    const withoutSpacesInStartAndEnd = value.trim(); // Remove espaços em branco do início e do final
+    return withoutSpacesInStartAndEnd.length >= 3 || 'Insira no ínimo de 3 caracteres, excluindo espaços em branco.';
+  };
 
   const ConsumerUnitSection = useCallback(() => (
     <>
