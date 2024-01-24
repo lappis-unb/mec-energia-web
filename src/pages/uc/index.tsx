@@ -29,9 +29,7 @@ const ConsumerUnitLoadingPage: NextPage = () => {
   );
 
   useEffect(() => {
-    if (consumerUnits) {
-      router.push(`/uc/${consumerUnits[0].id}`);
-    }
+    router.push(`/uc/${consumerUnits && consumerUnits!.length > 0 ? consumerUnits[0].id : -1}`);
   }, [consumerUnits, router]);
 
   return (

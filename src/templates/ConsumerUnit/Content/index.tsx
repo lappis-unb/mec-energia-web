@@ -29,9 +29,22 @@ const TabPanel = ({ children, value, index, ...other }: TabPanelProps) => (
   </div>
 );
 
+
+export const EmptyConsumerUnitContent = () => {
+  return (
+    <Box
+      height="40vh"
+      display="flex"
+      justifyContent="center"
+      alignItems="center"
+    >
+      <h2 style={{ color: "#0A5C67" }}>Não existem UCs cadastradas</h2>
+    </Box>
+  );
+};
+
 const ConsumerUnitContent = () => {
   const openedTab = useSelector(selectConsumerUnitOpenedTab);
-
   return (
     <>
       <TabPanel value={openedTab} index={ConsumerUnitTab.INVOICE}>
