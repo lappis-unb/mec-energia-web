@@ -69,7 +69,9 @@ const getFilteredInvoices = (
 
   return invoicesPayload[activeFilter];
 };
-
+function formatLocaleNumber(num: number | undefined): string | undefined {
+  return num?.toLocaleString("pt-BR");
+}
 const getDataGridRows = (
   invoicesPayload: InvoicePayload[],
   activeFilter: ConsumerUnitInvoiceFilter
@@ -77,6 +79,22 @@ const getDataGridRows = (
   return invoicesPayload.map(
     ({ month, year, isEnergyBillPending, energyBill }) => ({
       ...energyBill,
+      invoiceInReais: energyBill?.invoiceInReais?.toLocaleString("pt-BR", {
+        style: "currency",
+        currency: "BRL",
+      }),
+      peakConsumptionInKwh: formatLocaleNumber(
+        energyBill?.peakConsumptionInKwh
+      ),
+      offPeakConsumptionInKwh: formatLocaleNumber(
+        energyBill?.offPeakConsumptionInKwh
+      ),
+      peakMeasuredDemandInKw: formatLocaleNumber(
+        energyBill?.peakMeasuredDemandInKw
+      ),
+      offPeakMeasuredDemandInKw: formatLocaleNumber(
+        energyBill?.offPeakMeasuredDemandInKw
+      ),
       id: parseInt(`${year}${month >= 10 ? month : "0" + month}`),
       ...(energyBill && { energyBillId: energyBill.id }),
       month,

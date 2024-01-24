@@ -114,11 +114,11 @@ export type InvoiceDataGridRow = {
 
   energyBillId?: number;
   date?: string;
-  invoiceInReais?: number;
+  invoiceInReais?: string;
   isAtypical?: boolean;
-  peakConsumptionInKwh?: number;
-  offPeakConsumptionInKwh?: number;
+  peakConsumptionInKwh?: string;
+  offPeakConsumptionInKwh?: string;
   offPeakContractedDemandInKw?: number;
-  peakMeasuredDemandInKw?: number;
-  offPeakMeasuredDemandInKw?: number;
+  peakMeasuredDemandInKw?: string;
+  offPeakMeasuredDemandInKw?: string;
 };
