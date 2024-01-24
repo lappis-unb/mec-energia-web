@@ -29,9 +29,10 @@ const DistributorLoadingPage: NextPage = () => {
   );
 
   useEffect(() => {
-    if (distributors) {
-      router.push(`/distribuidoras/${distributors[0].id}`);
-    }
+    router.push(`/distribuidoras/${
+      distributors && distributors!.length > 0? 
+      distributors[0].id : -1
+    }`);
   }, [distributors, router]);
 
   return (

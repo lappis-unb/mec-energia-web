@@ -13,6 +13,19 @@ import DistributorContentConsumerUnitsList from "./ConsumerUnitsList";
 import DistributorContentTariffsTable from "./TariffsTable";
 import { FlashOffRounded } from "@mui/icons-material";
 
+export const EmptyDistributorContent = () => {
+  return (
+    <Box
+      height="40vh"
+      display="flex"
+      justifyContent="center"
+      alignItems="center"
+    >
+      <h2 style={{ color: "#0A5C67" }}>Não existem distribuidoras cadastradas</h2>
+    </Box>
+  );
+};
+
 const DistributorContent = () => {
   const distributorId = useSelector(selectActiveDistributorId);
   const selectedSubgroupTariff = useSelector(selectActiveSubgroup);
