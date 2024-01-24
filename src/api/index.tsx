@@ -182,7 +182,7 @@ export const mecEnergiaApi = createApi({
         url: `/energy-bills/${id}`,
         method: "DELETE",
       }),
-      invalidatesTags: ["Invoices"],
+      invalidatesTags: ["Invoices", "ConsumerUnit"],
     }),
     getContract: builder.query<GetContractsResponsePayload, number>({
       query: (consumerUnitId) =>
@@ -216,7 +216,7 @@ export const mecEnergiaApi = createApi({
         method: "POST",
         body,
       }),
-      invalidatesTags: ["Invoices", "Recommendation"],
+      invalidatesTags: ["Invoices", "ConsumerUnit", "Recommendation"],
     }),
     editInvoice: builder.mutation<
       EditEnergyBillResponsePayload,
