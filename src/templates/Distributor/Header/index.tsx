@@ -94,10 +94,8 @@ const DistributorContentHeader = () => {
                   Editar
                 </Button>
 
-
-
-                {distributor?.consumerUnits !== 0 ? (
-                  <Tooltip title="Enquanto houver uma UC com contrato associado à distribuidora, ela não pode ser apagada. Mesmo que a UC esteja inativa.">
+                {distributor?.consumerUnitsCount !== 0 ? (
+                  <Tooltip title="Enquanto houver uma UC com contrato associado à essa distribuidora, ela não pode ser apagada. Mesmo que a UC esteja inativa.">
                     <span>
                       <Button
                         variant="outlined"
