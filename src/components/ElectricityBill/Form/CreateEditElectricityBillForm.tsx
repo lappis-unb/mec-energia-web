@@ -341,7 +341,12 @@ const CreateEditEnergyBillForm = () => {
             name="date"
             rules={{
               required: "Já existe uma fatura lançada neste mês",
-              validate: () => true,
+              validate: (value) => {
+                if (isNaN(value.getTime())) {
+                  return "Formato de data inválido";
+                }
+                return true;
+              },
             }}
             render={({ field: { value, onChange }, fieldState: { error } }) => (
               <DatePicker
