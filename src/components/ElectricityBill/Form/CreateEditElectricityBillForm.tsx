@@ -46,6 +46,9 @@ import { DistributorPropsTariffs } from "@/types/distributor";
 import { sendFormattedDate } from "@/utils/date";
 import FormDrawerV2 from "@/components/Form/DrawerV2";
 
+import CloudUploadIcon from '@mui/icons-material/CloudUpload'; // Importe o ícone do Material-UI
+import Button from '@mui/material/Button';
+
 
 const defaultValues: CreateAndEditEnergyBillForm = {
   date: new Date(),
@@ -53,7 +56,7 @@ const defaultValues: CreateAndEditEnergyBillForm = {
   isIncludedInAnalysis: true,
   peakMeasuredDemandInKw: "",
   peakConsumptionInKwh: "",
-  offPeakConsumptionInKwh: ""
+  offPeakConsumptionInKwh: "",
 };
 
 const CreateEditEnergyBillForm = () => {
@@ -108,12 +111,14 @@ const CreateEditEnergyBillForm = () => {
   const {
     control,
     reset,
-    handleSubmit,
+    handleSubmit,  
     setValue,
     watch,
     formState: { isDirty, errors },
   } = form;
 
+  //const date = watch("date");
+  //const isIncludedInAnalysis = watch("isIncludedInAnalysis");
   const invoiceInReais = watch("invoiceInReais");
   const peakConsumptionInKwh = watch("peakConsumptionInKwh");
   const offPeakConsumptionInKwh = watch("offPeakConsumptionInKwh");
@@ -212,6 +217,7 @@ const CreateEditEnergyBillForm = () => {
   const handleDiscardForm = () => {
     handleCloseDialog();
     reset();
+    handleCloseFaturaTab(); 
     if (isCreateEnergyBillFormOpen) {
       dispatch(
         setEnergyBillEdiFormParams({ month: null, year: null, id: null })
@@ -251,6 +257,10 @@ const CreateEditEnergyBillForm = () => {
       peakMeasuredDemandInKw: peakMeasuredDemandInKw as number,
       offPeakMeasuredDemandInKw: offPeakMeasuredDemandInKw as number,
     };
+
+    if (selectedPdfFile) {
+      body.pdfBase64 = await convertPdfToBase64(selectedPdfFile);
+    }
 
     if (isEditEnergyBillFormOpen) body = { ...body, id: currentInvoice?.id };
 
@@ -318,16 +328,6 @@ const CreateEditEnergyBillForm = () => {
     handleNotification();
   }, [handleNotification, isPostInvoiceSuccess, isPostInvoiceError]);
 
-  const isValidDemandValue = (value: CreateAndEditEnergyBillForm["peakMeasuredDemandInKw"]) => {
-    if (value === 0) return "O valor não pode ser zero";
-    return true;
-  };
-
-  const isValidConsumptionValue = (value: CreateAndEditEnergyBillForm["peakConsumptionInKwh"]) => {
-    if (value === 0) return "O valor não pode ser zero";
-    return true;
-  };
-
   const Header = useCallback(
     () => (
       <>
@@ -351,12 +351,7 @@ const CreateEditEnergyBillForm = () => {
             name="date"
             rules={{
               required: "Já existe uma fatura lançada neste mês",
-              validate: (value) => {
-                if (isNaN(value.getTime())) {
-                  return "Formato de data inválido";
-                }
-                return true;
-              },
+              validate: () => true,
             }}
             render={({ field: { value, onChange }, fieldState: { error } }) => (
               <DatePicker
@@ -401,8 +396,8 @@ const CreateEditEnergyBillForm = () => {
                 value={value}
                 width="20%"
                 customInput={TextField}
-                label="Valor total *"
-                helperText={error?.message}
+                label="Valor total"
+                helperText={error?.message ?? "Campo opcional"}
                 error={!!error}
                 fullWidth
                 InputProps={{
@@ -510,10 +505,7 @@ const CreateEditEnergyBillForm = () => {
             <Controller
               control={control}
               name="peakMeasuredDemandInKw"
-              rules={{
-                required: "Preencha este campo",
-                validate: isValidDemandValue,
-              }}
+              rules={{ required: "Preencha este campo" }}
               render={({
                 field: { onChange, onBlur, value },
                 fieldState: { error },
@@ -530,13 +522,9 @@ const CreateEditEnergyBillForm = () => {
                   }}
                   type="text"
                   allowNegative={false}
-                  isAllowed={({ floatValue }) => {
-                  const isValid = !floatValue || floatValue <= 999999.99;
-                  if (!isValid) {
-                  alert("Limite de dígitos alcançado.(6)");
-                }
-                return isValid;
-              }}
+                  isAllowed={({ floatValue }) =>
+                    !floatValue || floatValue <= 99999.99
+                  }
                   placeholder="0"
                   decimalScale={2}
                   decimalSeparator=","
@@ -553,10 +541,7 @@ const CreateEditEnergyBillForm = () => {
             <Controller
               control={control}
               name="offPeakMeasuredDemandInKw"
-              rules={{
-                required: "Preencha este campo",
-                validate: isValidDemandValue, // Adiciona a validação aqui
-              }}
+              rules={{ required: "Preencha este campo" }}
               render={({
                 field: { onChange, onBlur, value },
                 fieldState: { error },
@@ -573,13 +558,9 @@ const CreateEditEnergyBillForm = () => {
                   }}
                   type="text"
                   allowNegative={false}
-                  isAllowed={({ floatValue }) => {
-                  const isValid = !floatValue || floatValue <= 999999.99;
-                  if (!isValid) {
-                  alert("Limite de dígitos alcançado.(6)");
-                }
-                return isValid;
-                }}
+                  isAllowed={({ floatValue }) =>
+                    !floatValue || floatValue <= 99999.99
+                  }
                   placeholder="0"
                   decimalScale={2}
                   decimalSeparator=","
@@ -610,10 +591,7 @@ const CreateEditEnergyBillForm = () => {
             <Controller
               control={control}
               name="peakConsumptionInKwh"
-              rules={{
-                required: "Preencha este campo",
-                validate: isValidConsumptionValue, // Adiciona a validação aqui
-              }}
+              rules={{ required: "Preencha este campo" }}
               render={({
                 field: { onChange, onBlur, value },
                 fieldState: { error },
@@ -630,13 +608,9 @@ const CreateEditEnergyBillForm = () => {
                   }}
                   type="text"
                   allowNegative={false}
-                  isAllowed={({ floatValue }) => {
-                  const isValid = !floatValue || floatValue <= 999999.99;
-                  if (!isValid) {
-                  alert("Limite de dígitos alcançado.(6)");
-                }
-                return isValid;
-                }}
+                  isAllowed={({ floatValue }) =>
+                    !floatValue || floatValue <= 99999.99
+                  }
                   decimalScale={2}
                   placeholder="0"
                   decimalSeparator=","
@@ -653,10 +627,7 @@ const CreateEditEnergyBillForm = () => {
             <Controller
               control={control}
               name="offPeakConsumptionInKwh"
-              rules={{
-                required: "Preencha este campo",
-                validate: isValidConsumptionValue,
-              }}
+              rules={{ required: "Preencha este campo" }}
               render={({
                 field: { onChange, onBlur, value },
                 fieldState: { error },
@@ -673,13 +644,9 @@ const CreateEditEnergyBillForm = () => {
                   }}
                   type="text"
                   allowNegative={false}
-                  isAllowed={({ floatValue }) => {
-                  const isValid = !floatValue || floatValue <= 999999.99;
-                  if (!isValid) {
-                  alert("Limite de dígitos alcançado.(6)");
-                }
-                return isValid;
-                }}
+                  isAllowed={({ floatValue }) =>
+                    !floatValue || floatValue <= 99999.99
+                  }
                   placeholder="0"
                   decimalScale={2}
                   decimalSeparator=","
@@ -698,83 +665,39 @@ const CreateEditEnergyBillForm = () => {
     [control]
   );
 
-  const AnnotationSection = useCallback(
-    () => (
-      <>
-        <Grid item xs={8} mb={2}>
-          <Typography variant="h5">Anotações</Typography>
-        </Grid>
-  
-        <Grid container spacing={2}>
-          <Grid item xs={12}> {/* Alterado de xs={4} para xs={8} */}
-            <Controller
-              control={control}
-              name="annotations"
-              rules={{ maxLength: { value: 500, message: "Máximo de 500 caracteres" } }}
-              render={({
-                field: { onChange, onBlur, value },
-                fieldState: { error },
-              }) => (
-                <TextField
-                  value={value}
-                  label="Insira suas anotações aqui, como o endereço da UC."
-                  fullWidth
-                  multiline
-                  rows={6}
-                  variant="outlined"
-                  placeholder=""
-                  error={Boolean(error)}
-                  helperText={error?.message ?? " "}
-                  onChange={onChange}
-                  onBlur={onBlur}
-                />
-              )}
-            />
-          </Grid>
-        </Grid>
-      </>
-    ),
-    [control]
-  );
-  
-  const AddressSection = useCallback(
-    () => (
-      <>
-        <Grid item xs={8} mb={2}>
-          <Typography variant="h5">Endereço</Typography>
-        </Grid>
-  
-        <Grid container spacing={2}>
-          <Grid item xs={12}> {/* Mantive a alteração de xs={4} para xs={12} */}
-            <Controller
-              control={control}
-              name="address"
-              rules={{ maxLength: { value: 300, message: "Máximo de 300 caracteres" } }}
-              render={({
-                field: { onChange, onBlur, value },
-                fieldState: { error },
-              }) => (
-                <TextField
-                  value={value}
-                  label="Insira o endereço aqui."
-                  fullWidth
-                  multiline
-                  rows={4}
-                  variant="outlined"
-                  placeholder="Rua, Número, Bairro, Cidade - Estado"
-                  error={Boolean(error)}
-                  helperText={error?.message ?? " "}
-                  onChange={onChange}
-                  onBlur={onBlur}
-                />
-              )}
-            />
-          </Grid>
-        </Grid>
-      </>
-    ),
-    [control]
-  );
+  // Novo estado para rastrear o arquivo PDF selecionado
+  const [selectedPdfFile, setSelectedPdfFile] = useState<File | null>(null);
+
+
+  // Novo manipulador de upload de arquivo PDF
+  const handlePdfFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {  
+    if (event.target.files && event.target.files.length > 0) {
+      const file = event.target.files[0];
+      if (file && file.type === "application/pdf") {
+        // Arquivo PDF válido, atualize o estado com o arquivo selecionado
+        setSelectedPdfFile(file);
+      } else {
+        // Arquivo inválido, você pode exibir uma mensagem de erro se desejar
+        setSelectedPdfFile(null);
+      }
+    }
+  };
+
+  // Função auxiliar para converter o PDF em base64
+  const convertPdfToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = (error) => reject(error);
+    });
+  };
+
+  //Lidar com o armazernamento inadequado ao fechar aba da fatura
+
+  const handleCloseFaturaTab = () => {
+    setSelectedPdfFile(null); // Isso limpa o PDF selecionado
+  };
 
   return (
     <Fragment>
@@ -790,8 +713,32 @@ const CreateEditEnergyBillForm = () => {
           <InvoiceSection key={0} />,
           <MeasuredDemandSection key={1} />,
           <MeasuredConsumption key={2} />,
-          <AnnotationSection key={3}/>,
-          <AddressSection key={4}/>,
+          // Adicione a seção de upload de PDF como parte do FormDrawerV2
+          <Grid item xs={4} key={3}>
+            <Grid item xs={8} mb={2}>
+              <Typography variant="h5">Anexo PDF</Typography>
+            </Grid>
+            <input
+              type="file"
+              accept=".pdf"
+              style={{ display: 'none' }}
+              onChange={handlePdfFileUpload}
+              id="pdfFile" // Adicionei o ID para associá-lo ao label
+            />
+            <label htmlFor="pdfFile">
+              <Button
+                variant="contained"
+                color="primary"
+                component="span"
+                startIcon={<CloudUploadIcon />}
+              >
+                Upload de PDF
+              </Button>
+            </label>
+            {selectedPdfFile && (
+              <p>Arquivo PDF selecionado: {selectedPdfFile.name}</p>
+            )}
+          </Grid>
         ]}
       />
       <FormWarningDialog
@@ -803,6 +750,5 @@ const CreateEditEnergyBillForm = () => {
     </Fragment>
   );
 };
-
 
 export default CreateEditEnergyBillForm;

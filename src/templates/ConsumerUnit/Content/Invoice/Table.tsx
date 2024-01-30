@@ -4,6 +4,7 @@ import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import ConfirmWarning from "@/components/ConfirmWarning/ConfirmWarning";
+import { GetApp } from "@mui/icons-material";
 
 import { Box, Button, IconButton } from "@mui/material";
 import {
@@ -69,9 +70,7 @@ const getFilteredInvoices = (
 
   return invoicesPayload[activeFilter];
 };
-function formatLocaleNumber(num: number | undefined): string | undefined {
-  return num?.toLocaleString("pt-BR");
-}
+
 const getDataGridRows = (
   invoicesPayload: InvoicePayload[],
   activeFilter: ConsumerUnitInvoiceFilter
@@ -79,22 +78,6 @@ const getDataGridRows = (
   return invoicesPayload.map(
     ({ month, year, isEnergyBillPending, energyBill }) => ({
       ...energyBill,
-      invoiceInReais: energyBill?.invoiceInReais?.toLocaleString("pt-BR", {
-        style: "currency",
-        currency: "BRL",
-      }),
-      peakConsumptionInKwh: formatLocaleNumber(
-        energyBill?.peakConsumptionInKwh
-      ),
-      offPeakConsumptionInKwh: formatLocaleNumber(
-        energyBill?.offPeakConsumptionInKwh
-      ),
-      peakMeasuredDemandInKw: formatLocaleNumber(
-        energyBill?.peakMeasuredDemandInKw
-      ),
-      offPeakMeasuredDemandInKw: formatLocaleNumber(
-        energyBill?.offPeakMeasuredDemandInKw
-      ),
       id: parseInt(`${year}${month >= 10 ? month : "0" + month}`),
       ...(energyBill && { energyBillId: energyBill.id }),
       month,
@@ -149,6 +132,18 @@ const ConsumerUnitInvoiceContentTable = () => {
 
   const cancelWarning = () => {
     setIsWarningOpen(false);
+  };
+
+  const handleDownloadPDF = (energyBillId: number) => {
+    const pdfUrl = `/media/energy_bills/`;
+
+    // Criando um novo link para realizar o download do arquivo PDF
+    const link = document.createElement('a');
+    link.href = pdfUrl;
+    link.download = `${energyBillId}.pdf`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   const columns: GridColDef<InvoiceDataGridRow>[] = [
@@ -230,7 +225,7 @@ const ConsumerUnitInvoiceContentTable = () => {
       headerName: "Ações",
       headerAlign: "center",
       align: "center",
-      flex: 1.5,
+      flex: 1,
       sortable: false,
       renderCell: ({ row: { month, year, energyBillId } }) => {
         if (!energyBillId) {
@@ -255,6 +250,30 @@ const ConsumerUnitInvoiceContentTable = () => {
               <Delete />
             </IconButton>
           </>
+        );
+      },
+    },
+    {
+      field: "download",
+      headerClassName: "MuiDataGrid-columnHeaderMain",
+      headerName: "Download",
+      headerAlign: "center",
+      align: "center",
+      flex: 1.4,
+      sortable: false,
+      renderCell: ({ row: { energyBillId } }) => {
+        if (!energyBillId) {
+          return <></>;
+        }
+    
+        return (
+          <IconButton
+            onClick={() => {
+              handleDownloadPDF(energyBillId);
+            }}
+          >
+            <GetApp />  {/* Este é um ícone de download do Material Icons. Se não for adequado, você pode substituí-lo por outro ícone de sua preferência. */}
+          </IconButton>
         );
       },
     },

@@ -6,8 +6,6 @@ export interface CreateAndEditEnergyBillForm {
   offPeakMeasuredDemandInKw?: number | "";
   peakConsumptionInKwh?: number | "";
   offPeakConsumptionInKwh?: number | "";
-  annotations?: string;
-  address?: string;
 }
 
 export interface PostEnergyBillRequestPayload {
@@ -20,6 +18,7 @@ export interface PostEnergyBillRequestPayload {
   offPeakConsumptionInKwh?: number;
   contract: number;
   consumerUnit: number;
+  pdfBase64?: string;
 }
 export interface EditEnergyBillRequestPayload {
   id: number;
@@ -32,6 +31,7 @@ export interface EditEnergyBillRequestPayload {
   offPeakConsumptionInKwh?: number;
   contract: number;
   consumerUnit: number;
+  pdfBase64?: string;
 }
 
 export interface PostEnergyBillResponsePayload {
@@ -45,6 +45,7 @@ export interface PostEnergyBillResponsePayload {
   offPeakMeasuredDemandInKw: number;
   contract: string;
   consumerUnit: string;
+  pdfBase64?: string;
 }
 
 export interface EditEnergyBillResponsePayload {
@@ -58,6 +59,7 @@ export interface EditEnergyBillResponsePayload {
   offPeakMeasuredDemandInKw: number;
   contract: string;
   consumerUnit: string;
+  pdfBase64?: string;
 }
 
 export interface CurrentEnergyBillResponsePayload {
@@ -71,4 +73,5 @@ export interface CurrentEnergyBillResponsePayload {
   offPeakConsumptionInKwh: number;
   peakMeasuredDemandInKw: number;
   offPeakMeasuredDemandInKw: number;
+  pdfBase64?: string;
 }
