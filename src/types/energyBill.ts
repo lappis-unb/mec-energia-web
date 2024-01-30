@@ -6,6 +6,8 @@ export interface CreateAndEditEnergyBillForm {
   offPeakMeasuredDemandInKw?: number | "";
   peakConsumptionInKwh?: number | "";
   offPeakConsumptionInKwh?: number | "";
+  annotations?: string;
+  address?: string;
 }
 
 export interface PostEnergyBillRequestPayload {

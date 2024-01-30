@@ -53,7 +53,7 @@ const defaultValues: CreateAndEditEnergyBillForm = {
   isIncludedInAnalysis: true,
   peakMeasuredDemandInKw: "",
   peakConsumptionInKwh: "",
-  offPeakConsumptionInKwh: "",
+  offPeakConsumptionInKwh: ""
 };
 
 const CreateEditEnergyBillForm = () => {
@@ -698,6 +698,84 @@ const CreateEditEnergyBillForm = () => {
     [control]
   );
 
+  const AnnotationSection = useCallback(
+    () => (
+      <>
+        <Grid item xs={8} mb={2}>
+          <Typography variant="h5">Anotações</Typography>
+        </Grid>
+  
+        <Grid container spacing={2}>
+          <Grid item xs={12}> {/* Alterado de xs={4} para xs={8} */}
+            <Controller
+              control={control}
+              name="annotations"
+              rules={{ maxLength: { value: 500, message: "Máximo de 500 caracteres" } }}
+              render={({
+                field: { onChange, onBlur, value },
+                fieldState: { error },
+              }) => (
+                <TextField
+                  value={value}
+                  label="Insira suas anotações aqui, como o endereço da UC."
+                  fullWidth
+                  multiline
+                  rows={6}
+                  variant="outlined"
+                  placeholder=""
+                  error={Boolean(error)}
+                  helperText={error?.message ?? " "}
+                  onChange={onChange}
+                  onBlur={onBlur}
+                />
+              )}
+            />
+          </Grid>
+        </Grid>
+      </>
+    ),
+    [control]
+  );
+  
+  const AddressSection = useCallback(
+    () => (
+      <>
+        <Grid item xs={8} mb={2}>
+          <Typography variant="h5">Endereço</Typography>
+        </Grid>
+  
+        <Grid container spacing={2}>
+          <Grid item xs={12}> {/* Mantive a alteração de xs={4} para xs={12} */}
+            <Controller
+              control={control}
+              name="address"
+              rules={{ maxLength: { value: 300, message: "Máximo de 300 caracteres" } }}
+              render={({
+                field: { onChange, onBlur, value },
+                fieldState: { error },
+              }) => (
+                <TextField
+                  value={value}
+                  label="Insira o endereço aqui."
+                  fullWidth
+                  multiline
+                  rows={4}
+                  variant="outlined"
+                  placeholder="Rua, Número, Bairro, Cidade - Estado"
+                  error={Boolean(error)}
+                  helperText={error?.message ?? " "}
+                  onChange={onChange}
+                  onBlur={onBlur}
+                />
+              )}
+            />
+          </Grid>
+        </Grid>
+      </>
+    ),
+    [control]
+  );
+
   return (
     <Fragment>
       <FormDrawerV2
@@ -712,6 +790,8 @@ const CreateEditEnergyBillForm = () => {
           <InvoiceSection key={0} />,
           <MeasuredDemandSection key={1} />,
           <MeasuredConsumption key={2} />,
+          <AnnotationSection key={3}/>,
+          <AddressSection key={4}/>,
         ]}
       />
       <FormWarningDialog
@@ -723,5 +803,6 @@ const CreateEditEnergyBillForm = () => {
     </Fragment>
   );
 };
+
 
 export default CreateEditEnergyBillForm;
