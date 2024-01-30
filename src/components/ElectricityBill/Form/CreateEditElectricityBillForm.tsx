@@ -363,7 +363,8 @@ const CreateEditEnergyBillForm = () => {
                 inputFormat="MMMM/yyyy"
                 value={value}
                 label="Mês de referência *"
-                minDate={new Date("2010")}
+                shouldDisableDate={(date: Date) => date.getMonth() !== value.getMonth() && isEditEnergyBillFormOpen}
+                minDate={new Date(contract ? contract.startDate : "2010")}
                 disableFuture
                 renderInput={(params) => (
                   <TextField
@@ -371,6 +372,7 @@ const CreateEditEnergyBillForm = () => {
                     inputProps={{
                       ...params.inputProps,
                       placeholder: "mm/aaaa",
+                      readOnly: isEditEnergyBillFormOpen
                     }}
                     helperText={error?.message ?? " "}
                     error={!!error}
