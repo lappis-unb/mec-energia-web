@@ -270,6 +270,14 @@ const ConsumerUnitEditForm = () => {
     setShouldShowDistributorFormDialog(false);
   };
 
+  const handleNumericInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    onChange: (value: string) => void
+  ) => {
+    const numericValue = e.target.value.replace(/\D/g, '');
+    onChange(numericValue);
+  };
+
 
   const ConsumerUnitSection = useCallback(() => (
     <>
@@ -373,7 +381,7 @@ const ConsumerUnitEditForm = () => {
                 "Nº ou código da Unidade Consumidora conforme a fatura"
               }
               fullWidth
-              onChange={onChange}
+              onChange={(e) => handleNumericInputChange(e, onChange)}
               onBlur={onBlur}
             />
           )}

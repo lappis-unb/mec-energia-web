@@ -226,6 +226,14 @@ const ConsumerUnitCreateForm = () => {
     return withoutSpacesInStartAndEnd.length >= 3 || 'Insira no ínimo de 3 caracteres, excluindo espaços em branco.';
   };
 
+  const handleNumericInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    onChange: (value: string) => void
+  ) => {
+    const numericValue = e.target.value.replace(/\D/g, '');
+    onChange(numericValue);
+  };
+
   const ConsumerUnitSection = useCallback(() => (
     <>
       <Grid item xs={12}>
@@ -290,7 +298,7 @@ const ConsumerUnitCreateForm = () => {
                 "Nº ou código da Unidade Consumidora conforme a fatura"
               }
               fullWidth
-              onChange={onChange}
+              onChange={(e) => handleNumericInputChange(e, onChange)}
               onBlur={onBlur}
             />
           )}
