@@ -2,11 +2,7 @@ import { Fragment, useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { isAfter, isFuture, isValid } from "date-fns";
 
-import {
-  Controller,
-  SubmitHandler,
-  useForm,
-} from "react-hook-form";
+import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { NumericFormat } from "react-number-format";
 
 import {
@@ -55,6 +51,7 @@ import { sendFormattedDate } from "@/utils/date";
 import { getSubgroupsText } from "@/utils/get-subgroup-text";
 import { isInSomeSubgroups } from "@/utils/validations/form-validations";
 import FormDrawerV2 from "@/components/Form/DrawerV2";
+import FormConfirmDialog from "./WarningDialogConfirm";
 
 const defaultValues: RenewContractForm = {
   code: "",
@@ -93,6 +90,7 @@ const ConsumerUnitRenewContractForm = () => {
 
   //Estados
   const [shouldShowCancelDialog, setShouldShowCancelDialog] = useState(false);
+  const [showShowConfirmDialog, setShouldShowConfirmDialog] = useState(false);
   const [shouldShowDistributorFormDialog, setShouldShowDistributorFormDialog] =
     useState(false);
 
@@ -150,11 +148,14 @@ const ConsumerUnitRenewContractForm = () => {
       | RenewContractForm["peakContractedDemandInKw"]
       | RenewContractForm["offPeakContractedDemandInKw"]
   ) => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     if (value <= 0) return "Insira um valor maior que 0";
   };
 
   const handleCloseDialog = () => {
     setShouldShowCancelDialog(false);
+    setShouldShowConfirmDialog(false);
   };
 
   const handleCancelEdition = () => {
@@ -165,7 +166,12 @@ const ConsumerUnitRenewContractForm = () => {
 
     handleDiscardForm();
   };
-
+  const onSubmitHandlerDialog = () => {
+    if (isDirty) {
+      setShouldShowConfirmDialog(true);
+      return;
+    }
+  };
   const handleDiscardForm = () => {
     handleCloseDialog();
     reset();
@@ -173,6 +179,7 @@ const ConsumerUnitRenewContractForm = () => {
   };
 
   const onSubmitHandler: SubmitHandler<RenewContractForm> = async (data) => {
+    setShouldShowConfirmDialog(false);
     if (data.tariffFlag === "G") {
       data.offPeakContractedDemandInKw = data.contracted;
       data.peakContractedDemandInKw = data.contracted;
@@ -222,306 +229,256 @@ const ConsumerUnitRenewContractForm = () => {
     setShouldShowDistributorFormDialog(false);
   };
 
+  const Contract = useCallback(
+    () => (
+      <>
+        <Grid item xs={12}>
+          <Typography variant="h5">Contrato</Typography>
+        </Grid>
 
-  const Contract = useCallback(() => (
-    <>
-      <Grid item xs={12}>
-        <Typography variant="h5">Contrato</Typography>
-      </Grid>
-
-      <Grid item xs={12}>
-        <Controller
-          control={control}
-          name="code"
-          rules={{
-            required: "Preencha este campo",
-            validate: hasEnoughCaracteresLength,
-          }}
-          render={({
-            field: { onChange, onBlur, value, ref },
-            fieldState: { error },
-          }) => (
-            <TextField
-              ref={ref}
-              value={value}
-              label="Número da Unidade *"
-              placeholder="Número da Unidade Consumidora conforme a fatura"
-              error={Boolean(error)}
-              helperText={
-                error?.message ??
-                "Nº ou código da Unidade Consumidora conforme a fatura"
-              }
-              fullWidth
-              onChange={onChange}
-              onBlur={onBlur}
-            />
-          )}
-        />
-      </Grid>
-
-      <Grid item xs={12}>
-        <Controller
-          control={control}
-          name="distributor"
-          rules={{ required: "Preencha este campo" }}
-          render={({
-            field: { onChange, onBlur, value, ref },
-            fieldState: { error },
-          }) => (
-            <FormControl
-              sx={{ minWidth: "200px", maxWidth: "100%" }}
-              error={!!error}
-            >
-              <InputLabel>Distribuidora *</InputLabel>
-
-              <Select
+        <Grid item xs={12}>
+          <Controller
+            control={control}
+            name="code"
+            rules={{
+              required: "Preencha este campo",
+              validate: hasEnoughCaracteresLength,
+            }}
+            render={({
+              field: { onChange, onBlur, value, ref },
+              fieldState: { error },
+            }) => (
+              <TextField
                 ref={ref}
                 value={value}
-                label="Distribuidora *"
-                autoWidth
-                MenuProps={{
-                  anchorOrigin: {
-                    vertical: "bottom",
-                    horizontal: "left",
-                  },
-                  transformOrigin: {
-                    vertical: "top",
-                    horizontal: "left",
-                  },
-                }}
-                onChange={onChange}
-                onBlur={onBlur}
-              >
-                {distributorList?.map(
-                  (distributor: DistributorPropsTariffs) => {
-                    return (
-                      <MenuItem
-                        key={distributor.id}
-                        value={distributor.id}
-                      >
-                        {distributor.name}
-                      </MenuItem>
-                    );
-                  }
-                )}
-                <MenuItem>
-                  <Button
-                    onClick={() =>
-                      setShouldShowDistributorFormDialog(true)
-                    }
-                  >
-                    Adicionar
-                  </Button>
-                </MenuItem>
-              </Select>
-
-              <FormHelperText>{error?.message ?? " "}</FormHelperText>
-            </FormControl>
-          )}
-        />
-      </Grid>
-
-      <Grid item xs={12}>
-        <Controller
-          control={control}
-          name="startDate"
-          rules={{
-            required: "Insira uma data válida no formato dd/mm/aaaa",
-            validate: isValidDate,
-          }}
-          render={({
-            field: { value, onChange },
-            fieldState: { error },
-          }) => (
-            <DatePicker
-              value={value}
-              label="Início da vigência *"
-              minDate={new Date("2010")}
-              disableFuture
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  inputProps={{
-                    ...params.inputProps,
-                    placeholder: "dd/mm/aaaa",
-                  }}
-                  helperText={error?.message ?? " "}
-                  error={!!error}
-                />
-              )}
-              onChange={onChange}
-            />
-          )}
-        />
-      </Grid>
-
-      <Tooltip
-        componentsProps={{
-          tooltip: {
-            sx: {
-              bgcolor: "warning.main",
-              color: "warning.contrastText",
-              "& .MuiTooltip-arrow": {
-                color: "warning.main",
-              },
-            },
-          },
-        }}
-        title={
-          <div style={{ whiteSpace: "pre-line" }}>
-            {subgroupsList
-              ? getSubgroupsText(subgroupsList?.subgroups)
-              : ""}
-          </div>
-        }
-        arrow
-        placement="right"
-        sx={{ color: "red" }}
-      >
-        <Grid item xs={8} sm={6}>
-          <Controller
-            control={control}
-            name={"supplyVoltage"}
-            rules={{
-              required: "Preencha este campo",
-              validate: (v) =>
-                isInSomeSubgroups(v, subgroupsList?.subgroups || []),
-            }}
-            render={({
-              field: { onChange, onBlur, value },
-              fieldState: { error },
-            }) => (
-              <NumericFormat
-                value={value}
-                customInput={TextField}
-                label="Tensão contratada *"
+                label="Número da Unidade *"
+                placeholder="Número da Unidade Consumidora conforme a fatura"
+                error={Boolean(error)}
                 helperText={
                   error?.message ??
-                  "Se preciso, converta a tensão de V para kV dividindo o valor por 1.000."
+                  "Nº ou código da Unidade Consumidora conforme a fatura"
                 }
-                error={!!error}
                 fullWidth
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">kV</InputAdornment>
-                  ),
-                }}
-                type="text"
-                allowNegative={false}
-                isAllowed={({ floatValue }) =>
-                  !floatValue || floatValue <= 9999.99
-                }
-                decimalScale={2}
-                decimalSeparator=","
-                thousandSeparator={" "}
-                onValueChange={(values) => onChange(values.floatValue)}
+                onChange={onChange}
                 onBlur={onBlur}
               />
             )}
           />
         </Grid>
-      </Tooltip>
-    </>
-  ), [control, distributorList, subgroupsList])
 
-  const ContractedDemand = useCallback(() => (
-    <>
-      <Grid item xs={12}>
-        <Typography variant="h5">Demanda Contratada</Typography>
-      </Grid>
-
-      <Grid item xs={12}>
-        <Controller
-          control={control}
-          name="tariffFlag"
-          rules={{ required: "Preencha este campo" }}
-          render={({
-            field: { onChange, value },
-            fieldState: { error },
-          }) => (
-            <FormControl error={!!error}>
-              <FormLabel>Modalidade tarifária *</FormLabel>
-
-              <RadioGroup value={value} onChange={onChange}>
-                <Box
-                  display={"flex"}
-                  justifyContent="flex-start"
-                  alignItems="center"
-                >
-                  <FormControlLabel
-                    value="G"
-                    control={<Radio />}
-                    label="Verde"
-                  />
-                  <FormHelperText>(Demanda única)</FormHelperText>
-                </Box>
-                <Box
-                  display={"flex"}
-                  justifyContent="flex-start"
-                  alignItems="center"
-                >
-                  <FormControlLabel
-                    value="B"
-                    control={<Radio />}
-                    label="Azul"
-                  />
-                  <FormHelperText>
-                    (Demanda de ponta e fora ponta)
-                  </FormHelperText>
-                </Box>
-              </RadioGroup>
-
-              <FormHelperText>{error?.message ?? " "}</FormHelperText>
-            </FormControl>
-          )}
-        />
-      </Grid>
-
-      {tariffFlag === "G" ? (
-        <Grid item xs={7}>
+        <Grid item xs={12}>
           <Controller
             control={control}
-            name="contracted"
-            rules={{
-              required: "Preencha este campo",
-              validate: isValueGreaterThenZero,
-            }}
+            name="distributor"
+            rules={{ required: "Preencha este campo" }}
             render={({
-              field: { onChange, onBlur, value },
+              field: { onChange, onBlur, value, ref },
               fieldState: { error },
             }) => (
-              <NumericFormat
+              <FormControl
+                sx={{ minWidth: "200px", maxWidth: "100%" }}
+                error={!!error}
+              >
+                <InputLabel>Distribuidora *</InputLabel>
+
+                <Select
+                  ref={ref}
+                  value={value}
+                  label="Distribuidora *"
+                  autoWidth
+                  MenuProps={{
+                    anchorOrigin: {
+                      vertical: "bottom",
+                      horizontal: "left",
+                    },
+                    transformOrigin: {
+                      vertical: "top",
+                      horizontal: "left",
+                    },
+                  }}
+                  onChange={onChange}
+                  onBlur={onBlur}
+                >
+                  {distributorList?.map(
+                    (distributor: DistributorPropsTariffs) => {
+                      return (
+                        <MenuItem key={distributor.id} value={distributor.id}>
+                          {distributor.name}
+                        </MenuItem>
+                      );
+                    }
+                  )}
+                  <MenuItem>
+                    <Button
+                      onClick={() => setShouldShowDistributorFormDialog(true)}
+                    >
+                      Adicionar
+                    </Button>
+                  </MenuItem>
+                </Select>
+
+                <FormHelperText>{error?.message ?? " "}</FormHelperText>
+              </FormControl>
+            )}
+          />
+        </Grid>
+
+        <Grid item xs={12}>
+          <Controller
+            control={control}
+            name="startDate"
+            rules={{
+              required: "Insira uma data válida no formato dd/mm/aaaa",
+              validate: isValidDate,
+            }}
+            render={({ field: { value, onChange }, fieldState: { error } }) => (
+              <DatePicker
                 value={value}
-                customInput={TextField}
-                label="Demanda *"
-                fullWidth
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">kW</InputAdornment>
-                  ),
-                }}
-                type="text"
-                allowNegative={false}
-                isAllowed={({ floatValue }) =>
-                  !floatValue || floatValue <= 99999.99
-                }
-                decimalScale={2}
-                decimalSeparator=","
-                thousandSeparator={" "}
-                error={Boolean(error)}
-                helperText={error?.message ?? " "}
-                onValueChange={(values) => onChange(values.floatValue)}
-                onBlur={onBlur}
+                label="Início da vigência *"
+                minDate={new Date("2010")}
+                disableFuture
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    inputProps={{
+                      ...params.inputProps,
+                      placeholder: "dd/mm/aaaa",
+                    }}
+                    helperText={error?.message ?? " "}
+                    error={!!error}
+                  />
+                )}
+                onChange={onChange}
               />
             )}
           />
         </Grid>
-      ) : (
-        <Box>
-          <Grid item xs={8}>
+
+        <Tooltip
+          componentsProps={{
+            tooltip: {
+              sx: {
+                bgcolor: "warning.main",
+                color: "warning.contrastText",
+                "& .MuiTooltip-arrow": {
+                  color: "warning.main",
+                },
+              },
+            },
+          }}
+          title={
+            <div style={{ whiteSpace: "pre-line" }}>
+              {subgroupsList ? getSubgroupsText(subgroupsList?.subgroups) : ""}
+            </div>
+          }
+          arrow
+          placement="right"
+          sx={{ color: "red" }}
+        >
+          <Grid item xs={8} sm={6}>
             <Controller
               control={control}
-              name="peakContractedDemandInKw"
+              name={"supplyVoltage"}
+              rules={{
+                required: "Preencha este campo",
+                validate: (v) =>
+                  isInSomeSubgroups(v, subgroupsList?.subgroups || []),
+              }}
+              render={({
+                field: { onChange, onBlur, value },
+                fieldState: { error },
+              }) => (
+                <NumericFormat
+                  value={value}
+                  customInput={TextField}
+                  label="Tensão contratada *"
+                  helperText={
+                    error?.message ??
+                    "Se preciso, converta a tensão de V para kV dividindo o valor por 1.000."
+                  }
+                  error={!!error}
+                  fullWidth
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">kV</InputAdornment>
+                    ),
+                  }}
+                  type="text"
+                  allowNegative={false}
+                  isAllowed={({ floatValue }) =>
+                    !floatValue || floatValue <= 9999.99
+                  }
+                  decimalScale={2}
+                  decimalSeparator=","
+                  thousandSeparator={" "}
+                  onValueChange={(values) => onChange(values.floatValue)}
+                  onBlur={onBlur}
+                />
+              )}
+            />
+          </Grid>
+        </Tooltip>
+      </>
+    ),
+    [control, distributorList, subgroupsList]
+  );
+
+  const ContractedDemand = useCallback(
+    () => (
+      <>
+        <Grid item xs={12}>
+          <Typography variant="h5">Demanda Contratada</Typography>
+        </Grid>
+
+        <Grid item xs={12}>
+          <Controller
+            control={control}
+            name="tariffFlag"
+            rules={{ required: "Preencha este campo" }}
+            render={({ field: { onChange, value }, fieldState: { error } }) => (
+              <FormControl error={!!error}>
+                <FormLabel>Modalidade tarifária *</FormLabel>
+
+                <RadioGroup value={value} onChange={onChange}>
+                  <Box
+                    display={"flex"}
+                    justifyContent="flex-start"
+                    alignItems="center"
+                  >
+                    <FormControlLabel
+                      value="G"
+                      control={<Radio />}
+                      label="Verde"
+                    />
+                    <FormHelperText>(Demanda única)</FormHelperText>
+                  </Box>
+                  <Box
+                    display={"flex"}
+                    justifyContent="flex-start"
+                    alignItems="center"
+                  >
+                    <FormControlLabel
+                      value="B"
+                      control={<Radio />}
+                      label="Azul"
+                    />
+                    <FormHelperText>
+                      (Demanda de ponta e fora ponta)
+                    </FormHelperText>
+                  </Box>
+                </RadioGroup>
+
+                <FormHelperText>{error?.message ?? " "}</FormHelperText>
+              </FormControl>
+            )}
+          />
+        </Grid>
+
+        {tariffFlag === "G" ? (
+          <Grid item xs={7}>
+            <Controller
+              control={control}
+              name="contracted"
               rules={{
                 required: "Preencha este campo",
                 validate: isValueGreaterThenZero,
@@ -533,7 +490,7 @@ const ConsumerUnitRenewContractForm = () => {
                 <NumericFormat
                   value={value}
                   customInput={TextField}
-                  label="Dem. Ponta *"
+                  label="Demanda *"
                   fullWidth
                   InputProps={{
                     endAdornment: (
@@ -556,50 +513,91 @@ const ConsumerUnitRenewContractForm = () => {
               )}
             />
           </Grid>
+        ) : (
+          <Box>
+            <Grid item xs={8}>
+              <Controller
+                control={control}
+                name="peakContractedDemandInKw"
+                rules={{
+                  required: "Preencha este campo",
+                  validate: isValueGreaterThenZero,
+                }}
+                render={({
+                  field: { onChange, onBlur, value },
+                  fieldState: { error },
+                }) => (
+                  <NumericFormat
+                    value={value}
+                    customInput={TextField}
+                    label="Dem. Ponta *"
+                    fullWidth
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">kW</InputAdornment>
+                      ),
+                    }}
+                    type="text"
+                    allowNegative={false}
+                    isAllowed={({ floatValue }) =>
+                      !floatValue || floatValue <= 99999.99
+                    }
+                    decimalScale={2}
+                    decimalSeparator=","
+                    thousandSeparator={" "}
+                    error={Boolean(error)}
+                    helperText={error?.message ?? " "}
+                    onValueChange={(values) => onChange(values.floatValue)}
+                    onBlur={onBlur}
+                  />
+                )}
+              />
+            </Grid>
 
-          <Grid item xs={8}>
-            <Controller
-              control={control}
-              name="offPeakContractedDemandInKw"
-              rules={{
-                required: "Preencha este campo",
-                validate: isValueGreaterThenZero,
-              }}
-              render={({
-                field: { onChange, onBlur, value },
-                fieldState: { error },
-              }) => (
-                <NumericFormat
-                  value={value}
-                  customInput={TextField}
-                  label="Dem. Fora Ponta *"
-                  fullWidth
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">kW</InputAdornment>
-                    ),
-                  }}
-                  type="text"
-                  allowNegative={false}
-                  isAllowed={({ floatValue }) =>
-                    !floatValue || floatValue <= 99999.99
-                  }
-                  decimalScale={2}
-                  decimalSeparator=","
-                  thousandSeparator={" "}
-                  error={!!error}
-                  helperText={error?.message ?? " "}
-                  onValueChange={(values) => onChange(values.floatValue)}
-                  onBlur={onBlur}
-                />
-              )}
-            />
-          </Grid>
-        </Box>
-      )}
-    </>
-  ), [control, tariffFlag])
-
+            <Grid item xs={8}>
+              <Controller
+                control={control}
+                name="offPeakContractedDemandInKw"
+                rules={{
+                  required: "Preencha este campo",
+                  validate: isValueGreaterThenZero,
+                }}
+                render={({
+                  field: { onChange, onBlur, value },
+                  fieldState: { error },
+                }) => (
+                  <NumericFormat
+                    value={value}
+                    customInput={TextField}
+                    label="Dem. Fora Ponta *"
+                    fullWidth
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">kW</InputAdornment>
+                      ),
+                    }}
+                    type="text"
+                    allowNegative={false}
+                    isAllowed={({ floatValue }) =>
+                      !floatValue || floatValue <= 99999.99
+                    }
+                    decimalScale={2}
+                    decimalSeparator=","
+                    thousandSeparator={" "}
+                    error={!!error}
+                    helperText={error?.message ?? " "}
+                    onValueChange={(values) => onChange(values.floatValue)}
+                    onBlur={onBlur}
+                  />
+                )}
+              />
+            </Grid>
+          </Box>
+        )}
+      </>
+    ),
+    [control, tariffFlag]
+  );
 
   return (
     <Fragment>
@@ -609,12 +607,9 @@ const ConsumerUnitRenewContractForm = () => {
         errorsLength={Object.keys(errors).length}
         isLoading={isLoading}
         handleCloseDrawer={handleCancelEdition}
-        handleSubmitDrawer={handleSubmit(onSubmitHandler)}
+        handleSubmitDrawer={handleSubmit(onSubmitHandlerDialog)}
         header={<></>}
-        sections={[
-          <Contract key={0} />,
-          <ContractedDemand key={1} />
-        ]}
+        sections={[<Contract key={0} />, <ContractedDemand key={1} />]}
       />
 
       <FormWarningDialog
@@ -624,13 +619,18 @@ const ConsumerUnitRenewContractForm = () => {
         onDiscard={handleDiscardForm}
       />
 
+      <FormConfirmDialog
+        open={showShowConfirmDialog}
+        onClose={handleCloseDialog}
+        onSave={handleSubmit(onSubmitHandler)}
+      />
+
       <DistributorCreateFormDialog
         open={shouldShowDistributorFormDialog}
         onClose={handleCloseDistributorFormDialog}
       />
-
     </Fragment>
-  )
+  );
 };
 
 export default ConsumerUnitRenewContractForm;
