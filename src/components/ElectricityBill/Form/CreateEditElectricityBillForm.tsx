@@ -318,6 +318,16 @@ const CreateEditEnergyBillForm = () => {
     handleNotification();
   }, [handleNotification, isPostInvoiceSuccess, isPostInvoiceError]);
 
+  const isValidDemandValue = (value: CreateAndEditEnergyBillForm["peakMeasuredDemandInKw"]) => {
+    if (value === 0) return "O valor não pode ser zero";
+    return true;
+  };
+
+  const isValidConsumptionValue = (value: CreateAndEditEnergyBillForm["peakConsumptionInKwh"]) => {
+    if (value === 0) return "O valor não pode ser zero";
+    return true;
+  };
+
   const Header = useCallback(
     () => (
       <>
@@ -500,7 +510,10 @@ const CreateEditEnergyBillForm = () => {
             <Controller
               control={control}
               name="peakMeasuredDemandInKw"
-              rules={{ required: "Preencha este campo" }}
+              rules={{
+                required: "Preencha este campo",
+                validate: isValidDemandValue,
+              }}
               render={({
                 field: { onChange, onBlur, value },
                 fieldState: { error },
@@ -536,7 +549,10 @@ const CreateEditEnergyBillForm = () => {
             <Controller
               control={control}
               name="offPeakMeasuredDemandInKw"
-              rules={{ required: "Preencha este campo" }}
+              rules={{
+                required: "Preencha este campo",
+                validate: isValidDemandValue, // Adiciona a validação aqui
+              }}
               render={({
                 field: { onChange, onBlur, value },
                 fieldState: { error },
@@ -586,7 +602,10 @@ const CreateEditEnergyBillForm = () => {
             <Controller
               control={control}
               name="peakConsumptionInKwh"
-              rules={{ required: "Preencha este campo" }}
+              rules={{
+                required: "Preencha este campo",
+                validate: isValidConsumptionValue, // Adiciona a validação aqui
+              }}
               render={({
                 field: { onChange, onBlur, value },
                 fieldState: { error },
@@ -622,7 +641,10 @@ const CreateEditEnergyBillForm = () => {
             <Controller
               control={control}
               name="offPeakConsumptionInKwh"
-              rules={{ required: "Preencha este campo" }}
+              rules={{
+                required: "Preencha este campo",
+                validate: isValidConsumptionValue,
+              }}
               render={({
                 field: { onChange, onBlur, value },
                 fieldState: { error },
