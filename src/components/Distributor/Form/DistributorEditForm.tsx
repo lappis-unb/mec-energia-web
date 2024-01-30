@@ -147,6 +147,11 @@ const DistributorEditForm = () => {
     return true;
   };
 
+  const hasConsecutiveSpaces = (value: EditDistributorForm["name"]) => {
+    if (/\s{2,}/.test(value)) return "Não são permitidos espaços consecutivos";
+    return true;
+  };
+
   const DistributorSection = useCallback(() => (
     <>
       <Grid item xs={12}>
@@ -158,7 +163,10 @@ const DistributorEditForm = () => {
           name="name"
           rules={{
             required: "Campo obrigatório",
-            validate: hasEnoughCaracteresLength,
+            validate: {
+              hasEnoughCaracteresLength: hasEnoughCaracteresLength,
+              hasConsecutiveSpaces: hasConsecutiveSpaces
+            }
           }}
           render={({
             field: { onChange, onBlur, value, ref },
@@ -167,7 +175,8 @@ const DistributorEditForm = () => {
             <TextField
               ref={ref}
               value={value}
-              label="Nome"
+              label="Nome (ao menos 3 caracteres)"
+              placeholder="Ex.: CEMIG, Enel, Neonergia"
               error={Boolean(error)}
               helperText={error?.message ?? " "}
               fullWidth
@@ -197,12 +206,19 @@ const DistributorEditForm = () => {
             <PatternFormat
               value={value}
               customInput={TextField}
-              label="CNPJ"
+              label="CNPJ (14 dígitos)"
               format="##.###.###/####-##"
               error={Boolean(error)}
               helperText={error?.message ?? " "}
               fullWidth
-              onChange={onChange}
+              onChange={(e) => {
+                onChange(e);
+                // Adicionando a lógica de verificação aqui
+                const digitos = e.target.value.replace(/\D/g, ''); // Remove caracteres não numéricos
+                if (digitos.length === 14) {
+                  alert('Limite de 14 dígitos atingido');
+                }
+              }}
               onBlur={onBlur}
             />
           )}

@@ -530,9 +530,13 @@ const CreateEditEnergyBillForm = () => {
                   }}
                   type="text"
                   allowNegative={false}
-                  isAllowed={({ floatValue }) =>
-                    !floatValue || floatValue <= 999999.99
-                  }
+                  isAllowed={({ floatValue }) => {
+                  const isValid = !floatValue || floatValue <= 999999.99;
+                  if (!isValid) {
+                  alert("Limite de dígitos alcançado.(6)");
+                }
+                return isValid;
+              }}
                   placeholder="0"
                   decimalScale={2}
                   decimalSeparator=","
@@ -569,9 +573,13 @@ const CreateEditEnergyBillForm = () => {
                   }}
                   type="text"
                   allowNegative={false}
-                  isAllowed={({ floatValue }) =>
-                    !floatValue || floatValue <= 999999.99
-                  }
+                  isAllowed={({ floatValue }) => {
+                  const isValid = !floatValue || floatValue <= 999999.99;
+                  if (!isValid) {
+                  alert("Limite de dígitos alcançado.(6)");
+                }
+                return isValid;
+                }}
                   placeholder="0"
                   decimalScale={2}
                   decimalSeparator=","
@@ -622,9 +630,13 @@ const CreateEditEnergyBillForm = () => {
                   }}
                   type="text"
                   allowNegative={false}
-                  isAllowed={({ floatValue }) =>
-                    !floatValue || floatValue <= 999999.99
-                  }
+                  isAllowed={({ floatValue }) => {
+                  const isValid = !floatValue || floatValue <= 999999.99;
+                  if (!isValid) {
+                  alert("Limite de dígitos alcançado.(6)");
+                }
+                return isValid;
+                }}
                   decimalScale={2}
                   placeholder="0"
                   decimalSeparator=","
@@ -661,9 +673,13 @@ const CreateEditEnergyBillForm = () => {
                   }}
                   type="text"
                   allowNegative={false}
-                  isAllowed={({ floatValue }) =>
-                    !floatValue || floatValue <= 999999.99
-                  }
+                  isAllowed={({ floatValue }) => {
+                  const isValid = !floatValue || floatValue <= 999999.99;
+                  if (!isValid) {
+                  alert("Limite de dígitos alcançado.(6)");
+                }
+                return isValid;
+                }}
                   placeholder="0"
                   decimalScale={2}
                   decimalSeparator=","

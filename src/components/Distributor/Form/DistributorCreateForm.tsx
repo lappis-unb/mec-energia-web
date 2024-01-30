@@ -133,7 +133,7 @@ const DistributorCreateForm = () => {
             <TextField
               ref={ref}
               value={value}
-              label="Nome *"
+              label="Nome * (ao menos 3 caracteres)"
               placeholder="Ex.: CEMIG, Enel, Neonergia"
               error={Boolean(error)}
               helperText={error?.message ?? " "}
@@ -164,13 +164,20 @@ const DistributorCreateForm = () => {
             <PatternFormat
               value={value}
               customInput={TextField}
-              label="CNPJ *"
+              label="CNPJ * (14 dígitos)"
               format="##.###.###/####-##"
               placeholder="Ex.: 12345678000167"
               error={Boolean(error)}
               helperText={error?.message ?? " "}
               fullWidth
-              onChange={onChange}
+              onChange={(e) => {
+                onChange(e);
+                // Adicionando a lógica de verificação aqui
+                const digitos = e.target.value.replace(/\D/g, ''); // Remove caracteres não numéricos
+                if (digitos.length === 14) {
+                  alert('Limite de 14 dígitos atingido');
+                }
+              }}
               onBlur={onBlur}
             />
           )}
