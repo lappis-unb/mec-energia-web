@@ -64,8 +64,6 @@ const DrawerListItem = ({
               justifyContent: "center",
             }}
           >
-            // eslint-disable-next-line
-            // @ts-ignore
             <Icon color={active ? "primary" : "inherit"} />
           </ListItemIcon>
 
