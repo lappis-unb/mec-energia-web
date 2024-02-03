@@ -59,7 +59,7 @@ const DistributorPage: NextPage = () => {
       headerAction={<DistributorHeaderAction />}
       contentHeader={activeDistributorUnit === -1? null :<DistributorContentHeader />}
     >
-     {activeDistributorUnit === -1? <EmptyDistributorContent/>: <DistributorContent />}
+      <DistributorContent />
       <DistributorCreateForm />
       <DistributorEditForm />
       <TariffCreateEditForm />
