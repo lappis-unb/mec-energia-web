@@ -130,7 +130,7 @@ const CreateEditEnergyBillForm = () => {
       const date = new Date(`${year}-${month + 1}`);
       setValue("date", date);
     }
-  }, [month, isCreateEnergyBillFormOpen, isEditEnergyBillFormOpen]);
+  }, [month, isCreateEnergyBillFormOpen, isEditEnergyBillFormOpen, setValue, year]);
 
   useEffect(() => {
     if (isCreateEnergyBillFormOpen) {
