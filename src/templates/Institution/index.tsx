@@ -47,10 +47,7 @@
                 color: institution.isActive ? "inherit" : "#888888",
               }}>
                 <TableCell>
-                  <IconButton
-                    onClick={() => handleToggleActivation(institution.id, institution.isActive, institution.name, institution.cnpj)}
-                    color={institution.isActive ? "primary" : "secondary"}
-                
+                  <IconButton                
                     onClick={() => handleToggleActivation(institution.id, institution.isActive, institution.name, institution.cnpj)}>
                       {institution.isActive ? <FlashOn /> : <FlashOff />}
                     </IconButton>
