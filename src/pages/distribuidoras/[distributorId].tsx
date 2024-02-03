@@ -6,7 +6,7 @@ import { selectActiveDistributorId, setActiveDistributorId } from "@/store/appSl
 import DefaultTemplateV2 from "@/templates/DefaultV2";
 import DistributorsCardGrid from "@/templates/Distributor/Grid";
 import DistributorContentHeader from "@/templates/Distributor/Header";
-import DistributorContent, { EmptyDistributorContent } from "@/templates/Distributor/Content";
+import DistributorContent from "@/templates/Distributor/Content";
 import DistributorHeaderAction from "@/templates/Distributor/Header/Action";
 import DistributorCreateForm from "@/components/Distributor/Form/DistributorCreateForm";
 import DistributorEditForm from "@/components/Distributor/Form/DistributorEditForm";
