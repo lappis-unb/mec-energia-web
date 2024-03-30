@@ -66,6 +66,7 @@ const DistributorCreateForm = () => {
   const onSubmitHandler: SubmitHandler<CreateDistributorForm> = async (
     data
   ) => {
+    data.name = data.name.charAt(0) === ' ' ? data.name.substring(1) : data.name;
     const cnpjSemMascara = data.cnpj.replace(/[\/.-]/g, "");
     data.cnpj = cnpjSemMascara;
     const body: CreateDistributorRequestPayload = {
@@ -138,7 +139,33 @@ const DistributorCreateForm = () => {
               error={Boolean(error)}
               helperText={error?.message ?? " "}
               fullWidth
-              onChange={onChange}
+              onChange={(e) => {
+                
+                // Adicionando a lógica de verificação aqui
+                let { value } = e.target;
+
+                // Impossibilitando o primeiro caracter de ser um espaço em branco
+                if (value.length === 1 && value.charAt(0) === ' ') {
+                  value = '';
+                  e.target.value = value;
+                } else {
+                  const splitted = value.split(' ');
+                  const hasMultipleSpaces = splitted.some((element, index) => element === '' && splitted[index + 1] === '');
+                  // Validação e aviso caso existam múltiplos espaços
+                  if (hasMultipleSpaces) {
+                    alert('O nome não pode conter dois espaços vazios consecutivos.');
+                    // Filtra os elementos vazios do array e junta novamente a string
+                    const filtered = splitted.filter(element => element);
+                    let updatedValue = filtered.join(' ');
+                    updatedValue  = `${updatedValue} `;
+
+                    // Define o novo valor na variável 'value' para remover o segundo espaço
+                    e.target.value = updatedValue;
+                  }
+                }
+
+                onChange(e);
+              }}
               onBlur={onBlur}
             />
           )}
