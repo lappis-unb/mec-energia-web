@@ -64,18 +64,18 @@ const baseUrl = process.env.NEXT_PUBLIC_API_URL;
 
 export const mecEnergiaApi = createApi({
   reducerPath: "mecEnergiaApi",
-    baseQuery: fetchBaseQuery({
-      baseUrl,
-      prepareHeaders: async (headers) => {
-        const session = await getSession();
-        
-        if (session) {
-          headers.set("Authorization", `Token ${session.user.token}`);
-        }
+  baseQuery: fetchBaseQuery({
+    baseUrl,
+    prepareHeaders: async (headers) => {
+      const session = await getSession();
 
-        return headers;
-      },
-    }),
+      if (session) {
+        headers.set("Authorization", `Token ${session.user.token}`);
+      }
+
+      return headers;
+    },
+  }),
   tagTypes: [
     "Distributors",
     "ConsumerUnit",
@@ -190,10 +190,10 @@ export const mecEnergiaApi = createApi({
       providesTags: (result, error, arg) =>
         result
           ? [
-              { type: "CurrentContract", arg },
-              "CurrentContract",
-              "Recommendation",
-            ]
+            { type: "CurrentContract", arg },
+            "CurrentContract",
+            "Recommendation",
+          ]
           : ["CurrentContract", "Recommendation"],
     }),
     renewContract: builder.mutation<
