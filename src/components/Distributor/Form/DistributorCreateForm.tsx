@@ -153,7 +153,6 @@ const DistributorCreateForm = () => {
                   const hasMultipleSpaces = splitted.some((element, index) => element === '' && splitted[index + 1] === '');
                   // Validação e aviso caso existam múltiplos espaços
                   if (hasMultipleSpaces) {
-                    alert('O nome não pode conter dois espaços vazios consecutivos.');
                     // Filtra os elementos vazios do array e junta novamente a string
                     const filtered = splitted.filter(element => element);
                     let updatedValue = filtered.join(' ');
