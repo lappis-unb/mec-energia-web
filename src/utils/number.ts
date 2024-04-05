@@ -20,3 +20,8 @@ export const formatNumber = (n: number | null, defaultOutput = "") => {
   return numberFormatter.format(n)
 }
 
+export const formatToPtBrCurrency = (n: number | null, defaultOutput = 0) => {
+  if (n == null) 
+    return defaultOutput;
+  return Number(n).toLocaleString('pt-BR', { maximumFractionDigits: 2 });
+};

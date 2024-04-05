@@ -5,6 +5,7 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import ConfirmWarning from "@/components/ConfirmWarning/ConfirmWarning";
 import { GetApp } from "@mui/icons-material";
+import { formatToPtBrCurrency } from "@/utils/number";
 
 import { Box, Button, IconButton } from "@mui/material";
 import {
@@ -34,6 +35,7 @@ import {
 } from "@/store/appSlice";
 import { ConsumerUnitInvoiceFilter } from "@/types/app";
 import {
+  EnergyBill,
   InvoiceDataGridRow,
   InvoicePayload,
   InvoicesPayload,
@@ -71,6 +73,16 @@ const getFilteredInvoices = (
   return invoicesPayload[activeFilter];
 };
 
+const formatConsumptionDemandToPtBrCurrency = (energyBill: EnergyBill) => {
+  return {
+    invoiceInReais: formatToPtBrCurrency(energyBill.invoiceInReais),
+    offPeakConsumptionInKwh: formatToPtBrCurrency(energyBill.offPeakConsumptionInKwh),
+    peakConsumptionInKwh: formatToPtBrCurrency(energyBill.peakConsumptionInKwh),
+    offPeakMeasuredDemandInKw: formatToPtBrCurrency(energyBill.offPeakMeasuredDemandInKw),
+    peakMeasuredDemandInKw: formatToPtBrCurrency(energyBill.peakMeasuredDemandInKw),
+  }
+};
+
 const getDataGridRows = (
   invoicesPayload: InvoicePayload[],
   activeFilter: ConsumerUnitInvoiceFilter
@@ -79,7 +91,10 @@ const getDataGridRows = (
     ({ month, year, isEnergyBillPending, energyBill }) => ({
       ...energyBill,
       id: parseInt(`${year}${month >= 10 ? month : "0" + month}`),
-      ...(energyBill && { energyBillId: energyBill.id }),
+      ...(energyBill && { 
+        energyBillId: energyBill.id,
+        ...formatConsumptionDemandToPtBrCurrency(energyBill),
+      }),
       month,
       year,
       isEnergyBillPending,
