@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { useSelector } from "react-redux";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
@@ -6,27 +5,24 @@ import { useSession } from "next-auth/react";
 import { Box } from "@mui/material";
 import { useFetchConsumerUnitsQuery } from "@/api";
 import { selectConsumerUnitActiveFilter } from "@/store/appSlice";
-import { ConsumerUnitsPayload } from "@/types/consumerUnit";
 import ConsumerUnitsFilterButtons from "@/templates/ConsumerUnit/FilterButtons";
 import ConsumerUnitCard from "@/components/ConsumerUnit/CardV2";
+import { useMemo } from "react";
 
 const ConsumerUnitsCardGrid = () => {
   const {
     query: { id },
   } = useRouter();
 
+  const activeFilter = useSelector(selectConsumerUnitActiveFilter);
   const { data: session } = useSession();
-  const { data: consumerUnitsData, refetch } = useFetchConsumerUnitsQuery(
+  const { data: consumerUnitsData } = useFetchConsumerUnitsQuery(
     session?.user.universityId ?? skipToken
   );
 
-  const activeFilter = useSelector(selectConsumerUnitActiveFilter);
-
-  const [consumerUnits, setConsumerUnits] = useState<ConsumerUnitsPayload>([]);
-
-  useEffect(() => {
+  const consumerUnits = useMemo(() => {
     if (!consumerUnitsData) {
-      return;
+      return [];
     }
 
     const filteredConsumerUnits = [];
@@ -48,9 +44,9 @@ const ConsumerUnitsCardGrid = () => {
       .sort(({ isFavorite }) => (isFavorite ? -1 : 1)) // favorites first
       .sort(({ isActive }) => (isActive ? -1 : 1)); // disabled last
 
-    setConsumerUnits(sortedConsumerUnits);
-    refetch()
-  })
+    return sortedConsumerUnits;
+  }, [activeFilter, consumerUnitsData]);
+
 
   return (
     <Box
