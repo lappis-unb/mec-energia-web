@@ -66,6 +66,7 @@ const DistributorCreateForm = () => {
   const onSubmitHandler: SubmitHandler<CreateDistributorForm> = async (
     data
   ) => {
+    data.name = data.name.charAt(0) === ' ' ? data.name.substring(1) : data.name;
     const cnpjSemMascara = data.cnpj.replace(/[\/.-]/g, "");
     data.cnpj = cnpjSemMascara;
     const body: CreateDistributorRequestPayload = {
@@ -112,6 +113,11 @@ const DistributorCreateForm = () => {
     return true;
   };
 
+  const hasConsecutiveSpaces = (value: CreateDistributorForm["name"]) => {
+    if (/\s{2,}/.test(value)) return "Não são permitidos espaços consecutivos";
+    return true;
+  };
+
   const DistributorSection = useCallback(() => (
     <>
       <Grid item xs={12}>
@@ -124,7 +130,10 @@ const DistributorCreateForm = () => {
           name="name"
           rules={{
             required: "Preencha este campo",
-            validate: hasEnoughCaracteresLength,
+            validate: {
+              hasEnoughCaracteresLength: hasEnoughCaracteresLength,
+              hasConsecutiveSpaces: hasConsecutiveSpaces
+            }
           }}
           render={({
             field: { onChange, onBlur, value, ref },
@@ -138,8 +147,36 @@ const DistributorCreateForm = () => {
               error={Boolean(error)}
               helperText={error?.message ?? " "}
               fullWidth
-              onChange={onChange}
               onBlur={onBlur}
+              onChange={(e) => {
+                
+                // Adicionando a lógica de verificação aqui
+                let { value } = e.target;
+
+                // Impossibilitando o primeiro caracter de ser um espaço em branco
+                if (value.length === 1 && value.charAt(0) === ' ') {
+                  value = '';
+                  e.target.value = value;
+                } else if(value.charAt(0) === ' '){
+                  value = value.substring(1);
+                  e.target.value = value;
+                } else {
+                  const splitted = value.split(' ');
+                  const hasMultipleSpaces = splitted.some((element, index) => element === '' && splitted[index + 1] === '');
+                  // Validação e aviso caso existam múltiplos espaços
+                  if (hasMultipleSpaces) {
+                    // Filtra os elementos vazios do array e junta novamente a string
+                    const filtered = splitted.filter(element => element);
+                    let updatedValue = filtered.join(' ');
+                    updatedValue  = `${updatedValue} `;
+
+                    // Define o novo valor na variável 'value' para remover o segundo espaço
+                    e.target.value = updatedValue;
+                  }
+                }
+
+                onChange(e);
+              }}
             />
           )}
         />
