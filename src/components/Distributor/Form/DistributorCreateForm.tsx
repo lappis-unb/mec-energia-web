@@ -154,9 +154,27 @@ const DistributorCreateForm = () => {
                 let { value } = e.target;
 
                 // Impossibilitando o primeiro caracter de ser um espaço em branco
-                value = value.replace(/^\s/, '');
+                if (value.length === 1 && value.charAt(0) === ' ') {
+                  value = '';
+                  e.target.value = value;
+                } else if(value.charAt(0) === ' '){
+                  value = value.substring(1);
+                  e.target.value = value;
+                } else {
+                  const splitted = value.split(' ');
+                  const hasMultipleSpaces = splitted.some((element, index) => element === '' && splitted[index + 1] === '');
+                  // Validação e aviso caso existam múltiplos espaços
+                  if (hasMultipleSpaces) {
+                    // Filtra os elementos vazios do array e junta novamente a string
+                    const filtered = splitted.filter(element => element);
+                    let updatedValue = filtered.join(' ');
+                    updatedValue  = `${updatedValue} `;
 
-                e.target.value = value;
+                    // Define o novo valor na variável 'value' para remover o segundo espaço
+                    e.target.value = updatedValue;
+                  }
+                }
+
                 onChange(e);
               }}
             />
