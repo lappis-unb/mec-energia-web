@@ -180,8 +180,18 @@ const DistributorEditForm = () => {
               error={Boolean(error)}
               helperText={error?.message ?? " "}
               fullWidth
-              onChange={onChange}
               onBlur={onBlur}
+              onChange={(e) => {
+                
+                // Adicionando a lógica de verificação aqui
+                let { value } = e.target;
+
+                // Impossibilitando o primeiro caracter de ser um espaço em branco
+                value = value.replace(/^\s/, '');
+
+                e.target.value = value;
+                onChange(e);
+              }}
             />
           )}
         />
