@@ -13,11 +13,7 @@ import {
 } from "../../../types/distributor";
 import { PatternFormat } from "react-number-format";
 
-import {
-  Controller,
-  SubmitHandler,
-  useForm,
-} from "react-hook-form";
+import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import {
   Box,
   FormControlLabel,
@@ -34,6 +30,7 @@ import { useEditDistributorMutation, useGetDistributorQuery } from "@/api";
 import { useSession } from "next-auth/react";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import FormDrawerV2 from "@/components/Form/DrawerV2";
+import isValidCnpj from "@/utils/validations/isValidCnpj";
 
 const defaultValues: EditDistributorForm = {
   isActive: true,
@@ -47,6 +44,7 @@ const DistributorEditForm = () => {
   const activeDistributor = useSelector(selectActiveDistributorId);
   const isEditFormOpen = useSelector(selectIsDistributorEditFormOpen);
   const [shouldShowCancelDialog, setShouldShowCancelDialog] = useState(false);
+  const [cnpjValid, setCnpjValid] = useState(true);
   const [
     editDistributor,
     { isError, isSuccess, isLoading, reset: resetMutation },
@@ -88,6 +86,7 @@ const DistributorEditForm = () => {
   }, [isActive, setValue]);
 
   const handleDiscardForm = () => {
+    setCnpjValid(true);
     handleCloseDialog();
     reset();
     dispatch(setIsDistributorEditFormOpen(false));
@@ -152,153 +151,161 @@ const DistributorEditForm = () => {
     return true;
   };
 
-  const DistributorSection = useCallback(() => (
-    <>
-      <Grid item xs={12}>
-        <Typography variant="h5">Distribuidora</Typography>
-      </Grid>
-      <Grid item xs={12}>
-        <Controller
-          control={control}
-          name="name"
-          rules={{
-            required: "Campo obrigatório",
-            validate: {
-              hasEnoughCaracteresLength: hasEnoughCaracteresLength,
-              hasConsecutiveSpaces: hasConsecutiveSpaces
-            }
-          }}
-          render={({
-            field: { onChange, onBlur, value, ref },
-            fieldState: { error },
-          }) => (
-            <TextField
-              ref={ref}
-              value={value}
-              label="Nome (ao menos 3 caracteres)"
-              placeholder="Ex.: CEMIG, Enel, Neonergia"
-              error={Boolean(error)}
-              helperText={error?.message ?? " "}
-              fullWidth
-              onBlur={onBlur}
-              onChange={(e) => {
-                
-                // Adicionando a lógica de verificação aqui
-                let { value } = e.target;
+  const DistributorSection = useCallback(
+    () => (
+      <Grid container spacing={1}>
+        <Grid item xs={12}>
+          <Typography variant="h5">Distribuidora</Typography>
+        </Grid>
+        <Grid item xs={12}>
+          <Controller
+            control={control}
+            name="name"
+            rules={{
+              required: "Campo obrigatório",
+              validate: {
+                hasEnoughCaracteresLength: hasEnoughCaracteresLength,
+                hasConsecutiveSpaces: hasConsecutiveSpaces,
+              },
+            }}
+            render={({
+              field: { onChange, onBlur, value, ref },
+              fieldState: { error },
+            }) => (
+              <TextField
+                ref={ref}
+                value={value}
+                label="Nome (ao menos 3 caracteres)"
+                placeholder="Ex.: CEMIG, Enel, Neonergia"
+                error={Boolean(error)}
+                helperText={error?.message ?? " "}
+                fullWidth
+                onBlur={onBlur}
+                onChange={(e) => {
+                  // Adicionando a lógica de verificação aqui
+                  let { value } = e.target;
 
-                // Impossibilitando o primeiro caracter de ser um espaço em branco
-                if (value.length === 1 && value.charAt(0) === ' ') {
-                  value = '';
-                  e.target.value = value;
-                } else if(value.charAt(0) === ' '){
-                  value = value.substring(1);
-                  e.target.value = value;
-                } else {
-                  const splitted = value.split(' ');
-                  const hasMultipleSpaces = splitted.some((element, index) => element === '' && splitted[index + 1] === '');
-                  // Validação e aviso caso existam múltiplos espaços
-                  if (hasMultipleSpaces) {
-                    // Filtra os elementos vazios do array e junta novamente a string
-                    const filtered = splitted.filter(element => element);
-                    let updatedValue = filtered.join(' ');
-                    updatedValue  = `${updatedValue} `;
+                  // Impossibilitando o primeiro caracter de ser um espaço em branco
+                  if (value.length === 1 && value.charAt(0) === " ") {
+                    value = "";
+                    e.target.value = value;
+                  } else if (value.charAt(0) === " ") {
+                    value = value.substring(1);
+                    e.target.value = value;
+                  } else {
+                    const splitted = value.split(" ");
+                    const hasMultipleSpaces = splitted.some(
+                      (element, index) =>
+                        element === "" && splitted[index + 1] === ""
+                    );
+                    // Validação e aviso caso existam múltiplos espaços
+                    if (hasMultipleSpaces) {
+                      // Filtra os elementos vazios do array e junta novamente a string
+                      const filtered = splitted.filter((element) => element);
+                      let updatedValue = filtered.join(" ");
+                      updatedValue = `${updatedValue} `;
 
-                    // Define o novo valor na variável 'value' para remover o segundo espaço
-                    e.target.value = updatedValue;
-                  }
-                }
-
-                onChange(e);
-              }}
-            />
-          )}
-        />
-      </Grid>
-
-      <Grid item xs={12}>
-        <Controller
-          control={control}
-          name="cnpj"
-          rules={{
-            required: "Preencha este campo",
-            pattern: {
-              value:
-                /([0-9]{2}[\.]?[0-9]{3}[\.]?[0-9]{3}[\/]?[0-9]{4}[-]?[0-9]{2})/,
-              message: "Insira um CNPJ válido com 14 dígitos",
-            },
-          }}
-          render={({
-            field: { onChange, onBlur, value },
-            fieldState: { error },
-          }) => (
-            <PatternFormat
-              value={value}
-              customInput={TextField}
-              label="CNPJ (14 dígitos)"
-              format="##.###.###/####-##"
-              error={Boolean(error)}
-              helperText={error?.message ?? " "}
-              fullWidth
-              onChange={(e) => {
-                onChange(e);
-                // Adicionando a lógica de verificação aqui
-                const digitos = e.target.value.replace(/\D/g, ''); // Remove caracteres não numéricos
-                if (digitos.length === 14) {
-                  alert('Limite de 14 dígitos atingido');
-                }
-              }}
-              onBlur={onBlur}
-            />
-          )}
-        />
-      </Grid>
-
-      <Grid item xs={12}>
-        <Controller
-          name="isActive"
-          control={control}
-          render={({ field: { onChange, value } }) => (
-            <FormGroup>
-              <Box
-                display="flex"
-                justifyContent="flex-start"
-                alignItems="center"
-              >
-                <FlashOnIcon color="primary" />
-                {distributor && (
-                  <FormControlLabel
-                    label="Distribuidora ativa"
-                    labelPlacement="start"
-                    sx={{ width: "40%", margin: 0 }}
-                    control={
-                      <Box>
-                        <Switch
-                          value={value}
-                          defaultChecked={distributor.isActive}
-                          onChange={onChange}
-                        />
-                      </Box>
+                      // Define o novo valor na variável 'value' para remover o segundo espaço
+                      e.target.value = updatedValue;
                     }
-                  />
-                )}
-              </Box>
+                  }
 
-              <FormHelperText>
-                <p>
-                  Só distribuidoras ativas permitem gerar recomendações
-                  para as unidades consumidoras relacionadas.
-                </p>
-                <p>
-                  Apenas as distribuidoras que não estão relacionadas à
-                  nenhuma unidade consumidora podem ser excluídas.
-                </p>
-              </FormHelperText>
-            </FormGroup>
-          )}
-        />
+                  onChange(e);
+                }}
+              />
+            )}
+          />
+        </Grid>
+
+        <Grid item xs={12}>
+          <Controller
+            control={control}
+            name="cnpj"
+            rules={{
+              required: "Preencha este campo",
+              validate: (value) =>
+                isValidCnpj(value) || "Insira um CNPJ válido com 14 dígitos",
+            }}
+            render={({
+              field: { onChange, onBlur, value },
+              fieldState: { error },
+            }) => (
+              <PatternFormat
+                value={value}
+                customInput={TextField}
+                label="CNPJ * (14 dígitos)"
+                format="##.###.###/####-##"
+                placeholder="Ex.: 12345678000167"
+                error={Boolean(error) || !cnpjValid}
+                helperText={
+                  error?.message ?? (cnpjValid ? " " : "CNPJ inválido")
+                }
+                fullWidth
+                onChange={(e) => {
+                  console.log(cnpjValid);
+                  const newValue = e.target.value;
+                  onChange(newValue);
+                  const digitos = newValue.replace(/\D/g, "");
+                  digitos.length === 14
+                    ? setCnpjValid(isValidCnpj(digitos))
+                    : setCnpjValid(true);
+                }}
+                onBlur={onBlur}
+              />
+            )}
+          />
+        </Grid>
+
+        <Grid item xs={12}>
+          <Controller
+            name="isActive"
+            control={control}
+            render={({ field: { onChange, value } }) => (
+              <FormGroup>
+                <Box
+                  display="flex"
+                  justifyContent="flex-start"
+                  alignItems="center"
+                  marginTop={0}
+                  style={{ marginTop: 0, paddingTop: 0 }}
+                >
+                  <FlashOnIcon color="primary" />
+                  {distributor && (
+                    <FormControlLabel
+                      label="Distribuidora ativa"
+                      labelPlacement="start"
+                      sx={{ width: "40%", margin: 0 }}
+                      control={
+                        <Box>
+                          <Switch
+                            value={value}
+                            defaultChecked={distributor.isActive}
+                            onChange={onChange}
+                          />
+                        </Box>
+                      }
+                    />
+                  )}
+                </Box>
+
+                <FormHelperText>
+                  <p>
+                    Só distribuidoras ativas permitem gerar recomendações para
+                    as unidades consumidoras relacionadas.
+                  </p>
+                  <p>
+                    Apenas as distribuidoras que não estão relacionadas à
+                    nenhuma unidade consumidora podem ser excluídas.
+                  </p>
+                </FormHelperText>
+              </FormGroup>
+            )}
+          />
+        </Grid>
       </Grid>
-    </>
-  ), [control, distributor])
+    ),
+    [cnpjValid, control, distributor]
+  );
 
   return (
     <Fragment>
@@ -310,9 +317,7 @@ const DistributorEditForm = () => {
         handleCloseDrawer={handleCancelEdition}
         handleSubmitDrawer={handleSubmit(onSubmitHandler)}
         header={<></>}
-        sections={[
-          <DistributorSection key={0} />,
-        ]}
+        sections={[<DistributorSection key={0} />]}
       />
       <FormWarningDialog
         open={shouldShowCancelDialog}
@@ -321,7 +326,7 @@ const DistributorEditForm = () => {
         onDiscard={handleDiscardForm}
       />
     </Fragment>
-  )
+  );
 };
 
 export default DistributorEditForm;
