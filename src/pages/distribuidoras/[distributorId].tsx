@@ -6,7 +6,7 @@ import { selectActiveDistributorId, setActiveDistributorId } from "@/store/appSl
 import DefaultTemplateV2 from "@/templates/DefaultV2";
 import DistributorsCardGrid from "@/templates/Distributor/Grid";
 import DistributorContentHeader from "@/templates/Distributor/Header";
-import DistributorContent from "@/templates/Distributor/Content";
+import DistributorContent, { EmptyDistributorContent } from "@/templates/Distributor/Content";
 import DistributorHeaderAction from "@/templates/Distributor/Header/Action";
 import DistributorCreateForm from "@/components/Distributor/Form/DistributorCreateForm";
 import DistributorEditForm from "@/components/Distributor/Form/DistributorEditForm";
@@ -55,11 +55,12 @@ const DistributorPage: NextPage = () => {
   const activeDistributorUnit = useSelector(selectActiveDistributorId);
   return (
     <DefaultTemplateV2
-      secondaryDrawer={activeDistributorUnit === -1? null : <DistributorsCardGrid />}
       headerAction={<DistributorHeaderAction />}
-      contentHeader={activeDistributorUnit === -1? null :<DistributorContentHeader />}
+      secondaryDrawer={activeDistributorUnit === -1 ? null : <DistributorsCardGrid />}
+      contentHeader={activeDistributorUnit === -1 ? null : <DistributorContentHeader />}
     >
-      <DistributorContent />
+      {activeDistributorUnit === -1 ? <EmptyDistributorContent /> : <DistributorContent />}
+
       <DistributorCreateForm />
       <DistributorEditForm />
       <TariffCreateEditForm />

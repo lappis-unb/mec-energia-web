@@ -1,24 +1,16 @@
-import { useEffect } from "react";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
-import { useSelector } from "react-redux";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 
 import { Box, CircularProgress } from "@mui/material";
 
-import { selectActiveConsumerUnitId } from "@/store/appSlice";
 import { useFetchConsumerUnitsQuery } from "@/api";
 import DefaultTemplateV2 from "@/templates/DefaultV2";
 
 const ConsumerUnitLoadingPage: NextPage = () => {
   const router = useRouter();
   const { data: session } = useSession();
-  const activeConsumerUnitId = useSelector(selectActiveConsumerUnitId);
-
-  if (activeConsumerUnitId) {
-    router.push(`/uc/${activeConsumerUnitId}`);
-  }
 
   if (session && session.user.universityId === undefined) {
     router.push("/instituicoes");
@@ -28,9 +20,9 @@ const ConsumerUnitLoadingPage: NextPage = () => {
     session?.user.universityId ?? skipToken
   );
 
-  useEffect(() => {
-    router.push(`/uc/${consumerUnits && consumerUnits!.length > 0 ? consumerUnits[0].id : -1}`);
-  }, [consumerUnits, router]);
+  if (consumerUnits) {
+    router.push(`/uc/${consumerUnits!.length > 0 ? consumerUnits[0].id : -1}`);
+  }
 
   return (
     <DefaultTemplateV2>
