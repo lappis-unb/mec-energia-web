@@ -44,6 +44,7 @@ variables:
 .kaniko-build-no-push:
   extends: .kaniko-build
   script:
+    - yarn install
     - >-
       /kaniko/executor
       --context $CONTEXT
