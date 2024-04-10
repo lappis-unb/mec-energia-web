@@ -407,7 +407,7 @@ const TariffCreateEditForm = () => {
             }
             decimalScale={2}
             decimalSeparator=","
-            thousandSeparator={" "}
+            thousandSeparator={"."}
             onValueChange={(values) => onChange(values.floatValue ?? null)}
             onBlur={onBlur}
           />
@@ -447,7 +447,7 @@ const TariffCreateEditForm = () => {
             allowNegative={false}
             decimalScale={2}
             decimalSeparator=","
-            thousandSeparator={" "}
+            thousandSeparator={"."}
             onValueChange={(values) => onChange(values.floatValue ?? null)}
             onBlur={onBlur}
           />
@@ -487,7 +487,7 @@ const TariffCreateEditForm = () => {
             allowNegative={false}
             decimalScale={2}
             decimalSeparator=","
-            thousandSeparator={" "}
+            thousandSeparator={"."}
             onValueChange={(values) => onChange(values.floatValue ?? null)}
             onBlur={onBlur}
           />
@@ -533,7 +533,7 @@ const TariffCreateEditForm = () => {
             allowNegative={false}
             decimalScale={2}
             decimalSeparator=","
-            thousandSeparator={" "}
+            thousandSeparator={"."}
             onValueChange={(values) => onChange(values.floatValue ?? null)}
             onBlur={onBlur}
           />
@@ -573,7 +573,7 @@ const TariffCreateEditForm = () => {
             allowNegative={false}
             decimalScale={2}
             decimalSeparator=","
-            thousandSeparator={" "}
+            thousandSeparator={"."}
             onValueChange={(values) => onChange(values.floatValue ?? null)}
             onBlur={onBlur}
           />
@@ -616,7 +616,7 @@ const TariffCreateEditForm = () => {
             }
             decimalScale={2}
             decimalSeparator=","
-            thousandSeparator={" "}
+            thousandSeparator={"."}
             onValueChange={(values) => onChange(values.floatValue ?? null)}
             onBlur={onBlur}
           />
@@ -670,7 +670,7 @@ const TariffCreateEditForm = () => {
               allowNegative={false}
               decimalScale={2}
               decimalSeparator=","
-              thousandSeparator={" "}
+              thousandSeparator={"."}
               onValueChange={(values) => onChange(values.floatValue ?? null)}
               onBlur={onBlur}
             />
@@ -716,7 +716,7 @@ const TariffCreateEditForm = () => {
               allowNegative={false}
               decimalScale={2}
               decimalSeparator=","
-              thousandSeparator={" "}
+              thousandSeparator={"."}
               onValueChange={(values) => onChange(values.floatValue ?? null)}
               onBlur={onBlur}
             />
@@ -756,7 +756,7 @@ const TariffCreateEditForm = () => {
               allowNegative={false}
               decimalScale={2}
               decimalSeparator=","
-              thousandSeparator={" "}
+              thousandSeparator={"."}
               onValueChange={(values) => onChange(values.floatValue ?? null)}
               onBlur={onBlur}
             />
@@ -802,7 +802,7 @@ const TariffCreateEditForm = () => {
               allowNegative={false}
               decimalScale={2}
               decimalSeparator=","
-              thousandSeparator={" "}
+              thousandSeparator={"."}
               onValueChange={(values) => onChange(values.floatValue ?? null)}
               onBlur={onBlur}
             />
@@ -842,7 +842,7 @@ const TariffCreateEditForm = () => {
               allowNegative={false}
               decimalScale={2}
               decimalSeparator=","
-              thousandSeparator={" "}
+              thousandSeparator={"."}
               onValueChange={(values) => onChange(values.floatValue ?? null)}
               onBlur={onBlur}
             />
