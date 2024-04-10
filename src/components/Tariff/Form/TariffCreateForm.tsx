@@ -379,8 +379,8 @@ const TariffCreateEditForm = () => {
         rules={{
           required: "Preencha este campo",
           min: {
-            value: 0.01,
-            message: "Insira um valor maior que R$ 0,00",
+            value: 0.00,
+            message: "Insira um valor maior ou igual a R$ 0,00",
           },
         }}
         render={({
@@ -422,8 +422,8 @@ const TariffCreateEditForm = () => {
         rules={{
           required: "Preencha este campo",
           min: {
-            value: 0.01,
-            message: "Insira um valor maior que R$ 0,00",
+            value: 0.00,
+            message: "Insira um valor maior ou igual a R$ 0,00",
           },
         }}
         render={({
@@ -462,8 +462,8 @@ const TariffCreateEditForm = () => {
         rules={{
           required: "Preencha este campo",
           min: {
-            value: 0.01,
-            message: "Insira um valor maior que R$ 0,00",
+            value: 0.00,
+            message: "Insira um valor maior ou igual a R$ 0,00",
           },
         }}
         render={({
@@ -508,8 +508,8 @@ const TariffCreateEditForm = () => {
         rules={{
           required: "Preencha este campo",
           min: {
-            value: 0.01,
-            message: "Insira um valor maior que R$ 0,00",
+            value: 0.00,
+            message: "Insira um valor maior ou igual a R$ 0,00",
           },
         }}
         render={({
@@ -548,8 +548,8 @@ const TariffCreateEditForm = () => {
         rules={{
           required: "Preencha este campo",
           min: {
-            value: 0.01,
-            message: "Insira um valor maior que R$ 0,00",
+            value: 0.00,
+            message: "Insira um valor maior ou igual a R$ 0,00",
           },
         }}
         render={({
@@ -588,8 +588,8 @@ const TariffCreateEditForm = () => {
         rules={{
           required: "Preencha este campo",
           min: {
-            value: 0.01,
-            message: "Insira um valor maior que R$ 0,00",
+            value: 0.00,
+            message: "Insira um valor maior ou igual a R$ 0,00",
           },
         }}
         render={({
@@ -645,8 +645,8 @@ const TariffCreateEditForm = () => {
           rules={{
             required: "Preencha este campo",
             min: {
-              value: 0.01,
-              message: "Insira um valor maior que R$ 0,00",
+              value: 0.00,
+              message: "Insira um valor maior ou igual a R$ 0,00",
             },
           }}
           render={({
@@ -691,8 +691,8 @@ const TariffCreateEditForm = () => {
           rules={{
             required: "Preencha este campo",
             min: {
-              value: 0.01,
-              message: "Insira um valor maior que R$ 0,00",
+              value: 0.00,
+              message: "Insira um valor maior ou igual a R$ 0,00",
             },
           }}
           render={({
@@ -731,8 +731,8 @@ const TariffCreateEditForm = () => {
           rules={{
             required: "Preencha este campo",
             min: {
-              value: 0.01,
-              message: "Insira um valor maior que R$ 0,00",
+              value: 0.00,
+              message: "Insira um valor maior ou igual a R$ 0,00",
             },
           }}
           render={({
@@ -777,8 +777,8 @@ const TariffCreateEditForm = () => {
           rules={{
             required: "Preencha este campo",
             min: {
-              value: 0.01,
-              message: "Insira um valor maior que R$ 0,00",
+              value: 0.00,
+              message: "Insira um valor maior ou igual a R$ 0,00",
             },
           }}
           render={({
@@ -817,8 +817,8 @@ const TariffCreateEditForm = () => {
           rules={{
             required: "Preencha este campo",
             min: {
-              value: 0.01,
-              message: "Insira um valor maior que R$ 0,00",
+              value: 0.00,
+              message: "Insira um valor maior ou igual a R$ 0,00",
             },
           }}
           render={({
