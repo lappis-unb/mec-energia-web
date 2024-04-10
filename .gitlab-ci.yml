@@ -72,6 +72,8 @@ test-build:
   variables:
     CONTEXT: $CI_PROJECT_DIR
     DOCKERFILE_PATH: Dockerfile.prod
+  script:
+    - yarn install --frozen-lockfile
 
 build:
   extends: .kaniko-build
