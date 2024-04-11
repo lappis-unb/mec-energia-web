@@ -127,7 +127,7 @@ const CreateEditEnergyBillForm = () => {
 
   useEffect(() => {
     if (month != null || month != undefined) {
-      let date = new Date(`${year}-${month}`);
+      const date = new Date(`${year}-${month}`);
       date.setMonth(date.getMonth() + 1)
       setValue("date", date);
     }
