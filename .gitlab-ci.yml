@@ -1,6 +1,6 @@
 stages:
-  - test
   - lint
+  - test
   - build
 
 workflow:
@@ -72,8 +72,6 @@ test-build:
   variables:
     CONTEXT: $CI_PROJECT_DIR
     DOCKERFILE_PATH: Dockerfile.prod
-  script:
-    - yarn install
 
 build:
   extends: .kaniko-build
