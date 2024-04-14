@@ -103,6 +103,9 @@ const TariffCreateEditForm = () => {
     formState: { isDirty, errors },
   } = form;
 
+  const minTariffValue = 0.1;
+  const maxTariffValue = 9999.99;
+
   useEffect(() => {
     if (isEditTariffFormOpen) {
       if (!currentTariff) return;
@@ -380,7 +383,7 @@ const TariffCreateEditForm = () => {
         rules={{
           required: "Preencha este campo",
           min: {
-            value: 0.01,
+            value: minTariffValue,
             message: "Insira um valor maior que R$ 0,00",
           },
         }}
@@ -404,7 +407,7 @@ const TariffCreateEditForm = () => {
             type="text"
             allowNegative={false}
             isAllowed={({ floatValue }) =>
-              !floatValue || floatValue <= 9999.99
+              !floatValue || (floatValue <= maxTariffValue)
             }
             decimalScale={2}
             decimalSeparator=","
@@ -423,9 +426,9 @@ const TariffCreateEditForm = () => {
         rules={{
           required: "Preencha este campo",
           min: {
-            value: 0.01,
+            value: minTariffValue,
             message: "Insira um valor maior que R$ 0,00",
-          },
+          }
         }}
         render={({
           field: { onChange, onBlur, value },
@@ -446,6 +449,9 @@ const TariffCreateEditForm = () => {
             }}
             type="text"
             allowNegative={false}
+            isAllowed={({ floatValue }) =>
+              !floatValue || floatValue <= maxTariffValue
+            }
             decimalScale={2}
             decimalSeparator=","
             thousandSeparator={"."}
@@ -463,7 +469,7 @@ const TariffCreateEditForm = () => {
         rules={{
           required: "Preencha este campo",
           min: {
-            value: 0.01,
+            value: minTariffValue,
             message: "Insira um valor maior que R$ 0,00",
           },
         }}
@@ -486,6 +492,9 @@ const TariffCreateEditForm = () => {
             }}
             type="text"
             allowNegative={false}
+            isAllowed={({ floatValue }) =>
+              !floatValue || floatValue <= maxTariffValue
+            }
             decimalScale={2}
             decimalSeparator=","
             thousandSeparator={"."}
@@ -532,6 +541,9 @@ const TariffCreateEditForm = () => {
             }}
             type="text"
             allowNegative={false}
+            isAllowed={({ floatValue }) =>
+              !floatValue || floatValue <= maxTariffValue
+            }
             decimalScale={2}
             decimalSeparator=","
             thousandSeparator={"."}
@@ -572,6 +584,9 @@ const TariffCreateEditForm = () => {
             }}
             type="text"
             allowNegative={false}
+            isAllowed={({ floatValue }) =>
+              !floatValue || floatValue <= maxTariffValue
+            }
             decimalScale={2}
             decimalSeparator=","
             thousandSeparator={"."}
@@ -613,7 +628,7 @@ const TariffCreateEditForm = () => {
             type="text"
             allowNegative={false}
             isAllowed={({ floatValue }) =>
-              !floatValue || floatValue >= 1 || floatValue <= 9999.99
+              !floatValue || floatValue <= maxTariffValue
             }
             decimalScale={2}
             decimalSeparator=","
@@ -669,6 +684,9 @@ const TariffCreateEditForm = () => {
               }}
               type="text"
               allowNegative={false}
+              isAllowed={({ floatValue }) =>
+                !floatValue || floatValue <= maxTariffValue
+              }
               decimalScale={2}
               decimalSeparator=","
               thousandSeparator={"."}
@@ -715,6 +733,9 @@ const TariffCreateEditForm = () => {
               }}
               type="text"
               allowNegative={false}
+              isAllowed={({ floatValue }) =>
+                !floatValue || floatValue <= maxTariffValue
+              }
               decimalScale={2}
               decimalSeparator=","
               thousandSeparator={"."}
@@ -755,6 +776,9 @@ const TariffCreateEditForm = () => {
               }}
               type="text"
               allowNegative={false}
+              isAllowed={({ floatValue }) =>
+                !floatValue || floatValue <= maxTariffValue
+              }
               decimalScale={2}
               decimalSeparator=","
               thousandSeparator={"."}
@@ -801,6 +825,9 @@ const TariffCreateEditForm = () => {
               }}
               type="text"
               allowNegative={false}
+              isAllowed={({ floatValue }) =>
+                !floatValue || floatValue <= maxTariffValue
+              }
               decimalScale={2}
               decimalSeparator=","
               thousandSeparator={"."}
@@ -841,6 +868,9 @@ const TariffCreateEditForm = () => {
               }}
               type="text"
               allowNegative={false}
+              isAllowed={({ floatValue }) =>
+                !floatValue || floatValue <= maxTariffValue
+              }
               decimalScale={2}
               decimalSeparator=","
               thousandSeparator={"."}

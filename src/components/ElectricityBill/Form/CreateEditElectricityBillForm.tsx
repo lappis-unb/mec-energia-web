@@ -111,7 +111,7 @@ const CreateEditEnergyBillForm = () => {
   const {
     control,
     reset,
-    handleSubmit,  
+    handleSubmit,
     setValue,
     watch,
     formState: { isDirty, errors },
@@ -218,7 +218,7 @@ const CreateEditEnergyBillForm = () => {
   const handleDiscardForm = () => {
     handleCloseDialog();
     reset();
-    handleCloseFaturaTab(); 
+    handleCloseFaturaTab();
     if (isCreateEnergyBillFormOpen) {
       dispatch(
         setEnergyBillEdiFormParams({ month: null, year: null, id: null })
@@ -414,7 +414,7 @@ const CreateEditEnergyBillForm = () => {
                 }
                 decimalScale={2}
                 decimalSeparator=","
-                thousandSeparator={" "}
+                thousandSeparator={"."}
                 onValueChange={(values) => onChange(values.floatValue)}
                 onBlur={onBlur}
               />
@@ -529,7 +529,7 @@ const CreateEditEnergyBillForm = () => {
                   placeholder="0"
                   decimalScale={2}
                   decimalSeparator=","
-                  thousandSeparator={" "}
+                  thousandSeparator={"."}
                   error={Boolean(error)}
                   helperText={error?.message ?? " "}
                   onValueChange={(values) => onChange(values.floatValue)}
@@ -565,7 +565,7 @@ const CreateEditEnergyBillForm = () => {
                   placeholder="0"
                   decimalScale={2}
                   decimalSeparator=","
-                  thousandSeparator={" "}
+                  thousandSeparator={"."}
                   error={!!error}
                   helperText={error?.message ?? " "}
                   onValueChange={(values) => onChange(values.floatValue)}
@@ -615,7 +615,7 @@ const CreateEditEnergyBillForm = () => {
                   decimalScale={2}
                   placeholder="0"
                   decimalSeparator=","
-                  thousandSeparator={" "}
+                  thousandSeparator={"."}
                   error={Boolean(error)}
                   helperText={error?.message ?? " "}
                   onValueChange={(values) => onChange(values.floatValue)}
@@ -651,7 +651,7 @@ const CreateEditEnergyBillForm = () => {
                   placeholder="0"
                   decimalScale={2}
                   decimalSeparator=","
-                  thousandSeparator={" "}
+                  thousandSeparator={"."}
                   error={Boolean(error)}
                   helperText={error?.message ?? " "}
                   onValueChange={(values) => onChange(values.floatValue)}
@@ -671,7 +671,7 @@ const CreateEditEnergyBillForm = () => {
 
 
   // Novo manipulador de upload de arquivo PDF
-  const handlePdfFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {  
+  const handlePdfFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length > 0) {
       const file = event.target.files[0];
       if (file && file.type === "application/pdf") {

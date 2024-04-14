@@ -514,7 +514,7 @@ const ConsumerUnitEditForm = () => {
                   }
                   decimalScale={2}
                   decimalSeparator=","
-                  thousandSeparator={" "}
+                  thousandSeparator={"."}
                   onValueChange={(values) => onChange(values.floatValue)}
                   onBlur={onBlur}
                 />
@@ -606,7 +606,7 @@ const ConsumerUnitEditForm = () => {
                   }
                   decimalScale={2}
                   decimalSeparator=","
-                  thousandSeparator={" "}
+                  thousandSeparator={"."}
                   error={Boolean(error)}
                   helperText={error?.message ?? " "}
                   onValueChange={(values) => onChange(values.floatValue)}
@@ -646,7 +646,7 @@ const ConsumerUnitEditForm = () => {
                     }
                     decimalScale={2}
                     decimalSeparator=","
-                    thousandSeparator={" "}
+                    thousandSeparator={"."}
                     error={Boolean(error)}
                     helperText={error?.message ?? " "}
                     onValueChange={(values) => onChange(values.floatValue)}
@@ -685,7 +685,7 @@ const ConsumerUnitEditForm = () => {
                     }
                     decimalScale={2}
                     decimalSeparator=","
-                    thousandSeparator={" "}
+                    thousandSeparator={"."}
                     error={Boolean(error)}
                     helperText={error?.message ?? " "}
                     onValueChange={(values) => onChange(values.floatValue)}
