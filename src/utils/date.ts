@@ -44,8 +44,25 @@ export const getFormattedDateUTC = (stringDate: string) => {
 
 export const getFormattedDateAndTime = (stringDate: string) => {
   return format(parseISO(stringDate), "dd/MM/YYY hh'h'mm");
-
 };
+
+/**
+ * @param stringDate yyyy-MM-dd HH:mm:ss
+ * @returns Data convertida em milissegundos para uma comparação mais precisa
+ */
+export const getTimeFromDateUTC = (stringDate: string) => {
+  const date = new Date(stringDate);
+
+  const day = date.getUTCDate();
+  const month = date.getUTCMonth();
+  const year = date.getUTCFullYear();
+
+  const hour = date.getUTCHours();
+  const minutes = date.getUTCMinutes();
+  const seconds = date.getUTCSeconds();
+
+  return new Date(year, month, day, hour, minutes, seconds).getTime();
+}
 
 export const sendFormattedDate = (stringDate: Date) => {
   return format(stringDate, "yyyy-MM-dd");
