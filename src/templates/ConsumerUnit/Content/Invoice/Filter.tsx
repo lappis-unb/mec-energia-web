@@ -16,30 +16,31 @@ import { ConsumerUnitInvoiceFilter } from "@/types/app";
 const ConsumerUnitInvoiceContentFilter = () => {
   const dispatch = useDispatch();
   const consumerUnitId = useSelector(selectActiveConsumerUnitId);
-  const { data: invoices } = useFetchInvoicesQuery(consumerUnitId ?? skipToken);
-  const { data: consumerUnit, refetch } = useGetConsumerUnitQuery(
-    consumerUnitId ?? skipToken
-  );
   const invoiceActiveFilter = useSelector(
     selectConsumerUnitInvoiceActiveFilter
   );
-  const [pendingFilterLabel, setPendingFilterLabel] = useState("Pendentes")
+  const [pendingFilterLabel, setPendingFilterLabel] = useState("Pendentes");
+
+  const invoicesQuery = useFetchInvoicesQuery(consumerUnitId ?? skipToken);
+  const consumerUnitQuery = useGetConsumerUnitQuery(
+    consumerUnitId ?? skipToken
+  );
+
+  const invoices = invoicesQuery.data;
+  const consumerUnit = consumerUnitQuery.data;
 
   const invoicesFilters = useMemo(() => {
     if (!invoices) {
       return [];
     }
 
-    // 2022, 2021, 2020 instead of 2020, 2021, 2022
     return Object.keys(invoices).reverse();
   }, [invoices]);
 
-
   useEffect(() => {
-    const pending = consumerUnit?.pendingEnergyBillsNumber ?? -1
+    const pending = consumerUnit?.pendingEnergyBillsNumber ?? -1;
     setPendingFilterLabel(pending <= 0 ? "Pendentes" : `Pendentes(${pending})`);
-    refetch()
-  })
+  }, [consumerUnit]);
 
   const handleFilterButtonClick = (filter: ConsumerUnitInvoiceFilter) => () => {
     dispatch(setConsumerUnitInvoiceActiveFilter(filter));
