@@ -158,6 +158,13 @@ export const mecEnergiaApi = createApi({
       }),
       invalidatesTags: ["Distributors"],
     }),
+    deleteDistributor: builder.mutation<void, number>({
+      query: (id) => ({
+        url: `distributors/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Distributors"],
+    }),
     createConsumerUnit: builder.mutation<
       string,
       CreateConsumerUnitRequestPayload
@@ -401,4 +408,5 @@ export const {
   useEditUserMutation,
   useFetchInstitutionsQuery,
   useDeleteEnergiBillMutation,
+  useDeleteDistributorMutation,
 } = mecEnergiaApi;

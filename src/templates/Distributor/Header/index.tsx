@@ -5,21 +5,26 @@ import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { Box, Button, Collapse, Container, Typography } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 
-import { useGetDistributorSubgroupsQuery, useGetDistributorQuery } from "@/api";
+import { useGetDistributorSubgroupsQuery, useGetDistributorQuery, useDeleteDistributorMutation } from "@/api";
 import {
   selectActiveDistributorId,
   setActiveSubgroup,
   setIsDistributorEditFormOpen,
+  setIsSuccessNotificationOpen,
 } from "@/store/appSlice";
 import DistributorContentHeaderTabs from "./Tabs";
 import DistributorEditForm from "@/components/Distributor/Form/DistributorEditForm";
 import { DeleteForever } from "@mui/icons-material";
 import Tooltip from "@mui/material/Tooltip";
 import DeleteDistributorDialog from "@/components/Distributor/Form/DeleteDistributorDialog";
+import { useRouter } from "next/router";
+import { DISTRIBUTORS_ROUTE } from "@/routes";
 
 const DistributorContentHeader = () => {
   const dispatch = useDispatch();
+  const router = useRouter();
   const distributorId = useSelector(selectActiveDistributorId);
+  const [ deleteDistributor ] = useDeleteDistributorMutation();
 
   const { data: distributor } = useGetDistributorQuery(
     distributorId ?? skipToken
@@ -51,7 +56,7 @@ const DistributorContentHeader = () => {
     }
 
     dispatch(setActiveSubgroup(tariffsSubgroups[0].subgroup));
-  }, [dispatch, tariffsSubgroups]);
+  }, [dispatch, deleteDistributor, tariffsSubgroups]);
 
   const shouldShowTabs = useMemo(
     () =>
@@ -65,10 +70,26 @@ const DistributorContentHeader = () => {
     dispatch(setIsDistributorEditFormOpen(true));
   }, [dispatch]);
 
-  const handleDeleteDistributorClick = useCallback(() => {
+  const showModalDeleteDistributor = useCallback(() => {
     setShouldShowCancelDialog(true);
-
   }, []);
+
+  const handleDeleteDistributorClick = async (distributorId: number | null) => {
+    if (distributorId) {
+      setShouldShowCancelDialog(false);
+      await deleteDistributor(distributorId);
+          
+      dispatch(
+        setIsSuccessNotificationOpen({
+          isOpen: true,
+          text: "Distribuidora excluída com sucesso!",
+        })
+      );
+
+      // Recarrega a lista de distribuidoras
+      router.push(DISTRIBUTORS_ROUTE.href);
+    }
+  }
 
   return (
     <Box
@@ -117,7 +138,7 @@ const DistributorContentHeader = () => {
                     color="error"
                     startIcon={<DeleteForever />}
                     size="small"
-                    onClick={handleDeleteDistributorClick}
+                    onClick={showModalDeleteDistributor}
                   >
                     Deletar
                   </Button>
@@ -128,7 +149,7 @@ const DistributorContentHeader = () => {
             </Box>
             <DeleteDistributorDialog
               open={shouldShowCancelDialog}
-              onClose={() => setShouldShowCancelDialog(false)}
+              onClose={() => handleDeleteDistributorClick(distributorId)}
               onDiscard={() => setShouldShowCancelDialog(false)}
               titleText="Deseja excluir esta distribuidora?"
               confirmText="Excluir"
