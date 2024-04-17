@@ -21,7 +21,25 @@ export const monthYear = (date: string) => {
 };
 
 export const getFormattedDate = (stringDate: string) => {
+  if (!stringDate)
+    return null;
+  
   return format(parseISO(stringDate), "dd/MM/yyyy");
+};
+
+/**
+ * @param stringDate Data no padrão yyyy-MM-dd (ano-mês-dia)
+ * @returns Data interpretada corretamente, sem depender do fuso horário local.
+ */
+export const getFormattedDateUTC = (stringDate: string) => {
+  if (!stringDate)
+    return null;
+
+  const day = Number(stringDate.slice(8, 10));
+  const month = (Number(stringDate.slice(5, 7)) - 1); // O mês começa em zero: 0 - Janeiro ... 11 - Dezembro
+  const year = Number(stringDate.slice(0, 4));
+
+  return new Date(year, month, day);
 };
 
 export const getFormattedDateAndTime = (stringDate: string) => {

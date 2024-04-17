@@ -1,7 +1,8 @@
 import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
-import { format } from "date-fns";
+import { getFormattedDate } from "@/utils/date";
+
 import {
   Box,
   Button,
@@ -80,8 +81,8 @@ const DistributorContentTariffsTable = () => {
     }
 
     return {
-      startDate: format(new Date(tariffData.startDate), "dd/MM/yyyy"),
-      endDate: format(new Date(tariffData.endDate), "dd/MM/yyyy"),
+      startDate: getFormattedDate(tariffData.startDate),
+      endDate: getFormattedDate(tariffData.endDate),
       overdue: tariffData.overdue,
       blue: tariffData.blue,
       green: tariffData.green,

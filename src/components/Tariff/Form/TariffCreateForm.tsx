@@ -38,7 +38,7 @@ import {
   useGetDistributorQuery,
   useGetTariffQuery,
 } from "@/api";
-import { sendFormattedDate } from "@/utils/date";
+import { getFormattedDateUTC, sendFormattedDate } from "@/utils/date";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import FormDrawerV2 from "@/components/Form/DrawerV2";
 
@@ -150,8 +150,9 @@ const TariffCreateEditForm = () => {
         "green.peakTusdInReaisPerMwh",
         currentTariff.green.peakTusdInReaisPerMwh
       );
-      setValue("endDate", new Date(currentTariff.endDate));
-      setValue("startDate", new Date(currentTariff.startDate));
+
+      setValue("endDate", getFormattedDateUTC(currentTariff.endDate));
+      setValue("startDate", getFormattedDateUTC(currentTariff.startDate));
     }
   }, [currentTariff, isEditTariffFormOpen, setValue]);
 
@@ -287,7 +288,7 @@ const TariffCreateEditForm = () => {
 
   const ValiditySection = useCallback(() => (
     <>
-      <Grid item xs={12}>
+      <Grid item xs={12} marginBottom={2}>
         <Typography variant="h5">Vigência</Typography>
       </Grid>
 
