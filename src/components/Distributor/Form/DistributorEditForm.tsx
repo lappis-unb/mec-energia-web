@@ -242,7 +242,6 @@ const DistributorEditForm = () => {
                 }
                 fullWidth
                 onChange={(e) => {
-                  console.log(cnpjValid);
                   const newValue = e.target.value;
                   onChange(newValue);
                   const digitos = newValue.replace(/\D/g, "");

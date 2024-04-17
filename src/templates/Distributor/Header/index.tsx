@@ -1,32 +1,39 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
+import { useRouter } from "next/router";
 
 import { Box, Button, Collapse, Container, Typography } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 
-import { useGetDistributorSubgroupsQuery, useGetDistributorQuery } from "@/api";
+import {
+  useGetDistributorSubgroupsQuery,
+  useGetDistributorQuery,
+  useDeleteDistributorMutation,
+} from "@/api";
 import {
   selectActiveDistributorId,
   setActiveSubgroup,
   setIsDistributorEditFormOpen,
+  setIsErrorNotificationOpen,
+  setIsSuccessNotificationOpen,
 } from "@/store/appSlice";
 import DistributorContentHeaderTabs from "./Tabs";
 import DistributorEditForm from "@/components/Distributor/Form/DistributorEditForm";
-import { DeleteForever } from "@mui/icons-material";
+import { Delete } from "@mui/icons-material";
 import Tooltip from "@mui/material/Tooltip";
 import DeleteDistributorDialog from "@/components/Distributor/Form/DeleteDistributorDialog";
 
 const DistributorContentHeader = () => {
   const dispatch = useDispatch();
   const distributorId = useSelector(selectActiveDistributorId);
+  const router = useRouter();
 
   const { data: distributor } = useGetDistributorQuery(
     distributorId ?? skipToken
   );
-
+  const [deleteDistributor] = useDeleteDistributorMutation();
   const [shouldShowCancelDialog, setShouldShowCancelDialog] = useState(false);
-
 
   const { data: tariffsSubgroups, isLoading: isTariffsSubgroupsLoading } =
     useGetDistributorSubgroupsQuery(distributorId ?? skipToken);
@@ -67,8 +74,33 @@ const DistributorContentHeader = () => {
 
   const handleDeleteDistributorClick = useCallback(() => {
     setShouldShowCancelDialog(true);
-
   }, []);
+
+  const handleDeleteDistributor = useCallback(async () => {
+    if (distributorId !== null) {
+      try {
+        await deleteDistributor(distributorId);
+        dispatch(
+          setIsSuccessNotificationOpen({
+            isOpen: true,
+            text: "Distribuidora excluída com sucesso!",
+          })
+        );
+        setShouldShowCancelDialog(false);
+        router.push("/distribuidoras");
+      } catch (error) {
+        dispatch(
+          setIsErrorNotificationOpen({
+            isOpen: true,
+            text: "Erro ao excluir distribuidora.",
+          })
+        );
+        console.error("Erro ao excluir distribuidora:", error);
+      }
+    } else {
+      console.error("ID do distribuidor não encontrado.");
+    }
+  }, [dispatch, deleteDistributor, distributorId, router]);
 
   return (
     <Box
@@ -101,13 +133,13 @@ const DistributorContentHeader = () => {
                         variant="outlined"
                         color="error"
                         disabled
-                        startIcon={<DeleteForever />}
+                        startIcon={<Delete />}
                         size="small"
                         onClick={() => {
-                          ""
+                          ("");
                         }}
                       >
-                        Deletar
+                        Apagar
                       </Button>
                     </span>
                   </Tooltip>
@@ -115,11 +147,11 @@ const DistributorContentHeader = () => {
                   <Button
                     variant="outlined"
                     color="error"
-                    startIcon={<DeleteForever />}
+                    startIcon={<Delete />}
                     size="small"
                     onClick={handleDeleteDistributorClick}
                   >
-                    Deletar
+                    Apagar
                   </Button>
                 )}
 
@@ -128,7 +160,7 @@ const DistributorContentHeader = () => {
             </Box>
             <DeleteDistributorDialog
               open={shouldShowCancelDialog}
-              onClose={() => setShouldShowCancelDialog(false)}
+              onClose={() => handleDeleteDistributor()}
               onDiscard={() => setShouldShowCancelDialog(false)}
               titleText="Deseja excluir esta distribuidora?"
               confirmText="Excluir"
@@ -147,8 +179,8 @@ const DistributorContentHeader = () => {
             <DistributorContentHeaderTabs />
           </Box>
         </Collapse>
-      </Container >
-    </Box >
+      </Container>
+    </Box>
   );
 };
 

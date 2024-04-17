@@ -27,7 +27,7 @@ const DeleteDistributorDialog = ({
   confirmText,
   dataLossMessage,
 }: DeleteDistributorDialogProps) => (
-  <Dialog open={open} onClick={onClose}>
+  <Dialog open={open}>
     <DialogTitle>{titleText}</DialogTitle>
 
     <DialogContent>
@@ -39,9 +39,7 @@ const DeleteDistributorDialog = ({
         {confirmText}
       </Button>
 
-      <Button onClick={onDiscard}>
-        {cancelText}
-      </Button>
+      <Button onClick={onDiscard}>{cancelText}</Button>
     </DialogActions>
   </Dialog>
 );
