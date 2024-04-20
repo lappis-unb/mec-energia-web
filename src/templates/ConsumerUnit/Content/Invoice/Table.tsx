@@ -70,7 +70,12 @@ const getFilteredInvoices = (
       .filter(({ isEnergyBillPending }) => isEnergyBillPending);
   }
 
-  return invoicesPayload[activeFilter];
+  const currentDate = new Date();
+  const currentYear = currentDate.getFullYear();
+  const currentMonth = currentDate.getMonth();
+
+  return invoicesPayload[activeFilter]
+    .filter(invoice => invoice.month <= currentMonth || invoice.year < currentYear);
 };
 
 const formatConsumptionDemandToPtBrCurrency = (energyBill: EnergyBill) => {
@@ -91,7 +96,7 @@ const getDataGridRows = (
     ({ month, year, isEnergyBillPending, energyBill }) => ({
       ...energyBill,
       id: parseInt(`${year}${month >= 10 ? month : "0" + month}`),
-      ...(energyBill && { 
+      ...(energyBill && {
         energyBillId: energyBill.id,
         ...formatConsumptionDemandToPtBrCurrency(energyBill),
       }),
@@ -280,7 +285,7 @@ const ConsumerUnitInvoiceContentTable = () => {
         if (!energyBillId) {
           return <></>;
         }
-    
+
         return (
           <IconButton
             onClick={() => {
@@ -357,14 +362,7 @@ const ConsumerUnitInvoiceContentTable = () => {
         );
       }
 
-      const currentDate = new Date();
-      const currentMonth = currentDate.getMonth();
-      const currentYear = currentDate.getFullYear();
-
-      const isCurrentMonthInvoice =
-        year === currentYear && month === currentMonth;
-
-      if (isCurrentMonthInvoice && !energyBillId) {
+      if (!energyBillId) {
         return (
           <Button
             variant="contained"
