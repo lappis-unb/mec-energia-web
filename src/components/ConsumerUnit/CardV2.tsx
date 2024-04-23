@@ -13,6 +13,7 @@ import {
 import { CardProps, ConsumerUnitTab } from "@/types/app";
 import { ConsumerUnit } from "@/types/consumerUnit";
 import Card from "@/components/Card";
+import { getMonthFromNumber } from "@/utils/date";
 
 interface ConsumerUnitCardProps extends CardProps {
   id: ConsumerUnit["id"];
@@ -43,6 +44,15 @@ const ConsumerUnitCardAction = ({
   const isWarning = variant === "warning";
 
   const pendenciesMessage = useMemo(() => {
+    // Caso a conta de energia atual não esteja preenchida
+    if (!isCurrentEnergyBillFilled) {
+      const currentDate = new Date();
+      const currentYear = currentDate.getFullYear();
+      const currentMonth = currentDate.getMonth();
+        
+      return `Lançar ${getMonthFromNumber(currentMonth, currentYear)}`;
+    }
+
     if (pendingEnergyBillsNumber === 0) {
       return "Em dia";
     }
@@ -54,7 +64,7 @@ const ConsumerUnitCardAction = ({
     if (pendingEnergyBillsNumber > 1) {
       return `${pendingEnergyBillsNumber} faturas pendentes`;
     }
-  }, [pendingEnergyBillsNumber]);
+  }, [pendingEnergyBillsNumber, isCurrentEnergyBillFilled]);
 
   const handleActionButtonClick = useCallback<
     MouseEventHandler<HTMLButtonElement>

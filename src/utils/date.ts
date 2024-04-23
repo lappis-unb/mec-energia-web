@@ -67,3 +67,18 @@ export const getTimeFromDateUTC = (stringDate: string) => {
 export const sendFormattedDate = (stringDate: Date) => {
   return format(stringDate, "yyyy-MM-dd");
 };
+
+export const getMonthFromNumber = (
+  month: number,
+  year: number,
+  shouldCapitalize?: boolean
+) => {
+  const date = new Date(year, month, 1);
+  const monthFullName = format(date, "MMMM", { locale: ptBR });
+
+  if (!shouldCapitalize) {
+    return monthFullName;
+  }
+
+  return monthFullName.charAt(0).toUpperCase() + monthFullName.slice(1);
+};
