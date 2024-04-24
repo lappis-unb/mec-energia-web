@@ -204,7 +204,7 @@ const ConsumerUnitInvoiceContentTable = () => {
       headerClassName: "MuiDataGrid-columnHeaderMain",
       headerName: "Ponta",
       headerAlign: "center",
-      align: "center",
+      align: "right",
       flex: 1,
     },
     {
@@ -212,7 +212,7 @@ const ConsumerUnitInvoiceContentTable = () => {
       headerClassName: "MuiDataGrid-columnHeaderMain",
       headerName: "Fora Ponta",
       headerAlign: "center",
-      align: "center",
+      align: "right",
       flex: 1,
     },
     {
@@ -220,7 +220,7 @@ const ConsumerUnitInvoiceContentTable = () => {
       headerClassName: "MuiDataGrid-columnHeaderMain",
       headerName: "Ponta",
       headerAlign: "center",
-      align: "center",
+      align: "right",
       flex: 1,
     },
     {
@@ -228,7 +228,7 @@ const ConsumerUnitInvoiceContentTable = () => {
       headerClassName: "MuiDataGrid-columnHeaderMain",
       headerName: "Fora Ponta",
       headerAlign: "center",
-      align: "center",
+      align: "right",
       flex: 1,
     },
     {
@@ -236,7 +236,7 @@ const ConsumerUnitInvoiceContentTable = () => {
       headerClassName: "MuiDataGrid-columnHeaderMain",
       headerName: "Valor (R$)",
       headerAlign: "center",
-      align: "center",
+      align: "right",
       flex: 1,
     },
     {

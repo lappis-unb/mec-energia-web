@@ -183,7 +183,7 @@ const DistributorContentTariffsTable = () => {
                       placement="top"
                       title="Tarifa de uso do sistema de distribuição"
                     >
-                      <TableCell sx={{ color: "white" }}>TUSD R$/kW</TableCell>
+                      <TableCell align="right" sx={{ color: "white" }}>TUSD R$/kW</TableCell>
                     </Tooltip>
 
                     <Tooltip
@@ -191,10 +191,10 @@ const DistributorContentTariffsTable = () => {
                       placement="top"
                       title="Tarifa de uso do sistema de distribuição"
                     >
-                      <TableCell sx={{ color: "white" }}>TUSD R$/MWh</TableCell>
+                      <TableCell align="right" sx={{ color: "white" }}>TUSD R$/MWh</TableCell>
                     </Tooltip>
                     <Tooltip arrow placement="top" title="Tarifa de energia">
-                      <TableCell sx={{ color: "white" }}>TE R$/MWh</TableCell>
+                      <TableCell align="right" sx={{ color: "white" }}>TE R$/MWh</TableCell>
                     </Tooltip>
                   </TableRow>
                 </TableHead>
@@ -211,9 +211,9 @@ const DistributorContentTariffsTable = () => {
                     </TableCell>
                     <TableCell>Ponta</TableCell>
 
-                    <TableCell>{blue.peakTusdInReaisPerKw}</TableCell>
-                    <TableCell>{blue.peakTusdInReaisPerMwh}</TableCell>
-                    <TableCell>{blue.peakTeInReaisPerMwh}</TableCell>
+                    <TableCell align="right">{blue.peakTusdInReaisPerKw}</TableCell>
+                    <TableCell align="right">{blue.peakTusdInReaisPerMwh}</TableCell>
+                    <TableCell align="right">{blue.peakTeInReaisPerMwh}</TableCell>
                   </TableRow>
 
                   <TableRow
@@ -223,9 +223,9 @@ const DistributorContentTariffsTable = () => {
                   >
                     <TableCell>Fora ponta</TableCell>
 
-                    <TableCell>{blue.offPeakTusdInReaisPerKw}</TableCell>
-                    <TableCell>{blue.offPeakTusdInReaisPerMwh}</TableCell>
-                    <TableCell>{blue.offPeakTeInReaisPerMwh}</TableCell>
+                    <TableCell align="right">{blue.offPeakTusdInReaisPerKw}</TableCell>
+                    <TableCell align="right">{blue.offPeakTusdInReaisPerMwh}</TableCell>
+                    <TableCell align="right">{blue.offPeakTeInReaisPerMwh}</TableCell>
                   </TableRow>
 
                   <TableRow>
@@ -239,9 +239,9 @@ const DistributorContentTariffsTable = () => {
                     </TableCell>
                     <TableCell>NA</TableCell>
 
-                    <TableCell>{green.naTusdInReaisPerKw}</TableCell>
-                    <TableCell>-</TableCell>
-                    <TableCell>-</TableCell>
+                    <TableCell align="right">{green.naTusdInReaisPerKw}</TableCell>
+                    <TableCell align="right">-</TableCell>
+                    <TableCell align="right">-</TableCell>
                   </TableRow>
 
                   <TableRow
@@ -251,17 +251,18 @@ const DistributorContentTariffsTable = () => {
                   >
                     <TableCell>Ponta</TableCell>
 
-                    <TableCell>-</TableCell>
-                    <TableCell>{green.peakTusdInReaisPerMwh}</TableCell>
-                    <TableCell>{green.peakTeInReaisPerMwh}</TableCell>
+                    <TableCell align="right">-</TableCell>
+                    <TableCell align="right">{green.peakTusdInReaisPerMwh}</TableCell>
+                    <TableCell align="right">{green.peakTeInReaisPerMwh}</TableCell>
                   </TableRow>
 
                   <TableRow>
                     <TableCell>Fora ponta</TableCell>
 
-                    <TableCell>-</TableCell>
-                    <TableCell>{green.offPeakTusdInReaisPerMwh}</TableCell>
-                    <TableCell>{green.offPeakTeInReaisPerMwh}</TableCell>
+                    
+                    <TableCell align="right">-</TableCell>
+                    <TableCell align="right">{green.offPeakTusdInReaisPerMwh}</TableCell>
+                    <TableCell align="right">{green.offPeakTeInReaisPerMwh}</TableCell>
                   </TableRow>
                 </TableBody>
               </Table>
