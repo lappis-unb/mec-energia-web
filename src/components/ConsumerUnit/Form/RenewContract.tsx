@@ -166,12 +166,6 @@ const ConsumerUnitRenewContractForm = () => {
 
     handleDiscardForm();
   };
-  const onSubmitHandlerDialog = () => {
-    if (isDirty) {
-      setShouldShowConfirmDialog(true);
-      return;
-    }
-  };
   const handleDiscardForm = () => {
     handleCloseDialog();
     reset();
@@ -615,7 +609,7 @@ const ConsumerUnitRenewContractForm = () => {
         errorsLength={Object.keys(errors).length}
         isLoading={isLoading}
         handleCloseDrawer={handleCancelEdition}
-        handleSubmitDrawer={handleSubmit(onSubmitHandlerDialog)}
+        handleSubmitDrawer={handleSubmit(onSubmitHandler)}
         header={<></>}
         sections={[<Contract key={0} />, <ContractedDemand key={1} />]}
       />
