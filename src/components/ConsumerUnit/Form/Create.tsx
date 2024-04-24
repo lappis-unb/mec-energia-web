@@ -82,6 +82,7 @@ const ConsumerUnitCreateForm = () => {
   const [shouldShowCancelDialog, setShouldShowCancelDialog] = useState(false);
   const [shouldShowDistributorFormDialog, setShouldShowDistributorFormDialog] =
     useState(false);
+  const [shouldShowGreenDemand, setShouldShowGreenDemand] = useState(true);
 
   //Formulário
   const form = useForm({ mode: "all", defaultValues });
@@ -91,6 +92,7 @@ const ConsumerUnitCreateForm = () => {
     handleSubmit,
     watch,
     setValue,
+    getValues,
     formState: { isDirty, errors },
   } = form;
 
@@ -103,10 +105,24 @@ const ConsumerUnitCreateForm = () => {
       offPeakContractedDemandInKw,
     } = defaultValues;
 
-    setValue("contracted", contracted);
-    setValue("peakContractedDemandInKw", peakContractedDemandInKw);
-    setValue("offPeakContractedDemandInKw", offPeakContractedDemandInKw);
+    if (!shouldShowGreenDemand) {
+      setValue("peakContractedDemandInKw", getValues("contracted"));
+      setValue("offPeakContractedDemandInKw", getValues("contracted"));
+    }else{
+      setValue("contracted", contracted);
+      setValue("peakContractedDemandInKw", peakContractedDemandInKw);
+      setValue("offPeakContractedDemandInKw", offPeakContractedDemandInKw);
+    }
   }, [setValue, tariffFlag]);
+
+  useEffect(() => {
+    // Verifica se shouldShowGreenDemand é false
+    if (!shouldShowGreenDemand) {
+      // Atualiza o estado tariffFlag para "B" (azul)
+      setValue("tariffFlag", "B");
+    }
+
+  }, [shouldShowGreenDemand]);
 
   // Validações de Formulário
   const isValidDate = (date: CreateConsumerUnitForm["startDate"]) => {
@@ -453,7 +469,17 @@ const ConsumerUnitCreateForm = () => {
                   decimalScale={2}
                   decimalSeparator=","
                   thousandSeparator={"."}
-                  onValueChange={(values) => onChange(values.floatValue)}
+                  onValueChange={(values) => {
+                    const newVoltage = values ? values.floatValue : 0;
+                    if (newVoltage === 69) {
+                      setShouldShowGreenDemand(false);
+                    } else if (newVoltage !== undefined && newVoltage >= 88 && newVoltage <= 138) {
+                      setShouldShowGreenDemand(false);
+                    } else {
+                      setShouldShowGreenDemand(true);
+                    }
+                    onChange(values.floatValue);
+                  }}
                   onBlur={onBlur}
                 />
               )}
@@ -491,6 +517,7 @@ const ConsumerUnitCreateForm = () => {
                       value="G"
                       control={<Radio />}
                       label="Verde"
+                      disabled={!shouldShowGreenDemand}
                     />
                     <FormHelperText>(Demanda única)</FormHelperText>
                   </Box>
@@ -634,11 +661,17 @@ const ConsumerUnitCreateForm = () => {
                 )}
               />
             </Grid>
+            {!shouldShowGreenDemand && (
+              <Typography variant="body2" sx={{ px: 2 }}>
+                O valor de tensão contratada inserido é compatível apenas com a modalidade azul
+              </Typography>
+            )}
+
           </Box>
         )}
       </>
     ),
-    [control, tariffFlag]
+    [control, tariffFlag, shouldShowGreenDemand]
   );
 
   return (

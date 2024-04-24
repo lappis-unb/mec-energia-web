@@ -70,6 +70,7 @@ const ConsumerUnitEditForm = () => {
   const [shouldShowDistributorFormDialog, setShouldShowDistributorFormDialog] =
     useState(false);
   const [shouldShowCancelDialog, setShouldShowCancelDialog] = useState(false);
+  const [shouldShowGreenDemand, setShouldShowGreenDemand] = useState(true);
 
   const { data: session } = useSession();
   const { data: subgroupsList } = useGetSubgroupsQuery();
@@ -111,6 +112,13 @@ const ConsumerUnitEditForm = () => {
       setValue("code", consumerUnit?.code);
       setValue("distributor", contract?.distributor);
       setValue("supplyVoltage", contract?.supplyVoltage);
+      if (contract?.supplyVoltage === 69) {
+        setShouldShowGreenDemand(false);
+      } else if (contract?.supplyVoltage >= 88 && contract?.supplyVoltage <= 138) {
+        setShouldShowGreenDemand(false);
+      } else {
+        setShouldShowGreenDemand(true);
+      }
       setValue("peakContractedDemandInKw", contract?.peakContractedDemandInKw);
       setValue(
         "offPeakContractedDemandInKw",
@@ -144,6 +152,15 @@ const ConsumerUnitEditForm = () => {
     setValue,
     supplyVoltage,
   ]);
+
+  useEffect(() => {
+    // Verifica se shouldShowGreenDemand é false
+    if (!shouldShowGreenDemand) {
+      // Atualiza o estado tariffFlag para "B" (azul)
+      setValue("tariffFlag", "B");
+    }
+
+  }, [shouldShowGreenDemand]);
 
   // Validações
 
@@ -514,8 +531,23 @@ const ConsumerUnitEditForm = () => {
                   }
                   decimalScale={2}
                   decimalSeparator=","
+<<<<<<< HEAD
                   thousandSeparator={"."}
                   onValueChange={(values) => onChange(values.floatValue)}
+=======
+                  thousandSeparator={" "}
+                  onValueChange={(values) => {
+                    const newVoltage = values ? values.floatValue : 0;
+                    if (newVoltage === 69) {
+                      setShouldShowGreenDemand(false);
+                    } else if (newVoltage !== undefined && newVoltage >= 88 && newVoltage <= 138) {
+                      setShouldShowGreenDemand(false);
+                    } else {
+                      setShouldShowGreenDemand(true);
+                    }
+                    onChange(values.floatValue);
+                  }}
+>>>>>>> d587942 (fix 206: Desabilitando radio button da tarifa verde para subgrupos A2 e A3 na edição de UCs e de contratos)
                   onBlur={onBlur}
                 />
               )}
@@ -552,6 +584,7 @@ const ConsumerUnitEditForm = () => {
                       value="G"
                       control={<Radio />}
                       label="Verde"
+                      disabled={!shouldShowGreenDemand}
                     />
                     <FormHelperText>(Demanda única)</FormHelperText>
                   </Box>
@@ -694,11 +727,16 @@ const ConsumerUnitEditForm = () => {
                 )}
               />
             </Grid>
+            {!shouldShowGreenDemand && (
+              <Typography variant="body2" sx={{ px: 2 }}>
+                O valor de tensão contratada inserido é compatível apenas com a modalidade azul
+              </Typography>
+            )}
           </>
         )}
       </>
     ),
-    [control, tariffFlag]
+    [control, tariffFlag, shouldShowGreenDemand]
   );
 
   return (
