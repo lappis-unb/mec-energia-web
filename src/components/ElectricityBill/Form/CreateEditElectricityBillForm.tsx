@@ -504,7 +504,13 @@ const CreateEditEnergyBillForm = () => {
             <Controller
               control={control}
               name="peakMeasuredDemandInKw"
-              rules={{ required: "Preencha este campo" }}
+              rules={{
+                required: "Preencha este campo",
+                min: {
+                  value: 0.1,
+                  message: "Insira um valor maior que 0",
+                },
+              }}
               render={({
                 field: { onChange, onBlur, value },
                 fieldState: { error },
@@ -540,7 +546,13 @@ const CreateEditEnergyBillForm = () => {
             <Controller
               control={control}
               name="offPeakMeasuredDemandInKw"
-              rules={{ required: "Preencha este campo" }}
+              rules={{
+                required: "Preencha este campo",
+                min: {
+                  value: 0.1,
+                  message: "Insira um valor maior que 0",
+                },
+              }}
               render={({
                 field: { onChange, onBlur, value },
                 fieldState: { error },
@@ -590,7 +602,13 @@ const CreateEditEnergyBillForm = () => {
             <Controller
               control={control}
               name="peakConsumptionInKwh"
-              rules={{ required: "Preencha este campo" }}
+              rules={{
+                required: "Preencha este campo",
+                min: {
+                  value: 0.1,
+                  message: "Insira um valor maior que 0",
+                },
+              }}
               render={({
                 field: { onChange, onBlur, value },
                 fieldState: { error },
@@ -626,7 +644,13 @@ const CreateEditEnergyBillForm = () => {
             <Controller
               control={control}
               name="offPeakConsumptionInKwh"
-              rules={{ required: "Preencha este campo" }}
+              rules={{
+                required: "Preencha este campo",
+                min: {
+                  value: 0.1,
+                  message: "Insira um valor maior que 0",
+                },
+              }}
               render={({
                 field: { onChange, onBlur, value },
                 fieldState: { error },
