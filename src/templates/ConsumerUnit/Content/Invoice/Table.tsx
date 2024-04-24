@@ -7,7 +7,7 @@ import ConfirmWarning from "@/components/ConfirmWarning/ConfirmWarning";
 import { GetApp } from "@mui/icons-material";
 import { formatToPtBrCurrency } from "@/utils/number";
 
-import { Box, Button, IconButton } from "@mui/material";
+import { Box, Button, IconButton, styled } from "@mui/material";
 import {
   DataGrid,
   GridColDef,
@@ -378,9 +378,30 @@ const ConsumerUnitInvoiceContentTable = () => {
     [handleOpenAddEnergyBillForm]
   );
 
+  /**
+   * Fonte: https://github.com/mui/mui-x/issues/5189 
+   * @description fixa o menu da tabela
+  */
+  const FixedMenuDataGrid = styled(DataGrid)(() => ({
+    "& .MuiDataGrid-main": {
+      // remove overflow hidden overwise sticky does not work
+      overflow: "unset"
+    },
+    "& .MuiDataGrid-columnHeaders": {
+      position: "sticky",
+      backgroundColor: "#EEF4F4",
+      zIndex: 1,
+      top: 62
+    },
+    "& .MuiDataGrid-virtualScroller": {
+      // remove the space left for the header
+      marginTop: "0!important"
+    }
+  }));
+
   return (
     <>
-      <DataGrid
+      <FixedMenuDataGrid
         experimentalFeatures={{ columnGrouping: true }}
         columnGroupingModel={columnGroupingModel}
         columns={columns}
