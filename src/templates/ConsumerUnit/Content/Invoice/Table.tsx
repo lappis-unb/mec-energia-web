@@ -391,7 +391,7 @@ const ConsumerUnitInvoiceContentTable = () => {
       position: "sticky",
       backgroundColor: "#EEF4F4",
       zIndex: 1,
-      top: 62
+      top: 70
     },
     "& .MuiDataGrid-virtualScroller": {
       // remove the space left for the header
