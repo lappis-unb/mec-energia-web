@@ -14,6 +14,7 @@ export const CurrentBaseCostPlot = ({
   currentContractCostsPlot,
   displayTitle,
 }: Props) => {
+
   return (
     <Chart
       type="bar"

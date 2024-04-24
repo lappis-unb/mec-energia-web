@@ -54,6 +54,8 @@ export const AnalysisAndRecommendation = () => {
   const hasMinimumEnergyBills =
     recommendation.energyBillsCount >= MINIMUM_ENERGY_BILLS_FOR_RECOMMENDATION;
 
+  const hasRecommendation = recommendation.recommendedContract ? true : false;
+
   return (
     <Box>
       {(hasErrors || hasWarnings) && (
@@ -79,7 +81,7 @@ export const AnalysisAndRecommendation = () => {
         </Grid>
       )}
 
-      {hasMinimumEnergyBills && !hasErrors && (
+      {hasRecommendation && !hasErrors && (
         <Button
           sx={{ my: 1 }}
           variant="contained"
@@ -106,11 +108,13 @@ export const AnalysisAndRecommendation = () => {
           />
         </Grid>
 
+
         <Grid item xs={6}>
           <BaseCostComparisonCard
             dates={dates}
             recommendation={recommendation}
             hasErrors={hasErrors}
+            hasRecommendation={hasRecommendation}
           />
         </Grid>
 

@@ -23,8 +23,7 @@ export const BaseCostComparisonPlot = ({ dates, recommendation }: Props) => {
           },
           {
             label: "Custo-base proposto",
-            data: recommendation?.costsComparisonPlot
-              .totalCostInReaisInRecommended,
+            data: recommendation?.costsComparisonPlot.totalCostInReaisInRecommended,
             backgroundColor: "#FB736C",
             pointStyle: "circle",
             stack: "Proposto",

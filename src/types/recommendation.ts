@@ -38,6 +38,7 @@ export interface Recommendation {
   tariffsTable: TariffsTableRow[],
   contractsComparisonTable: ContractComparisonTableRow[],
   contractsComparisonTotals: ContractsComparisonTotals,
+  currentTotalCost: number,
 }
 
 export interface ContractCostsPlot {

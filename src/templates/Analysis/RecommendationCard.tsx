@@ -37,7 +37,7 @@ export const RecommendationCard = ({
         </Typography>
 
         <Grid container direction="column" spacing={2}>
-          {!!recommendation && recommendation?.shouldRenewContract ? (
+          {recommendation?.shouldRenewContract ? (
             <>
               <Grid item>
                 <ColoredText text="Ajuste do contrato" highlighted />
@@ -90,8 +90,8 @@ export const RecommendationCard = ({
               </Grid>
               <Grid item>
                 <Typography>
-                  A alteração de contrato só é recomendada se a economia nominal
-                  for igual ou superior a{" "}
+                  A alteração de contrato só é recomendada se for identificada uma economia nominal
+                  igual ou superior a{" "}
                   {minimumPercentageForContractRenovation * 100}
                   %.
                 </Typography>
