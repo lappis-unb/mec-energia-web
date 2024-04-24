@@ -531,11 +531,7 @@ const ConsumerUnitEditForm = () => {
                   }
                   decimalScale={2}
                   decimalSeparator=","
-<<<<<<< HEAD
                   thousandSeparator={"."}
-                  onValueChange={(values) => onChange(values.floatValue)}
-=======
-                  thousandSeparator={" "}
                   onValueChange={(values) => {
                     const newVoltage = values ? values.floatValue : 0;
                     if (newVoltage === 69) {
@@ -547,8 +543,6 @@ const ConsumerUnitEditForm = () => {
                     }
                     onChange(values.floatValue);
                   }}
->>>>>>> d587942 (fix 206: Desabilitando radio button da tarifa verde para subgrupos A2 e A3 na edição de UCs e de contratos)
-                  onBlur={onBlur}
                 />
               )}
             />
