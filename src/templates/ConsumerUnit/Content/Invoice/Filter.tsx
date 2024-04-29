@@ -20,6 +20,7 @@ const ConsumerUnitInvoiceContentFilter = () => {
     selectConsumerUnitInvoiceActiveFilter
   );
   const [pendingFilterLabel, setPendingFilterLabel] = useState("Pendentes");
+  const [isPendingFilterActive, setPendingFilterActive] = useState(false);
 
   const invoicesQuery = useFetchInvoicesQuery(consumerUnitId ?? skipToken);
   const consumerUnitQuery = useGetConsumerUnitQuery(
@@ -39,7 +40,8 @@ const ConsumerUnitInvoiceContentFilter = () => {
 
   useEffect(() => {
     const pending = consumerUnit?.pendingEnergyBillsNumber ?? -1;
-    setPendingFilterLabel(pending <= 0 ? "Pendentes" : `Pendentes(${pending})`);
+    setPendingFilterActive(pending > 0);
+    setPendingFilterLabel(pending < 0 ? "Pendentes" : `Pendentes (${pending})`);
   }, [consumerUnit]);
 
   const handleFilterButtonClick = (filter: ConsumerUnitInvoiceFilter) => () => {
@@ -53,6 +55,7 @@ const ConsumerUnitInvoiceContentFilter = () => {
 
         <Box ml={2}>
           <Button
+            disabled={!isPendingFilterActive}
             sx={{ borderRadius: 10 }}
             size="small"
             disableElevation

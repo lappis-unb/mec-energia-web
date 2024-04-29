@@ -12,6 +12,7 @@ import {
   STORE_HYDRATE,
 } from "@/types/app";
 import { InvoiceDataGridRow } from "@/types/consumerUnit";
+import { getActualYear } from "@/utils/date";
 
 const initialState: AppState = {
   isDrawerOpen: true,
@@ -26,7 +27,7 @@ const initialState: AppState = {
     activeFilter: "all",
     openedTab: ConsumerUnitTab.INVOICE,
     invoice: {
-      activeFilter: "pending",
+      activeFilter: `${getActualYear()}`,
       dataGridRows: [],
     },
   },

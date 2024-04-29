@@ -82,3 +82,10 @@ export const getMonthFromNumber = (
 
   return monthFullName.charAt(0).toUpperCase() + monthFullName.slice(1);
 };
+
+export const getActualYear = () => {
+  const date = new Date();
+  const year = date.getUTCFullYear();
+  
+  return year;
+};
