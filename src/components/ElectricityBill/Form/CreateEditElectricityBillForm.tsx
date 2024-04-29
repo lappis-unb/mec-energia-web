@@ -381,7 +381,6 @@ const CreateEditEnergyBillForm = () => {
             control={control}
             name={"invoiceInReais"}
             rules={{
-              required: "Preencha este campo",
               min: {
                 value: 0.01,
                 message: "Insira um valor maior que R$ 0,00",
