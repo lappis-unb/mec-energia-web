@@ -506,7 +506,7 @@ const ConsumerUnitEditForm = () => {
                   isInSomeSubgroups(v, subgroupsList?.subgroups || []),
               }}
               render={({
-                field: { onChange, onBlur, value },
+                field: { onChange, value },
                 fieldState: { error },
               }) => (
                 <NumericFormat
