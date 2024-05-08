@@ -40,11 +40,7 @@ const ConsumerUnitsCardGrid = () => {
         break;
     }
 
-    const sortedConsumerUnits = filteredConsumerUnits
-      .sort(({ isFavorite }) => (isFavorite ? -1 : 1)) // favorites first
-      .sort(({ isActive }) => (isActive ? -1 : 1)); // disabled last
-
-    return sortedConsumerUnits;
+    return filteredConsumerUnits;
   }, [activeFilter, consumerUnitsData]);
 
 

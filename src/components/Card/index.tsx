@@ -16,6 +16,7 @@ const Card = ({
   actionIcon,
   onClick,
   onActionIconClick,
+  onFavoriteButtonClick,
 }: CardProps) => {
   const isActive = variant !== "disabled";
   const isDisabled = variant === "disabled";
@@ -46,6 +47,7 @@ const Card = ({
                 color: isWarning ? "black" : "primary.main",
                 mt: -1.5,
               }}
+              onClick={onFavoriteButtonClick} 
             >
               {isFavorite ? <StarRoundedIcon /> : <StarOutlineRoundedIcon />}
             </IconButton>

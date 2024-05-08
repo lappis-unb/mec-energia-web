@@ -14,6 +14,9 @@ import { CardProps, ConsumerUnitTab } from "@/types/app";
 import { ConsumerUnit } from "@/types/consumerUnit";
 import Card from "@/components/Card";
 import { getMonthFromNumber } from "@/utils/date";
+import { EditFavoritesRequestPayload } from "@/types/person";
+import { useEditPersonFavoritesMutation } from "@/api"
+import { useSession } from "next-auth/react";
 
 interface ConsumerUnitCardProps extends CardProps {
   id: ConsumerUnit["id"];
@@ -49,7 +52,6 @@ const ConsumerUnitCardAction = ({
       const currentDate = new Date();
       const currentYear = currentDate.getFullYear();
       const currentMonth = currentDate.getMonth();
-        
       return `Lançar ${getMonthFromNumber(currentMonth, currentYear)}`;
     }
 
@@ -132,7 +134,8 @@ const ConsumerUnitCard = ({
 }: ConsumerUnitCardProps) => {
   const router = useRouter();
   const dispatch = useDispatch();
-
+  const [editPersonFavorites] = useEditPersonFavoritesMutation();
+  const { data: session } = useSession();
   const variant = useMemo(() => {
     if (!isActive) {
       return "disabled";
@@ -167,6 +170,19 @@ const ConsumerUnitCard = ({
     [dispatch, id, pendingEnergyBillsNumber, router]
   );
 
+
+  const handleFavoriteButtonClick = useCallback<
+    MouseEventHandler<HTMLButtonElement>
+  >(async (event) => {
+    event.stopPropagation();
+    const body: EditFavoritesRequestPayload = {
+      consumerUnitId: id,
+      personId: session?.user?.id,
+      action: isFavorite ? "remove" : "add"
+    };
+    await editPersonFavorites(body);
+  }, [isFavorite]);
+
   return (
     <Card
       name={name}
@@ -190,6 +206,7 @@ const ConsumerUnitCard = ({
         />
       }
       onActionIconClick={handleActionIconClick}
+      onFavoriteButtonClick={handleFavoriteButtonClick}
     />
   );
 };

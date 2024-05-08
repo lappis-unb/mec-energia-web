@@ -85,6 +85,8 @@ export interface CardProps extends CardWrapperProps {
   action?: ReactNode;
   actionIcon?: ReactNode;
   onActionIconClick?: IconButtonProps["onClick"];
+  onFavoriteButtonClick?: IconButtonProps["onClick"];
+  addFavorites?: () => void; 
 }
 
 export interface NotificationProps {

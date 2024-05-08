@@ -38,7 +38,7 @@ export interface GetPersonResponsePayload {
   createOn: Date;
 }
 
-export interface GetPersonUniversityResponsePayload extends GetPersonResponsePayload{
+export interface GetPersonUniversityResponsePayload extends GetPersonResponsePayload {
   university: number;
 }
 
@@ -51,6 +51,15 @@ export interface CreatePersonRequestPayload {
   university: number;
   type: UserRole;
 }
+
+export interface EditFavoritesResponsePayload {
+  consumerUnitId: number,
+  action: string
+}
+
+export interface EditFavoritesRequestPayload extends EditFavoritesResponsePayload {
+  personId?: number | string;
+};
 
 export interface EditPersonRequestPayload extends CreatePersonRequestPayload {
   id: number;

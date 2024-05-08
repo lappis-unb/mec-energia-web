@@ -50,6 +50,8 @@ import {
 import {
   CreatePersonRequestPayload,
   CreatePersonResponsePayload,
+  EditFavoritesRequestPayload,
+  EditFavoritesResponsePayload,
   EditPersonRequestPayload,
   EditPersonResponsePayload,
   GetPersonResponsePayload,
@@ -196,10 +198,10 @@ export const mecEnergiaApi = createApi({
       providesTags: (result, error, arg) =>
         result
           ? [
-              { type: "CurrentContract", arg },
-              "CurrentContract",
-              "Recommendation",
-            ]
+            { type: "CurrentContract", arg },
+            "CurrentContract",
+            "Recommendation",
+          ]
           : ["CurrentContract", "Recommendation"],
     }),
     renewContract: builder.mutation<
@@ -335,6 +337,17 @@ export const mecEnergiaApi = createApi({
       }),
       invalidatesTags: ["Person"],
     }),
+    editPersonFavorites: builder.mutation<
+      EditFavoritesResponsePayload,
+      EditFavoritesRequestPayload
+    >({
+      query: (body) => ({
+        url: `university-user/${body.personId}/favorite-consumer-units/`,
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["ConsumerUnit"],
+    }),
     recommendation: builder.query<Recommendation, number>({
       query: (consumerUnitId) => `recommendation/${consumerUnitId}`,
       providesTags: ["Recommendation"],
@@ -400,6 +413,7 @@ export const {
   useGetUniversityPersonQuery,
   useCreatePersonMutation,
   useEditPersonMutation,
+  useEditPersonFavoritesMutation,
   useRecommendationQuery,
   useRecommendationSettingsQuery,
   useGetDistributorSubgroupsQuery,
