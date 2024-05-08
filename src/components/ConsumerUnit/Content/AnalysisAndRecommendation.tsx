@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { WarningAmberOutlined } from "@mui/icons-material";
 import {
@@ -10,26 +10,34 @@ import {
   Grid,
   Typography,
 } from "@mui/material";
+import { useRouter } from "next/router";
 import Alert from "@mui/material/Alert";
-import { useRecommendationQuery, useRecommendationSettingsQuery } from "@/api";
+import { useGetContractQuery, useRecommendationQuery, useRecommendationSettingsQuery } from "@/api";
 
 import { BaseCostComparisonCard } from "@/templates/Analysis/BaseCostComparisonCard";
 import { MeasuredConsumptionPlot } from "@/templates/Analysis/MeasuredConsumptionPlot";
 import { MeasuredDemandPlot } from "@/templates/Analysis/MeasuredDemandPlot";
 import { RecommendationCard } from "@/templates/Analysis/RecommendationCard";
-import { selectActiveConsumerUnitId } from "@/store/appSlice";
+import { selectActiveConsumerUnitId, setActiveSubgroup, setConsumerUnitInvoiceActiveFilter, setConsumerUnitOpenedTab } from "@/store/appSlice";
 import { DetailedAnalysisDrawer } from "@/templates/Analysis/DetailedAnalysisDrawer";
 import { monthYearForPlot } from "@/utils/date";
 
 import "./configChartjs";
 
 export const AnalysisAndRecommendation = () => {
+  const router = useRouter();
+
+  const dispatch = useDispatch();
   const consumerUnitId = useSelector(selectActiveConsumerUnitId);
   const { data: recommendation, isLoading } = useRecommendationQuery(
     consumerUnitId ?? skipToken
   );
   const { data: recommendationSettings } = useRecommendationSettingsQuery();
   const [isDetailedAnalysisOpen, setIsDetailedAnalysisOpen] = useState(false);
+
+  const { data: contract } = useGetContractQuery(
+    consumerUnitId || skipToken
+  );
 
   if (isLoading || !recommendation || !recommendationSettings)
     return (
@@ -60,12 +68,18 @@ export const AnalysisAndRecommendation = () => {
     <Box>
       {(hasErrors || hasWarnings) && (
         <Grid container spacing={1} sx={{ mb: 1 }}>
-          {recommendation.errors.map((error, i) => (
+          {
+          recommendation.errors.map((error, i) => (
             <Grid key={i} item xs={12}>
               <Alert
                 key={i}
                 severity="warning"
                 icon={<WarningAmberOutlined style={{ color: "#000" }} />}
+                onClick={() => {
+                    dispatch(setConsumerUnitOpenedTab(0));
+                    dispatch(setConsumerUnitInvoiceActiveFilter('pending'));
+                }}
+                sx={{ cursor: 'pointer'}}
               >
                 {error}
               </Alert>
@@ -73,7 +87,20 @@ export const AnalysisAndRecommendation = () => {
           ))}
           {recommendation.warnings.map((warn, i) => (
             <Grid key={i} item xs={12}>
-              <Alert severity="info" variant="outlined">
+              <Alert 
+                onClick={() => {
+                  if(warn.charAt(0) == 'L'){
+                    dispatch(setConsumerUnitOpenedTab(0));
+                    dispatch(setConsumerUnitInvoiceActiveFilter('pending'));
+                  } else if(warn.charAt(0) == 'A'){
+                    dispatch(setActiveSubgroup(contract?.subgroup || null));
+                    router.push(`/distribuidoras/${contract?.distributor}`);
+                  }
+                }}
+                sx={{ cursor: 'pointer'}}
+                severity="info" 
+                variant="outlined"
+              >
                 {warn}
               </Alert>
             </Grid>
