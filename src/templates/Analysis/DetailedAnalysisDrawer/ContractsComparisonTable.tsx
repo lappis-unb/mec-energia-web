@@ -23,18 +23,22 @@ export const ContractsComparisonTable = ({ rows, totals }: Props) => (
     <Table>
       <TableHead>
         <TableRow sx={{ "& th": { p: 0.5 } }}>
-          <TableCell />
+          <TableCell 
+            sx={{ bgcolor: "background.paper" }}
+          />
           <TableCell
             align="center"
             colSpan={2}
-            sx={{ bgcolor: "background.default", position: "relative" }}
+            sx={{ bgcolor: "background.columnGroup", position: "relative" }}
+            style={{color: "#2E3131"}}
           >
             Contrato atual (R$)
           </TableCell>
           <TableCell
             align="center"
             colSpan={2}
-            sx={{ bgcolor: "background.default" }}
+            sx={{ bgcolor: "background.columnGroup" }}
+            style={{color: "#2E3131"}}
           >
             Contrato proposto (R$)
           </TableCell>

@@ -20,18 +20,22 @@ export const ConsumptionHistoryTable = ({ consumptionHistory }: Props) => {
       <Table aria-label="simple table">
         <TableHead>
           <TableRow sx={{ "& th": { p: 0.5 } }}>
-            <TableCell />
+            <TableCell 
+              sx={{ bgcolor: "background.paper" }}
+            />
             <TableCell
               align="center"
               colSpan={2}
-              sx={{ bgcolor: "background.default", position: "relative" }}
+              sx={{ bgcolor: "background.columnGroup", color: "#353838", position: "relative" }}
+              style={{color: "#2E3131"}}
             >
               Consumo médio (kWh)
             </TableCell>
             <TableCell
               align="center"
               colSpan={2}
-              sx={{ bgcolor: "background.default" }}
+              sx={{ bgcolor: "background.columnGroup" }}
+              style={{color: "#2E3131"}}
             >
               Demanda medida (kW)
             </TableCell>

@@ -23,15 +23,20 @@ export const BaseCostComparisonTable = ({ rows, totals }: Props) => (
     <Table aria-label="simple table">
       <TableHead>
         <TableRow sx={{ "& th": { p: 0.5 } }}>
-          <TableCell />
+          <TableCell 
+            sx={{ bgcolor: "background.paper" }}
+          />
           <TableCell
             align="center"
             colSpan={2}
-            sx={{ bgcolor: "background.default", position: "relative" }}
+            sx={{ bgcolor: "background.columnGroup", position: "relative" }}
+            style={{color: "#2E3131"}}
           >
             Custo-base (R$)
           </TableCell>
-          <TableCell />
+          <TableCell 
+            sx={{ bgcolor: "background.paper" }}
+          />
         </TableRow>
 
         <TableRow sx={{ th: { color: "white" }, bgcolor: "primary.main" }}>

@@ -28,6 +28,7 @@ const theme = createTheme(
       background: {
         default: "#EEF4F4",
         paper: "#fff",
+        columnGroup: "#DAE8E9",
       },
       error: {
         main: "#B31B0A",
