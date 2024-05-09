@@ -39,20 +39,20 @@ const Card = ({
         justifyContent="space-between"
         height="100%"
       >
-        <Box display="flex" minHeight="28px">
-          {shouldShowFavoriteIconButton && (
+        {shouldShowFavoriteIconButton && (
+          <Box display="flex" minHeight="28px">
             <IconButton
               edge="start"
               sx={{
                 color: isWarning ? "black" : "primary.main",
                 mt: -1.5,
               }}
-              onClick={onFavoriteButtonClick} 
+              onClick={onFavoriteButtonClick}
             >
               {isFavorite ? <StarRoundedIcon /> : <StarOutlineRoundedIcon />}
             </IconButton>
-          )}
-        </Box>
+          </Box>
+        )}
 
         <Box display="flex" flexDirection="column" justifyContent="end">
           <Box

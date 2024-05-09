@@ -17,7 +17,6 @@ const CardWrapper = ({
       ...(dense
         ? {
             minWidth: "208px",
-            minHeight: "108px",
           }
         : {
             width: "240px",
