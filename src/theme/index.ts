@@ -68,24 +68,59 @@ const theme = createTheme(
       MuiAlert: {
         styleOverrides: {
           standardError: {
-            backgroundColor: "#B31B0A",
-            color: "#FFFFFF",
+            backgroundColor: "#F8E9E7",
+            color: "#520D05",
           },
           standardSuccess: {
-            backgroundColor: "#418026",
-            color: "#FFFFFF",
+            backgroundColor: "#ECF2E9",
+            color: "#25401A",
           },
           standardWarning: {
-            backgroundColor: "RGB(217, 138, 11)",
-            color: "#000",
-          },
-          outlinedInfo: {
-            backgroundColor: "rgba(0, 0, 0, 0)",
-            borderColor: "rgb(41, 109, 204)",
-            color: "rgb(41, 109, 204)",
+            backgroundColor: "#FBF4E7",
+            color: "#613E05", // Cor do texto do alerta de aviso
+            "& .MuiAlert-icon": {
+              // Especifica a customização do ícone dentro de um alerta de aviso
+              color: "#D98A0B", // Nova cor do ícone
+            },
           },
           standardInfo: {
-            backgroundColor: "#E8EFF9",
+            backgroundColor: "#E6ECF3",
+            color: "#0F294D",
+          },
+          filledError: {
+            backgroundColor: "#B31B0A",
+            color: "#FFF",
+          },
+          filledSuccess: {
+            backgroundColor: "#418026",
+            color: "#FFF",
+          },
+          filledWarning: {
+            backgroundColor: "#D98A0B",
+            color: "#000",
+          },
+          filledInfo: {
+            backgroundColor: "#0E438C",
+            color: "#FFF",
+          },
+          outlinedError: {
+            backgroundColor: "#FFF",
+            borderColor: "#B31B0A",
+            color: "#520D05",
+          },
+          outlinedSuccess: {
+            backgroundColor: "#FFF",
+            borderColor: "#418026",
+            color: "#25401A",
+          },
+          outlinedWarning: {
+            backgroundColor: "#FFF",
+            borderColor: "#D98A0B",
+            color: "#613E05",
+          },
+          outlinedInfo: {
+            backgroundColor: "#FFF",
+            borderColor: "#0E438C",
             color: "#0F294D",
           },
           icon: {
@@ -93,6 +128,7 @@ const theme = createTheme(
           },
         },
       },
+
       MuiTableHead: {
         styleOverrides: {
           root: {

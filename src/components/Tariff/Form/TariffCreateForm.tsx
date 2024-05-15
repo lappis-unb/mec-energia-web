@@ -5,6 +5,7 @@ import {
   InputAdornment,
   TextField,
   Typography,
+  Link,
 } from "@mui/material";
 import React, { Fragment, useCallback, useEffect, useState } from "react";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
@@ -37,6 +38,7 @@ import {
 import { getFormattedDateUTC, sendFormattedDate } from "@/utils/date";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import FormDrawerV2 from "@/components/Form/DrawerV2";
+import { getSession } from "next-auth/react";
 
 const defaultValues: CreateAndEditTariffForm = {
   startDate: new Date(),
@@ -209,6 +211,40 @@ const TariffCreateEditForm = () => {
     },
     [startDate]
   );
+
+  const handleDownloadClick = async (
+    event: React.MouseEvent<HTMLButtonElement>
+  ) => {
+    event?.preventDefault();
+    try {
+      const session = await getSession();
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/download-step-by-step-pdf/`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Token ${session?.user?.token}`,
+            "Content-Type": "application/pdf",
+          },
+        }
+      );
+      if (!response.ok) throw new Error("Network response was not ok");
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute(
+        "download",
+        "Pegar_dados_de_tarifas_das_distribuidoras.pdf"
+      );
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode?.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Failed to download file:", error);
+    }
+  };
 
   const onSubmitHandler: SubmitHandler<CreateAndEditTariffForm> = async (
     data: CreateAndEditTariffForm
@@ -923,9 +959,20 @@ const TariffCreateEditForm = () => {
         <Typography variant="h4">Subgrupo {activeSubgroup}</Typography>
         <Typography>Distribuidora: {distributor.data?.name}</Typography>
         <Box mt={3} mb={3}>
-          <Alert icon={<ErrorOutlineIcon />} severity="info">
-            Veja o passo-a-passo a seguir para encontrar as informações de
-            tarifa no site da ANEEL.
+          <Alert icon={<ErrorOutlineIcon />} severity="info" variant="filled">
+            Siga este{" "}
+            <Link
+              component="button"
+              onClick={handleDownloadClick}
+              style={{
+                cursor: "pointer",
+                color: "white",
+                textDecoration: "underline",
+              }}
+            >
+              passo-a-passo
+            </Link>{" "}
+            a seguir para encontrar as informações de tarifa no site da ANEEL.
           </Alert>
         </Box>
       </>
