@@ -1,4 +1,4 @@
-import { SyntheticEvent } from "react";
+import { SyntheticEvent, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 
@@ -18,6 +18,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import ReceiptLongRoundedIcon from "@mui/icons-material/ReceiptLongRounded";
 import InsightsRoundedIcon from "@mui/icons-material/InsightsRounded";
 import StickyNote2RoundedIcon from "@mui/icons-material/StickyNote2Rounded";
+import { useEditPersonFavoritesMutation } from "@/api"
 
 import {
   selectActiveConsumerUnitId,
@@ -26,6 +27,7 @@ import {
   setIsConsumerUnitEditFormOpen,
 } from "@/store/appSlice";
 import { useGetConsumerUnitQuery } from "@/api";
+import { useSession } from "next-auth/react";
 
 const ConsumerUnitContentHeader = () => {
   const dispatch = useDispatch();
@@ -33,16 +35,30 @@ const ConsumerUnitContentHeader = () => {
   const { data: consumerUnit } = useGetConsumerUnitQuery(
     consumerUnitId ?? skipToken
   );
+  const [editPersonFavorites] = useEditPersonFavoritesMutation();
 
+  const { data: session } = useSession();
   const openedTab = useSelector(selectConsumerUnitOpenedTab);
 
   const handleEditConsumerUnitClick = () => {
     dispatch(setIsConsumerUnitEditFormOpen(true));
   };
-
+  
   const handleTabChange = (_event: SyntheticEvent, tabIndex: number) => {
     dispatch(setConsumerUnitOpenedTab(tabIndex));
   };
+
+  const handleFavoriteButtonClick = useCallback<
+    MouseEventHandler<HTMLButtonElement>
+  >(async (event) => {
+    event.stopPropagation();
+    const body: EditFavoritesRequestPayload = {
+      consumerUnitId: consumerUnit?.id,
+      personId: session?.user?.id,
+      action: consumerUnit?.isFavorite ? "remove" : "add"
+    };
+    await editPersonFavorites(body);
+  });
 
   return (
     <Box
@@ -54,7 +70,7 @@ const ConsumerUnitContentHeader = () => {
       <Container>
         <Box display="flex">
           <Box mt={-0.5}>
-            <IconButton color="primary" edge="start">
+            <IconButton color="primary" edge="start" onClick={handleFavoriteButtonClick}>
               {consumerUnit?.isFavorite ? (
                 <StarRoundedIcon fontSize="large" />
               ) : (
