@@ -7,11 +7,7 @@ import {
   Typography,
 } from "@mui/material";
 import React, { Fragment, useCallback, useEffect, useState } from "react";
-import {
-  Controller,
-  SubmitHandler,
-  useForm,
-} from "react-hook-form";
+import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import {
   selectActiveDistributorId,
@@ -178,35 +174,41 @@ const TariffCreateEditForm = () => {
     handleDiscardForm();
   }, [handleDiscardForm, isDirty]);
 
-  const isValidDate = useCallback((date: CreateAndEditTariffForm["startDate"]) => {
-    if (!date || !isValid(date)) {
-      return "Insira uma data válida no formato dd/mm/aaaa.";
-    }
+  const isValidDate = useCallback(
+    (date: CreateAndEditTariffForm["startDate"]) => {
+      if (!date || !isValid(date)) {
+        return "Insira uma data válida no formato dd/mm/aaaa.";
+      }
 
-    if (isFuture(new Date(date))) {
-      return "Insira uma data anterior ou igual a data atual no formato dd/mm/aaaa";
-    }
+      if (isFuture(new Date(date))) {
+        return "Insira uma data anterior ou igual a data atual no formato dd/mm/aaaa";
+      }
 
-    if (!isAfter(new Date(date), new Date("2010"))) {
-      return "Insira uma data a partir de 2010";
-    }
+      if (!isAfter(new Date(date), new Date("2010"))) {
+        return "Insira uma data a partir de 2010";
+      }
 
-    setStartDate(new Date(date));
+      setStartDate(new Date(date));
 
-    return true;
-  }, []);
+      return true;
+    },
+    []
+  );
 
-  const isValidEndDate = useCallback((date: CreateAndEditTariffForm["endDate"]) => {
-    if (!date || !isValid(date)) {
-      return "Insira uma data válida no formato dd/mm/aaaa.";
-    }
+  const isValidEndDate = useCallback(
+    (date: CreateAndEditTariffForm["endDate"]) => {
+      if (!date || !isValid(date)) {
+        return "Insira uma data válida no formato dd/mm/aaaa.";
+      }
 
-    if (!isAfter(new Date(date), startDate)) {
-      return "Insira uma data posterior à data de início";
-    }
+      if (!isAfter(new Date(date), startDate)) {
+        return "Insira uma data posterior à data de início";
+      }
 
-    return true;
-  }, [startDate]);
+      return true;
+    },
+    [startDate]
+  );
 
   const onSubmitHandler: SubmitHandler<CreateAndEditTariffForm> = async (
     data: CreateAndEditTariffForm
@@ -288,614 +290,648 @@ const TariffCreateEditForm = () => {
     handleNotification();
   }, [handleNotification, isCreateTariffSuccess, isCreateTariffError]);
 
+  const ValiditySection = useCallback(
+    () => (
+      <>
+        <Grid item xs={12} marginBottom={2}>
+          <Typography variant="h5">Vigência</Typography>
+        </Grid>
 
-  const ValiditySection = useCallback(() => (
-    <>
-      <Grid item xs={12} marginBottom={2}>
-        <Typography variant="h5">Vigência</Typography>
-      </Grid>
-
-      <Grid item xs={4.5}>
-        <Controller
-          control={control}
-          name="startDate"
-          rules={{
-            required: "Preencha este campo",
-            validate: isValidDate,
-          }}
-          render={({
-            field: { value, onChange },
-            fieldState: { error },
-          }) => (
-            <DatePicker
-              value={value}
-              label="Início *"
-              minDate={new Date("2010")}
-              disableFuture
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  inputProps={{
-                    ...params.inputProps,
-                    placeholder: "dd/mm/aaaa",
-                  }}
-                  helperText={error?.message ?? " "}
-                  error={!!error}
+        <Grid container spacing={2}>
+          <Grid item xs={6}>
+            <Controller
+              control={control}
+              name="startDate"
+              rules={{
+                required: "Preencha este campo",
+                validate: isValidDate,
+              }}
+              render={({
+                field: { value, onChange },
+                fieldState: { error },
+              }) => (
+                <DatePicker
+                  value={value}
+                  label="Início *"
+                  minDate={new Date("2010")}
+                  disableFuture
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      inputProps={{
+                        ...params.inputProps,
+                        placeholder: "dd/mm/aaaa",
+                      }}
+                      helperText={error?.message ?? " "}
+                      error={!!error}
+                    />
+                  )}
+                  onChange={onChange}
                 />
               )}
-              onChange={onChange}
             />
-          )}
-        />
-      </Grid>
-
-      <Grid item xs={4.5}>
-        <Controller
-          control={control}
-          name="endDate"
-          rules={{
-            required: "Preencha este campo",
-            validate: isValidEndDate,
-          }}
-          render={({
-            field: { value, onChange },
-            fieldState: { error },
-          }) => (
-            <DatePicker
-              value={value}
-              label="Fim *"
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  inputProps={{
-                    ...params.inputProps,
-                    placeholder: "dd/mm/aaaa",
-                  }}
-                  helperText={error?.message ?? " "}
-                  error={!!error}
+          </Grid>
+          <Grid item xs={6}>
+            <Controller
+              control={control}
+              name="endDate"
+              rules={{
+                required: "Preencha este campo",
+                validate: isValidEndDate,
+              }}
+              render={({
+                field: { value, onChange },
+                fieldState: { error },
+              }) => (
+                <DatePicker
+                  value={value}
+                  label="Fim *"
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      inputProps={{
+                        ...params.inputProps,
+                        placeholder: "dd/mm/aaaa",
+                      }}
+                      helperText={error?.message ?? " "}
+                      error={!!error}
+                    />
+                  )}
+                  onChange={onChange}
                 />
               )}
-              onChange={onChange}
             />
-          )}
-        />
-      </Grid>
+          </Grid>
+        </Grid>
+      </>
+    ),
+    [control, isValidDate, isValidEndDate]
+  );
 
-    </>
-  ),
-    [control, isValidDate, isValidEndDate])
+  const BlueMode = useCallback(
+    () => (
+      <>
+        <Grid item xs={12}>
+          <Typography variant="h5">Modalidade Azul</Typography>
+        </Grid>
 
-  const BlueMode = useCallback(() => (<>
-    <Grid item xs={12}>
-      <Typography variant="h5">Modalidade Azul</Typography>
-    </Grid>
-
-    <Grid item xs={12}>
-      <Typography variant="inherit" color="primary">
-        Ponta
-      </Typography>
-    </Grid>
-
-    <Grid item xs={4}>
-      <Controller
-        control={control}
-        name={"blue.peakTusdInReaisPerKw"}
-        rules={{
-          required: "Preencha este campo",
-          min: {
-            value: minTariffValue,
-            message: "Insira um valor maior que R$ 0,00",
-          },
-        }}
-        render={({
-          field: { onChange, onBlur, value },
-          fieldState: { error },
-        }) => (
-          <NumericFormat
-            value={value}
-            customInput={TextField}
-            label="TUSD R$/kW  *"
-            helperText={error?.message ?? " "}
-            error={!!error}
-            fullWidth
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">R$</InputAdornment>
-              ),
-              placeholder: "0,00",
-            }}
-            type="text"
-            allowNegative={false}
-            isAllowed={({ floatValue }) =>
-              !floatValue || (floatValue <= maxTariffValue)
-            }
-            decimalScale={2}
-            decimalSeparator=","
-            thousandSeparator={"."}
-            onValueChange={(values) => onChange(values.floatValue ?? null)}
-            onBlur={onBlur}
-          />
-        )}
-      />
-    </Grid>
-
-    <Grid item xs={4}>
-      <Controller
-        control={control}
-        name={"blue.peakTusdInReaisPerMwh"}
-        rules={{
-          required: "Preencha este campo",
-          min: {
-            value: minTariffValue,
-            message: "Insira um valor maior que R$ 0,00",
-          }
-        }}
-        render={({
-          field: { onChange, onBlur, value },
-          fieldState: { error },
-        }) => (
-          <NumericFormat
-            value={value !== 0 ? value : null}
-            customInput={TextField}
-            label="TUSD R$/MWh *"
-            helperText={error?.message ?? " "}
-            error={!!error}
-            fullWidth
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">R$</InputAdornment>
-              ),
-              placeholder: "0,00",
-            }}
-            type="text"
-            allowNegative={false}
-            isAllowed={({ floatValue }) =>
-              !floatValue || floatValue <= maxTariffValue
-            }
-            decimalScale={2}
-            decimalSeparator=","
-            thousandSeparator={"."}
-            onValueChange={(values) => onChange(values.floatValue ?? null)}
-            onBlur={onBlur}
-          />
-        )}
-      />
-    </Grid>
-
-    <Grid item xs={4}>
-      <Controller
-        control={control}
-        name={"blue.peakTeInReaisPerMwh"}
-        rules={{
-          required: "Preencha este campo",
-          min: {
-            value: minTariffValue,
-            message: "Insira um valor maior que R$ 0,00",
-          },
-        }}
-        render={({
-          field: { onChange, onBlur, value },
-          fieldState: { error },
-        }) => (
-          <NumericFormat
-            value={value !== 0 ? value : null}
-            customInput={TextField}
-            label="TE R$/MWh  *"
-            helperText={error?.message ?? " "}
-            error={!!error}
-            fullWidth
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">R$</InputAdornment>
-              ),
-              placeholder: "0,00",
-            }}
-            type="text"
-            allowNegative={false}
-            isAllowed={({ floatValue }) =>
-              !floatValue || floatValue <= maxTariffValue
-            }
-            decimalScale={2}
-            decimalSeparator=","
-            thousandSeparator={"."}
-            onValueChange={(values) => onChange(values.floatValue ?? null)}
-            onBlur={onBlur}
-          />
-        )}
-      />
-    </Grid>
-
-    <Grid item xs={12}>
-      <Typography variant="inherit" color="primary">
-        Fora Ponta
-      </Typography>
-    </Grid>
-
-    <Grid item xs={4}>
-      <Controller
-        control={control}
-        name={"blue.offPeakTusdInReaisPerKw"}
-        rules={{
-          required: "Preencha este campo",
-          min: {
-            value: 0.01,
-            message: "Insira um valor maior que R$ 0,00",
-          },
-        }}
-        render={({
-          field: { onChange, onBlur, value },
-          fieldState: { error },
-        }) => (
-          <NumericFormat
-            value={value !== 0 ? value : null}
-            customInput={TextField}
-            label="TUSD R$/kW  *"
-            helperText={error?.message ?? " "}
-            error={!!error}
-            fullWidth
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">R$</InputAdornment>
-              ),
-              placeholder: "0,00",
-            }}
-            type="text"
-            allowNegative={false}
-            isAllowed={({ floatValue }) =>
-              !floatValue || floatValue <= maxTariffValue
-            }
-            decimalScale={2}
-            decimalSeparator=","
-            thousandSeparator={"."}
-            onValueChange={(values) => onChange(values.floatValue ?? null)}
-            onBlur={onBlur}
-          />
-        )}
-      />
-    </Grid>
-
-    <Grid item xs={4}>
-      <Controller
-        control={control}
-        name={"blue.offPeakTusdInReaisPerMwh"}
-        rules={{
-          required: "Preencha este campo",
-          min: {
-            value: 0.01,
-            message: "Insira um valor maior que R$ 0,00",
-          },
-        }}
-        render={({
-          field: { onChange, onBlur, value },
-          fieldState: { error },
-        }) => (
-          <NumericFormat
-            value={value !== 0 ? value : null}
-            customInput={TextField}
-            label="TUSD R$/MWh *"
-            helperText={error?.message ?? " "}
-            error={!!error}
-            fullWidth
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">R$</InputAdornment>
-              ),
-              placeholder: "0,00",
-            }}
-            type="text"
-            allowNegative={false}
-            isAllowed={({ floatValue }) =>
-              !floatValue || floatValue <= maxTariffValue
-            }
-            decimalScale={2}
-            decimalSeparator=","
-            thousandSeparator={"."}
-            onValueChange={(values) => onChange(values.floatValue ?? null)}
-            onBlur={onBlur}
-          />
-        )}
-      />
-    </Grid>
-
-    <Grid item xs={4}>
-      <Controller
-        control={control}
-        name={"blue.offPeakTeInReaisPerMwh"}
-        rules={{
-          required: "Preencha este campo",
-          min: {
-            value: 0.01,
-            message: "Insira um valor maior que R$ 0,00",
-          },
-        }}
-        render={({
-          field: { onChange, onBlur, value },
-          fieldState: { error },
-        }) => (
-          <NumericFormat
-            value={value !== 0 ? value : undefined}
-            customInput={TextField}
-            label="TE R$/MWh  *"
-            helperText={error?.message ?? " "}
-            error={!!error}
-            fullWidth
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">R$</InputAdornment>
-              ),
-              placeholder: "0,00",
-            }}
-            type="text"
-            allowNegative={false}
-            isAllowed={({ floatValue }) =>
-              !floatValue || floatValue <= maxTariffValue
-            }
-            decimalScale={2}
-            decimalSeparator=","
-            thousandSeparator={"."}
-            onValueChange={(values) => onChange(values.floatValue ?? null)}
-            onBlur={onBlur}
-          />
-        )}
-      />
-    </Grid>
-  </>),
-    [control])
-
-  const GreenMode = useCallback(() => (
-    <>
-      <Grid item xs={12}>
-        <Typography variant="h5">Modalidade Verde</Typography>
-      </Grid>
-
-      <Grid item xs={12}>
-        <Typography variant="inherit" color="primary">
-          NA
-        </Typography>
-      </Grid>
-
-      <Grid item xs={4}>
-        <Controller
-          control={control}
-          name={"green.naTusdInReaisPerKw"}
-          rules={{
-            required: "Preencha este campo",
-            min: {
-              value: 0.01,
-              message: "Insira um valor maior que R$ 0,00",
-            },
-          }}
-          render={({
-            field: { onChange, onBlur, value },
-            fieldState: { error },
-          }) => (
-            <NumericFormat
-              value={value !== 0 ? value : null}
-              customInput={TextField}
-              label="TUSD R$/kW  *"
-              helperText={error?.message ?? " "}
-              error={!!error}
-              fullWidth
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">R$</InputAdornment>
-                ),
-                placeholder: "0,00",
+        <Grid item xs={12} style={{ marginBottom: "20px", marginTop: "20px" }}>
+          <Typography variant="inherit" color="primary">
+            Ponta
+          </Typography>
+        </Grid>
+        <Grid container spacing={2}>
+          <Grid item xs={4}>
+            <Controller
+              control={control}
+              name={"blue.peakTusdInReaisPerKw"}
+              rules={{
+                required: "Preencha este campo",
+                min: {
+                  value: minTariffValue,
+                  message: "Insira um valor maior que R$ 0,00",
+                },
               }}
-              type="text"
-              allowNegative={false}
-              isAllowed={({ floatValue }) =>
-                !floatValue || floatValue <= maxTariffValue
-              }
-              decimalScale={2}
-              decimalSeparator=","
-              thousandSeparator={"."}
-              onValueChange={(values) => onChange(values.floatValue ?? null)}
-              onBlur={onBlur}
+              render={({
+                field: { onChange, onBlur, value },
+                fieldState: { error },
+              }) => (
+                <NumericFormat
+                  value={value}
+                  customInput={TextField}
+                  label="TUSD R$/kW  *"
+                  helperText={error?.message ?? " "}
+                  error={!!error}
+                  fullWidth
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">R$</InputAdornment>
+                    ),
+                    placeholder: "0,00",
+                  }}
+                  type="text"
+                  allowNegative={false}
+                  isAllowed={({ floatValue }) =>
+                    !floatValue || floatValue <= maxTariffValue
+                  }
+                  decimalScale={2}
+                  decimalSeparator=","
+                  thousandSeparator={"."}
+                  onValueChange={(values) =>
+                    onChange(values.floatValue ?? null)
+                  }
+                  onBlur={onBlur}
+                />
+              )}
             />
-          )}
-        />
-      </Grid>
+          </Grid>
 
-      <Grid item xs={12}>
-        <Typography variant="inherit" color="primary">
-          Ponta
-        </Typography>
-      </Grid>
-
-      <Grid item xs={4}>
-        <Controller
-          control={control}
-          name={"green.peakTusdInReaisPerMwh"}
-          rules={{
-            required: "Preencha este campo",
-            min: {
-              value: 0.01,
-              message: "Insira um valor maior que R$ 0,00",
-            },
-          }}
-          render={({
-            field: { onChange, onBlur, value },
-            fieldState: { error },
-          }) => (
-            <NumericFormat
-              value={value !== 0 ? value : null}
-              customInput={TextField}
-              label="TUSD R$/MWh *"
-              helperText={error?.message ?? " "}
-              error={!!error}
-              fullWidth
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">R$</InputAdornment>
-                ),
-                placeholder: "0,00",
+          <Grid item xs={4}>
+            <Controller
+              control={control}
+              name={"blue.peakTusdInReaisPerMwh"}
+              rules={{
+                required: "Preencha este campo",
+                min: {
+                  value: minTariffValue,
+                  message: "Insira um valor maior que R$ 0,00",
+                },
               }}
-              type="text"
-              allowNegative={false}
-              isAllowed={({ floatValue }) =>
-                !floatValue || floatValue <= maxTariffValue
-              }
-              decimalScale={2}
-              decimalSeparator=","
-              thousandSeparator={"."}
-              onValueChange={(values) => onChange(values.floatValue ?? null)}
-              onBlur={onBlur}
+              render={({
+                field: { onChange, onBlur, value },
+                fieldState: { error },
+              }) => (
+                <NumericFormat
+                  value={value !== 0 ? value : null}
+                  customInput={TextField}
+                  label="TUSD R$/MWh *"
+                  helperText={error?.message ?? " "}
+                  error={!!error}
+                  fullWidth
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">R$</InputAdornment>
+                    ),
+                    placeholder: "0,00",
+                  }}
+                  type="text"
+                  allowNegative={false}
+                  isAllowed={({ floatValue }) =>
+                    !floatValue || floatValue <= maxTariffValue
+                  }
+                  decimalScale={2}
+                  decimalSeparator=","
+                  thousandSeparator={"."}
+                  onValueChange={(values) =>
+                    onChange(values.floatValue ?? null)
+                  }
+                  onBlur={onBlur}
+                />
+              )}
             />
-          )}
-        />
-      </Grid>
+          </Grid>
 
-      <Grid item xs={4}>
-        <Controller
-          control={control}
-          name={"green.peakTeInReaisPerMwh"}
-          rules={{
-            required: "Preencha este campo",
-            min: {
-              value: 0.01,
-              message: "Insira um valor maior que R$ 0,00",
-            },
-          }}
-          render={({
-            field: { onChange, onBlur, value },
-            fieldState: { error },
-          }) => (
-            <NumericFormat
-              value={value !== 0 ? value : null}
-              customInput={TextField}
-              label="TE R$/MWh  *"
-              helperText={error?.message ?? " "}
-              error={!!error}
-              fullWidth
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">R$</InputAdornment>
-                ),
-                placeholder: "0,00",
+          <Grid item xs={4}>
+            <Controller
+              control={control}
+              name={"blue.peakTeInReaisPerMwh"}
+              rules={{
+                required: "Preencha este campo",
+                min: {
+                  value: minTariffValue,
+                  message: "Insira um valor maior que R$ 0,00",
+                },
               }}
-              type="text"
-              allowNegative={false}
-              isAllowed={({ floatValue }) =>
-                !floatValue || floatValue <= maxTariffValue
-              }
-              decimalScale={2}
-              decimalSeparator=","
-              thousandSeparator={"."}
-              onValueChange={(values) => onChange(values.floatValue ?? null)}
-              onBlur={onBlur}
+              render={({
+                field: { onChange, onBlur, value },
+                fieldState: { error },
+              }) => (
+                <NumericFormat
+                  value={value !== 0 ? value : null}
+                  customInput={TextField}
+                  label="TE R$/MWh  *"
+                  helperText={error?.message ?? " "}
+                  error={!!error}
+                  fullWidth
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">R$</InputAdornment>
+                    ),
+                    placeholder: "0,00",
+                  }}
+                  type="text"
+                  allowNegative={false}
+                  isAllowed={({ floatValue }) =>
+                    !floatValue || floatValue <= maxTariffValue
+                  }
+                  decimalScale={2}
+                  decimalSeparator=","
+                  thousandSeparator={"."}
+                  onValueChange={(values) =>
+                    onChange(values.floatValue ?? null)
+                  }
+                  onBlur={onBlur}
+                />
+              )}
             />
-          )}
-        />
-      </Grid>
+          </Grid>
+        </Grid>
 
-      <Grid item xs={12}>
-        <Typography variant="inherit" color="primary">
-          Fora Ponta
-        </Typography>
-      </Grid>
-
-      <Grid item xs={4}>
-        <Controller
-          control={control}
-          name={"green.offPeakTusdInReaisPerMwh"}
-          rules={{
-            required: "Preencha este campo",
-            min: {
-              value: 0.01,
-              message: "Insira um valor maior que R$ 0,00",
-            },
-          }}
-          render={({
-            field: { onChange, onBlur, value },
-            fieldState: { error },
-          }) => (
-            <NumericFormat
-              value={value !== 0 ? value : null}
-              customInput={TextField}
-              label="TUSD R$/MWh *"
-              helperText={error?.message ?? " "}
-              error={!!error}
-              fullWidth
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">R$</InputAdornment>
-                ),
-                placeholder: "0,00",
+        <Grid item xs={12} style={{ marginBottom: "20px", marginTop: "10px" }}>
+          <Typography variant="inherit" color="primary">
+            Fora Ponta
+          </Typography>
+        </Grid>
+        <Grid container spacing={2}>
+          <Grid item xs={4}>
+            <Controller
+              control={control}
+              name={"blue.offPeakTusdInReaisPerKw"}
+              rules={{
+                required: "Preencha este campo",
+                min: {
+                  value: 0.01,
+                  message: "Insira um valor maior que R$ 0,00",
+                },
               }}
-              type="text"
-              allowNegative={false}
-              isAllowed={({ floatValue }) =>
-                !floatValue || floatValue <= maxTariffValue
-              }
-              decimalScale={2}
-              decimalSeparator=","
-              thousandSeparator={"."}
-              onValueChange={(values) => onChange(values.floatValue ?? null)}
-              onBlur={onBlur}
+              render={({
+                field: { onChange, onBlur, value },
+                fieldState: { error },
+              }) => (
+                <NumericFormat
+                  value={value !== 0 ? value : null}
+                  customInput={TextField}
+                  label="TUSD R$/kW  *"
+                  helperText={error?.message ?? " "}
+                  error={!!error}
+                  fullWidth
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">R$</InputAdornment>
+                    ),
+                    placeholder: "0,00",
+                  }}
+                  type="text"
+                  allowNegative={false}
+                  isAllowed={({ floatValue }) =>
+                    !floatValue || floatValue <= maxTariffValue
+                  }
+                  decimalScale={2}
+                  decimalSeparator=","
+                  thousandSeparator={"."}
+                  onValueChange={(values) =>
+                    onChange(values.floatValue ?? null)
+                  }
+                  onBlur={onBlur}
+                />
+              )}
             />
-          )}
-        />
-      </Grid>
+          </Grid>
 
-      <Grid item xs={4}>
-        <Controller
-          control={control}
-          name={"green.offPeakTeInReaisPerMwh"}
-          rules={{
-            required: "Preencha este campo",
-            min: {
-              value: 0.01,
-              message: "Insira um valor maior que R$ 0,00",
-            },
-          }}
-          render={({
-            field: { onChange, onBlur, value },
-            fieldState: { error },
-          }) => (
-            <NumericFormat
-              value={value !== 0 ? value : null}
-              customInput={TextField}
-              label="TE R$/MWh  *"
-              helperText={error?.message ?? " "}
-              error={!!error}
-              fullWidth
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">R$</InputAdornment>
-                ),
-                placeholder: "0,00",
+          <Grid item xs={4}>
+            <Controller
+              control={control}
+              name={"blue.offPeakTusdInReaisPerMwh"}
+              rules={{
+                required: "Preencha este campo",
+                min: {
+                  value: 0.01,
+                  message: "Insira um valor maior que R$ 0,00",
+                },
               }}
-              type="text"
-              allowNegative={false}
-              isAllowed={({ floatValue }) =>
-                !floatValue || floatValue <= maxTariffValue
-              }
-              decimalScale={2}
-              decimalSeparator=","
-              thousandSeparator={"."}
-              onValueChange={(values) => onChange(values.floatValue ?? null)}
-              onBlur={onBlur}
+              render={({
+                field: { onChange, onBlur, value },
+                fieldState: { error },
+              }) => (
+                <NumericFormat
+                  value={value !== 0 ? value : null}
+                  customInput={TextField}
+                  label="TUSD R$/MWh *"
+                  helperText={error?.message ?? " "}
+                  error={!!error}
+                  fullWidth
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">R$</InputAdornment>
+                    ),
+                    placeholder: "0,00",
+                  }}
+                  type="text"
+                  allowNegative={false}
+                  isAllowed={({ floatValue }) =>
+                    !floatValue || floatValue <= maxTariffValue
+                  }
+                  decimalScale={2}
+                  decimalSeparator=","
+                  thousandSeparator={"."}
+                  onValueChange={(values) =>
+                    onChange(values.floatValue ?? null)
+                  }
+                  onBlur={onBlur}
+                />
+              )}
             />
-          )}
-        />
-      </Grid>
+          </Grid>
 
-    </>
-  ), [control])
+          <Grid item xs={4}>
+            <Controller
+              control={control}
+              name={"blue.offPeakTeInReaisPerMwh"}
+              rules={{
+                required: "Preencha este campo",
+                min: {
+                  value: 0.01,
+                  message: "Insira um valor maior que R$ 0,00",
+                },
+              }}
+              render={({
+                field: { onChange, onBlur, value },
+                fieldState: { error },
+              }) => (
+                <NumericFormat
+                  value={value !== 0 ? value : undefined}
+                  customInput={TextField}
+                  label="TE R$/MWh  *"
+                  helperText={error?.message ?? " "}
+                  error={!!error}
+                  fullWidth
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">R$</InputAdornment>
+                    ),
+                    placeholder: "0,00",
+                  }}
+                  type="text"
+                  allowNegative={false}
+                  isAllowed={({ floatValue }) =>
+                    !floatValue || floatValue <= maxTariffValue
+                  }
+                  decimalScale={2}
+                  decimalSeparator=","
+                  thousandSeparator={"."}
+                  onValueChange={(values) =>
+                    onChange(values.floatValue ?? null)
+                  }
+                  onBlur={onBlur}
+                />
+              )}
+            />
+          </Grid>
+        </Grid>
+      </>
+    ),
+    [control]
+  );
 
-  const Header = useCallback(() => (
-    <>
-      <Typography variant="h4">Subgrupo {activeSubgroup}</Typography>
-      <Typography>Distribuidora: {distributor.data?.name}</Typography>
-      <Box mt={3} mb={3}>
-        <Alert icon={<ErrorOutlineIcon />} severity="info">
-          Veja o passo-a-passo a seguir para encontrar as informações de
-          tarifa no site da ANEEL.
-        </Alert>
-      </Box>
-    </>
-  ), [activeSubgroup, distributor.data?.name])
+  const GreenMode = useCallback(
+    () => (
+      <>
+        <Grid item xs={12}>
+          <Typography variant="h5">Modalidade Verde</Typography>
+        </Grid>
+
+        <Grid item xs={12} style={{ marginBottom: "20px", marginTop: "20px" }}>
+          <Typography variant="inherit" color="primary">
+            NA
+          </Typography>
+        </Grid>
+
+        <Grid item xs={4}>
+          <Controller
+            control={control}
+            name={"green.naTusdInReaisPerKw"}
+            rules={{
+              required: "Preencha este campo",
+              min: {
+                value: 0.01,
+                message: "Insira um valor maior que R$ 0,00",
+              },
+            }}
+            render={({
+              field: { onChange, onBlur, value },
+              fieldState: { error },
+            }) => (
+              <NumericFormat
+                value={value !== 0 ? value : null}
+                customInput={TextField}
+                label="TUSD R$/kW  *"
+                helperText={error?.message ?? " "}
+                error={!!error}
+                fullWidth
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">R$</InputAdornment>
+                  ),
+                  placeholder: "0,00",
+                  style: { maxWidth: "31.5%" },
+                }}
+                type="text"
+                allowNegative={false}
+                isAllowed={({ floatValue }) =>
+                  !floatValue || floatValue <= maxTariffValue
+                }
+                decimalScale={2}
+                decimalSeparator=","
+                thousandSeparator={"."}
+                onValueChange={(values) => onChange(values.floatValue ?? null)}
+                onBlur={onBlur}
+              />
+            )}
+          />
+        </Grid>
+
+        <Grid item xs={12} style={{ marginBottom: "20px", marginTop: "10px" }}>
+          <Typography variant="inherit" color="primary">
+            Ponta
+          </Typography>
+        </Grid>
+        <Grid container spacing={2}>
+          <Grid item xs={4}>
+            <Controller
+              control={control}
+              name={"green.peakTusdInReaisPerMwh"}
+              rules={{
+                required: "Preencha este campo",
+                min: {
+                  value: 0.01,
+                  message: "Insira um valor maior que R$ 0,00",
+                },
+              }}
+              render={({
+                field: { onChange, onBlur, value },
+                fieldState: { error },
+              }) => (
+                <NumericFormat
+                  value={value !== 0 ? value : null}
+                  customInput={TextField}
+                  label="TUSD R$/MWh *"
+                  helperText={error?.message ?? " "}
+                  error={!!error}
+                  fullWidth
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">R$</InputAdornment>
+                    ),
+                    placeholder: "0,00",
+                  }}
+                  type="text"
+                  allowNegative={false}
+                  isAllowed={({ floatValue }) =>
+                    !floatValue || floatValue <= maxTariffValue
+                  }
+                  decimalScale={2}
+                  decimalSeparator=","
+                  thousandSeparator={"."}
+                  onValueChange={(values) =>
+                    onChange(values.floatValue ?? null)
+                  }
+                  onBlur={onBlur}
+                />
+              )}
+            />
+          </Grid>
+
+          <Grid item xs={4}>
+            <Controller
+              control={control}
+              name={"green.peakTeInReaisPerMwh"}
+              rules={{
+                required: "Preencha este campo",
+                min: {
+                  value: 0.01,
+                  message: "Insira um valor maior que R$ 0,00",
+                },
+              }}
+              render={({
+                field: { onChange, onBlur, value },
+                fieldState: { error },
+              }) => (
+                <NumericFormat
+                  value={value !== 0 ? value : null}
+                  customInput={TextField}
+                  label="TE R$/MWh  *"
+                  helperText={error?.message ?? " "}
+                  error={!!error}
+                  fullWidth
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">R$</InputAdornment>
+                    ),
+                    placeholder: "0,00",
+                  }}
+                  type="text"
+                  allowNegative={false}
+                  isAllowed={({ floatValue }) =>
+                    !floatValue || floatValue <= maxTariffValue
+                  }
+                  decimalScale={2}
+                  decimalSeparator=","
+                  thousandSeparator={"."}
+                  onValueChange={(values) =>
+                    onChange(values.floatValue ?? null)
+                  }
+                  onBlur={onBlur}
+                />
+              )}
+            />
+          </Grid>
+        </Grid>
+        <Grid item xs={12} style={{ marginBottom: "20px", marginTop: "10px" }}>
+          <Typography variant="inherit" color="primary">
+            Fora Ponta
+          </Typography>
+        </Grid>
+        <Grid container spacing={2}>
+          <Grid item xs={4}>
+            <Controller
+              control={control}
+              name={"green.offPeakTusdInReaisPerMwh"}
+              rules={{
+                required: "Preencha este campo",
+                min: {
+                  value: 0.01,
+                  message: "Insira um valor maior que R$ 0,00",
+                },
+              }}
+              render={({
+                field: { onChange, onBlur, value },
+                fieldState: { error },
+              }) => (
+                <NumericFormat
+                  value={value !== 0 ? value : null}
+                  customInput={TextField}
+                  label="TUSD R$/MWh *"
+                  helperText={error?.message ?? " "}
+                  error={!!error}
+                  fullWidth
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">R$</InputAdornment>
+                    ),
+                    placeholder: "0,00",
+                  }}
+                  type="text"
+                  allowNegative={false}
+                  isAllowed={({ floatValue }) =>
+                    !floatValue || floatValue <= maxTariffValue
+                  }
+                  decimalScale={2}
+                  decimalSeparator=","
+                  thousandSeparator={"."}
+                  onValueChange={(values) =>
+                    onChange(values.floatValue ?? null)
+                  }
+                  onBlur={onBlur}
+                />
+              )}
+            />
+          </Grid>
+
+          <Grid item xs={4}>
+            <Controller
+              control={control}
+              name={"green.offPeakTeInReaisPerMwh"}
+              rules={{
+                required: "Preencha este campo",
+                min: {
+                  value: 0.01,
+                  message: "Insira um valor maior que R$ 0,00",
+                },
+              }}
+              render={({
+                field: { onChange, onBlur, value },
+                fieldState: { error },
+              }) => (
+                <NumericFormat
+                  value={value !== 0 ? value : null}
+                  customInput={TextField}
+                  label="TE R$/MWh  *"
+                  helperText={error?.message ?? " "}
+                  error={!!error}
+                  fullWidth
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">R$</InputAdornment>
+                    ),
+                    placeholder: "0,00",
+                  }}
+                  type="text"
+                  allowNegative={false}
+                  isAllowed={({ floatValue }) =>
+                    !floatValue || floatValue <= maxTariffValue
+                  }
+                  decimalScale={2}
+                  decimalSeparator=","
+                  thousandSeparator={"."}
+                  onValueChange={(values) =>
+                    onChange(values.floatValue ?? null)
+                  }
+                  onBlur={onBlur}
+                />
+              )}
+            />
+          </Grid>
+        </Grid>
+      </>
+    ),
+    [control]
+  );
+
+  const Header = useCallback(
+    () => (
+      <>
+        <Typography variant="h4">Subgrupo {activeSubgroup}</Typography>
+        <Typography>Distribuidora: {distributor.data?.name}</Typography>
+        <Box mt={3} mb={3}>
+          <Alert icon={<ErrorOutlineIcon />} severity="info">
+            Veja o passo-a-passo a seguir para encontrar as informações de
+            tarifa no site da ANEEL.
+          </Alert>
+        </Box>
+      </>
+    ),
+    [activeSubgroup, distributor.data?.name]
+  );
 
   return (
     <Fragment>
@@ -910,8 +946,7 @@ const TariffCreateEditForm = () => {
         sections={[
           <ValiditySection key={0} />,
           <BlueMode key={1} />,
-          <GreenMode key={2} />
-
+          <GreenMode key={2} />,
         ]}
       />
       <FormWarningDialog
@@ -921,7 +956,7 @@ const TariffCreateEditForm = () => {
         onDiscard={handleDiscardForm}
       />
     </Fragment>
-  )
+  );
 };
 
 export default TariffCreateEditForm;
