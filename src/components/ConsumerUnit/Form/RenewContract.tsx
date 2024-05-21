@@ -93,6 +93,7 @@ const ConsumerUnitRenewContractForm = () => {
   const [showShowConfirmDialog, setShouldShowConfirmDialog] = useState(false);
   const [shouldShowDistributorFormDialog, setShouldShowDistributorFormDialog] =
     useState(false);
+  const [shouldShowGreenDemand, setShouldShowGreenDemand] = useState(true);
 
   const form = useForm({ mode: "all", defaultValues });
 
@@ -102,6 +103,7 @@ const ConsumerUnitRenewContractForm = () => {
     handleSubmit,
     watch,
     setValue,
+    getValues,
     formState: { isDirty, errors },
   } = form;
 
@@ -115,11 +117,26 @@ const ConsumerUnitRenewContractForm = () => {
         offPeakContractedDemandInKw,
       } = defaultValues;
       setValue("code", consumerUnit?.code as string);
-      setValue("contracted", contracted);
-      setValue("peakContractedDemandInKw", peakContractedDemandInKw);
-      setValue("offPeakContractedDemandInKw", offPeakContractedDemandInKw);
+
+      if (!shouldShowGreenDemand) {
+        setValue("peakContractedDemandInKw", getValues("contracted"));
+        setValue("offPeakContractedDemandInKw", getValues("contracted"));
+      } else {
+        setValue("contracted", contracted);
+        setValue("peakContractedDemandInKw", peakContractedDemandInKw);
+        setValue("offPeakContractedDemandInKw", offPeakContractedDemandInKw);
+      }
     }
   }, [consumerUnit?.code, isRenewContractFormOpen, setValue, tariffFlag]);
+
+  useEffect(() => {
+    // Verifica se shouldShowGreenDemand é false
+    if (!shouldShowGreenDemand) {
+      // Atualiza o estado tariffFlag para "B" (azul)
+      setValue("tariffFlag", "B");
+    }
+
+  }, [shouldShowGreenDemand]);
 
   // Validações de Formulário
   const isValidDate = (date: RenewContractForm["startDate"]) => {
@@ -413,7 +430,17 @@ const ConsumerUnitRenewContractForm = () => {
                   decimalScale={2}
                   decimalSeparator=","
                   thousandSeparator={"."}
-                  onValueChange={(values) => onChange(values.floatValue)}
+                  onValueChange={(values) => {
+                    const newVoltage = values ? values.floatValue : 0;
+                    if (newVoltage === 69) {
+                      setShouldShowGreenDemand(false);
+                    } else if (newVoltage !== undefined && newVoltage >= 88 && newVoltage <= 138) {
+                      setShouldShowGreenDemand(false);
+                    } else {
+                      setShouldShowGreenDemand(true);
+                    }
+                    onChange(values.floatValue);
+                  }}
                   onBlur={onBlur}
                 />
               )}
@@ -451,6 +478,7 @@ const ConsumerUnitRenewContractForm = () => {
                       value="G"
                       control={<Radio />}
                       label="Verde"
+                      disabled={!shouldShowGreenDemand}
                     />
                     <FormHelperText>(Demanda única)</FormHelperText>
                   </Box>
@@ -594,11 +622,16 @@ const ConsumerUnitRenewContractForm = () => {
                 )}
               />
             </Grid>
+            {!shouldShowGreenDemand && (
+              <Typography variant="body2" sx={{ px: 2 }}>
+                O valor de tensão contratada inserido é compatível apenas com a modalidade azul
+              </Typography>
+            )}
           </Box>
         )}
       </>
     ),
-    [control, tariffFlag]
+    [control, tariffFlag, shouldShowGreenDemand]
   );
 
   return (

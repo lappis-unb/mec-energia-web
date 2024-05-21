@@ -980,6 +980,15 @@ const TariffCreateEditForm = () => {
     [activeSubgroup, distributor.data?.name]
   );
 
+  const sections = [
+    <ValiditySection key={0} />,
+    <BlueMode key={1} />
+  ];
+
+  if (activeSubgroup !== "A3" && activeSubgroup !== "A2") {
+    sections.push(<GreenMode key={2} />);
+  }
+
   return (
     <Fragment>
       <FormDrawerV2
@@ -990,11 +999,7 @@ const TariffCreateEditForm = () => {
         handleSubmitDrawer={handleSubmit(onSubmitHandler)}
         isLoading={isCreateTariffLoading || isEditTariffLoading}
         header={<Header />}
-        sections={[
-          <ValiditySection key={0} />,
-          <BlueMode key={1} />,
-          <GreenMode key={2} />,
-        ]}
+        sections={sections}
       />
       <FormWarningDialog
         open={shouldShowCancelDialog}

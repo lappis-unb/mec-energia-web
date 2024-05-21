@@ -177,7 +177,7 @@ const DistributorContentTariffsTable = () => {
                   <TableRow>
                     <TableCell sx={{ color: "white" }}>Modalidade</TableCell>
                     <TableCell sx={{ color: "white" }}>
-                      Posto tatrifário
+                      Posto tarifário
                     </TableCell>
 
                     <Tooltip
@@ -248,51 +248,55 @@ const DistributorContentTariffsTable = () => {
                     </TableCell>
                   </TableRow>
 
-                  <TableRow>
-                    <TableCell
-                      rowSpan={3}
-                      sx={{
-                        backgroundColor: "RGBA(10, 92, 103, 0.12)",
-                      }}
-                    >
-                      Verde
-                    </TableCell>
-                    <TableCell>NA</TableCell>
+                  {!(activeSubgroup == "A3" || activeSubgroup == "A2") && (
+                    <>
+                      <TableRow>
+                        <TableCell
+                          rowSpan={3}
+                          sx={{
+                            backgroundColor: "RGBA(10, 92, 103, 0.12)",
+                          }}
+                        >
+                          Verde
+                        </TableCell>
+                        <TableCell>NA</TableCell>
 
-                    <TableCell align="right">
-                      {green.naTusdInReaisPerKw}
-                    </TableCell>
-                    <TableCell align="right">-</TableCell>
-                    <TableCell align="right">-</TableCell>
-                  </TableRow>
+                        <TableCell align="right">
+                          {green.naTusdInReaisPerKw}
+                        </TableCell>
+                        <TableCell align="right">-</TableCell>
+                        <TableCell align="right">-</TableCell>
+                      </TableRow>
 
-                  <TableRow
-                    sx={{
-                      backgroundColor: "RGBA(10, 92, 103, 0.12)",
-                    }}
-                  >
-                    <TableCell>Ponta</TableCell>
+                      <TableRow
+                        sx={{
+                          backgroundColor: "RGBA(10, 92, 103, 0.12)",
+                        }}
+                      >
+                        <TableCell>Ponta</TableCell>
 
-                    <TableCell align="right">-</TableCell>
-                    <TableCell align="right">
-                      {green.peakTusdInReaisPerMwh}
-                    </TableCell>
-                    <TableCell align="right">
-                      {green.peakTeInReaisPerMwh}
-                    </TableCell>
-                  </TableRow>
+                        <TableCell align="right">-</TableCell>
+                        <TableCell align="right">
+                          {green.peakTusdInReaisPerMwh}
+                        </TableCell>
+                        <TableCell align="right">
+                          {green.peakTeInReaisPerMwh}
+                        </TableCell>
+                      </TableRow>
 
-                  <TableRow>
-                    <TableCell>Fora ponta</TableCell>
-
-                    <TableCell align="right">-</TableCell>
-                    <TableCell align="right">
-                      {green.offPeakTusdInReaisPerMwh}
-                    </TableCell>
-                    <TableCell align="right">
-                      {green.offPeakTeInReaisPerMwh}
-                    </TableCell>
-                  </TableRow>
+                      <TableRow>
+                        <TableCell>Fora ponta</TableCell>
+                        
+                        <TableCell align="right">-</TableCell>
+                        <TableCell align="right">
+                          {green.offPeakTusdInReaisPerMwh}
+                        </TableCell>
+                        <TableCell align="right">
+                          {green.offPeakTeInReaisPerMwh}
+                        </TableCell>
+                      </TableRow>
+                    </>
+                  )}
                 </TableBody>
               </Table>
             </TableContainer>
