@@ -1,12 +1,13 @@
 import { MouseEventHandler, useCallback, useMemo } from "react";
 import { useRouter } from "next/router";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { format } from "date-fns";
 import ptBR from "date-fns/locale/pt-BR";
 import { Badge, Button, Typography } from "@mui/material";
 import InsightsRoundedIcon from "@mui/icons-material/InsightsRounded";
 import ReceiptLongRoundedIcon from "@mui/icons-material/ReceiptLongRounded";
 import {
+  selectActiveConsumerUnitId,
   setConsumerUnitInvoiceActiveFilter,
   setConsumerUnitOpenedTab,
 } from "@/store/appSlice";
@@ -134,6 +135,7 @@ const ConsumerUnitCard = ({
 }: ConsumerUnitCardProps) => {
   const router = useRouter();
   const dispatch = useDispatch();
+  const activeConsumerUnit = useSelector(selectActiveConsumerUnitId);
   const [editPersonFavorites] = useEditPersonFavoritesMutation();
   const { data: session } = useSession();
   const variant = useMemo(() => {
@@ -149,7 +151,9 @@ const ConsumerUnitCard = ({
   }, [isActive, pendingEnergyBillsNumber]);
 
   const handleConsumerUnitClick = () => {
-    router.push(`/uc/${id}`);
+    if (id !== activeConsumerUnit) {
+      router.push(`/uc/${id}`);
+    }
   };
 
   const handleActionIconClick = useCallback<
