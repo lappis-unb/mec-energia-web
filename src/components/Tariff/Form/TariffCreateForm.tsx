@@ -52,11 +52,11 @@ const defaultValues: CreateAndEditTariffForm = {
     offPeakTeInReaisPerMwh: "",
   },
   green: {
-    peakTusdInReaisPerMwh: "",
-    peakTeInReaisPerMwh: "",
-    offPeakTusdInReaisPerMwh: "",
-    offPeakTeInReaisPerMwh: "",
-    naTusdInReaisPerKw: "",
+    peakTusdInReaisPerMwh: null,
+    peakTeInReaisPerMwh: null,
+    offPeakTusdInReaisPerMwh: null,
+    offPeakTeInReaisPerMwh: null,
+    naTusdInReaisPerKw: null,
   },
 };
 

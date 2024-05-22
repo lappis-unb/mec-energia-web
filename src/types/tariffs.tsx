@@ -66,9 +66,9 @@ export interface Blue {
 }
 
 export interface Green {
-  peakTusdInReaisPerMwh?: number | "";
-  peakTeInReaisPerMwh?: number | "";
-  offPeakTusdInReaisPerMwh?: number | "";
-  offPeakTeInReaisPerMwh?: number | "";
-  naTusdInReaisPerKw?: number | "";
+  peakTusdInReaisPerMwh?: number | null;
+  peakTeInReaisPerMwh?: number | null;
+  offPeakTusdInReaisPerMwh?: number | null;
+  offPeakTeInReaisPerMwh?: number | null;
+  naTusdInReaisPerKw?: number | null;
 }
