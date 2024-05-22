@@ -80,7 +80,7 @@ const getFilteredInvoices = (
 
 const formatConsumptionDemandToPtBrCurrency = (energyBill: EnergyBill) => {
   return {
-    invoiceInReais: formatToPtBrCurrency(energyBill.invoiceInReais, 2),
+    invoiceInReais: typeof(energyBill.invoiceInReais) == "number" ? formatToPtBrCurrency(energyBill.invoiceInReais, 2) : "-",
     offPeakConsumptionInKwh: formatToPtBrCurrency(energyBill.offPeakConsumptionInKwh),
     peakConsumptionInKwh: formatToPtBrCurrency(energyBill.peakConsumptionInKwh),
     offPeakMeasuredDemandInKw: formatToPtBrCurrency(energyBill.offPeakMeasuredDemandInKw),

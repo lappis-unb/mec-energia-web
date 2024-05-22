@@ -140,7 +140,7 @@ const CreateEditEnergyBillForm = () => {
       setValue("peakMeasuredDemandInKw", "");
       setValue("offPeakMeasuredDemandInKw", "");
     } else if (isEditEnergyBillFormOpen) {
-      setValue("invoiceInReais", currentInvoice?.invoiceInReais.toString());
+      setValue("invoiceInReais", currentInvoice?.invoiceInReais?.toString());
       setValue("peakConsumptionInKwh", currentInvoice?.peakConsumptionInKwh);
       setValue(
         "offPeakConsumptionInKwh",
@@ -250,7 +250,7 @@ const CreateEditEnergyBillForm = () => {
       contract: contract?.id ?? 0,
       date: date ? sendFormattedDate(date) : "",
       isAtypical: !isIncludedInAnalysis,
-      invoiceInReais: Number(invoiceInReais),
+      invoiceInReais: invoiceInReais ? Number(invoiceInReais) : undefined,
       offPeakConsumptionInKwh: offPeakConsumptionInKwh as number,
       peakConsumptionInKwh: peakConsumptionInKwh as number,
       peakMeasuredDemandInKw: peakMeasuredDemandInKw as number,
