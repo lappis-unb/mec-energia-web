@@ -214,6 +214,7 @@ const DistributorContentHeader = () => {
       top={0}
       zIndex={1}
       sx={{ backgroundColor: "background.default" }}
+      display={"flex"}
     >
       <Container>
         <Box display="flex" justifyContent="space-between">
@@ -279,12 +280,6 @@ const DistributorContentHeader = () => {
             </Typography>
           </Box>
 
-          <Box>
-            <IconButton onClick={() => setOpenModalInfoAboutSubGroupsAndTariff(true)}>
-              <HelpOutlineSharpIcon />
-            </IconButton>
-          </Box>
-
           <ModalInfoAboutSubGroupsAndTariff />
         </Box>
 
@@ -294,6 +289,12 @@ const DistributorContentHeader = () => {
           </Box>
         </Collapse>
       </Container>
+
+      <Box>
+        <IconButton onClick={() => setOpenModalInfoAboutSubGroupsAndTariff(true)}>
+          <HelpOutlineSharpIcon />
+        </IconButton>
+      </Box>
     </Box>
   );
 };
