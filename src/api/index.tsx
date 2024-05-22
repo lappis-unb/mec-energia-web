@@ -11,7 +11,6 @@ import {
 import {
   CreateDistributorRequestPayload,
   CreateDistributorResponsePayload,
-  Distributor,
   DistributorPropsTariffs,
   DistributorResponsePayload,
   EditDistributorRequestPayload,
@@ -115,23 +114,13 @@ export const mecEnergiaApi = createApi({
       query: (universityId) => `distributors/?university_id=${universityId}`,
       providesTags: ["Distributors", "Tariffs"],
     }),
-    fetchDistributors: builder.query<Distributor[], number>({
+    fetchPendingDistributors: builder.query<DistributorResponsePayload[], number>({
+      query: (universityId) => `distributors?university_id=${universityId}&only_pending=true`,
+      providesTags: ["Distributors"],
+    }),
+    fetchDistributors: builder.query<DistributorResponsePayload[], number>({
       query: (universityId) => `distributors?university_id=${universityId}`,
       providesTags: ["Distributors", "Tariffs"],
-      transformResponse: (distributors: DistributorResponsePayload[]) => {
-        // Sorts alphabetically by default
-        return distributors.sort((a, b) => {
-          if (a.name.toLowerCase() < b.name.toLowerCase()) {
-            return -1;
-          }
-
-          if (a.name.toLowerCase() > b.name.toLowerCase()) {
-            return 1;
-          }
-
-          return 0;
-        });
-      },
     }),
     getDistributor: builder.query<DistributorPropsTariffs, number>({
       query: (distributorId) => `distributors/${distributorId}/`,
@@ -272,7 +261,7 @@ export const mecEnergiaApi = createApi({
         method: "PUT",
         body,
       }),
-      invalidatesTags: ["Tariffs", "Recommendation"],
+      invalidatesTags: ["Tariffs", "Recommendation", "Distributors"],
     }),
     getAllInstitution: builder.query<GetInstitutionResponsePayload[], void>({
       query: () => "universities/",
@@ -391,6 +380,7 @@ export const {
   useGetDistributorQuery,
   useCreateDistributorMutation,
   useFetchDistributorsQuery,
+  useFetchPendingDistributorsQuery,
   useEditDistributorMutation,
   useEditConsumerUnitMutation,
   useCreateConsumerUnitMutation,

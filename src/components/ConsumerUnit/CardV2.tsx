@@ -6,6 +6,9 @@ import ptBR from "date-fns/locale/pt-BR";
 import { Badge, Button, Typography } from "@mui/material";
 import InsightsRoundedIcon from "@mui/icons-material/InsightsRounded";
 import ReceiptLongRoundedIcon from "@mui/icons-material/ReceiptLongRounded";
+import WarningRounded from "@mui/icons-material/WarningRounded";
+import FlashOffRoundedIcon from '@mui/icons-material/FlashOffRounded'
+import TodayRoundedIcon from '@mui/icons-material/TodayRounded'
 import {
   selectActiveConsumerUnitId,
   setActiveConsumerUnitId,
@@ -233,6 +236,7 @@ const ConsumerUnitCard = ({
       name={name}
       variant={variant}
       isFavorite={isFavorite}
+      BackgroundIcon={!isActive ? FlashOffRoundedIcon : (pendingEnergyBillsNumber > 0 ? WarningRounded : TodayRoundedIcon)}
       dense={dense}
       selected={selected}
       onClick={handleConsumerUnitClick}

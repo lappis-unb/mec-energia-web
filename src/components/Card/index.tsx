@@ -11,7 +11,7 @@ const Card = ({
   dense,
   variant,
   isFavorite,
-  // TODO BackgroundIcon,
+  BackgroundIcon,
   action,
   actionIcon,
   onClick,
@@ -39,8 +39,8 @@ const Card = ({
         justifyContent="space-between"
         height="100%"
       >
-        {shouldShowFavoriteIconButton && (
-          <Box display="flex" minHeight="28px">
+        <Box display="flex" minHeight="30px" maxHeight="5px" maxWidth="2" dir="col">
+          {shouldShowFavoriteIconButton && (
             <IconButton
               edge="start"
               sx={{
@@ -51,26 +51,30 @@ const Card = ({
             >
               {isFavorite ? <StarRoundedIcon /> : <StarOutlineRoundedIcon />}
             </IconButton>
-          </Box>
-        )}
+          )}
+        </Box>
 
-        <Box display="flex" flexDirection="column" justifyContent="end">
+
+        <Box display="flex" flexDirection="column" justifyContent="space-between">
           <Box
             sx={{ WebkitLineClamp: "2", WebkitBoxOrient: "vertical" }}
-            overflow="hidden"
             textOverflow="ellipsis"
-            display="-webkit-box"
+            display="flex"
             mb={1.5}
           >
-            <Typography fontWeight={400} fontSize="20px" lineHeight="24px">
+            <Typography position="relative" fontWeight={400} fontSize="20px" lineHeight="24px" minWidth={150} minHeight={48} maxWidth={190}>
               {name}
             </Typography>
+            {BackgroundIcon ? <BackgroundIcon style={{ position: "relative", opacity: 0.24, height: 72, width: 72 }} sx={{
+              mt: -5,
+              color: (isWarning ? "white" : "secondary")
+            }} /> : null}
           </Box>
 
           <Box
             display="flex"
             justifyContent="space-between"
-            alignItems="end"
+            alignItems="center"
             {...(!dense && { minHeight: "30.75px" })}
           >
             {isDisabled ? (
@@ -80,7 +84,7 @@ const Card = ({
             )}
 
             {shouldShowActionIconButton && (
-              <Box alignSelf="center" m={-1}>
+              <Box m={-1}>
                 <IconButton onClick={onActionIconClick}>
                   {actionIcon}
                 </IconButton>
@@ -89,7 +93,7 @@ const Card = ({
           </Box>
         </Box>
       </Box>
-    </CardWrapper>
+    </CardWrapper >
   );
 };
 

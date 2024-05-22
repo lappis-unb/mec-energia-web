@@ -10,18 +10,20 @@ const CardWrapper = ({
 }: CardWrapperProps) => (
   <Paper
     sx={{
+      overflow: "hidden",
       padding: 2,
       position: "relative",
       boxShadow: "24dp",
 
       ...(dense
         ? {
-            minWidth: "208px",
-          }
+          minWidth: "208px",
+          minHeight: "108px",
+        }
         : {
-            width: "240px",
-            height: "152px",
-          }),
+          width: "240px",
+          height: "152px",
+        }),
 
       ...(variant === "warning" && {
         backgroundColor: "warning.main",

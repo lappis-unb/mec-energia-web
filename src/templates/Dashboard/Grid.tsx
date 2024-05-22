@@ -5,10 +5,9 @@ import {
   selectDashboardActiveFilter,
   setActiveConsumerUnitId,
 } from "@/store/appSlice";
-// import { DistributorsPayload } from "@/types/supplier";
-// import DistributorCard from "@/components/Distributor/Card";
+import DistributorCard from "@/components//Distributor/DistributorCard";
 import ConsumerUnitCard from "@/components/ConsumerUnit/CardV2";
-import { useFetchConsumerUnitsQuery } from "@/api";
+import { useFetchConsumerUnitsQuery, useFetchPendingDistributorsQuery } from "@/api";
 import { useSession } from "next-auth/react";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 
@@ -16,7 +15,10 @@ const DashboardCardGrid = () => {
   const dispatch = useDispatch();
   const { data: session } = useSession();
 
-  // const { data: distributorsData } = useFetchDistributorsQuery();
+  const { data: distributors } = useFetchPendingDistributorsQuery(
+    session?.user.universityId ?? skipToken
+  );
+
   const { data: consumerUnitsData } = useFetchConsumerUnitsQuery(
     session?.user.universityId ?? skipToken
   );
@@ -61,7 +63,7 @@ const DashboardCardGrid = () => {
 
   return (
     <Grid container spacing={5} py={3}>
-      {/* {distributors?.map((card) => (
+      {distributors?.map((card) => (
         <Grid
           key={card.id}
           item
@@ -73,13 +75,14 @@ const DashboardCardGrid = () => {
           justifyContent="center"
         >
           <DistributorCard
-            disabled={card.disabled}
             id={card.id}
-            hasPendencies={card.hasPendencies}
-            title={card.title}
+            name={card.name}
+            isActive={card.isActive}
+            consumerUnitsCount={card.consumerUnitsCount}
+            pendingTariffsCount={card.pendingTariffsCount}
           />
         </Grid>
-      ))} */}
+      ))}
 
       {consumerUnits?.map((card) => (
         <Grid

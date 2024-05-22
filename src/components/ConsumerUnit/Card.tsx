@@ -83,9 +83,8 @@ const ConsumerUnitCard = ({
         pendencies[0].year === today.getFullYear() &&
         pendencies[0].month === today.getMonth() + 1
       ) {
-        text = `${
-          longMonth.charAt(0).toUpperCase() + longMonth.slice(1)
-        } disponível`;
+        text = `${longMonth.charAt(0).toUpperCase() + longMonth.slice(1)
+          } disponível`;
       } else text = "1 lançamento pendente";
     } else if (pendencies.length > 1)
       text = `${pendencies.length} lançamentos pendentes`;

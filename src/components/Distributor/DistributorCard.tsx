@@ -1,125 +1,114 @@
-import { useCallback, useEffect, useState } from "react";
+import { MouseEventHandler, useCallback, useMemo } from "react";
+import { Distributor } from "@/types/distributor";
 import { useRouter } from "next/router";
-import {
-  Badge,
-  Box,
-  Card,
-  CardContent,
-  Divider,
-  IconButton,
-  Typography,
-} from "@mui/material";
-import { DistributorPropsTariffs } from "../../types/distributor";
-import BusinessIcon from "@mui/icons-material/Business";
-import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
+import { useDispatch } from "react-redux";
+import { Badge } from "@mui/material";
+import { CardProps } from "@/types/app";
+import AttachMoneyRoundedIcon from "@mui/icons-material/AttachMoneyRounded";
+import FactoryRoundedIcon from "@mui/icons-material/FactoryRounded";
+import Card from "@/components/Card";
 
+interface DistributorCardProps extends CardProps {
+  id: number;
+  name: string;
+  isActive: boolean;
+  consumerUnitsCount: number;
+  pendingTariffsCount: number;
+}
+
+interface DistributorCardActionIcon {
+  isActive: Distributor["isActive"];
+  pendingTariffsCount: Distributor["pendingTariffsCount"];
+}
+
+const DistributorCardActionIcon = ({
+  isActive,
+  pendingTariffsCount,
+}: DistributorCardActionIcon) => {
+  if (!isActive) {
+    return null;
+  }
+
+  if (pendingTariffsCount > 0) {
+    return (
+      <Badge badgeContent={"!"} color="primary">
+        <AttachMoneyRoundedIcon sx={{ color: "black" }} />
+      </Badge>
+    );
+  }
+
+  return <AttachMoneyRoundedIcon />;
+};
 const DistributorCard = ({
   id,
-  name: title,
-  isActive: is_active = true,
-  tariffs,
-  consumerUnits: consumer_units,
-}: DistributorPropsTariffs) => {
+  isActive,
+  name,
+  pendingTariffsCount,
+  dense,
+  selected,
+}: DistributorCardProps) => {
   const router = useRouter();
-  const DistributorUrl = `/distribuidoras/${id}`;
-  const [overdue, setOverdue] = useState(false);
-  const [textBottomCard, setTextBottomCard] = useState("");
+  const dispatch = useDispatch();
+  const getDistributorCardVariant = ({
+    isActive,
+    pendingTariffsCount,
+  }: {
+    isActive: boolean;
+    pendingTariffsCount: number;
+  }) => {
+    if (!isActive) {
+      return "disabled";
+    }
 
-  useEffect(() => {
-    const isOverdue = tariffs?.find((tariff) => tariff.overdue === true);
-    if (isOverdue !== undefined) setOverdue(true);
-    else setOverdue(false);
-  }, [tariffs]);
+    if (pendingTariffsCount > 0) {
+      return "warning";
+    }
 
-  const handleCardClick = () => {
-    router.push(DistributorUrl);
+    return "default";
   };
 
-  const handleTextBottomCard = useCallback(() => {
-    if (!is_active) setTextBottomCard("Desativada");
-    else if (tariffs?.find((tariff) => tariff.overdue === true))
-      setTextBottomCard("Tarifas pendentes");
-    else if (consumer_units === 0)
-      setTextBottomCard("Nenhuma unidade consumidora");
-    else if (consumer_units === 1) setTextBottomCard("1 unidade consumidora");
-    else if (consumer_units)
-      setTextBottomCard(`${consumer_units} unidades consumidoras`);
-  }, [consumer_units, is_active, tariffs]);
 
-  useEffect(() => {
-    handleTextBottomCard();
-  }, [handleTextBottomCard]);
+  const handleActionIconClick = useCallback<
+    MouseEventHandler<HTMLButtonElement>
+  >(
+    async (event) => {
+      event.stopPropagation();
+
+      router.push(`/distribuidoras/${id}`);
+    },
+    [dispatch, id, pendingTariffsCount, router]
+  );
+
+  const variant = useMemo(
+    () =>
+      getDistributorCardVariant({
+        isActive,
+        pendingTariffsCount,
+      }),
+    [isActive, pendingTariffsCount]
+  );
+
+  const handleDistributorClick = useCallback(() => {
+    router.push(`/distribuidoras/${id}`);
+  }, [router, id]);
 
   return (
-    <>
-      {router.pathname === "/distribuidoras/[id]" ? (
-        <Card
-          sx={{
-            height: 120,
-            display: "flex",
-            flexDirection: "column",
-            cursor: "pointer",
-            background: overdue ? "grey" : "",
-            color: overdue ? "white" : "",
-          }}
-          variant={!is_active ? "outlined" : "elevation"}
-          onClick={handleCardClick}
-        >
-          <CardContent
-            sx={{
-              flexGrow: 1,
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "end",
-              pt: 0,
-            }}
-          >
-            <Typography variant="h5">{title}</Typography>
-          </CardContent>
-
-          <Divider sx={{ background: overdue ? "white" : "" }} />
-          <Box ml={1} p={1}>
-            <Typography>{textBottomCard}</Typography>
-          </Box>
-        </Card>
-      ) : (
-        <Card
-          sx={{
-            height: 196,
-            display: "flex",
-            flexDirection: "column",
-            cursor: "pointer",
-            background: overdue ? "grey" : "",
-            color: overdue ? "white" : "",
-          }}
-          variant={!is_active ? "outlined" : "elevation"}
-          onClick={handleCardClick}
-        >
-          <BusinessIcon sx={{ margin: 2 }} />
-          <CardContent
-            sx={{
-              flexGrow: 1,
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "end",
-              pt: 0,
-            }}
-          >
-            <Typography variant="h5">{title}</Typography>
-          </CardContent>
-
-          <Divider sx={{ background: overdue ? "white" : "" }} />
-          <Box ml={1} p={1} display="flex" justifyContent="space-between">
-            <Typography>{textBottomCard}</Typography>
-            <IconButton color="inherit">
-              <Badge badgeContent={"!"} color="warning">
-                <AttachMoneyIcon />
-              </Badge>
-            </IconButton>
-          </Box>
-        </Card>
-      )}
-    </>
+    <Card
+      name={name}
+      variant={variant}
+      dense={dense}
+      selected={selected}
+      onClick={handleDistributorClick}
+      action={"Tarifas pendentes"}
+      BackgroundIcon={FactoryRoundedIcon}
+      actionIcon={
+        <DistributorCardActionIcon
+          isActive={isActive}
+          pendingTariffsCount={pendingTariffsCount}
+        />
+      }
+      onActionIconClick={handleActionIconClick}
+    />
   );
 };
 
