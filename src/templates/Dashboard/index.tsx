@@ -4,6 +4,9 @@ import { getHeadTitle } from "@/utils/head";
 import DashboardFilterButtons from "@/templates/Dashboard/FilterButtons";
 import DashboardCardGrid from "@/templates/Dashboard/Grid";
 import DefaultTemplateV2 from "@/templates/DefaultV2";
+import CreateEditEnergyBillForm from "@/components/ElectricityBill/Form/CreateEditElectricityBillForm";
+import SuccessNotification from "@/components/Notification/SuccessNotification";
+import FailNotification from "@/components/Notification/FailNotification";
 
 const DashboardTemplate = () => {
   const headTitle = useMemo(() => getHeadTitle("Painel"), []);
@@ -18,6 +21,9 @@ const DashboardTemplate = () => {
       </Head>
 
       <DashboardCardGrid />
+      <CreateEditEnergyBillForm />
+      <SuccessNotification />
+      <FailNotification />
     </DefaultTemplateV2>
   );
 };
