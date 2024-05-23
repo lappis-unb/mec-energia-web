@@ -62,10 +62,10 @@ const Card = ({
             display="flex"
             mb={1.5}
           >
-            <Typography position="relative" fontWeight={400} fontSize="20px" lineHeight="24px" minWidth={150} minHeight={48} maxWidth={190}>
-              {name}
+            <Typography zIndex={1} title={name} position="relative" fontWeight={400} fontSize="20px" lineHeight="24px" minWidth={150} minHeight={48} maxWidth={190}>
+              {name.substring(0, 30)}{name.length > 30 ? '...' : ''}
             </Typography>
-            {BackgroundIcon ? <BackgroundIcon style={{ position: "relative", opacity: 0.24, height: 72, width: 72 }} sx={{
+            {BackgroundIcon ? <BackgroundIcon style={{ position: "absolute", marginLeft: shouldShowFavoriteIconButton ? "72%" : "60%", opacity: 0.24, height: 72, width: 72 }} sx={{
               mt: -5,
               color: (isWarning ? "white" : "secondary")
             }} /> : null}
