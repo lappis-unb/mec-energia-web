@@ -2,7 +2,7 @@ import { MouseEventHandler, useCallback, useMemo } from "react";
 import { Distributor } from "@/types/distributor";
 import { useRouter } from "next/router";
 import { useDispatch } from "react-redux";
-import { Badge } from "@mui/material";
+import { Badge, Typography } from "@mui/material";
 import { CardProps } from "@/types/app";
 import AttachMoneyRoundedIcon from "@mui/icons-material/AttachMoneyRounded";
 import FactoryRoundedIcon from "@mui/icons-material/FactoryRounded";
@@ -99,7 +99,11 @@ const DistributorCard = ({
       dense={dense}
       selected={selected}
       onClick={handleDistributorClick}
-      action={"Tarifas pendentes"}
+      action={
+        <Typography paddingLeft="8px">
+          Tarifas pendentes
+        </Typography>
+      }
       BackgroundIcon={FactoryRoundedIcon}
       actionIcon={
         <DistributorCardActionIcon
