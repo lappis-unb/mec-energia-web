@@ -1,75 +1,104 @@
+import StripedDataGrid from "@/components/StripedDataGrid";
 import { ConsumptionHistoryTableRow } from "@/types/recommendation";
 import { monthYear } from "@/utils/date";
 import { formatNumber } from "@/utils/number";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-} from "@mui/material";
+import { GridColDef, GridColumnGroupingModel } from "@mui/x-data-grid";
 
 interface Props {
   consumptionHistory: ConsumptionHistoryTableRow[];
 }
 
 export const ConsumptionHistoryTable = ({ consumptionHistory }: Props) => {
+
+  const columns: GridColDef<ConsumptionHistoryTableRow>[] = [
+    {
+      field: "date",
+      headerName: "Mês",
+      headerAlign: "left",
+      align: "left",
+      flex: 2,
+      sortable: false
+    },
+    {
+      field: "peakConsumptionInKwh",
+      headerClassName: "MuiDataGrid-columnHeaderMain",
+      headerName: "Ponta",
+      headerAlign: "right",
+      align: "right",
+      flex: 1,
+      sortable: false
+    },
+    {
+      field: "offPeakConsumptionInKwh",
+      headerClassName: "MuiDataGrid-columnHeaderMain",
+      headerName: "Fora Ponta",
+      headerAlign: "right",
+      align: "right",
+      flex: 1,
+      sortable: false
+    },
+    {
+      field: "peakMeasuredDemandInKw",
+      headerClassName: "MuiDataGrid-columnHeaderMain",
+      headerName: "Ponta",
+      headerAlign: "right",
+      align: "right",
+      flex: 1,
+      sortable: false
+    },
+    {
+      field: "offPeakMeasuredDemandInKw",
+      headerClassName: "MuiDataGrid-columnHeaderMain",
+      headerName: "Fora Ponta",
+      headerAlign: "right",
+      align: "right",
+      flex: 1,
+      sortable: false
+    },
+  ];
+
+  const columnGroupingModel: GridColumnGroupingModel = [
+    {
+      groupId: "consumption",
+      headerName: "Consumo médio (kWh)",
+      headerAlign: "center",
+      children: [
+        { field: "peakConsumptionInKwh" },
+        { field: "offPeakConsumptionInKwh" },
+      ],
+    },
+    {
+      groupId: "demand",
+      headerName: "Demanda medida (kW)",
+      headerAlign: "center",
+      children: [
+        { field: "peakMeasuredDemandInKw" },
+        { field: "offPeakMeasuredDemandInKw" },
+      ],
+    },
+  ];
+
+  const getDataGridRows = (
+    consumptionHistoryTableRow: ConsumptionHistoryTableRow[]
+  ): ConsumptionHistoryTableRow[] => {
+    return consumptionHistoryTableRow.map(
+      (row, index) => ({
+        id: index,
+        date: monthYear(row.date),
+        peakConsumptionInKwh: formatNumber(row.peakConsumptionInKwh, "Indisponível"),
+        offPeakConsumptionInKwh: formatNumber(row.offPeakConsumptionInKwh, "Indisponível"),
+        peakMeasuredDemandInKw: formatNumber(row.peakMeasuredDemandInKw, "Indisponível"),
+        offPeakMeasuredDemandInKw: formatNumber(row.offPeakMeasuredDemandInKw, "Indisponível"),
+      })
+    );
+  };
+
   return (
-    <TableContainer sx={{ boxShadow: 0 }}>
-      <Table aria-label="simple table">
-        <TableHead>
-          <TableRow sx={{ "& th": { p: 0.5 } }}>
-            <TableCell />
-            <TableCell
-              align="center"
-              colSpan={2}
-              sx={{ bgcolor: "background.default", position: "relative" }}
-            >
-              Consumo médio (kWh)
-            </TableCell>
-            <TableCell
-              align="center"
-              colSpan={2}
-              sx={{ bgcolor: "background.default" }}
-            >
-              Demanda medida (kW)
-            </TableCell>
-          </TableRow>
-
-          <TableRow sx={{ th: { color: "white" }, bgcolor: "primary.main" }}>
-            <TableCell>Mês</TableCell>
-            <TableCell align="right">Ponta</TableCell>
-            <TableCell align="right">Fora Ponta</TableCell>
-            <TableCell align="right">Ponta</TableCell>
-            <TableCell align="right">Fora Ponta</TableCell>
-          </TableRow>
-        </TableHead>
-
-        <TableBody
-          sx={{
-            "tr:nth-of-type(even)": { bgcolor: "background.default" },
-          }}
-        >
-          {consumptionHistory.map((row) => (
-            <TableRow key={row.date}>
-              <TableCell>{monthYear(row.date)}</TableCell>
-              <TableCell align="right">
-                {formatNumber(row.peakConsumptionInKwh, "Indisponível")}
-              </TableCell>
-              <TableCell align="right">
-                {formatNumber(row.offPeakConsumptionInKwh, "Indisponível")}
-              </TableCell>
-              <TableCell align="right">
-                {formatNumber(row.peakMeasuredDemandInKw, "Indisponível")}
-              </TableCell>
-              <TableCell align="right">
-                {formatNumber(row.offPeakMeasuredDemandInKw, "Indisponível")}
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+    <StripedDataGrid 
+      experimentalFeatures={{ columnGrouping: true }}
+      columnGroupingModel={columnGroupingModel}
+      columns={columns}
+      rows={getDataGridRows(consumptionHistory)}
+    />
   );
 };

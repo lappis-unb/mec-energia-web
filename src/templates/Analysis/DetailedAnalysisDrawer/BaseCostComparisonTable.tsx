@@ -1,3 +1,4 @@
+import StripedDataGrid from "@/components/StripedDataGrid";
 import {
   ContractComparisonTableRow,
   ContractsComparisonTotals,
@@ -5,76 +6,115 @@ import {
 import { monthYear } from "@/utils/date";
 import { formatNumber } from "@/utils/number";
 import {
-  Table,
-  TableBody,
-  TableCell,
   TableContainer,
-  TableHead,
-  TableRow,
 } from "@mui/material";
+import { GridColDef, GridColumnGroupingModel } from "@mui/x-data-grid";
 
 interface Props {
   rows: ContractComparisonTableRow[];
   totals: ContractsComparisonTotals;
 }
 
-export const BaseCostComparisonTable = ({ rows, totals }: Props) => (
-  <TableContainer sx={{ boxShadow: 0 }}>
-    <Table aria-label="simple table">
-      <TableHead>
-        <TableRow sx={{ "& th": { p: 0.5 } }}>
-          <TableCell />
-          <TableCell
-            align="center"
-            colSpan={2}
-            sx={{ bgcolor: "background.default", position: "relative" }}
-          >
-            Custo-base (R$)
-          </TableCell>
-          <TableCell />
-        </TableRow>
+export const BaseCostComparisonTable = ({ rows, totals }: Props) => {
 
-        <TableRow sx={{ th: { color: "white" }, bgcolor: "primary.main" }}>
-          <TableCell>Mês</TableCell>
-          <TableCell align="right">Atual</TableCell>
-          <TableCell align="right">Proposto</TableCell>
-          <TableCell align="right">Diferença (R$)</TableCell>
-        </TableRow>
-      </TableHead>
+  const columnGroupingModel: GridColumnGroupingModel = [
+    {
+      groupId: "actualContract",
+      headerName: "Custo-base (R$)",
+      headerAlign: "center",
+      children: [
+        { field: "totalCostInReaisInCurrent" },
+        { field: "totalCostInReaisInRecommended" },
+      ],
+    },
+  ];
 
-      <TableBody
-        sx={{
-          "tr:nth-of-type(even)": { bgcolor: "background.default" },
-        }}
-      >
-        {rows.map((row) => (
-          <TableRow key={row.date}>
-            <TableCell>{monthYear(row.date)}</TableCell>
-            <TableCell align="right">
-              {formatNumber(row.totalCostInReaisInCurrent, "Indisponível")}
-            </TableCell>
-            <TableCell align="right">
-              {formatNumber(row.totalCostInReaisInRecommended, "Indisponível")}
-            </TableCell>
-            <TableCell align="right">
-              {formatNumber(row.absoluteDifference, "Indisponível")}
-            </TableCell>
-          </TableRow>
-        ))}
+  const columns: GridColDef<ContractComparisonTableRow>[] = [
+    {
+      field: "date",
+      headerName: "Mês",
+      headerAlign: "left",
+      align: "left",
+      flex: 2,
+      sortable: false
+    },
+    {
+      field: "totalCostInReaisInCurrent",
+      headerClassName: "MuiDataGrid-columnHeaderMain",
+      headerName: "Atual",
+      headerAlign: "right",
+      align: "right",
+      flex: 1,
+      sortable: false
+    },
+    {
+      field: "totalCostInReaisInRecommended",
+      headerClassName: "MuiDataGrid-columnHeaderMain",
+      headerName: "Proposto",
+      headerAlign: "right",
+      align: "right",
+      flex: 1,
+      sortable: false
+    },
+    {
+      field: "absoluteDifference",
+      headerClassName: "MuiDataGrid-columnHeaderMain",
+      headerName: "Diferença (R$)",
+      headerAlign: "right",
+      align: "right",
+      flex: 1,
+      sortable: false
+    },
+  ];
 
-        <TableRow sx={{ "th,td": { color: "white" }, bgcolor: "primary.main" }}>
-          <TableCell align="center">Total</TableCell>
-          <TableCell align="right">
-            {formatNumber(totals.totalCostInReaisInCurrent)}
-          </TableCell>
-          <TableCell align="right">
-            {formatNumber(totals.totalCostInReaisInRecommended)}
-          </TableCell>
-          <TableCell align="right">
-            {formatNumber(totals.absoluteDifference)}
-          </TableCell>
-        </TableRow>
-      </TableBody>
-    </Table>
-  </TableContainer>
-);
+  const getDataGridRows = (
+    contractComparisonTableRow: ContractComparisonTableRow[]
+  ): ContractComparisonTableRow[] => {
+    const rowsWithTotal: ContractComparisonTableRow[] = [...contractComparisonTableRow, {
+      date: "Total",
+      totalCostInReaisInCurrent: 0,
+      totalCostInReaisInRecommended: 0,
+      absoluteDifference: 0,
+      consumptionCostInReaisInCurrent: 0,
+      consumptionCostInReaisInRecommended: 0,
+      demandCostInReaisInCurrent: 0,
+      demandCostInReaisInRecommended: 0
+    }];
+
+    return rowsWithTotal.map(
+      (row, index) => {
+        // Ultima linha deve ter os dados de total
+        if (index == rowsWithTotal.length - 1) {
+          return {
+            ...contractComparisonTableRow,
+            id: index,
+            date: "Total",
+            totalCostInReaisInCurrent: formatNumber(totals.totalCostInReaisInCurrent),
+            totalCostInReaisInRecommended: formatNumber(totals.totalCostInReaisInRecommended),
+            absoluteDifference: formatNumber(totals.absoluteDifference),
+          };
+        };
+
+        return {
+          ...contractComparisonTableRow,
+          id: index,
+          date: monthYear(row.date),
+          totalCostInReaisInCurrent: formatNumber(row.totalCostInReaisInCurrent, "Indisponível"),
+          totalCostInReaisInRecommended: formatNumber(row.totalCostInReaisInRecommended, "Indisponível"),
+          absoluteDifference: formatNumber(row.absoluteDifference, "Indisponível"),
+        };
+      }
+    );
+  };
+
+  return (
+    <TableContainer sx={{ boxShadow: 0 }}>
+      <StripedDataGrid 
+        experimentalFeatures={{ columnGrouping: true }}
+        columnGroupingModel={columnGroupingModel} 
+        columns={columns}
+        rows={getDataGridRows(rows)}
+      />
+    </TableContainer>
+  );
+};

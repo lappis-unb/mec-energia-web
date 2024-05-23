@@ -161,7 +161,6 @@ const theme = createTheme(
             "& .MuiDataGrid-columnHeader--emptyGroup": {
               backgroundColor: "unset",
             },
-
             border: "unset",
           },
           row: {
@@ -178,6 +177,12 @@ const theme = createTheme(
             button: {
               color: "white",
             },
+            // Remove o último separador de coluna dos componentes baseados no MuiDataGrid 
+            "&:last-of-type": { 
+              "& .MuiDataGrid-columnSeparator": { 
+                display: "none" 
+              }
+            }
           },
         },
       },

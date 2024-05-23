@@ -1,14 +1,11 @@
+import StripedDataGrid from "@/components/StripedDataGrid";
 import { tariffLabelToPtBr, TariffsTableRow } from "@/types/recommendation";
 import {
   Box,
-  Table,
-  TableBody,
-  TableCell,
   TableContainer,
-  TableHead,
-  TableRow,
 } from "@mui/material";
 import Paper from "@mui/material/Paper";
+import { GridColDef } from "@mui/x-data-grid";
 
 interface Props {
   rows: TariffsTableRow[];
@@ -33,46 +30,67 @@ export const TariffsTable = ({ rows }: Props) => {
     green: r.green ? r.green.toLocaleString("pt-BR") : "-",
   }));
 
+  const columns: GridColDef<TariffsTableRow>[] = [
+    {
+      field: "label",
+      headerName: "Tipo de tarifa",
+      headerAlign: "left",
+      align: "left",
+      flex: 2,
+      sortable: false
+    },
+    {
+      field: "billingTime",
+      headerClassName: "MuiDataGrid-columnHeaderMain",
+      headerName: "Posto tarifário",
+      headerAlign: "center",
+      align: "center",
+      flex: 1,
+      sortable: false
+    },
+    {
+      field: "blue",
+      headerClassName: "MuiDataGrid-columnHeaderMain",
+      headerName: "Valor tarifa azul",
+      headerAlign: "right",
+      align: "right",
+      flex: 1,
+      sortable: false
+    },
+    {
+      field: "green",
+      headerClassName: "MuiDataGrid-columnHeaderMain",
+      headerName: "Valor tarifa verde",
+      headerAlign: "right",
+      align: "right",
+      flex: 1,
+      sortable: false
+    },
+  ];
+
+  const getDataGridRows = (
+    tariffsTableRow: TariffsTableRow[]
+  ): TariffsTableRow[] => {
+    return tariffsTableRow.map(
+      (row, index) => ({
+        ...row,
+        id: index,
+        label: tariffLabelToPtBr[row.label],
+        billingTime: row.billingTime,
+        blue: row.blue,
+        green: row.green,
+      })
+    );
+  };
+
   return (
     <>
       <Box>
         <TableContainer component={Paper} sx={{ boxShadow: 0 }}>
-          <Table aria-label="simple table">
-            <TableHead sx={{ bgcolor: "primary.main", borderRadius: 3 }}>
-              <TableRow sx={{ th: { color: "white" } }}>
-                <TableCell sx={{ borderRadius: 0 }} align="left">
-                  Tipo de tarifa
-                </TableCell>
-                <TableCell sx={{ borderRadius: 0 }} align="center">
-                  Posto tarifário
-                </TableCell>
-                <TableCell sx={{ borderRadius: 0 }} align="right">
-                  Valor tarifa azul
-                </TableCell>
-                <TableCell sx={{ borderRadius: 0 }} align="right">
-                  Valor tarifa verde
-                </TableCell>
-              </TableRow>
-            </TableHead>
-
-            <TableBody
-              sx={{
-                "tr:nth-of-type(even)": { bgcolor: "background.default" },
-              }}
-            >
-              {tableRows.map((row) => (
-                <TableRow
-                  key={row.label}
-                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                >
-                  <TableCell>{tariffLabelToPtBr[row.label]}</TableCell>
-                  <TableCell align="center">{row.billingTime}</TableCell>
-                  <TableCell align="right">{row.blue}</TableCell>
-                  <TableCell align="right">{row.green}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+          <StripedDataGrid 
+            columns={columns}
+            rows={getDataGridRows(tableRows)}
+          />
         </TableContainer>
       </Box>
     </>

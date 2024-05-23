@@ -1,15 +1,11 @@
+import StripedDataGrid from "@/components/StripedDataGrid";
 import { RecommendationContract } from "@/types/recommendation";
 import { tariffFlags } from "@/utils/tariff";
 import {
   Box,
-  Table,
-  TableBody,
-  TableCell,
   TableContainer,
-  TableHead,
-  TableRow,
 } from "@mui/material";
-import Paper from "@mui/material/Paper";
+import { GridColDef } from "@mui/x-data-grid";
 
 interface Props {
   recommendedContract: RecommendationContract;
@@ -21,6 +17,10 @@ interface CurrentVsRecommendedRow {
   current: string | number | null;
   recommended: string | number | null;
   different: boolean;
+}
+
+interface InfoRows extends CurrentVsRecommendedRow {
+  value?: string;
 }
 
 export const RecommendedContractTable = ({
@@ -63,52 +63,78 @@ export const RecommendedContractTable = ({
     },
   ];
 
+  const columns: GridColDef<InfoRows>[] = [
+    {
+      field: "label",
+      headerName: "",
+      headerAlign: "left",
+      align: "left",
+      flex: 2,
+      sortable: false,
+    },
+    {
+      field: "current",
+      headerClassName: "MuiDataGrid-columnHeaderMain",
+      headerName: "Contrato atual",
+      headerAlign: "center",
+      align: "center",
+      flex: 1,
+      sortable: false,
+      colSpan: ({ row }) => (row?.value ? 2 : 1),
+      renderCell: ({ row }) => {
+        return row?.value ? (
+          <span style={{textAlign: "center"}}>
+            {row.value}
+          </span>
+        ) : (
+          <span style={{textDecoration: row.different ? "line-through" : ""}}>
+            {row.current}
+          </span>
+        )
+      }
+    },
+    {
+      field: "recommended",
+      headerClassName: "MuiDataGrid-columnHeaderMain",
+      headerName: "Contrato recomendado",
+      headerAlign: "center",
+      align: "center",
+      flex: 1,
+      sortable: false,
+      renderCell: ({ row }) => (
+        <span style={{fontWeight: "bold"}}>
+          {row.recommended}
+        </span>
+      )
+    },
+  ];
+
+  const getDataGridRows = (
+    currentVsRecommendedRow: CurrentVsRecommendedRow[]
+  ): InfoRows[] => {
+    const newRows: InfoRows[] = [
+      ...fixedRows,
+      ...currentVsRecommendedRow,
+    ];
+
+    return newRows.map(
+      (row, index) => {
+        return {
+          ...row,
+          id: index,
+        };
+      }
+    );
+  };
+
   return (
     <>
       <Box>
-        <TableContainer component={Paper} sx={{ boxShadow: 0 }}>
-          <Table sx={{ minWidth: 650 }} aria-label="simple table">
-            <TableHead
-              sx={{ bgcolor: "primary.main", display: "table-header-group" }}
-            >
-              <TableRow sx={{ th: { color: "white" } }}>
-                <TableCell />
-                <TableCell align="center">Contrato atual</TableCell>
-                <TableCell align="center">Contrato recomendado</TableCell>
-              </TableRow>
-            </TableHead>
-
-            <TableBody
-              sx={{
-                "tr:nth-of-type(even)": { bgcolor: "background.default" },
-                "tr:last-child td, tr:last-child th": { border: 0 },
-              }}
-            >
-              {fixedRows.map((row) => (
-                <TableRow key={row.label}>
-                  <TableCell>{row.label}</TableCell>
-                  <TableCell align="center" colSpan={2}>
-                    {row.value}
-                  </TableCell>
-                </TableRow>
-              ))}
-
-              {rows.map((row) => (
-                <TableRow key={row.label}>
-                  <TableCell>{row.label}</TableCell>
-                  <TableCell
-                    align="center"
-                    sx={{ textDecoration: row.different ? "line-through" : "" }}
-                  >
-                    {row.current}
-                  </TableCell>
-                  <TableCell align="center" sx={{ fontWeight: "bold" }}>
-                    {row.recommended}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+        <TableContainer sx={{ boxShadow: 0 }}>
+          <StripedDataGrid
+            columns={columns}
+            rows={getDataGridRows(rows)}
+          />
         </TableContainer>
       </Box>
     </>
