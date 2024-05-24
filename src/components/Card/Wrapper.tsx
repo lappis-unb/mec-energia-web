@@ -11,7 +11,7 @@ const CardWrapper = ({
   <Paper
     sx={{
       overflow: "hidden",
-      padding: 2,
+      
       position: "relative",
       boxShadow: "24dp",
 

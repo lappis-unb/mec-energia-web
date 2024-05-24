@@ -91,7 +91,7 @@ const ConsumerUnitCardAction = ({
 
   if (isCurrentEnergyBillFilled || dense) {
     return (
-      <Typography color={isWarning ? "text.primary" : "text.secondary"}>
+      <Typography paddingLeft="8px" color={isWarning ? "text.primary" : "text.secondary"}>
         {pendenciesMessage}
       </Typography>
     );
@@ -129,7 +129,7 @@ const ConsumerUnitCardActionIcon = ({
 }: ConsumerUnitCardActionIcon) => {
   const router = useRouter();
   const dispatch = useDispatch();
-  
+
   if (!isActive) {
     return null;
   }
@@ -141,9 +141,9 @@ const ConsumerUnitCardActionIcon = ({
 
   if (pendingEnergyBillsNumber > 0) {
     return (
-      <Badge 
+      <Badge
         onClick={() => handleConsumerUnitClick('pending')}
-        badgeContent={pendingEnergyBillsNumber} 
+        badgeContent={pendingEnergyBillsNumber}
         color="primary"
       >
         <ReceiptLongRoundedIcon sx={{ color: "black" }} />
@@ -152,7 +152,7 @@ const ConsumerUnitCardActionIcon = ({
   }
 
   return (
-    <InsightsRoundedIcon 
+    <InsightsRoundedIcon
       onClick={() => handleConsumerUnitClick(new Date().getUTCFullYear().toString())}
     />
   );
@@ -190,7 +190,7 @@ const ConsumerUnitCard = ({
   >(
     async (event) => {
       const consumerUnitCardActionHtmlButton = (event.target as HTMLButtonElement);
-      
+
       // Verifica se o alvo da ação de clique é diferente do botão de Lançar
       if (id !== activeConsumerUnit && consumerUnitCardActionHtmlButton.type !== 'button') {
         router.push(`/uc/${id}`);
@@ -211,7 +211,7 @@ const ConsumerUnitCard = ({
 
         router.push(`/uc/${id}`);
       } else {
-        router.push(`/uc/${id}`).then(() => 
+        router.push(`/uc/${id}`).then(() =>
           dispatch(setConsumerUnitOpenedTab(ConsumerUnitTab.ANALYSIS)));
       }
     },
