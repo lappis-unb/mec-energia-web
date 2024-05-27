@@ -40,7 +40,7 @@ const Card = ({
         height="100%"
         padding="0px"
       >
-        <Box paddingLeft="4px" paddingTop="12px" display="flex" minHeight="30px" maxHeight="5px" maxWidth="2" dir="col">
+        <Box paddingLeft="4px" paddingTop="12px" display="flex" minHeight="36px" maxHeight="5px" maxWidth="2" dir="col">
           {shouldShowFavoriteIconButton && (
             <IconButton
               sx={{
@@ -54,18 +54,28 @@ const Card = ({
           )}
         </Box>
 
-
         <Box display="flex" flexDirection="column" justifyContent="space-between">
           <Box
             sx={{ overflow: "hidden" }}
             // textOverflow="ellipsis"
             paddingLeft="16px" paddingRight="16px" paddingBottom="8px"
           >
-            <Typography sx={{ overflow: "hidden", textOverflow: "ellipsis", display: "-webkit-box", WebkitLineClamp: "2", WebkitBoxOrient: "vertical" }} zIndex={1} title={name} position="relative" fontWeight={400} fontSize="20px" lineHeight="24px" minWidth={150} minHeight={48}>
+            <Typography
+              sx={{ ...(!dense && { overflow: "hidden", textOverflow: "ellipsis", display: "-webkit-box", WebkitLineClamp: "2", WebkitBoxOrient: "vertical" }) }}
+              zIndex={1}
+              title={name}
+              position="relative"
+              fontWeight={400}
+              display="flex"
+              flexDirection="column-reverse"
+              fontSize="20px"
+              lineHeight="24px"
+              minWidth={150}
+              minHeight={48}>
               {name}
             </Typography>
-            {BackgroundIcon ? <BackgroundIcon style={{ position: "absolute", marginLeft: shouldShowFavoriteIconButton ? "72%" : "60%", opacity: 0.24, height: 72, width: 72 }} sx={{
-              mt: -5,
+            {BackgroundIcon ? <BackgroundIcon style={{ position: "absolute", right: 8, opacity: 0.24, height: 72, width: 72 }} sx={{
+              mt: -11,
               color: (isWarning ? "white" : "secondary")
             }} /> : null}
           </Box>

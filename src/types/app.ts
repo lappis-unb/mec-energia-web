@@ -1,4 +1,4 @@
-import { ComponentType, ReactNode } from "react";
+import { ReactNode } from "react";
 import { createAction } from "@reduxjs/toolkit";
 import { HYDRATE } from "next-redux-wrapper";
 import { makeStore } from "@/store";
@@ -81,12 +81,12 @@ export type CardWrapperProps = {
 export interface CardProps extends CardWrapperProps {
   name: string;
   isFavorite?: boolean;
-  BackgroundIcon?: ComponentType<SvgIconProps>;
+  BackgroundIcon?: SvgIconProps;
   action?: ReactNode;
   actionIcon?: ReactNode;
   onActionIconClick?: IconButtonProps["onClick"];
   onFavoriteButtonClick?: IconButtonProps["onClick"];
-  addFavorites?: () => void; 
+  addFavorites?: () => void;
 }
 
 export interface NotificationProps {

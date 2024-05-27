@@ -236,12 +236,13 @@ const ConsumerUnitCard = ({
       name={name}
       variant={variant}
       isFavorite={isFavorite}
-      BackgroundIcon={!isActive ? FlashOffRoundedIcon : (pendingEnergyBillsNumber > 0 ? WarningRounded : TodayRoundedIcon)}
+      BackgroundIcon={!isActive ? FlashOffRoundedIcon : (pendingEnergyBillsNumber > 0 ? WarningRounded : TodayRoundedIcon)
+      }
       dense={dense}
       selected={selected}
       onClick={handleConsumerUnitClick}
       action={
-        <ConsumerUnitCardAction
+        < ConsumerUnitCardAction
           dense={dense}
           pendingEnergyBillsNumber={pendingEnergyBillsNumber}
           isCurrentEnergyBillFilled={isCurrentEnergyBillFilled}
@@ -250,7 +251,7 @@ const ConsumerUnitCard = ({
         />
       }
       actionIcon={
-        <ConsumerUnitCardActionIcon
+        < ConsumerUnitCardActionIcon
           consumerUnitId={id}
           isActive={isActive}
           pendingEnergyBillsNumber={pendingEnergyBillsNumber}
