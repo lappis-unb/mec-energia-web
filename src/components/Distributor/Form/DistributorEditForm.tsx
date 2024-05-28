@@ -49,7 +49,7 @@ const DistributorEditForm = () => {
     editDistributor,
     { isError, isSuccess, isLoading, reset: resetMutation },
   ] = useEditDistributorMutation();
-  const { data: distributor } = useGetDistributorQuery(
+  const { data: distributor, refetch: refetchDistributor } = useGetDistributorQuery(
     activeDistributor || skipToken
   );
   const form = useForm({ defaultValues });
@@ -73,13 +73,25 @@ const DistributorEditForm = () => {
   const isActive = watch("isActive");
 
   useEffect(() => {
-    if (isEditFormOpen && distributor) {
-      const { name, isActive, cnpj } = distributor;
-      setValue("name", name);
-      setValue("cnpj", cnpj);
-      setValue("isActive", isActive);
+    if (isEditFormOpen) {
+      const fetchData = async () => {
+        try {
+          const { data: distributor } = await refetchDistributor();
+
+          if (!distributor) return;
+          
+          const { name, isActive, cnpj } = distributor;
+          setValue("name", name);
+          setValue("cnpj", cnpj);
+          setValue("isActive", isActive);
+        } catch (err) {
+          console.error('Failed to refetch:', err);
+        }
+      }
+
+      fetchData();
     }
-  }, [distributor, isEditFormOpen, setValue]);
+  }, [distributor, isEditFormOpen, setValue, refetchDistributor]);
 
   useEffect(() => {
     setValue("isActive", isActive);

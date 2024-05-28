@@ -66,7 +66,7 @@ const TariffCreateEditForm = () => {
   const isEditTariffFormOpen = useSelector(selectIsTariffEditFormOpen);
   const activeDistributorId = useSelector(selectActiveDistributorId);
   const activeSubgroup = useSelector(selectActiveSubgroup);
-  const { data: currentTariff } = useGetTariffQuery({
+  const { data: currentTariff, refetch: refetchCurrentTariff } = useGetTariffQuery({
     distributor: activeDistributorId ?? 0,
     subgroup: activeSubgroup ?? "",
   });
@@ -106,56 +106,70 @@ const TariffCreateEditForm = () => {
 
   useEffect(() => {
     if (isEditTariffFormOpen) {
-      if (!currentTariff) return;
-      setValue(
-        "blue.offPeakTeInReaisPerMwh",
-        currentTariff.blue.offPeakTeInReaisPerMwh
-      );
-      setValue(
-        "blue.offPeakTusdInReaisPerKw",
-        currentTariff.blue.offPeakTusdInReaisPerKw
-      );
-      setValue(
-        "blue.offPeakTusdInReaisPerMwh",
-        currentTariff.blue.offPeakTusdInReaisPerMwh
-      );
-      setValue(
-        "blue.peakTeInReaisPerMwh",
-        currentTariff.blue.peakTeInReaisPerMwh
-      );
-      setValue(
-        "blue.peakTusdInReaisPerKw",
-        currentTariff.blue.peakTusdInReaisPerKw
-      );
-      setValue(
-        "blue.peakTusdInReaisPerMwh",
-        currentTariff.blue.peakTusdInReaisPerMwh
-      );
-      setValue(
-        "green.naTusdInReaisPerKw",
-        currentTariff.green.naTusdInReaisPerKw
-      );
-      setValue(
-        "green.offPeakTeInReaisPerMwh",
-        currentTariff.green.offPeakTeInReaisPerMwh
-      );
-      setValue(
-        "green.offPeakTusdInReaisPerMwh",
-        currentTariff.green.offPeakTusdInReaisPerMwh
-      );
-      setValue(
-        "green.peakTeInReaisPerMwh",
-        currentTariff.green.peakTeInReaisPerMwh
-      );
-      setValue(
-        "green.peakTusdInReaisPerMwh",
-        currentTariff.green.peakTusdInReaisPerMwh
-      );
+      const fetchData = async () => {
+        try {
+          const { data: currentTariff } = await refetchCurrentTariff();
+          
+          if (!currentTariff) return;
+          
+          setValue(
+            "blue.offPeakTeInReaisPerMwh",
+            currentTariff.blue.offPeakTeInReaisPerMwh
+          );
+          setValue(
+            "blue.offPeakTusdInReaisPerKw",
+            currentTariff.blue.offPeakTusdInReaisPerKw
+          );
+          setValue(
+            "blue.offPeakTusdInReaisPerMwh",
+            currentTariff.blue.offPeakTusdInReaisPerMwh
+          );
+          setValue(
+            "blue.peakTeInReaisPerMwh",
+            currentTariff.blue.peakTeInReaisPerMwh
+          );
+          setValue(
+            "blue.peakTusdInReaisPerKw",
+            currentTariff.blue.peakTusdInReaisPerKw
+          );
+          setValue(
+            "blue.peakTusdInReaisPerMwh",
+            currentTariff.blue.peakTusdInReaisPerMwh
+          );
+          setValue(
+            "green.naTusdInReaisPerKw",
+            currentTariff.green.naTusdInReaisPerKw
+          );
+          setValue(
+            "green.offPeakTeInReaisPerMwh",
+            currentTariff.green.offPeakTeInReaisPerMwh
+          );
+          setValue(
+            "green.offPeakTusdInReaisPerMwh",
+            currentTariff.green.offPeakTusdInReaisPerMwh
+          );
+          setValue(
+            "green.peakTeInReaisPerMwh",
+            currentTariff.green.peakTeInReaisPerMwh
+          );
+          setValue(
+            "green.peakTusdInReaisPerMwh",
+            currentTariff.green.peakTusdInReaisPerMwh
+          );
+    
+          setValue("endDate", getFormattedDateUTC(currentTariff.endDate));
+          setValue("startDate", getFormattedDateUTC(currentTariff.startDate));
+        } catch (err) {
+          console.error('Failed to refetch:', err);
+        }
+      }
 
-      setValue("endDate", getFormattedDateUTC(currentTariff.endDate));
-      setValue("startDate", getFormattedDateUTC(currentTariff.startDate));
+      // Garante que o refetch não seja executado antes do fetch
+      if (isEditTariffFormOpen) {
+        fetchData();
+      }
     }
-  }, [currentTariff, isEditTariffFormOpen, setValue]);
+  }, [currentTariff, isEditTariffFormOpen, setValue, refetchCurrentTariff]);
 
   const handleCloseDialog = useCallback(() => {
     setShouldShowCancelDialog(false);

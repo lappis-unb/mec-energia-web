@@ -83,7 +83,7 @@ const ConsumerUnitEditForm = () => {
   const { data: contract } = useGetContractQuery(
     activeConsumerUnit || skipToken
   );
-  const { data: consumerUnit } = useGetConsumerUnitQuery(
+  const { data: consumerUnit, refetch: refetchConsumerUnit } = useGetConsumerUnitQuery(
     activeConsumerUnit || skipToken
   );
   const [
@@ -112,30 +112,47 @@ const ConsumerUnitEditForm = () => {
 
   useEffect(() => {
     if (isEditFormOpen && consumerUnit && contract) {
-      setValue("name", consumerUnit?.name);
-      setValue("isActive", true);
-      setValue("code", consumerUnit?.code);
-      setValue("distributor", contract?.distributor);
-      setValue("supplyVoltage", contract?.supplyVoltage);
-      setValue("shouldShowInstalledPower", (consumerUnit?.totalInstalledPower != null));
-      setValue("totalInstalledPower", consumerUnit?.totalInstalledPower)
+      const fetchData = async () => {
+        try {
+          const { data: consumerUnit } = await refetchConsumerUnit();
 
-      if (contract?.supplyVoltage === 69) {
-        setShouldShowGreenDemand(false);
-      } else if (contract?.supplyVoltage >= 88 && contract?.supplyVoltage <= 138) {
-        setShouldShowGreenDemand(false);
-      } else {
-        setShouldShowGreenDemand(true);
+          if (!consumerUnit || !contract) {
+            return;
+          }
+          
+          setValue("name", consumerUnit?.name ?? "");
+          setValue("isActive", true);
+          setValue("code", consumerUnit?.code ?? "");
+          setValue("distributor", contract?.distributor);
+          setValue("supplyVoltage", contract?.supplyVoltage);
+          setValue("shouldShowInstalledPower", (consumerUnit?.totalInstalledPower != null));
+          setValue("totalInstalledPower", consumerUnit?.totalInstalledPower)
+
+          if (contract?.supplyVoltage === 69) {
+            setShouldShowGreenDemand(false);
+          } else if (contract?.supplyVoltage >= 88 && contract?.supplyVoltage <= 138) {
+            setShouldShowGreenDemand(false);
+          } else {
+            setShouldShowGreenDemand(true);
+          }
+          setValue("peakContractedDemandInKw", contract?.peakContractedDemandInKw);
+          setValue(
+            "offPeakContractedDemandInKw",
+            contract?.offPeakContractedDemandInKw
+          );
+
+          const currentDate = new Date(contract?.startDate);
+          currentDate.setDate(currentDate.getDate() + 1);
+          setValue("startDate", currentDate);
+        } catch (err) {
+          console.error('Failed to refetch:', err);
+        }
       }
-      setValue("peakContractedDemandInKw", contract?.peakContractedDemandInKw);
-      setValue(
-        "offPeakContractedDemandInKw",
-        contract?.offPeakContractedDemandInKw
-      );
 
-      const currentDate = new Date(contract?.startDate);
-      currentDate.setDate(currentDate.getDate() + 1);
-      setValue("startDate", currentDate);
+      // Garante que o refetch não seja executado antes do fetch
+      if (isEditFormOpen) {
+        fetchData();
+      }
     }
   }, [isEditFormOpen, consumerUnit, contract, setValue]);
 

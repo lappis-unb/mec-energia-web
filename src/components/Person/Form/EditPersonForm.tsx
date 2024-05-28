@@ -46,7 +46,7 @@ const EditPersonForm = () => {
   const isEditFormOpen = useSelector(selectIsPersonEditFormOpen);
   const [shouldShowCancelDialog, setShouldShowCancelDialog] = useState(false);
   const currentPersonId = useSelector(selectActivePersonId);
-  const { data: currentPerson } = useGetPersonQuery(
+  const { data: currentPerson, refetch: refetchPerson } = useGetPersonQuery(
     currentPersonId || skipToken
   );
   const { data: universityPerson } = useGetUniversityPersonQuery(currentPersonId || skipToken)
@@ -69,11 +69,24 @@ const EditPersonForm = () => {
   };
 
   useEffect(() => {
-    if (!currentPerson) return;
-    setValue("firstName", currentPerson.firstName);
-    setValue("lastName", currentPerson.lastName);
-    setValue("email", currentPerson.email);
-  }, [currentPerson, setValue]);
+    const fetchData = async () => {
+      try {
+        const { data: currentPerson } = await refetchPerson();
+        if (!currentPerson) return;
+        
+        setValue("firstName", currentPerson.firstName);
+        setValue("lastName", currentPerson.lastName);
+        setValue("email", currentPerson.email);
+      } catch (err) {
+        console.error('Failed to refetch:', err);
+      }
+    };
+
+    // Garante que o refetch não seja executado antes do fetch
+    if (isEditFormOpen) {
+      fetchData();
+    }
+  }, [currentPerson, isEditFormOpen, setValue]);
 
   const handleDiscardForm = useCallback(() => {
     handleCloseDialog();

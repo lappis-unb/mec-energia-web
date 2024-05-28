@@ -28,6 +28,7 @@ import { NumericFormat } from "react-number-format";
 import FormWarningDialog from "../../ConsumerUnit/Form/WarningDialog";
 import {
   CreateAndEditEnergyBillForm,
+  CurrentEnergyBillResponsePayload,
   EditEnergyBillRequestPayload,
   PostEnergyBillRequestPayload,
 } from "@/types/energyBill";
@@ -100,7 +101,7 @@ const CreateEditEnergyBillForm = () => {
   const { data: distributors } = useGetDistributorsQuery(
     session.data?.user.universityId || skipToken
   );
-  const { data: currentInvoice } = useGetCurrentInvoiceQuery(
+  const { data: currentInvoice, refetch: refetchCurrentInvoice } = useGetCurrentInvoiceQuery(
     currentInvoiceId || skipToken
   );
 
@@ -126,6 +127,24 @@ const CreateEditEnergyBillForm = () => {
   const offPeakMeasuredDemandInKw = watch("offPeakMeasuredDemandInKw");
 
   useEffect(() => {
+    if (isEditEnergyBillFormOpen) {
+      const fetchData = async () => {
+        try {
+          const { data: currentInvoice } = await refetchCurrentInvoice();
+          updateCurrentInvoiceData(currentInvoice);
+        } catch (err) {
+          console.error('Failed to refetch:', err);
+        }
+      }
+
+      // Garante que o refetch não seja executado antes do fetch
+      if (isEditEnergyBillFormOpen) {
+        fetchData();
+      }
+    }
+  }, [isEditEnergyBillFormOpen]);
+
+  useEffect(() => {
     if (month != null || month != undefined) {
       const date = new Date(`${year}/${month + 1}`);
       setValue("date", date);
@@ -134,26 +153,8 @@ const CreateEditEnergyBillForm = () => {
 
   useEffect(() => {
     if (isCreateEnergyBillFormOpen) {
-      setValue("invoiceInReais", "");
-      setValue("peakConsumptionInKwh", "");
-      setValue("offPeakConsumptionInKwh", "");
-      setValue("peakMeasuredDemandInKw", "");
-      setValue("offPeakMeasuredDemandInKw", "");
-    } else if (isEditEnergyBillFormOpen) {
-      setValue("invoiceInReais", currentInvoice?.invoiceInReais?.toString());
-      setValue("peakConsumptionInKwh", currentInvoice?.peakConsumptionInKwh);
-      setValue(
-        "offPeakConsumptionInKwh",
-        currentInvoice?.offPeakConsumptionInKwh
-      );
-      setValue(
-        "peakMeasuredDemandInKw",
-        currentInvoice?.peakMeasuredDemandInKw
-      );
-      setValue(
-        "offPeakMeasuredDemandInKw",
-        currentInvoice?.offPeakMeasuredDemandInKw
-      );
+      // Reset form data
+      updateCurrentInvoiceData();
     }
   }, [
     currentInvoice?.invoiceInReais,
@@ -205,6 +206,14 @@ const CreateEditEnergyBillForm = () => {
     );
     if (distributor) setCurrentDistributor(distributor);
   }, [contract?.distributor, distributors]);
+
+  const updateCurrentInvoiceData = (currentInvoice: CurrentEnergyBillResponsePayload | undefined = undefined) => {
+    setValue("invoiceInReais", currentInvoice?.invoiceInReais?.toString() ?? "");
+    setValue("peakConsumptionInKwh", currentInvoice?.peakConsumptionInKwh ?? "");
+    setValue("offPeakConsumptionInKwh", currentInvoice?.offPeakConsumptionInKwh ?? "");
+    setValue("peakMeasuredDemandInKw", currentInvoice?.peakMeasuredDemandInKw ?? "");
+    setValue("offPeakMeasuredDemandInKw", currentInvoice?.offPeakMeasuredDemandInKw ?? "");
+  }
 
   const handleCancelEdition = () => {
     if (isDirty) {

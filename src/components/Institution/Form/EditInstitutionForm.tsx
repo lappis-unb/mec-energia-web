@@ -36,7 +36,7 @@ const EditInstitutionForm = () => {
   const isEditFormOpen = useSelector(selectIsInstitutionEditFormOpen);
   const [shouldShowCancelDialog, setShouldShowCancelDialog] = useState(false);
   const currentInstitutionId = useSelector(selectActiveInstitutionId);
-  const { data: currentInstitution } = useGetInstitutionQuery(
+  const { data: currentInstitution, refetch: refetchInstitution } = useGetInstitutionQuery(
     currentInstitutionId || skipToken
   );
   const [
@@ -53,11 +53,24 @@ const EditInstitutionForm = () => {
   } = form;
 
   useEffect(() => {
-    if (!currentInstitution) return;
-    setValue("acronym", currentInstitution.acronym ?? "");
-    setValue("name", currentInstitution.name ?? "");
-    setValue("cnpj", currentInstitution.cnpj ?? "");
-  }, [currentInstitution, setValue]);
+    const fetchData = async () => {
+      try {
+        const { data: currentInstitution } = await refetchInstitution();
+        if (!currentInstitution) return;
+
+        setValue("acronym", currentInstitution.acronym ?? "");
+        setValue("name", currentInstitution.name ?? "");
+        setValue("cnpj", currentInstitution.cnpj ?? "");
+      } catch (err) {
+        console.error('Failed to refetch:', err);
+      }
+    };
+
+    // Garante que o refetch não seja executado antes do fetch
+    if (isEditFormOpen) {
+      fetchData();
+    }
+  }, [currentInstitution, isEditFormOpen, setValue]);
 
   const handleCancelEdition = () => {
     if (isDirty) {
