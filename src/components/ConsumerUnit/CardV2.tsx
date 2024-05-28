@@ -6,9 +6,6 @@ import ptBR from "date-fns/locale/pt-BR";
 import { Badge, Button, Typography } from "@mui/material";
 import InsightsRoundedIcon from "@mui/icons-material/InsightsRounded";
 import ReceiptLongRoundedIcon from "@mui/icons-material/ReceiptLongRounded";
-import WarningRounded from "@mui/icons-material/WarningRounded";
-import FlashOffRoundedIcon from '@mui/icons-material/FlashOffRounded'
-import TodayRoundedIcon from '@mui/icons-material/TodayRounded'
 import {
   selectActiveConsumerUnitId,
   setActiveConsumerUnitId,
@@ -129,7 +126,7 @@ const ConsumerUnitCardActionIcon = ({
 }: ConsumerUnitCardActionIcon) => {
   const router = useRouter();
   const dispatch = useDispatch();
-  
+
   if (!isActive) {
     return null;
   }
@@ -141,9 +138,9 @@ const ConsumerUnitCardActionIcon = ({
 
   if (pendingEnergyBillsNumber > 0) {
     return (
-      <Badge 
+      <Badge
         onClick={() => handleConsumerUnitClick('pending')}
-        badgeContent={pendingEnergyBillsNumber} 
+        badgeContent={pendingEnergyBillsNumber}
         color="primary"
       >
         <ReceiptLongRoundedIcon sx={{ color: "black" }} />
@@ -152,7 +149,7 @@ const ConsumerUnitCardActionIcon = ({
   }
 
   return (
-    <InsightsRoundedIcon 
+    <InsightsRoundedIcon
       onClick={() => handleConsumerUnitClick(new Date().getUTCFullYear().toString())}
     />
   );
@@ -190,7 +187,7 @@ const ConsumerUnitCard = ({
   >(
     async (event) => {
       const consumerUnitCardActionHtmlButton = (event.target as HTMLButtonElement);
-      
+
       // Verifica se o alvo da ação de clique é diferente do botão de Lançar
       if (id !== activeConsumerUnit && consumerUnitCardActionHtmlButton.type !== 'button') {
         router.push(`/uc/${id}`);
@@ -211,7 +208,7 @@ const ConsumerUnitCard = ({
 
         router.push(`/uc/${id}`);
       } else {
-        router.push(`/uc/${id}`).then(() => 
+        router.push(`/uc/${id}`).then(() =>
           dispatch(setConsumerUnitOpenedTab(ConsumerUnitTab.ANALYSIS)));
       }
     },
@@ -236,7 +233,6 @@ const ConsumerUnitCard = ({
       name={name}
       variant={variant}
       isFavorite={isFavorite}
-      BackgroundIcon={!isActive ? FlashOffRoundedIcon : (pendingEnergyBillsNumber > 0 ? WarningRounded : TodayRoundedIcon)}
       dense={dense}
       selected={selected}
       onClick={handleConsumerUnitClick}

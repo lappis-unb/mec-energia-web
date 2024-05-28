@@ -11,7 +11,6 @@ const Card = ({
   dense,
   variant,
   isFavorite,
-  BackgroundIcon,
   action,
   actionIcon,
   onClick,
@@ -39,7 +38,7 @@ const Card = ({
         justifyContent="space-between"
         height="100%"
       >
-        <Box display="flex" minHeight="30px" maxHeight="5px" maxWidth="2" dir="col">
+        <Box display="flex" minHeight="30px">
           {shouldShowFavoriteIconButton && (
             <IconButton
               edge="start"
@@ -55,26 +54,29 @@ const Card = ({
         </Box>
 
 
-        <Box display="flex" flexDirection="column" justifyContent="space-between">
+        <Box display="flex" flexDirection="column" justifyContent="end">
           <Box
-            sx={{ WebkitLineClamp: "2", WebkitBoxOrient: "vertical" }}
             textOverflow="ellipsis"
             display="flex"
             mb={1.5}
           >
-            <Typography position="relative" fontWeight={400} fontSize="20px" lineHeight="24px" minWidth={150} minHeight={48} maxWidth={190}>
+            <Typography sx={{ ...(!dense && { overflow: "hidden", textOverflow: "ellipsis", display: "-webkit-box", WebkitLineClamp: "2", WebkitBoxOrient: "vertical" }) }}
+              title={name}
+              position="relative"
+              fontWeight={400}
+              fontSize="20px"
+              lineHeight="24px"
+              minWidth={150}
+              minHeight={48}
+            >
               {name}
             </Typography>
-            {BackgroundIcon ? <BackgroundIcon style={{ position: "relative", opacity: 0.24, height: 72, width: 72 }} sx={{
-              mt: -5,
-              color: (isWarning ? "white" : "secondary")
-            }} /> : null}
           </Box>
 
           <Box
             display="flex"
             justifyContent="space-between"
-            alignItems="center"
+            alignItems="end"
             {...(!dense && { minHeight: "30.75px" })}
           >
             {isDisabled ? (
@@ -84,7 +86,7 @@ const Card = ({
             )}
 
             {shouldShowActionIconButton && (
-              <Box m={-1}>
+              <Box alignSelf="center" m={-1}>
                 <IconButton onClick={onActionIconClick}>
                   {actionIcon}
                 </IconButton>

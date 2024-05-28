@@ -5,7 +5,6 @@ import { useDispatch } from "react-redux";
 import { Badge } from "@mui/material";
 import { CardProps } from "@/types/app";
 import AttachMoneyRoundedIcon from "@mui/icons-material/AttachMoneyRounded";
-import FactoryRoundedIcon from "@mui/icons-material/FactoryRounded";
 import Card from "@/components/Card";
 
 interface DistributorCardProps extends CardProps {
@@ -100,7 +99,6 @@ const DistributorCard = ({
       selected={selected}
       onClick={handleDistributorClick}
       action={"Tarifas pendentes"}
-      BackgroundIcon={FactoryRoundedIcon}
       actionIcon={
         <DistributorCardActionIcon
           isActive={isActive}
