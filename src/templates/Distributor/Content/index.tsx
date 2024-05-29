@@ -3,7 +3,7 @@ import { skipToken } from "@reduxjs/toolkit/dist/query";
 
 import { Alert, Box, Grid, Typography } from "@mui/material";
 
-import { useGetDistributorQuery, useGetDistributorSubgroupsQuery } from "@/api";
+import { useFetchDistributorsQuery, useGetDistributorQuery, useGetDistributorSubgroupsQuery } from "@/api";
 import {
   selectActiveDistributorId,
   selectActiveSubgroup,
@@ -12,6 +12,7 @@ import {
 import DistributorContentConsumerUnitsList from "./ConsumerUnitsList";
 import DistributorContentTariffsTable from "./TariffsTable";
 import { FlashOffRounded } from "@mui/icons-material";
+import { useSession } from "next-auth/react";
 
 export const EmptyDistributorContent = () => {
   return (
@@ -30,6 +31,16 @@ const DistributorContent = () => {
   const distributorId = useSelector(selectActiveDistributorId);
   const selectedSubgroupTariff = useSelector(selectActiveSubgroup);
 
+  const { data: session } = useSession();
+
+  const { data: distributors } = useFetchDistributorsQuery(
+    session?.user.universityId ?? skipToken
+  );
+
+  const activeDistributorData = distributors?.find(
+    distributor => distributor?.id === distributorId
+  );
+
   const { data: distributor, isLoading: isDistributorLoading } =
     useGetDistributorQuery(distributorId ?? skipToken);
 
@@ -39,6 +50,10 @@ const DistributorContent = () => {
 
   if (isDistributorLoading || isSubgroupLoading) {
     return <Box pt={2}>Carregando...</Box>;
+  }
+
+  if (!activeDistributorData) {
+    return null;
   }
 
   if (distributor && !distributor.isActive) {

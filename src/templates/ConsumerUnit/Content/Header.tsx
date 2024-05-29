@@ -3,6 +3,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 
 import {
+  Alert,
+  AlertTitle,
   Box,
   Button,
   Container,
@@ -18,7 +20,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import ReceiptLongRoundedIcon from "@mui/icons-material/ReceiptLongRounded";
 import InsightsRoundedIcon from "@mui/icons-material/InsightsRounded";
 import StickyNote2RoundedIcon from "@mui/icons-material/StickyNote2Rounded";
-import { useEditPersonFavoritesMutation } from "@/api"
+import { useEditPersonFavoritesMutation, useFetchConsumerUnitsQuery } from "@/api"
 
 import {
   selectActiveConsumerUnitId,
@@ -38,6 +40,9 @@ const ConsumerUnitContentHeader = () => {
   const [editPersonFavorites] = useEditPersonFavoritesMutation();
 
   const { data: session } = useSession();
+  const { data: consumerUnitsData } = useFetchConsumerUnitsQuery(
+    session?.user.universityId ?? skipToken
+  );
   const openedTab = useSelector(selectConsumerUnitOpenedTab);
 
   const handleEditConsumerUnitClick = () => {
@@ -59,6 +64,25 @@ const ConsumerUnitContentHeader = () => {
     };
     await editPersonFavorites(body);
   });
+
+  const activeConsumerUnitData = consumerUnitsData?.find(
+    consumerUnit => consumerUnit?.id === consumerUnitId
+  );
+
+  if (!activeConsumerUnitData) {
+    return (
+      <>
+        <Alert
+          sx={{ ml: 5 }}
+          severity="error"
+          variant="filled"
+        >
+          <AlertTitle>Unidade consumidora não encontrada</AlertTitle>
+          Selecione outra unidade consumidora na lista ao lado
+        </Alert>
+      </>
+    );
+  }
 
   return (
     <Box

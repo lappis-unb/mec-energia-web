@@ -3,7 +3,19 @@ import { useDispatch, useSelector } from "react-redux";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { useRouter } from "next/router";
 
-import { Box, Button, Collapse, Container, Grid, IconButton, Link, Modal, Typography } from "@mui/material";
+import { 
+  Box, 
+  Button, 
+  Collapse, 
+  Container, 
+  Grid, 
+  IconButton, 
+  Link, 
+  Modal, 
+  Typography,
+  Alert,
+  AlertTitle,
+} from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import HelpOutlineSharpIcon from '@mui/icons-material/HelpOutlineSharp';
 
@@ -11,6 +23,7 @@ import {
   useGetDistributorSubgroupsQuery,
   useGetDistributorQuery,
   useDeleteDistributorMutation,
+  useFetchDistributorsQuery
 } from "@/api";
 import {
   selectActiveDistributorId,
@@ -24,11 +37,21 @@ import DistributorEditForm from "@/components/Distributor/Form/DistributorEditFo
 import { Delete } from "@mui/icons-material";
 import Tooltip from "@mui/material/Tooltip";
 import DeleteDistributorDialog from "@/components/Distributor/Form/DeleteDistributorDialog";
-import { getSession } from "next-auth/react";
+import { getSession, useSession } from "next-auth/react";
 
 const DistributorContentHeader = () => {
   const dispatch = useDispatch();
   const distributorId = useSelector(selectActiveDistributorId);
+  const { data: session } = useSession();
+
+  const { data: distributors } = useFetchDistributorsQuery(
+    session?.user.universityId ?? skipToken
+  );
+
+  const activeDistributorData = distributors?.find(
+    distributor => distributor?.id === distributorId
+  );
+  
   const router = useRouter();
 
   const { data: distributor } = useGetDistributorQuery(
@@ -207,6 +230,21 @@ const DistributorContentHeader = () => {
       </Modal>
     );
   };
+
+  if (!activeDistributorData) {
+    return (
+      <>
+        <Alert
+          sx={{ ml: 5 }}
+          severity="error"
+          variant="filled"
+        >
+          <AlertTitle>Distribuidora não encontrada</AlertTitle>
+          Selecione outra distribuidora na lista ao lado
+        </Alert>
+      </>
+    );
+  }
 
   return (
     <Box

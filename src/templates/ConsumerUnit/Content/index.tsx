@@ -3,12 +3,15 @@ import { useSelector } from "react-redux";
 
 import { Box } from "@mui/material";
 
-import { selectConsumerUnitOpenedTab } from "@/store/appSlice";
+import { selectActiveConsumerUnitId, selectConsumerUnitOpenedTab } from "@/store/appSlice";
 import { ConsumerUnitTab } from "@/types/app";
 
 import ConsumerUnitInvoiceContent from "@/templates/ConsumerUnit/Content/Invoice";
 import ConsumerUnitContractContent from "@/templates/ConsumerUnit/Content/Contract";
 import { AnalysisAndRecommendation } from "@/components/ConsumerUnit/Content/AnalysisAndRecommendation";
+import { useSession } from "next-auth/react";
+import { useFetchConsumerUnitsQuery } from "@/api";
+import { skipToken } from "@reduxjs/toolkit/query";
 
 interface TabPanelProps {
   children?: ReactNode;
@@ -45,6 +48,20 @@ export const EmptyConsumerUnitContent = () => {
 
 const ConsumerUnitContent = () => {
   const openedTab = useSelector(selectConsumerUnitOpenedTab);
+  const { data: session } = useSession();
+  const { data: consumerUnitsData } = useFetchConsumerUnitsQuery(
+    session?.user.universityId ?? skipToken
+  );
+  const activeConsumerUnit = useSelector(selectActiveConsumerUnitId);
+
+  const activeConsumerUnitData = consumerUnitsData?.find(
+    consumerUnit => consumerUnit?.id === activeConsumerUnit
+  );
+
+  if (!activeConsumerUnitData) {
+    return null;
+  }
+
   return (
     <>
       <TabPanel value={openedTab} index={ConsumerUnitTab.INVOICE}>
