@@ -18,7 +18,7 @@ export const RecommendationCard = ({
 }: Props) => {
   if (hasErrors)
     return (
-      <Card>
+      <Card sx={{height: "100%"}}>
         <CardContent>
           <Typography variant="h5" sx={{ marginBottom: 1 }}>
             Recomendação
@@ -30,7 +30,7 @@ export const RecommendationCard = ({
     );
 
   return (
-    <Card>
+    <Card sx={{height: "100%"}}>
       <CardContent>
         <Typography variant="h5" sx={{ marginBottom: 1 }}>
           Recomendação
