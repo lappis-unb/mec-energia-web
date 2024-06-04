@@ -98,13 +98,16 @@ const verifySession = (session: Session | null) => {
       return signOut({ callbackUrl: "/" });
     }
   }
-}
+};
 
 const Drawer = () => {
   const router = useRouter();
   const dispatch = useDispatch();
   const { data: session } = useSession();
-  const { data: currentUser } = useGetPersonQuery(session?.user.id as number || skipToken)
+  const { data: currentUser } = useGetPersonQuery(
+    (session?.user.id as number) || skipToken
+  );
+
   const isDrawerOpen = useSelector(selectIsDrawerOpen);
 
   verifySession(session);
@@ -138,6 +141,8 @@ const Drawer = () => {
   );
 
   const handleSignOutClick = () => {
+    localStorage.clear();
+    sessionStorage.clear();
     signOut({ callbackUrl: "/" });
   };
 
