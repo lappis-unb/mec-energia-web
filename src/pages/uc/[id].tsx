@@ -2,12 +2,12 @@ import { NextPage } from "next";
 import { NextParsedUrlQuery } from "next/dist/server/request-meta";
 
 import { wrapper } from "@/store";
-import { setActiveConsumerUnitId, selectActiveConsumerUnitId } from "@/store/appSlice";
+import { selectActiveConsumerUnitId, setActiveConsumerUnitId } from "@/store/appSlice";
 
 import DefaultTemplateV2 from "@/templates/DefaultV2";
 import ConsumerUnitsCardGrid from "@/templates/ConsumerUnit/Grid";
 import ConsumerUnitHeaderAction from "@/templates/ConsumerUnit/HeaderAction";
-import ConsumerUnitContent, { EmptyConsumerUnitContent } from "@/templates/ConsumerUnit/Content";
+import ConsumerUnitContent from "@/templates/ConsumerUnit/Content";
 import ConsumerUnitCreateForm from "@/components/ConsumerUnit/Form/Create";
 import ConsumerUnitEditForm from "@/components/ConsumerUnit/Form/Edit";
 import ConsumerUnitRenewContractForm from "@/components/ConsumerUnit/Form/RenewContract";
@@ -56,7 +56,6 @@ export const getServerSideProps = wrapper.getServerSideProps(
 
 
 const ConsumerUnitPage: NextPage = () => {
-
   const activeConsumerUnit = useSelector(selectActiveConsumerUnitId);
 
   const { data: session } = useSession();
@@ -70,17 +69,17 @@ const ConsumerUnitPage: NextPage = () => {
   );
 
   const contentContainerMaxWidth = activeConsumerUnitData === undefined
-  ? false
-  : undefined;
+    ? false
+    : undefined;
 
   return (
     <DefaultTemplateV2
       headerAction={<ConsumerUnitHeaderAction />}
-      secondaryDrawer={activeConsumerUnit === -1 ? null : <ConsumerUnitsCardGrid />}
-      contentHeader={activeConsumerUnit === -1 ? null : <ConsumerUnitContentHeader />}
+      secondaryDrawer={<ConsumerUnitsCardGrid />}
+      contentHeader={<ConsumerUnitContentHeader />}
       contentContainerMaxWidth={contentContainerMaxWidth}
     >
-      {activeConsumerUnit === -1 ? <EmptyConsumerUnitContent /> : <ConsumerUnitContent />}
+      {<ConsumerUnitContent />}
 
 
       <ConsumerUnitCreateForm />

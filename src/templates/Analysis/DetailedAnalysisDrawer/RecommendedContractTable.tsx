@@ -27,6 +27,9 @@ export const RecommendedContractTable = ({
   recommendedContract,
   currentContract,
 }: Props) => {
+  const areTariffFlagsBothG =
+    recommendedContract.tariffFlag === "G" && currentContract.tariffFlag === "G";
+
   const fixedRows = [
     { label: "Distribuidora", value: recommendedContract.distributor },
     { label: "Instiuição", value: recommendedContract.university },
@@ -39,29 +42,45 @@ export const RecommendedContractTable = ({
     { label: "Subgrupo", value: recommendedContract.subgroup },
   ];
 
-  const rows: CurrentVsRecommendedRow[] = [
-    {
-      label: "Modalidade tarifária",
-      current: tariffFlags[currentContract.tariffFlag],
-      recommended: tariffFlags[recommendedContract.tariffFlag],
-      different: currentContract.tariffFlag !== recommendedContract.tariffFlag,
-    },
-    {
-      label: "Demanda contratada atual de ponta",
-      current: currentContract.peakDemandInKw + " kW",
-      recommended: recommendedContract.peakDemandInKw + " kW",
-      different:
-        currentContract.peakDemandInKw !== recommendedContract.peakDemandInKw,
-    },
-    {
-      label: "Demanda contratada atual fora de ponta",
-      current: currentContract.offPeakDemandInKw + " kW",
-      recommended: recommendedContract.offPeakDemandInKw + " kW",
-      different:
-        currentContract.offPeakDemandInKw !==
-        recommendedContract.offPeakDemandInKw,
-    },
-  ];
+  const rows: CurrentVsRecommendedRow[] = areTariffFlagsBothG
+    ? [
+      {
+        label: "Modalidade tarifária",
+        current: tariffFlags[currentContract.tariffFlag],
+        recommended: tariffFlags[recommendedContract.tariffFlag],
+        different: false, // Both are "G" so there's no difference
+      },
+      {
+        label: "Demanda contratada atual",
+        current: currentContract.peakDemandInKw + " kW",
+        recommended: recommendedContract.peakDemandInKw + " kW",
+        different:
+          currentContract.peakDemandInKw !== recommendedContract.peakDemandInKw,
+      },
+    ]
+    : [
+      {
+        label: "Modalidade tarifária",
+        current: tariffFlags[currentContract.tariffFlag],
+        recommended: tariffFlags[recommendedContract.tariffFlag],
+        different: currentContract.tariffFlag !== recommendedContract.tariffFlag,
+      },
+      {
+        label: "Demanda contratada atual de ponta",
+        current: currentContract.peakDemandInKw + " kW",
+        recommended: recommendedContract.peakDemandInKw + " kW",
+        different:
+          currentContract.peakDemandInKw !== recommendedContract.peakDemandInKw,
+      },
+      {
+        label: "Demanda contratada atual fora de ponta",
+        current: currentContract.offPeakDemandInKw + " kW",
+        recommended: recommendedContract.offPeakDemandInKw + " kW",
+        different:
+          currentContract.offPeakDemandInKw !==
+          recommendedContract.offPeakDemandInKw,
+      },
+    ];
 
   const columns: GridColDef<InfoRows>[] = [
     {
@@ -83,11 +102,11 @@ export const RecommendedContractTable = ({
       colSpan: ({ row }) => (row?.value ? 2 : 1),
       renderCell: ({ row }) => {
         return row?.value ? (
-          <span style={{textAlign: "center"}}>
+          <span style={{ textAlign: "center" }}>
             {row.value}
           </span>
         ) : (
-          <span style={{textDecoration: row.different ? "line-through" : ""}}>
+          <span style={{ textDecoration: row.different ? "line-through" : "" }}>
             {row.current}
           </span>
         )
@@ -102,7 +121,7 @@ export const RecommendedContractTable = ({
       flex: 1,
       sortable: false,
       renderCell: ({ row }) => (
-        <span style={{fontWeight: "bold"}}>
+        <span style={{ fontWeight: "bold" }}>
           {row.recommended}
         </span>
       )

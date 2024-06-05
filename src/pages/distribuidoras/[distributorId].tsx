@@ -6,7 +6,7 @@ import { selectActiveDistributorId, setActiveDistributorId } from "@/store/appSl
 import DefaultTemplateV2 from "@/templates/DefaultV2";
 import DistributorsCardGrid from "@/templates/Distributor/Grid";
 import DistributorContentHeader from "@/templates/Distributor/Header";
-import DistributorContent, { EmptyDistributorContent } from "@/templates/Distributor/Content";
+import DistributorContent from "@/templates/Distributor/Content";
 import DistributorHeaderAction from "@/templates/Distributor/Header/Action";
 import DistributorCreateForm from "@/components/Distributor/Form/DistributorCreateForm";
 import DistributorEditForm from "@/components/Distributor/Form/DistributorEditForm";
@@ -70,15 +70,14 @@ const DistributorPage: NextPage = () => {
   const contentContainerMaxWidth = activeDistributorData === undefined
   ? false
   : undefined;
-
   return (
     <DefaultTemplateV2
       headerAction={<DistributorHeaderAction />}
-      secondaryDrawer={activeDistributorUnit === -1 ? null : <DistributorsCardGrid />}
-      contentHeader={activeDistributorUnit === -1 ? null : <DistributorContentHeader />}
+      secondaryDrawer={<DistributorsCardGrid />}
+      contentHeader={<DistributorContentHeader />}
       contentContainerMaxWidth={contentContainerMaxWidth}
     >
-      {activeDistributorUnit === -1 ? <EmptyDistributorContent /> : <DistributorContent />}
+      {<DistributorContent />}
 
       <DistributorCreateForm />
       <DistributorEditForm />
