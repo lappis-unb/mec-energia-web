@@ -68,7 +68,7 @@ const TariffCreateEditForm = () => {
   const activeSubgroup = useSelector(selectActiveSubgroup);
   const { data: currentTariff, refetch: refetchCurrentTariff } = useGetTariffQuery({
     distributor: activeDistributorId ?? 0,
-    subgroup: activeSubgroup ?? "",
+    subgroup: activeSubgroup ?? "0",
   });
   const [
     createTariff,
