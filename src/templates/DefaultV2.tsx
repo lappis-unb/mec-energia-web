@@ -35,7 +35,7 @@ const DefaultTemplateV2 = ({
             flexGrow={1}
             minHeight="calc(100vh - 64px)"
             maxHeight="calc(100vh - 64px)"
-            overflow="scroll"
+            overflow="overlay"
             display="flex"
             flexDirection="column"
           >

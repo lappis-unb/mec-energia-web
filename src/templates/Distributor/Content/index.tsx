@@ -1,7 +1,7 @@
 import { useSelector } from "react-redux";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 
-import { Alert, Box, Grid, Typography } from "@mui/material";
+import { Alert, AlertTitle, Box, Grid, Typography } from "@mui/material";
 
 import { useFetchDistributorsQuery, useGetDistributorQuery, useGetDistributorSubgroupsQuery } from "@/api";
 import {
@@ -33,7 +33,7 @@ const DistributorContent = () => {
 
   const { data: session } = useSession();
 
-  const { data: distributors } = useFetchDistributorsQuery(
+  const { data: distributors, isLoading: isDistributorsLoading } = useFetchDistributorsQuery(
     session?.user.universityId ?? skipToken
   );
 
@@ -48,12 +48,23 @@ const DistributorContent = () => {
     distributorId ?? skipToken
   );
 
-  if (isDistributorLoading || isSubgroupLoading) {
+  if (isDistributorLoading || isSubgroupLoading || isDistributorsLoading) {
     return <Box pt={2}>Carregando...</Box>;
   }
 
   if (!activeDistributorData) {
-    return null;
+    return (
+      <Box marginRight={3}>
+        <Alert
+          sx={{ ml: 4, width: 1, mt: 2 }}
+          severity="error"
+          variant="filled"
+        >
+          <AlertTitle>Distribuidora não encontrada</AlertTitle>
+          Selecione outra distribuidora na lista ao lado
+        </Alert>
+      </Box>
+    );
   }
 
   if (distributor && !distributor.isActive) {

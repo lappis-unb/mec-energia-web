@@ -1,7 +1,7 @@
 import { ReactNode } from "react";
 import { useSelector } from "react-redux";
 
-import { Box } from "@mui/material";
+import { Alert, AlertTitle, Box } from "@mui/material";
 
 import { selectActiveConsumerUnitId, selectConsumerUnitOpenedTab } from "@/store/appSlice";
 import { ConsumerUnitTab } from "@/types/app";
@@ -49,7 +49,7 @@ export const EmptyConsumerUnitContent = () => {
 const ConsumerUnitContent = () => {
   const openedTab = useSelector(selectConsumerUnitOpenedTab);
   const { data: session } = useSession();
-  const { data: consumerUnitsData } = useFetchConsumerUnitsQuery(
+  const { data: consumerUnitsData, isLoading: isConsumerUnitsLoading, data } = useFetchConsumerUnitsQuery(
     session?.user.universityId ?? skipToken
   );
   const activeConsumerUnit = useSelector(selectActiveConsumerUnitId);
@@ -58,8 +58,23 @@ const ConsumerUnitContent = () => {
     consumerUnit => consumerUnit?.id === activeConsumerUnit
   );
 
+  if (isConsumerUnitsLoading || !data) {
+    return <Box pt={2}>Carregando...</Box>;
+  }
+
   if (!activeConsumerUnitData) {
-    return null;
+    return (
+      <Box marginRight={3}>
+        <Alert
+          sx={{ ml: 4, width: 1, mt: 2 }}
+          severity="error"
+          variant="filled"
+        >
+          <AlertTitle>Unidade consumidora não encontrada</AlertTitle>
+          Selecione outra unidade consumidora na lista ao lado
+        </Alert>
+      </Box>
+    );
   }
 
   return (

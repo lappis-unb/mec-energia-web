@@ -14,6 +14,9 @@ import TariffCreateEditForm from "@/components/Tariff/Form/TariffCreateForm";
 import FailNotification from "@/components/Notification/FailNotification";
 import SuccessNotification from "@/components/Notification/SuccessNotification";
 import { useSelector } from "react-redux";
+import { useSession } from "next-auth/react";
+import { useFetchDistributorsQuery } from "@/api";
+import { skipToken } from "@reduxjs/toolkit/query";
 
 type ExpectedQuery = {
   distributorId: string;
@@ -53,11 +56,27 @@ export const getServerSideProps = wrapper.getServerSideProps(
 
 const DistributorPage: NextPage = () => {
   const activeDistributorUnit = useSelector(selectActiveDistributorId);
+
+  const { data: session } = useSession();
+
+  const { data: distributors } = useFetchDistributorsQuery(
+    session?.user.universityId ?? skipToken
+  );
+
+  const activeDistributorData = distributors?.find(
+    distributor => distributor?.id === activeDistributorUnit
+  );
+
+  const contentContainerMaxWidth = activeDistributorData === undefined
+  ? false
+  : undefined;
+
   return (
     <DefaultTemplateV2
       headerAction={<DistributorHeaderAction />}
       secondaryDrawer={activeDistributorUnit === -1 ? null : <DistributorsCardGrid />}
       contentHeader={activeDistributorUnit === -1 ? null : <DistributorContentHeader />}
+      contentContainerMaxWidth={contentContainerMaxWidth}
     >
       {activeDistributorUnit === -1 ? <EmptyDistributorContent /> : <DistributorContent />}
 

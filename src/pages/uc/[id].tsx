@@ -16,6 +16,9 @@ import FailNotification from "@/components/Notification/FailNotification";
 import CreateEditEnergyBillForm from "@/components/ElectricityBill/Form/CreateEditElectricityBillForm";
 import ConsumerUnitContentHeader from "@/templates/ConsumerUnit/Content/Header";
 import { useSelector } from "react-redux";
+import { useSession } from "next-auth/react";
+import { useFetchConsumerUnitsQuery } from "@/api";
+import { skipToken } from "@reduxjs/toolkit/query";
 
 type ExpectedQuery = {
   id: string;
@@ -55,11 +58,27 @@ export const getServerSideProps = wrapper.getServerSideProps(
 const ConsumerUnitPage: NextPage = () => {
 
   const activeConsumerUnit = useSelector(selectActiveConsumerUnitId);
+
+  const { data: session } = useSession();
+
+  const { data: consumerUnitsData } = useFetchConsumerUnitsQuery(
+    session?.user.universityId ?? skipToken
+  );
+
+  const activeConsumerUnitData = consumerUnitsData?.find(
+    consumerUnit => consumerUnit?.id === activeConsumerUnit
+  );
+
+  const contentContainerMaxWidth = activeConsumerUnitData === undefined
+  ? false
+  : undefined;
+
   return (
     <DefaultTemplateV2
       headerAction={<ConsumerUnitHeaderAction />}
       secondaryDrawer={activeConsumerUnit === -1 ? null : <ConsumerUnitsCardGrid />}
       contentHeader={activeConsumerUnit === -1 ? null : <ConsumerUnitContentHeader />}
+      contentContainerMaxWidth={contentContainerMaxWidth}
     >
       {activeConsumerUnit === -1 ? <EmptyConsumerUnitContent /> : <ConsumerUnitContent />}
 

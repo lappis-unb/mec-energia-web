@@ -3,8 +3,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 
 import {
-  Alert,
-  AlertTitle,
   Box,
   Button,
   Container,
@@ -70,18 +68,7 @@ const ConsumerUnitContentHeader = () => {
   );
 
   if (!activeConsumerUnitData) {
-    return (
-      <>
-        <Alert
-          sx={{ ml: 5 }}
-          severity="error"
-          variant="filled"
-        >
-          <AlertTitle>Unidade consumidora não encontrada</AlertTitle>
-          Selecione outra unidade consumidora na lista ao lado
-        </Alert>
-      </>
-    );
+    return null;
   }
 
   return (

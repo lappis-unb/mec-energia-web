@@ -12,9 +12,7 @@ import {
   IconButton, 
   Link, 
   Modal, 
-  Typography,
-  Alert,
-  AlertTitle,
+  Typography
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import HelpOutlineSharpIcon from '@mui/icons-material/HelpOutlineSharp';
@@ -232,18 +230,7 @@ const DistributorContentHeader = () => {
   };
 
   if (!activeDistributorData) {
-    return (
-      <>
-        <Alert
-          sx={{ ml: 5 }}
-          severity="error"
-          variant="filled"
-        >
-          <AlertTitle>Distribuidora não encontrada</AlertTitle>
-          Selecione outra distribuidora na lista ao lado
-        </Alert>
-      </>
-    );
+    return null;
   }
 
   return (
