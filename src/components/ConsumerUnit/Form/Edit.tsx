@@ -61,6 +61,8 @@ const defaultValues: EditConsumerUnitForm = {
   tariffFlag: "B",
   peakContractedDemandInKw: "",
   offPeakContractedDemandInKw: "",
+  totalInstalledPower: null,
+  shouldShowInstalledPower: true,
 };
 
 const ConsumerUnitEditForm = () => {
@@ -71,6 +73,7 @@ const ConsumerUnitEditForm = () => {
     useState(false);
   const [shouldShowCancelDialog, setShouldShowCancelDialog] = useState(false);
   const [shouldShowGreenDemand, setShouldShowGreenDemand] = useState(true);
+  // const [shouldShowInstalledPower, setShouldShowInstalledPower] = useState(false);
 
   const { data: session } = useSession();
   const { data: subgroupsList } = useGetSubgroupsQuery();
@@ -90,6 +93,7 @@ const ConsumerUnitEditForm = () => {
 
   const form = useForm({ mode: "all", defaultValues });
 
+
   const {
     control,
     reset,
@@ -104,6 +108,7 @@ const ConsumerUnitEditForm = () => {
   const peakContractedDemandInKw = watch("peakContractedDemandInKw");
   const offPeakContractedDemandInKw = watch("offPeakContractedDemandInKw");
   const isActive = watch("isActive");
+  const shouldShowInstalledPower = watch("shouldShowInstalledPower");
 
   useEffect(() => {
     if (isEditFormOpen && consumerUnit && contract) {
@@ -112,6 +117,9 @@ const ConsumerUnitEditForm = () => {
       setValue("code", consumerUnit?.code);
       setValue("distributor", contract?.distributor);
       setValue("supplyVoltage", contract?.supplyVoltage);
+      setValue("shouldShowInstalledPower", (consumerUnit?.totalInstalledPower != null));
+      setValue("totalInstalledPower", consumerUnit?.totalInstalledPower)
+
       if (contract?.supplyVoltage === 69) {
         setShouldShowGreenDemand(false);
       } else if (contract?.supplyVoltage >= 88 && contract?.supplyVoltage <= 138) {
@@ -219,7 +227,6 @@ const ConsumerUnitEditForm = () => {
       if (data.tariffFlag === "G") {
         data.offPeakContractedDemandInKw = data.peakContractedDemandInKw;
       }
-
       const body: EditConsumerUnitRequestPayload = {
         consumerUnit: {
           consumerUnitId: activeConsumerUnit as number,
@@ -227,6 +234,7 @@ const ConsumerUnitEditForm = () => {
           code: data.code,
           isActive: data.isActive,
           university: session?.user.universityId || 0,
+          totalInstalledPower: (!data.shouldShowInstalledPower ? null : data.totalInstalledPower)
         },
         contract: {
           contractId: contract?.id as number,
@@ -337,8 +345,8 @@ const ConsumerUnitEditForm = () => {
                     control={
                       <Switch
                         value={value}
-                        onChange={onChange}
                         defaultChecked={consumerUnit?.isActive}
+                        onChange={onChange}
                       />
                     }
                     label="Unidade ativa"
@@ -727,10 +735,98 @@ const ConsumerUnitEditForm = () => {
               </Typography>
             )}
           </>
+
         )}
       </>
     ),
     [control, tariffFlag, shouldShowGreenDemand]
+  );
+
+  const InstalledPower = useCallback(
+    () => (
+      <>
+        <Grid container spacing={2}>
+          <Grid item xs={12} display="flex" flexDirection={"row"} justifyContent={"begin"} alignItems={"center"}>
+            <Typography variant="h5">Geração de energia</Typography>
+            <Controller
+              name="shouldShowInstalledPower"
+              control={control}
+              render={({ field: { onChange, value } }) => (
+                <FormControl>
+                  <FormControlLabel
+                    sx={{ marginLeft: 0.5 }}
+                    control={
+                      <Switch
+                        value={value}
+                        defaultChecked={shouldShowInstalledPower}
+                        onChange={onChange}
+                      />
+                    }
+                  />
+                </FormControl>
+              )}
+            />
+          </Grid>
+          {(shouldShowInstalledPower) ? (
+            <>
+              <Grid item xs={12}>
+                <Alert
+                  severity="info"
+                  variant="standard"
+                >
+                  Insira o valor total da potência de geração instalada na Unidade Consumidora.
+                  Some a potência de todas as plantas fotovoltaicas instaladas, se houver mais de uma.
+                </Alert>
+              </Grid>
+
+              <Grid item xs={12}>
+                <Controller
+                  control={control}
+                  name="totalInstalledPower"
+                  rules={{
+                    required: "Preencha este campo",
+                    min: {
+                      value: 0.01,
+                      message: "Insira um valor maior que R$ 0,00",
+                    },
+
+                  }}
+                  render={({
+                    field: { onChange, onBlur, value },
+                    fieldState: { error },
+                  }) => (
+                    <NumericFormat
+                      value={value}
+                      customInput={TextField}
+                      label="Potêcia Instalada *"
+                      fullWidth
+                      InputProps={{
+                        endAdornment: (
+                          <InputAdornment position="end">kW</InputAdornment>
+                        ),
+                      }}
+                      type="text"
+                      allowNegative={false}
+                      isAllowed={({ floatValue }) =>
+                        !floatValue || floatValue <= 99999.99
+                      }
+                      decimalScale={2}
+                      decimalSeparator=","
+                      thousandSeparator={"."}
+                      error={Boolean(error)}
+                      helperText={error?.message ?? " "}
+                      onValueChange={(values) => onChange(values.floatValue)}
+                      onBlur={onBlur}
+                    />
+                  )}
+                />
+              </Grid>
+            </>
+          ) : null}
+        </Grid >
+      </>
+    ),
+    [control, shouldShowInstalledPower]
   );
 
   return (
@@ -746,6 +842,7 @@ const ConsumerUnitEditForm = () => {
           <ConsumerUnitSection key={0} />,
           <ContractSection key={1} />,
           <ContractedDemand key={2} />,
+          <InstalledPower key={3} />,
         ]}
         header={<></>}
       />

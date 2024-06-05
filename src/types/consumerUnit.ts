@@ -11,6 +11,8 @@ export interface CreateConsumerUnitForm {
   contracted: number | "";
   peakContractedDemandInKw: number | "";
   offPeakContractedDemandInKw: number | "";
+  totalInstalledPower: number | null;
+  shouldShowInstalledPower: boolean | null;
 }
 
 export interface EditConsumerUnitForm {
@@ -23,6 +25,8 @@ export interface EditConsumerUnitForm {
   offPeakContractedDemandInKw: number | "";
   supplyVoltage: number | "";
   distributor: number | "";
+  totalInstalledPower: number | null;
+  shouldShowInstalledPower: boolean | null;
 }
 
 export type ConsumerUnit = {
@@ -33,6 +37,7 @@ export type ConsumerUnit = {
   isFavorite: boolean;
   isCurrentEnergyBillFilled: boolean;
   pendingEnergyBillsNumber: number;
+  totalInstalledPower: number | null;
 };
 
 export type ConsumerUnitsPayload = ConsumerUnit[];
@@ -42,6 +47,7 @@ export interface ConsumerUnitRequestPayload {
   code: string;
   isActive: boolean;
   university: number;
+  totalInstalledPower: number | null;
 }
 
 export interface ConsumerUnitRequestPayloadEdit {
@@ -50,6 +56,7 @@ export interface ConsumerUnitRequestPayloadEdit {
   code: string;
   isActive: boolean;
   university: number;
+  totalInstalledPower: number | null;
 }
 
 export interface ContractRequestPayload {
