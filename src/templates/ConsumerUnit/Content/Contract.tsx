@@ -29,7 +29,10 @@ const ConsumerUnitContractContent = () => {
   const dispatch = useDispatch();
   const consumerUnitId = useSelector(selectActiveConsumerUnitId);
   const { data: contractData } = useGetContractQuery(
-    consumerUnitId ?? skipToken
+    consumerUnitId ?? skipToken,
+    {
+      refetchOnMountOrArgChange: true,
+    }
   );
 
   const [isRenewContractDialogOpen, setIsRenewContractDialogOpen] =

@@ -122,7 +122,10 @@ const ConsumerUnitInvoiceContentTable = () => {
   const [selectedBillenergyId, setSelectedEnergyBillId] = useState<number>(0);
 
   const { data: invoicesPayload } = useFetchInvoicesQuery(
-    consumerUnitId ?? skipToken
+    consumerUnitId ?? skipToken,
+    {
+      refetchOnMountOrArgChange: true,
+    }
   );
   const activeFilter = useSelector(selectConsumerUnitInvoiceActiveFilter);
   const dataGridRows = useSelector(selectConsumerUnitInvoiceDataGridRows);

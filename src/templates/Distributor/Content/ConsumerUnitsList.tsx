@@ -16,7 +16,10 @@ const DistributorContentConsumerUnitsList = () => {
   const selectedSubgroupTariff = useSelector(selectActiveSubgroup);
 
   const { data: tariffsSubgroups, isLoading } = useGetDistributorSubgroupsQuery(
-    distributorId ?? skipToken
+    distributorId ?? skipToken,
+    {
+      refetchOnMountOrArgChange: true,
+    }
   );
 
   const consumerUnits = useMemo(() => {

@@ -105,7 +105,10 @@ const Drawer = () => {
   const dispatch = useDispatch();
   const { data: session } = useSession();
   const { data: currentUser } = useGetPersonQuery(
-    (session?.user.id as number) || skipToken
+    (session?.user.id as number) || skipToken,
+    {
+      refetchOnMountOrArgChange: true
+    }
   );
 
   const isDrawerOpen = useSelector(selectIsDrawerOpen);
@@ -127,7 +130,7 @@ const Drawer = () => {
 
       if (!routeItem.roles) {
         allowedRoutes.push(routeItem);
-      } else if (routeItem.roles.includes(session.user.type)) {
+      } else if (routeItem.roles.includes(currentUser!.type)) {
         allowedRoutes.push(routeItem);
       }
     });
