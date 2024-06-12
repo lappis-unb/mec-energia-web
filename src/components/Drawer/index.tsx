@@ -130,13 +130,13 @@ const Drawer = () => {
 
       if (!routeItem.roles) {
         allowedRoutes.push(routeItem);
-      } else if (routeItem.roles.includes(currentUser!.type)) {
+      } else if (currentUser?.type && routeItem.roles.includes(currentUser.type)) {
         allowedRoutes.push(routeItem);
       }
     });
 
     return allowedRoutes;
-  }, [session, router.pathname]);
+  }, [session, router.pathname, currentUser?.type]);
 
   const isCurrentRoute = useCallback(
     (pathname: string) => pathname === router.pathname,
