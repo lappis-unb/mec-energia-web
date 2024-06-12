@@ -371,6 +371,12 @@ export const mecEnergiaApi = createApi({
       query: () => `/universities`,
       providesTags: ["Institution"],
     }),
+    resetPasswordAdminRequest: builder.query<string, { email: string }>({
+      query: ({ email }) => ({
+        url: `/reset-password/?email=${email}`,
+        method: "POST",
+      }),
+    }),
   }),
 });
 
@@ -412,4 +418,5 @@ export const {
   useFetchInstitutionsQuery,
   useDeleteEnergiBillMutation,
   useDeleteDistributorMutation,
+  useLazyResetPasswordAdminRequestQuery,
 } = mecEnergiaApi;

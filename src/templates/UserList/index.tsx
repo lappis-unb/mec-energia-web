@@ -108,7 +108,7 @@ const UserListTemplate = () => {
                 </TableCell>
 
                 <TableCell>
-                  <UserListPasswordResetButton />
+                  <UserListPasswordResetButton email={user.email}/>
                 </TableCell>
               </TableRow>
             ))}
