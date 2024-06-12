@@ -4,15 +4,15 @@ import { LockResetRounded } from "@mui/icons-material";
 import { useLazyResetPasswordAdminRequestQuery } from "@/api";
 
 interface UserListPasswordResetButtonProps {
-  email: string;
+  id: string;
 }
 
-const UserListPasswordResetButton = ({ email }: UserListPasswordResetButtonProps) => {
+const UserListPasswordResetButton = ({ id }: UserListPasswordResetButtonProps) => {
   const [triggerResetPasswordRequest, { isLoading }] = useLazyResetPasswordAdminRequestQuery();
 
   const handleOnPasswordResetButtonClick = useCallback(() => {
-    triggerResetPasswordRequest({ email });
-  }, [triggerResetPasswordRequest, email]);
+    triggerResetPasswordRequest({ id });
+  }, [triggerResetPasswordRequest, id]);
 
   return (
     <IconButton onClick={handleOnPasswordResetButtonClick} disabled={isLoading}>
