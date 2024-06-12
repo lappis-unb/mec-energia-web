@@ -1,5 +1,6 @@
 import React, { Fragment, useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useSession } from "next-auth/react";
 import {
   selectIsPersonCreateFormOpen,
   setIsErrorNotificationOpen,
@@ -53,6 +54,7 @@ const CreatePersonForm = () => {
     createPerson,
     { isError, isSuccess, isLoading, reset: resetMutation },
   ] = useCreatePersonMutation();
+  const { data: session } = useSession();
   const form = useForm({ defaultValues });
   const {
     control,
@@ -87,13 +89,18 @@ const CreatePersonForm = () => {
 
   const onSubmitHandler: SubmitHandler<CreatePersonForm> = async (data) => {
     const { email, firstName, lastName, type, university } = data;
+    
+    // Verifica se o usuário não é um super usuário e define o ID da universidade com base na sessão do usuário
+    const universityId = session?.user?.type !== UserRole.SUPER_USER ? (session?.user?.universityId ?? 0) : (university?.id ?? 0);
+  
     const body: CreatePersonRequestPayload = {
       email,
       firstName,
       lastName,
       type,
-      university: university?.id ?? 0,
+      university: universityId,
     };
+
     await createPerson(body);
   };
 
@@ -220,49 +227,52 @@ const CreatePersonForm = () => {
         />
       </Grid>
 
-      <Grid item xs={12}>
-        <Controller
-          control={control}
-          name={"university"}
-          rules={{ required: "Selecione alguma universidade" }}
-          render={({
-            field: { onChange, onBlur, value },
-            fieldState: { error },
-          }) => (
-            <>
-              <Autocomplete
-                id="university-select"
-                options={institutionsOptions || []}
-                getOptionLabel={(option) => option.label}
-                sx={{ width: 450 }}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Instituição *"
-                    placeholder="Selecione uma instituição"
-                    error={!!error}
-                  />
+      {session?.user?.type === UserRole.SUPER_USER && (
+        <Grid item xs={12}>
+          <Controller
+            control={control}
+            name={"university"}
+            rules={{ required: "Selecione alguma universidade" }}
+            render={({
+              field: { onChange, onBlur, value },
+              fieldState: { error },
+            }) => (
+              <>
+                <Autocomplete
+                  id="university-select"
+                  options={institutionsOptions || []}
+                  getOptionLabel={(option) => option.label}
+                  sx={{ width: 450 }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Instituição *"
+                      placeholder="Selecione uma instituição"
+                      error={!!error}
+                    />
+                  )}
+                  value={value}
+                  onBlur={onBlur}
+                  onChange={(_, data) => {
+                    onChange(data);
+                    return data;
+                  }}
+                />
+                {errors.university !== undefined && (
+                  <Typography
+                    mt={0.4}
+                    ml={2}
+                    sx={{ color: "error.main", fontSize: 13 }}
+                  >
+                    {errors.university.message}
+                  </Typography>
                 )}
-                value={value}
-                onBlur={onBlur}
-                onChange={(_, data) => {
-                  onChange(data);
-                  return data;
-                }}
-              />
-              {errors.university !== undefined && (
-                <Typography
-                  mt={0.4}
-                  ml={2}
-                  sx={{ color: "error.main", fontSize: 13 }}
-                >
-                  {errors.university.message}
-                </Typography>
-              )}
-            </>
-          )}
-        />
-      </Grid>
+              </>
+            )}
+          />
+        </Grid>
+
+      )}
     </>
   ), [control, errors.university, institutionsOptions])
 
