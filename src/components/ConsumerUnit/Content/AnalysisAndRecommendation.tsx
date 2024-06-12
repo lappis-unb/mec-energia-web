@@ -69,36 +69,37 @@ export const AnalysisAndRecommendation = () => {
       {(hasErrors || hasWarnings) && (
         <Grid container spacing={1} sx={{ mb: 1 }}>
           {
-          recommendation.errors.map((error, i) => (
-            <Grid key={i} item xs={12}>
-              <Alert
-                key={i}
-                severity="warning"
-                icon={<WarningAmberOutlined style={{ color: "#000" }} />}
-                onClick={() => {
+            recommendation.errors.map((error, i) => (
+              <Grid key={i} item xs={12}>
+                <Alert
+                  key={i}
+                  severity="warning"
+                  variant="filled"
+                  icon={<WarningAmberOutlined style={{ color: "#000" }} />}
+                  onClick={() => {
                     dispatch(setConsumerUnitOpenedTab(0));
                     dispatch(setConsumerUnitInvoiceActiveFilter('pending'));
-                }}
-                sx={{ cursor: 'pointer'}}
-              >
-                {error}
-              </Alert>
-            </Grid>
-          ))}
+                  }}
+                  sx={{ cursor: 'pointer', whiteSpace: 'pre-line' }}
+                >
+                  {error}
+                </Alert>
+              </Grid>
+            ))}
           {recommendation.warnings.map((warn, i) => (
             <Grid key={i} item xs={12}>
-              <Alert 
+              <Alert
                 onClick={() => {
-                  if(warn.charAt(0) == 'L'){
+                  if (warn.charAt(0) == 'L') {
                     dispatch(setConsumerUnitOpenedTab(0));
                     dispatch(setConsumerUnitInvoiceActiveFilter('pending'));
-                  } else if(warn.charAt(0) == 'A'){
+                  } else if (warn.charAt(0) == 'A') {
                     dispatch(setActiveSubgroup(contract?.subgroup || null));
                     router.push(`/distribuidoras/${contract?.distributor}`);
                   }
                 }}
-                sx={{ cursor: 'pointer'}}
-                severity="info" 
+                sx={{ cursor: 'pointer' }}
+                severity="info"
                 variant="outlined"
               >
                 {warn}
