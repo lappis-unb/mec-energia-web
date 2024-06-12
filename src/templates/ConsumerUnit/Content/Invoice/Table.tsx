@@ -7,7 +7,7 @@ import ConfirmWarning from "@/components/ConfirmWarning/ConfirmWarning";
 import { GetApp } from "@mui/icons-material";
 import { formatToPtBrCurrency } from "@/utils/number";
 
-import { Box, Button, IconButton, styled } from "@mui/material";
+import { Box, Button, Grid, IconButton, styled } from "@mui/material";
 import {
   DataGrid,
   GridColDef,
@@ -74,18 +74,28 @@ const getFilteredInvoices = (
   const currentYear = currentDate.getFullYear();
   const currentMonth = currentDate.getMonth();
 
-  return invoicesPayload[activeFilter]
-    .filter(invoice => invoice.month <= currentMonth || invoice.year < currentYear);
+  return invoicesPayload[activeFilter].filter(
+    (invoice) => invoice.month <= currentMonth || invoice.year < currentYear
+  );
 };
 
 const formatConsumptionDemandToPtBrCurrency = (energyBill: EnergyBill) => {
   return {
-    invoiceInReais: typeof(energyBill.invoiceInReais) == "number" ? formatToPtBrCurrency(energyBill.invoiceInReais, 2) : "-",
-    offPeakConsumptionInKwh: formatToPtBrCurrency(energyBill.offPeakConsumptionInKwh),
+    invoiceInReais:
+      typeof energyBill.invoiceInReais == "number"
+        ? formatToPtBrCurrency(energyBill.invoiceInReais, 2)
+        : "-",
+    offPeakConsumptionInKwh: formatToPtBrCurrency(
+      energyBill.offPeakConsumptionInKwh
+    ),
     peakConsumptionInKwh: formatToPtBrCurrency(energyBill.peakConsumptionInKwh),
-    offPeakMeasuredDemandInKw: formatToPtBrCurrency(energyBill.offPeakMeasuredDemandInKw),
-    peakMeasuredDemandInKw: formatToPtBrCurrency(energyBill.peakMeasuredDemandInKw),
-  }
+    offPeakMeasuredDemandInKw: formatToPtBrCurrency(
+      energyBill.offPeakMeasuredDemandInKw
+    ),
+    peakMeasuredDemandInKw: formatToPtBrCurrency(
+      energyBill.peakMeasuredDemandInKw
+    ),
+  };
 };
 
 const getDataGridRows = (
@@ -127,6 +137,7 @@ const ConsumerUnitInvoiceContentTable = () => {
       refetchOnMountOrArgChange: true,
     }
   );
+
   const activeFilter = useSelector(selectConsumerUnitInvoiceActiveFilter);
   const dataGridRows = useSelector(selectConsumerUnitInvoiceDataGridRows);
 
@@ -161,7 +172,7 @@ const ConsumerUnitInvoiceContentTable = () => {
     const pdfUrl = `/media/energy_bills/`;
 
     // Criando um novo link para realizar o download do arquivo PDF
-    const link = document.createElement('a');
+    const link = document.createElement("a");
     link.href = pdfUrl;
     link.download = `${energyBillId}.pdf`;
     document.body.appendChild(link);
@@ -295,7 +306,8 @@ const ConsumerUnitInvoiceContentTable = () => {
               handleDownloadPDF(energyBillId);
             }}
           >
-            <GetApp />  {/* Este é um ícone de download do Material Icons. Se não for adequado, você pode substituí-lo por outro ícone de sua preferência. */}
+            <GetApp />{" "}
+            {/* Este é um ícone de download do Material Icons. Se não for adequado, você pode substituí-lo por outro ícone de sua preferência. */}
           </IconButton>
         );
       },
@@ -382,28 +394,29 @@ const ConsumerUnitInvoiceContentTable = () => {
   );
 
   /**
-   * Fonte: https://github.com/mui/mui-x/issues/5189 
+   * Fonte: https://github.com/mui/mui-x/issues/5189
    * @description fixa o menu da tabela
-  */
+   */
   const FixedMenuDataGrid = styled(DataGrid)(() => ({
     "& .MuiDataGrid-main": {
       // remove overflow hidden overwise sticky does not work
-      overflow: "unset"
+      overflow: "unset",
     },
     "& .MuiDataGrid-columnHeaders": {
       position: "sticky",
       backgroundColor: "#EEF4F4",
       zIndex: 1,
-      top: 70
+      top: 70,
     },
     "& .MuiDataGrid-virtualScroller": {
       // remove the space left for the header
-      marginTop: "0!important"
-    }
+      marginTop: "0!important",
+    },
   }));
 
   return (
     <>
+      <Grid container justifyContent="flex-end"></Grid>
       <FixedMenuDataGrid
         experimentalFeatures={{ columnGrouping: true }}
         columnGroupingModel={columnGroupingModel}

@@ -77,10 +77,9 @@ const theme = createTheme(
           },
           standardWarning: {
             backgroundColor: "#FBF4E7",
-            color: "#613E05", // Cor do texto do alerta de aviso
+            color: "#613E05",
             "& .MuiAlert-icon": {
-              // Especifica a customização do ícone dentro de um alerta de aviso
-              color: "#D98A0B", // Nova cor do ícone
+              color: "#D98A0B",
             },
           },
           standardInfo: {
@@ -98,6 +97,9 @@ const theme = createTheme(
           filledWarning: {
             backgroundColor: "#D98A0B",
             color: "#000",
+            "& .MuiAlert-icon": {
+              color: "#000",
+            },
           },
           filledInfo: {
             backgroundColor: "#0E438C",
@@ -177,12 +179,12 @@ const theme = createTheme(
             button: {
               color: "white",
             },
-            // Remove o último separador de coluna dos componentes baseados no MuiDataGrid 
-            "&:last-of-type": { 
-              "& .MuiDataGrid-columnSeparator": { 
-                display: "none" 
-              }
-            }
+            // Remove o último separador de coluna dos componentes baseados no MuiDataGrid
+            "&:last-of-type": {
+              "& .MuiDataGrid-columnSeparator": {
+                display: "none",
+              },
+            },
           },
         },
       },

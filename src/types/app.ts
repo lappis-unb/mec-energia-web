@@ -28,6 +28,7 @@ export type AppState = {
     activeId: number | null;
     isCreateFormOpen: boolean;
     isEditFormOpen: boolean;
+    isCsvFormOpen: boolean;
     isRenewContractFormOpen: boolean;
     activeFilter: ConsumerUnitFilter;
     openedTab: ConsumerUnitTab;

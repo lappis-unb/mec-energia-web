@@ -1,5 +1,4 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-
 import {
   AppState,
   ConsumerUnitFilter,
@@ -22,6 +21,7 @@ const initialState: AppState = {
   consumerUnit: {
     activeId: null,
     isCreateFormOpen: false,
+    isCsvFormOpen: false,
     isEditFormOpen: false,
     isRenewContractFormOpen: false,
     activeFilter: "all",
@@ -127,6 +127,9 @@ export const appSlice = createSlice({
     },
     setIsConsumerUnitEditFormOpen: (state, action: PayloadAction<boolean>) => {
       state.consumerUnit.isEditFormOpen = action.payload;
+    },
+    setIsCsvFormOpen: (state, action: PayloadAction<boolean>) => {
+      state.consumerUnit.isCsvFormOpen = action.payload;
     },
     setIsConsumerUnitRenewContractFormOpen: (
       state,
@@ -240,6 +243,7 @@ export const {
   setConsumerUnitOpenedTab,
   setIsConsumerUnitCreateFormOpen,
   setIsConsumerUnitEditFormOpen,
+  setIsCsvFormOpen,
   setIsConsumerUnitRenewContractFormOpen,
 
   setActiveDistributorId,
@@ -305,6 +309,9 @@ export const selectIsConsumerUnitEditFormOpen = (state: RootState) => {
 export const selectIsConsumerUnitRenewContractFormOpen = (state: RootState) => {
   return state.app.consumerUnit.isRenewContractFormOpen;
 };
+
+export const selectIsCsvFormOpen = (state: RootState) =>
+  state.app.consumerUnit.isCsvFormOpen;
 
 // Distributor Page
 

@@ -47,6 +47,29 @@ export interface PostEnergyBillResponsePayload {
   consumerUnit: string;
   pdfBase64?: string;
 }
+interface ValidationErrorDetails {
+  [field: string]: string | string[];
+}
+export interface PostMultipleEnergyBillResponsePayload {
+  created: IEnergyBill[];
+  errors?: {
+    error: string;
+    data: IEnergyBill;
+    details?: ValidationErrorDetails;
+  }[];
+}
+
+export interface IEnergyBill {
+  date: string;
+  anotacoes?: string;
+  address?: string;
+  invoiceInReais?: number;
+  isAtypical?: boolean;
+  peakConsumptionInKwh: number;
+  offPeakConsumptionInKwh: number;
+  peakMeasuredDemandInKw: number;
+  offPeakMeasuredDemandInKw: number;
+}
 
 export interface EditEnergyBillResponsePayload {
   id: number;

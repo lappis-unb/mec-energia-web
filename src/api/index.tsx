@@ -23,6 +23,8 @@ import {
   EditEnergyBillResponsePayload,
   PostEnergyBillRequestPayload,
   PostEnergyBillResponsePayload,
+  IEnergyBill,
+  PostMultipleEnergyBillResponsePayload,
 } from "@/types/energyBill";
 import { GetSubgroupsResponsePayload } from "@/types/subgroups";
 import { Recommendation, RecommendationSettings } from "@/types/recommendation";
@@ -187,10 +189,10 @@ export const mecEnergiaApi = createApi({
       providesTags: (result, error, arg) =>
         result
           ? [
-            { type: "CurrentContract", arg },
-            "CurrentContract",
-            "Recommendation",
-          ]
+              { type: "CurrentContract", arg },
+              "CurrentContract",
+              "Recommendation",
+            ]
           : ["CurrentContract", "Recommendation"],
     }),
     renewContract: builder.mutation<
@@ -212,6 +214,32 @@ export const mecEnergiaApi = createApi({
         url: "/energy-bills/",
         method: "POST",
         body,
+      }),
+      invalidatesTags: ["Invoices", "ConsumerUnit", "Recommendation"],
+    }),
+    postMultipleInvoices: builder.mutation<
+      PostMultipleEnergyBillResponsePayload,
+      { consumerUnit: string; contract: string; energyBills: IEnergyBill[] }
+    >({
+      query: ({ consumerUnit, contract, energyBills }) => ({
+        url: "/energy-bills/multiple_create/",
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: {
+          consumer_unit: consumerUnit,
+          contract: contract,
+          energy_bills: energyBills,
+        },
+      }),
+      invalidatesTags: ["Invoices", "ConsumerUnit", "Recommendation"],
+    }),
+    postInvoiceCsv: builder.mutation<string, FormData>({
+      query: (formData) => ({
+        url: "/energy-bills/upload/",
+        method: "POST",
+        body: formData,
       }),
       invalidatesTags: ["Invoices", "ConsumerUnit", "Recommendation"],
     }),
@@ -393,6 +421,8 @@ export const {
   useGetContractQuery,
   useRenewContractMutation,
   usePostInvoiceMutation,
+  usePostMultipleInvoicesMutation,
+  usePostInvoiceCsvMutation,
   useEditInvoiceMutation,
   useGetCurrentInvoiceQuery,
   useFetchConsumerUnitsQuery,
