@@ -308,15 +308,19 @@ const CsvForm: React.FC<CsvFormProps> = ({ csvData }) => {
 
                       const errorMessages = [];
                       if (item.date.errorDoubleDateCsv) {
-                        errorMessages.push("- Data duplicada dentro do CSV.");
+                        errorMessages.push(
+                          "- Este mês está duplicado na planilha"
+                        );
                       }
                       if (item.date.errorDoubleDateRegistered) {
                         errorMessages.push(
-                          "- Data já registrada para esta unidade consumidora."
+                          "- Já existe uma fatura lançada neste mês"
                         );
                       }
                       if (item.date.errorDateNotCoveredByContract) {
-                        errorMessages.push("- Data não coberta pelo contrato.");
+                        errorMessages.push(
+                          "- Este mês não é coberto por um contrato registrado no sistema"
+                        );
                       }
                       if (
                         item.peakConsumptionInKwh.error ||
