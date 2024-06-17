@@ -30,6 +30,8 @@ import {
   selectActiveConsumerUnitId,
   selectIsCsvFormOpen,
   setIsCsvFormOpen,
+  setIsErrorNotificationOpen,
+  setIsSuccessNotificationOpen,
 } from "@/store/appSlice";
 import { useTheme } from "@mui/material/styles";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
@@ -110,12 +112,32 @@ const CsvForm: React.FC<CsvFormProps> = ({ csvData }) => {
       energyBills: transformSelectedRows(selectedRows),
     };
 
+    const handleNotification = (isSuccess: boolean) => {
+      if (isSuccess) {
+        dispatch(
+          setIsSuccessNotificationOpen({
+            isOpen: true,
+            text: "Faturas lançadas com sucesso",
+          })
+        );
+      } else {
+        dispatch(
+          setIsErrorNotificationOpen({
+            isOpen: true,
+            text: "Erro ao lançar faturas",
+          })
+        );
+      }
+    };
+
     try {
       const response = await postMultipleInvoice(payload).unwrap();
       console.log("Success:", response);
+      handleNotification(true);
       // Optionally, close the drawer on success
       handleCloseDrawer();
     } catch (err) {
+      handleNotification(false);
       console.error("Error:", err);
     }
   };
