@@ -90,7 +90,7 @@ const CsvDialog: React.FC<CsvDialogProps> = ({
         alignItems="center"
         paddingRight={3}
       >
-        <DialogTitle>Importar Planilha</DialogTitle>
+        <DialogTitle>Importar planilha</DialogTitle>
         <Link
           component="button"
           onClick={handleDownloadClick}
@@ -101,11 +101,13 @@ const CsvDialog: React.FC<CsvDialogProps> = ({
             marginLeft: "auto",
           }}
         >
-          modelo.csv{" "}
-          <AttachFileRoundedIcon style={{ marginLeft: 2, fontSize: 19 }} />
+          <Box display="flex" alignItems="center" justifyContent="center">
+            <Typography variant="body2">modelo.csv</Typography>
+            <AttachFileRoundedIcon style={{ marginLeft: 2, fontSize: 19 }} />
+          </Box>
         </Link>
       </Box>
-      <DialogContent>
+      <DialogContent sx={{ paddingTop: "8px" }}>
         <Box pb={2}>
           <Typography variant="body2" color="textSecondary">
             É possível lançar várias faturas faturas de uma só vez. Para isso,
@@ -139,7 +141,7 @@ const CsvDialog: React.FC<CsvDialogProps> = ({
         />
         <label htmlFor="csvFileInput">
           <Button variant="contained" component="span">
-            Escolher CSV
+            Importar
           </Button>
         </label>
       </DialogContent>

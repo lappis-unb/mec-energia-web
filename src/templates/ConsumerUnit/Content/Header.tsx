@@ -162,7 +162,7 @@ const ConsumerUnitContentHeader = () => {
                     size="small"
                     onClick={handleOpenCsvDialog}
                   >
-                    Importar Planilha
+                    Importar planilha
                   </Button>
                 </Stack>
               </Box>
