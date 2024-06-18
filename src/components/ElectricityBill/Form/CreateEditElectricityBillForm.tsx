@@ -33,10 +33,13 @@ import {
   PostEnergyBillRequestPayload,
 } from "@/types/energyBill";
 import InsightsIcon from "@mui/icons-material/Insights";
+import ReportRoundedIcon from "@mui/icons-material/ReportRounded";
+
 import {
   useEditInvoiceMutation,
   useGetConsumerUnitQuery,
   useGetContractQuery,
+  useGetAllContractsQuery,
   useGetCurrentInvoiceQuery,
   useGetDistributorsQuery,
   usePostInvoiceMutation,
@@ -47,9 +50,8 @@ import { DistributorPropsTariffs } from "@/types/distributor";
 import { sendFormattedDate } from "@/utils/date";
 import FormDrawerV2 from "@/components/Form/DrawerV2";
 
-import CloudUploadIcon from '@mui/icons-material/CloudUpload'; // Importe o ícone do Material-UI
-import Button from '@mui/material/Button';
-
+import CloudUploadIcon from "@mui/icons-material/CloudUpload"; // Importe o ícone do Material-UI
+import Button from "@mui/material/Button";
 
 const defaultValues: CreateAndEditEnergyBillForm = {
   date: new Date(),
@@ -98,12 +100,14 @@ const CreateEditEnergyBillForm = () => {
   const { data: contract } = useGetContractQuery(
     activeConsumerUnitId || skipToken
   );
+  const { data: contracts } = useGetAllContractsQuery(
+    activeConsumerUnitId || skipToken
+  );
   const { data: distributors } = useGetDistributorsQuery(
     session.data?.user.universityId || skipToken
   );
-  const { data: currentInvoice, refetch: refetchCurrentInvoice } = useGetCurrentInvoiceQuery(
-    currentInvoiceId || skipToken
-  );
+  const { data: currentInvoice, refetch: refetchCurrentInvoice } =
+    useGetCurrentInvoiceQuery(currentInvoiceId || skipToken);
 
   const [currentDistributor, setCurrentDistributor] =
     useState<DistributorPropsTariffs>();
@@ -133,9 +137,9 @@ const CreateEditEnergyBillForm = () => {
           const { data: currentInvoice } = await refetchCurrentInvoice();
           updateCurrentInvoiceData(currentInvoice);
         } catch (err) {
-          console.error('Failed to refetch:', err);
+          console.error("Failed to refetch:", err);
         }
-      }
+      };
 
       // Garante que o refetch não seja executado antes do fetch
       if (isEditEnergyBillFormOpen) {
@@ -149,7 +153,13 @@ const CreateEditEnergyBillForm = () => {
       const date = new Date(`${year}/${month + 1}`);
       setValue("date", date);
     }
-  }, [month, isCreateEnergyBillFormOpen, isEditEnergyBillFormOpen, setValue, year]);
+  }, [
+    month,
+    isCreateEnergyBillFormOpen,
+    isEditEnergyBillFormOpen,
+    setValue,
+    year,
+  ]);
 
   useEffect(() => {
     if (isCreateEnergyBillFormOpen) {
@@ -207,13 +217,30 @@ const CreateEditEnergyBillForm = () => {
     if (distributor) setCurrentDistributor(distributor);
   }, [contract?.distributor, distributors]);
 
-  const updateCurrentInvoiceData = (currentInvoice: CurrentEnergyBillResponsePayload | undefined = undefined) => {
-    setValue("invoiceInReais", currentInvoice?.invoiceInReais?.toString() ?? "");
-    setValue("peakConsumptionInKwh", currentInvoice?.peakConsumptionInKwh ?? "");
-    setValue("offPeakConsumptionInKwh", currentInvoice?.offPeakConsumptionInKwh ?? "");
-    setValue("peakMeasuredDemandInKw", currentInvoice?.peakMeasuredDemandInKw ?? "");
-    setValue("offPeakMeasuredDemandInKw", currentInvoice?.offPeakMeasuredDemandInKw ?? "");
-  }
+  const updateCurrentInvoiceData = (
+    currentInvoice: CurrentEnergyBillResponsePayload | undefined = undefined
+  ) => {
+    setValue(
+      "invoiceInReais",
+      currentInvoice?.invoiceInReais?.toString() ?? ""
+    );
+    setValue(
+      "peakConsumptionInKwh",
+      currentInvoice?.peakConsumptionInKwh ?? ""
+    );
+    setValue(
+      "offPeakConsumptionInKwh",
+      currentInvoice?.offPeakConsumptionInKwh ?? ""
+    );
+    setValue(
+      "peakMeasuredDemandInKw",
+      currentInvoice?.peakMeasuredDemandInKw ?? ""
+    );
+    setValue(
+      "offPeakMeasuredDemandInKw",
+      currentInvoice?.offPeakMeasuredDemandInKw ?? ""
+    );
+  };
 
   const handleCancelEdition = () => {
     if (isDirty) {
@@ -353,34 +380,67 @@ const CreateEditEnergyBillForm = () => {
         <Grid item xs={8}>
           <Typography variant="h5">Fatura</Typography>
         </Grid>
-        <Grid item xs={12}>
+        <Grid item xs={12} mt={1}>
           <Controller
             control={control}
             name="date"
             rules={{
               required: "Já existe uma fatura lançada neste mês",
-              validate: () => true,
+              validate: (value) => {
+                const selectedDate = new Date(value);
+                if (contracts && contracts.length > 0) {
+                  const earliestContract = contracts.reduce(
+                    (earliest, current) => {
+                      return new Date(current.startDate) <
+                        new Date(earliest.startDate)
+                        ? current
+                        : earliest;
+                    }
+                  );
+
+                  const contractStartDate = new Date(
+                    earliestContract.startDate
+                  );
+
+                  if (selectedDate <= contractStartDate) {
+                    return "Este mês não é coberto por um contrato registrado no sistema";
+                  }
+                }
+                return true;
+              },
             }}
             render={({ field: { value, onChange }, fieldState: { error } }) => (
-              <DatePicker
-                inputFormat="MMMM/yyyy"
-                value={value}
-                label="Mês de referência *"
-                minDate={new Date("2010")}
-                disableFuture
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    inputProps={{
-                      ...params.inputProps,
-                      placeholder: "mm/aaaa",
-                    }}
-                    helperText={error?.message ?? " "}
-                    error={!!error}
-                  />
-                )}
-                onChange={onChange}
-              />
+              <Box mb={3}>
+                <DatePicker
+                  inputFormat="MMMM/yyyy"
+                  value={value}
+                  label="Mês de referência *"
+                  minDate={new Date("2010")}
+                  disableFuture
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      inputProps={{
+                        ...params.inputProps,
+                        placeholder: "mm/aaaa",
+                      }}
+                      error={!!error}
+                      helperText={
+                        error ? (
+                          <Box display="flex" alignItems="start">
+                            <ReportRoundedIcon color="error" fontSize="small" />
+                            <Box ml={1}>{error.message}</Box>
+                          </Box>
+                        ) : (
+                          " "
+                        )
+                      }
+                      sx={{ width: 250 }}
+                    />
+                  )}
+                  onChange={onChange}
+                />
+              </Box>
             )}
           />
         </Grid>
@@ -423,6 +483,7 @@ const CreateEditEnergyBillForm = () => {
                 thousandSeparator={"."}
                 onValueChange={(values) => onChange(values.floatValue)}
                 onBlur={onBlur}
+                sx={{ width: 200 }}
               />
             )}
           />
@@ -699,7 +760,6 @@ const CreateEditEnergyBillForm = () => {
   // Novo estado para rastrear o arquivo PDF selecionado
   const [selectedPdfFile, setSelectedPdfFile] = useState<File | null>(null);
 
-
   // Novo manipulador de upload de arquivo PDF
   const handlePdfFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length > 0) {
@@ -752,7 +812,7 @@ const CreateEditEnergyBillForm = () => {
             <input
               type="file"
               accept=".pdf"
-              style={{ display: 'none' }}
+              style={{ display: "none" }}
               onChange={handlePdfFileUpload}
               id="pdfFile" // Adicionei o ID para associá-lo ao label
             />
@@ -769,7 +829,7 @@ const CreateEditEnergyBillForm = () => {
             {selectedPdfFile && (
               <p>Arquivo PDF selecionado: {selectedPdfFile.name}</p>
             )}
-          </Grid>
+          </Grid>,
         ]}
       />
       <FormWarningDialog

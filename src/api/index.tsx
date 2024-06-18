@@ -116,8 +116,12 @@ export const mecEnergiaApi = createApi({
       query: (universityId) => `distributors/?university_id=${universityId}`,
       providesTags: ["Distributors", "Tariffs"],
     }),
-    fetchPendingDistributors: builder.query<DistributorResponsePayload[], number>({
-      query: (universityId) => `distributors?university_id=${universityId}&only_pending=true`,
+    fetchPendingDistributors: builder.query<
+      DistributorResponsePayload[],
+      number
+    >({
+      query: (universityId) =>
+        `distributors?university_id=${universityId}&only_pending=true`,
       providesTags: ["Distributors"],
     }),
     fetchDistributors: builder.query<DistributorResponsePayload[], number>({
@@ -186,6 +190,18 @@ export const mecEnergiaApi = createApi({
     getContract: builder.query<GetContractsResponsePayload, number>({
       query: (consumerUnitId) =>
         `contracts/get-current-contract-of-consumer-unit/?consumer_unit_id=${consumerUnitId}`,
+      providesTags: (result, error, arg) =>
+        result
+          ? [
+              { type: "CurrentContract", arg },
+              "CurrentContract",
+              "Recommendation",
+            ]
+          : ["CurrentContract", "Recommendation"],
+    }),
+    getAllContracts: builder.query<GetContractsResponsePayload[], number>({
+      query: (consumerUnitId) =>
+        `contracts/?consumer_unit_id=${consumerUnitId}`,
       providesTags: (result, error, arg) =>
         result
           ? [
@@ -419,6 +435,7 @@ export const {
   useEditConsumerUnitMutation,
   useCreateConsumerUnitMutation,
   useGetContractQuery,
+  useGetAllContractsQuery,
   useRenewContractMutation,
   usePostInvoiceMutation,
   usePostMultipleInvoicesMutation,
