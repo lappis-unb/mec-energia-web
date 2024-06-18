@@ -1,21 +1,23 @@
-import { useMemo } from "react";
-import { useRouter } from "next/router";
+import { getHeadTitle } from "@/utils/head";
+import { Alert, Box, Button, Link, Paper, TextField, Typography } from "@mui/material";
+import { NextPage } from "next";
+import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import Head from "next/head";
 import Image from "next/image";
-import { signIn } from "next-auth/react";
-import { Controller, SubmitHandler, useForm } from "react-hook-form";
-import { Alert, Box, Button, Link, Paper, TextField } from "@mui/material";
-import { SignInRequestPayload } from "@/types/auth";
-import { getHeadTitle } from "@/utils/head";
+import { ResetPasswordRequestPayload } from "@/types/auth";
+import { useMemo } from "react";
+import { useRouter } from "next/router";
 import Footer from "@/components/Footer";
+import { useResetPasswordRequestMutation } from "@/api";
 
-const defaultValues: SignInRequestPayload = {
-  username: "",
-  password: "",
+const defaultValues: ResetPasswordRequestPayload = {
+  email: ""
 };
 
-const SignInTemplate = () => {
-  const headTitle = useMemo(() => getHeadTitle("Entrar"), []);
+const DefinePasswordPage: NextPage = () => {
+  const [ResetPasswordRequest] = useResetPasswordRequestMutation();
+
+  const headTitle = useMemo(() => getHeadTitle("Esqueci minha senha"), []);
 
   const router = useRouter();
 
@@ -24,13 +26,34 @@ const SignInTemplate = () => {
   } = useRouter();
 
   const form = useForm({ defaultValues });
-  const { control, handleSubmit } = form;
+  const { control, handleSubmit, setError, clearErrors } = form;
 
-  const handleOnSubmit: SubmitHandler<SignInRequestPayload> = ({
-    username,
-    password,
-  }) => {
-    signIn("credentials", { username, password, callbackUrl: "/" });
+  const handleOnSubmit: SubmitHandler<ResetPasswordRequestPayload> = async ({ email }) => {
+    // Validação do e-mail
+    const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailPattern.test(email)) {
+      setError("email", { type: "manual", message: "Formato de e-mail inválido" });
+      return;
+    }
+
+    clearErrors("email");
+    console.log("Email: ", email);
+
+    
+    try {
+        await ResetPasswordRequest({
+          email: email,
+        }).unwrap();
+        
+        // Redirect or show a success message
+        console.log('Senha redefinida com sucesso');
+        router.push("/")
+
+      } catch (error) {
+        // Handle error
+        console.error('Erro ao redefinir a senha', error);
+      }
+    // Chame a função de confirmação de redefinição de senha aqui com o email
   };
 
   return (
@@ -55,7 +78,7 @@ const SignInTemplate = () => {
               onSubmit={handleSubmit(handleOnSubmit)}
             >
               <Box
-                mt={8}
+                mt={4}
                 height="112px"
                 display="flex"
                 alignItems="center"
@@ -69,16 +92,21 @@ const SignInTemplate = () => {
                 />
               </Box>
 
-              <Box mt={8}>
+              <Box mt={4}>
+                <Typography variant="h5">Esqueci minha senha</Typography>
+                <Typography variant="subtitle1">Insira seu e-mail institucional para receber instruções de como redefinir sua senha.</Typography>
+              </Box>
+
+              <Box mt={3}>
                 <Controller
                   control={control}
-                  name="username"
+                  name="email"
                   rules={{
                     required: "Preencha este campo",
                     pattern: {
-                      value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                      message: "Insira um e-mail válido",
-                    },
+                      value: /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+                      message: "Formato de e-mail inválido"
+                    }
                   }}
                   render={({
                     field: { onChange, onBlur, value, ref },
@@ -88,6 +116,7 @@ const SignInTemplate = () => {
                       ref={ref}
                       value={value}
                       label="E-mail institucional"
+                      type="email"
                       error={Boolean(error)}
                       helperText={error?.message ?? " "}
                       fullWidth
@@ -96,53 +125,25 @@ const SignInTemplate = () => {
                     />
                   )}
                 />
-              </Box>
-
-              <Box mt={3}>
-                <Controller
-                  control={control}
-                  name="password"
-                  rules={{ required: "Preencha este campo" }}
-                  render={({
-                    field: { onChange, onBlur, value, ref },
-                    fieldState: { error },
-                  }) => (
-                    <TextField
-                      ref={ref}
-                      value={value}
-                      label="Senha"
-                      type="password"
-                      error={Boolean(error)}
-                      helperText={error?.message ?? " "}
-                      fullWidth
-                      onChange={onChange}
-                      onBlur={onBlur}
-                    />
-                  )}
-                />
-              </Box>
-
-              <Box display="flex" flexDirection="row-reverse">
-                <Link variant="caption" onClick={() => router.push("/esqueci-senha")}>Esqueci minha senha</Link>
               </Box>
 
               {error && (
                 <Box mt={2}>
                   <Alert severity="error" variant="filled">
-                    E-mail não cadastrado e/ou senha inválida
+                    E-mail não cadastrado
                   </Alert>
                 </Box>
               )}
 
               <Box mt={2}>
                 <Button type="submit" variant="contained" fullWidth>
-                  Entrar
+                  Enviar
                 </Button>
               </Box>
 
               <Box mt={5}>
                 <Box display="flex" justifyContent="center">
-                  <Link>Não tenho cadastro</Link>
+                  <Link onClick={() => router.push("/")}>Voltar</Link>
                 </Box>
               </Box>
             </Box>
@@ -155,4 +156,4 @@ const SignInTemplate = () => {
   );
 };
 
-export default SignInTemplate;
+export default DefinePasswordPage;
