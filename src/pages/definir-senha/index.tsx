@@ -5,20 +5,18 @@ import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import Head from "next/head";
 import Image from "next/image";
 import { useMemo, useState, useEffect } from "react";
+import { ResetPasswordRequestPayload } from "@/types/auth";
 import { useRouter } from "next/router";
 import Footer from "@/components/Footer";
 import { useConfirmResetPasswordMutation } from "@/api";
 
-const defaultValues: any = {
+const defaultValues: ResetPasswordRequestPayload = {
   password: "",
   confirmPassword: ""
 };
 
 const DefinePasswordPage: NextPage = () => {
-  const [
-    confirmResetPassword,
-    { isError, isSuccess, isLoading, reset: resetMutation },
-  ] = useConfirmResetPasswordMutation();
+  const [confirmResetPassword, { isLoading, error: mutationError }] = useConfirmResetPasswordMutation();
   const headTitle = useMemo(() => getHeadTitle("Definir Senha"), []);
   const [isValidPassword, setIsValidPassword] = useState<{
     hasLetter: boolean | null,
@@ -48,7 +46,6 @@ const DefinePasswordPage: NextPage = () => {
     }
   }, [router.query]);
   
-
   const {
     query: { error },
   } = useRouter();
@@ -76,7 +73,7 @@ const DefinePasswordPage: NextPage = () => {
     }
   }, [password]);
 
-  const handleOnSubmit: SubmitHandler<any> = ({
+  const handleOnSubmit: SubmitHandler<ResetPasswordRequestPayload> = async ({
     password,
     confirmPassword
   }) => {
@@ -86,11 +83,19 @@ const DefinePasswordPage: NextPage = () => {
     }
 
     clearErrors("confirmPassword");
-    console.log("user_new_password: ", password, "user_token: ", token);
-    confirmResetPassword({
-      user_token: token,
-      user_new_password: password,
-    });
+
+    try {
+      await confirmResetPassword({
+        user_token: token,
+        user_new_password: password,
+      }).unwrap();
+      
+      // Redirect or show a success message
+      console.log('Senha redefinida com sucesso');
+    } catch (error) {
+      // Handle error
+      console.error('Erro ao redefinir a senha', error);
+    }
   };
 
   const getColor = (criteria: boolean | null) => {
@@ -148,7 +153,7 @@ const DefinePasswordPage: NextPage = () => {
                     required: "Preencha este campo",
                     minLength: {
                       value: 8,
-                      message: ""
+                      message: "A senha deve ter no mínimo 8 caracteres"
                     },
                     validate: {
                       hasLetter: value => /[a-zA-Z]/.test(value),
@@ -222,15 +227,23 @@ const DefinePasswordPage: NextPage = () => {
                 </Box>
               )}
 
+              {mutationError && (
+                <Box mt={2}>
+                  <Alert severity="error" variant="filled">
+                    {mutationError.message}
+                  </Alert>
+                </Box>
+              )}
+
               <Box mt={2}>
-                <Button type="submit" variant="contained" fullWidth>
-                  Gravar
+                <Button type="submit" variant="contained" fullWidth disabled={isLoading}>
+                  {isLoading ? 'Gravando...' : 'Gravar'}
                 </Button>
               </Box>
 
               <Box mt={5}>
                 <Box display="flex" justifyContent="center">
-                  <Link>Cancelar</Link>
+                  <Link href="/">Cancelar</Link>
                 </Box>
               </Box>
             </Box>
