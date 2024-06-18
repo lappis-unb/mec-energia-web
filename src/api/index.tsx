@@ -431,6 +431,13 @@ export const mecEnergiaApi = createApi({
         },
       }),
     }),
+    resetPasswordRequest: builder.mutation<void, { email: string }>({
+      query: ({ email }) => ({
+        url: `/reset-password/?email=${email}`,
+        method: "POST",
+        body: {},
+      }),
+    }),
   }),
 });
 
@@ -477,4 +484,5 @@ export const {
   useDeleteDistributorMutation,
   useLazyResetPasswordAdminRequestQuery,
   useConfirmResetPasswordMutation,
+  useResetPasswordRequestMutation,
 } = mecEnergiaApi;
