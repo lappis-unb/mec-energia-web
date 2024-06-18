@@ -20,7 +20,7 @@ import {
   setIsConsumerUnitEditFormOpen,
   setIsConsumerUnitRenewContractFormOpen,
 } from "@/store/appSlice";
-import { useGetContractQuery } from "@/api";
+import { useGetConsumerUnitQuery, useGetContractQuery } from "@/api";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { getFormattedDate } from "@/utils/date";
 import { getTariffFlagName } from "@/utils/tariff";
@@ -34,7 +34,9 @@ const ConsumerUnitContractContent = () => {
       refetchOnMountOrArgChange: true,
     }
   );
-
+  const { data: consumerUnit } = useGetConsumerUnitQuery(
+    consumerUnitId ?? skipToken
+  )
   const [isRenewContractDialogOpen, setIsRenewContractDialogOpen] =
     useState(false);
 
@@ -72,7 +74,7 @@ const ConsumerUnitContractContent = () => {
       <Card sx={{ maxWidth: "450px" }}>
         <CardHeader title={contract?.distributorName} />
         <CardContent>
-          <Grid container spacing={4}>
+          <Grid container rowSpacing="28px" columnSpacing={4} >
             <Grid item xs={6}>
               <Typography variant="body2" color="GrayText">
                 Início
@@ -89,14 +91,28 @@ const ConsumerUnitContractContent = () => {
               <Typography variant="body1">{contract?.tariffFlag}</Typography>
             </Grid>
 
-            <Grid item xs={6}>
-              <Typography variant="body2" color="GrayText">
-                Tensão de fornecimento
-              </Typography>
+            <Grid item xs={6} display="grid">
+              <Grid>
+                <Typography variant="body2" color="GrayText">
+                  Tensão de fornecimento
+                </Typography>
 
-              <Typography variant="body1">
-                {contract?.supplyVoltage} kV - Subgrupo {contract?.subgroup}
-              </Typography>
+                <Typography variant="body1">
+                  {contract?.supplyVoltage} kV - Subgrupo {contract?.subgroup}
+                </Typography>
+              </Grid>
+
+              {consumerUnit?.totalInstalledPower &&
+                <Grid mt="28px">
+                  <Typography variant="body2" color="GrayText" sx={{ maxWidth: "167px" }}>
+                    Potência de geração total instalada
+                  </Typography>
+
+                  <Typography variant="body1">
+                    {consumerUnit?.totalInstalledPower} kW
+                  </Typography>
+                </Grid>
+              }
             </Grid>
 
             <Grid item xs={6}>
@@ -126,6 +142,7 @@ const ConsumerUnitContractContent = () => {
             </Grid>
           </Grid>
         </CardContent>
+
 
         <CardActions>
           <Button size="small" onClick={handleEditFormClick}>
