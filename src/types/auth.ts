@@ -11,3 +11,8 @@ export type SignInRequestPayload = {
   username: string;
   password: string;
 };
+
+export type ResetPasswordRequestPayload = {
+  password: string;
+  confirmPassword: string;
+};
