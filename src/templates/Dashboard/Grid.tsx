@@ -46,7 +46,7 @@ const DashboardCardGrid = () => {
 
       case "pending":
         const pendingConsumerUnits = consumerUnitsData.filter(
-          ({ pendingEnergyBillsNumber }) => pendingEnergyBillsNumber > 0
+          ({ pendingEnergyBillsNumber, isCurrentEnergyBillFilled, isActive }) => (pendingEnergyBillsNumber > 0 || isCurrentEnergyBillFilled === false) && isActive === true
         );
         filteredConsumerUnits.push(...pendingConsumerUnits);
         break;
