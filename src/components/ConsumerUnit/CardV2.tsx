@@ -132,8 +132,10 @@ const ConsumerUnitCardActionIcon = ({
   }
 
   const handleConsumerUnitClick = async (filtro: string = new Date().getUTCFullYear().toString()) => {
-    await router.push(`/uc/${consumerUnitId}`);
-    dispatch(setConsumerUnitInvoiceActiveFilter(filtro));
+    router.push(`/uc/${consumerUnitId}`).then(() => {
+      dispatch(setActiveConsumerUnitId(consumerUnitId));
+      dispatch(setConsumerUnitInvoiceActiveFilter(filtro));
+    });
   };
 
   if (pendingEnergyBillsNumber > 0) {
@@ -187,9 +189,10 @@ const ConsumerUnitCard = ({
   >(
     async (event) => {
       const consumerUnitCardActionHtmlButton = (event.target as HTMLButtonElement);
-
+      const applyMultipleRedirectOnlyInPanelPage = router.pathname === '/';
+      
       // Verifica se o alvo da ação de clique é diferente do botão de Lançar
-      if (id !== activeConsumerUnit && consumerUnitCardActionHtmlButton.type !== 'button') {
+      if (applyMultipleRedirectOnlyInPanelPage || (id !== activeConsumerUnit && consumerUnitCardActionHtmlButton.type !== 'button')) {
         router.push(`/uc/${id}`);
       }
     },
@@ -203,10 +206,10 @@ const ConsumerUnitCard = ({
       event.stopPropagation();
 
       if (pendingEnergyBillsNumber > 0) {
-        dispatch(setConsumerUnitOpenedTab(ConsumerUnitTab.INVOICE));
-        dispatch(setConsumerUnitInvoiceActiveFilter("pending"));
-
-        router.push(`/uc/${id}`);
+        router.push(`/uc/${id}`).then(() => {
+          dispatch(setConsumerUnitInvoiceActiveFilter("pending"));
+          dispatch(setConsumerUnitOpenedTab(ConsumerUnitTab.INVOICE));
+        });
       } else {
         router.push(`/uc/${id}`).then(() =>
           dispatch(setConsumerUnitOpenedTab(ConsumerUnitTab.ANALYSIS)));
