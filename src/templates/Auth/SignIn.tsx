@@ -17,6 +17,8 @@ const defaultValues: SignInRequestPayload = {
 const SignInTemplate = () => {
   const headTitle = useMemo(() => getHeadTitle("Entrar"), []);
 
+  const router = useRouter();
+
   const {
     query: { error },
   } = useRouter();
@@ -121,7 +123,7 @@ const SignInTemplate = () => {
               </Box>
 
               <Box display="flex" flexDirection="row-reverse">
-                <Link variant="caption">Esqueci minha senha</Link>
+                <Link variant="caption" onClick={() => router.push("/esqueci-senha")}>Esqueci minha senha</Link>
               </Box>
 
               {error && (
