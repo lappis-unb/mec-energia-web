@@ -192,7 +192,7 @@ const ConsumerUnitCard = ({
       const applyMultipleRedirectOnlyInPanelPage = router.pathname === '/';
       
       // Verifica se o alvo da ação de clique é diferente do botão de Lançar
-      if (applyMultipleRedirectOnlyInPanelPage || (id !== activeConsumerUnit && consumerUnitCardActionHtmlButton.type !== 'button')) {
+      if ((applyMultipleRedirectOnlyInPanelPage || id !== activeConsumerUnit) && consumerUnitCardActionHtmlButton.type !== 'button') {
         router.push(`/uc/${id}`);
       }
     },
