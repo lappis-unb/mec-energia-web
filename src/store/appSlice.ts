@@ -17,7 +17,7 @@ import { getActualYear } from "@/utils/date";
 const initialState: AppState = {
   isDrawerOpen: true,
   dashboard: {
-    activeFilter: "all",
+    activeFilter: "active",
   },
   consumerUnit: {
     activeId: null,
