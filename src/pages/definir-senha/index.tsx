@@ -92,6 +92,7 @@ const DefinePasswordPage: NextPage = () => {
       
       // Redirect or show a success message
       console.log('Senha redefinida com sucesso');
+      router.push('/');
     } catch (error) {
       // Handle error
       console.error('Erro ao redefinir a senha', error);
