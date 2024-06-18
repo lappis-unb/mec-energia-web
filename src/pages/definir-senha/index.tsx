@@ -5,12 +5,12 @@ import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import Head from "next/head";
 import Image from "next/image";
 import { useMemo, useState, useEffect } from "react";
-import { ResetPasswordRequestPayload } from "@/types/auth";
+import { ConfirmResetPasswordPayload } from "@/types/auth";
 import { useRouter } from "next/router";
 import Footer from "@/components/Footer";
 import { useConfirmResetPasswordMutation } from "@/api";
 
-const defaultValues: ResetPasswordRequestPayload = {
+const defaultValues: ConfirmResetPasswordPayload = {
   password: "",
   confirmPassword: ""
 };
@@ -73,7 +73,7 @@ const DefinePasswordPage: NextPage = () => {
     }
   }, [password]);
 
-  const handleOnSubmit: SubmitHandler<ResetPasswordRequestPayload> = async ({
+  const handleOnSubmit: SubmitHandler<ConfirmResetPasswordPayload> = async ({
     password,
     confirmPassword
   }) => {

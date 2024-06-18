@@ -4,17 +4,18 @@ import { NextPage } from "next";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import Head from "next/head";
 import Image from "next/image";
+import { ResetPasswordRequestPayload } from "@/types/auth";
 import { useMemo } from "react";
 import { useRouter } from "next/router";
 import Footer from "@/components/Footer";
 import { useResetPasswordRequestMutation } from "@/api";
 
-const defaultValues: any = {
+const defaultValues: ResetPasswordRequestPayload = {
   email: ""
 };
 
 const DefinePasswordPage: NextPage = () => {
-  const [ResetPasswordRequest, { isLoading, error: mutationError }] = useResetPasswordRequestMutation();
+  const [ResetPasswordRequest] = useResetPasswordRequestMutation();
 
   const headTitle = useMemo(() => getHeadTitle("Esqueci minha senha"), []);
 
@@ -27,7 +28,7 @@ const DefinePasswordPage: NextPage = () => {
   const form = useForm({ defaultValues });
   const { control, handleSubmit, setError, clearErrors } = form;
 
-  const handleOnSubmit: SubmitHandler<any> = async ({ email }) => {
+  const handleOnSubmit: SubmitHandler<ResetPasswordRequestPayload> = async ({ email }) => {
     // Validação do e-mail
     const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     if (!emailPattern.test(email)) {

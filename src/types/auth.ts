@@ -12,7 +12,11 @@ export type SignInRequestPayload = {
   password: string;
 };
 
-export type ResetPasswordRequestPayload = {
+export type ConfirmResetPasswordPayload = {
   password: string;
   confirmPassword: string;
+};
+
+export type ResetPasswordRequestPayload = {
+  email: string;
 };
