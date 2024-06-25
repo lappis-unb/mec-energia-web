@@ -11,6 +11,8 @@ import {
   useTheme,
 } from "@mui/material";
 import AttachFileRoundedIcon from "@mui/icons-material/AttachFileRounded";
+import DeleteIcon from "@mui/icons-material/Delete";
+import FolderIcon from "@mui/icons-material/Folder";
 import { getSession } from "next-auth/react";
 
 interface CsvDialogProps {
@@ -26,6 +28,7 @@ const CsvDialog: React.FC<CsvDialogProps> = ({
 }) => {
   const theme = useTheme();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [helpTextClicked, setHelpTextClicked] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -77,13 +80,22 @@ const CsvDialog: React.FC<CsvDialogProps> = ({
     }
   };
 
+  const handleHelpTextClick = () => {
+    setHelpTextClicked(true);
+  };
+
   const handleClearCsvDialogAndClose = () => {
     handleFileRemove();
+    setHelpTextClicked(false);
     handleCloseCsvDialog();
   };
 
   return (
-    <Dialog open={isCsvDialogOpen} onClose={handleClearCsvDialogAndClose} maxWidth="xs">
+    <Dialog
+      open={isCsvDialogOpen}
+      onClose={handleClearCsvDialogAndClose}
+      maxWidth="xs"
+    >
       <Box
         display="flex"
         justifyContent="space-between"
@@ -110,45 +122,105 @@ const CsvDialog: React.FC<CsvDialogProps> = ({
       <DialogContent sx={{ paddingTop: "8px" }}>
         <Box pb={2}>
           <Typography variant="body2" color="textSecondary">
-            É possível lançar várias faturas faturas de uma só vez. Para isso,
-            preencha uma planilha em formato CSV seguindo o modelo acima. Em
-            seguida, selecione o arquivo ou arraste-o até aqui. Depois clique em
-            “Importar”.
+            Importe uma planilha para lançar várias faturas de uma só vez.{" "}
+            <span
+              style={{
+                cursor: "pointer",
+                color: theme.palette.primary.main,
+                textDecoration: "underline",
+              }}
+              onClick={handleHelpTextClick}
+            >
+              Saiba como fazer
+            </span>
           </Typography>
         </Box>
 
-        {selectedFile ? (
-          <Box display="flex" alignItems="center">
-            <Typography variant="body1">{selectedFile.name}</Typography>
-            <Button
-              variant="outlined"
-              size="small"
-              onClick={handleFileRemove}
-              style={{ marginLeft: "auto" }}
-            >
-              Remover
-            </Button>
+        {helpTextClicked ? (
+          <Box pb={2}>
+            <Typography variant="body2" color="textSecondary">
+              1. Baixe o arquivo modelo em formato CSV acima. <br />
+              2. Abra o modelo. <br />
+              3. Insira os dados das faturas sem alterar os cabeçalhos ou a
+              ordem das colunas. <br />
+              4. Grave o arquivo em formato CSV. <br />
+              5. Arraste o arquivo até aqui, ou use o botão “Selecionar” abaixo.{" "}
+              <br />
+              6. Por fim, clique em “Importar”.
+            </Typography>
           </Box>
         ) : null}
 
-        <input
-          type="file"
-          id="csvFileInput"
-          style={{ display: "none" }}
-          onChange={handleFileSelect}
-          accept=".csv"
-          ref={fileInputRef}
-        />
-        <label htmlFor="csvFileInput">
-          <Button variant="contained" component="span">
-            Importar
-          </Button>
-        </label>
+        {selectedFile ? (
+          <Box
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+            mt={2}
+          >
+            <Box
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+              border="1px solid"
+              borderRadius="24px"
+              padding="4px 12px"
+              marginRight="8px"
+              bgcolor="#e3f2fd" // cor de fundo ajustada
+              borderColor={theme.palette.primary.main}
+            >
+              <Typography variant="body2" color={theme.palette.primary.main}>
+                {" "}
+                {/* cor do texto ajustada */}
+                {selectedFile.name}
+              </Typography>
+            </Box>
+            <DeleteIcon
+              onClick={handleFileRemove}
+              style={{ cursor: "pointer", color: theme.palette.primary.main }}
+            />
+          </Box>
+        ) : (
+          <input
+            type="file"
+            id="csvFileInput"
+            style={{ display: "none" }}
+            onChange={handleFileSelect}
+            accept=".csv"
+            ref={fileInputRef}
+          />
+        )}
+        {!selectedFile && (
+          <Box display="flex" justifyContent="center" mt={2}>
+            <label htmlFor="csvFileInput">
+              <Box
+                display="inline-flex"
+                alignItems="center"
+                justifyContent="center"
+                border="1px solid"
+                borderRadius="8px"
+                padding="8px 16px"
+                color={theme.palette.primary.main}
+                style={{
+                  cursor: "pointer",
+                  borderColor: theme.palette.primary.main,
+                }}
+              >
+                <FolderIcon
+                  style={{ marginRight: 8, color: theme.palette.primary.main }}
+                />
+                <Typography variant="body2" fontWeight="bold">
+                  Selecionar arquivo CSV
+                </Typography>
+              </Box>
+            </label>
+          </Box>
+        )}
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClearCsvDialogAndClose}>Cancelar</Button>
         <Button onClick={handleUploadClick} disabled={!selectedFile}>
-          Próximo
+          Importar
         </Button>
       </DialogActions>
     </Dialog>
