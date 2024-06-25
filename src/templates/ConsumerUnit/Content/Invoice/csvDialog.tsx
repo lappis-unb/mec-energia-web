@@ -13,6 +13,7 @@ import {
 import AttachFileRoundedIcon from "@mui/icons-material/AttachFileRounded";
 import DeleteIcon from "@mui/icons-material/Delete";
 import FolderIcon from "@mui/icons-material/Folder";
+import { useDropzone } from "react-dropzone";
 import { getSession } from "next-auth/react";
 
 interface CsvDialogProps {
@@ -31,10 +32,16 @@ const CsvDialog: React.FC<CsvDialogProps> = ({
   const [helpTextClicked, setHelpTextClicked] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    setSelectedFile(file || null);
+  const onDrop = (acceptedFiles: File[]) => {
+    setSelectedFile(acceptedFiles[0]);
   };
+
+  const { getRootProps, getInputProps } = useDropzone({
+    onDrop,
+    accept: { "text/csv": [".csv"] },
+    multiple: false,
+    noClick: true,
+  });
 
   const handleFileRemove = () => {
     setSelectedFile(null);
@@ -81,7 +88,7 @@ const CsvDialog: React.FC<CsvDialogProps> = ({
   };
 
   const handleHelpTextClick = () => {
-    setHelpTextClicked(true);
+    setHelpTextClicked(!helpTextClicked);
   };
 
   const handleClearCsvDialogAndClose = () => {
@@ -138,7 +145,7 @@ const CsvDialog: React.FC<CsvDialogProps> = ({
 
         {helpTextClicked ? (
           <Box pb={2}>
-            <Typography variant="body2" color="textSecondary">
+            <Typography variant="body2" color="black">
               1. Baixe o arquivo modelo em formato CSV acima. <br />
               2. Abra o modelo. <br />
               3. Insira os dados das faturas sem alterar os cabeçalhos ou a
@@ -151,70 +158,91 @@ const CsvDialog: React.FC<CsvDialogProps> = ({
           </Box>
         ) : null}
 
-        {selectedFile ? (
-          <Box
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-            mt={2}
-          >
-            <Box
-              display="flex"
-              alignItems="center"
-              justifyContent="center"
-              border="1px solid"
-              borderRadius="24px"
-              padding="4px 12px"
-              marginRight="8px"
-              bgcolor="#e3f2fd" // cor de fundo ajustada
-              borderColor={theme.palette.primary.main}
-            >
-              <Typography variant="body2" color={theme.palette.primary.main}>
-                {" "}
-                {/* cor do texto ajustada */}
-                {selectedFile.name}
-              </Typography>
-            </Box>
-            <DeleteIcon
-              onClick={handleFileRemove}
-              style={{ cursor: "pointer", color: theme.palette.primary.main }}
-            />
-          </Box>
-        ) : (
-          <input
-            type="file"
-            id="csvFileInput"
-            style={{ display: "none" }}
-            onChange={handleFileSelect}
-            accept=".csv"
-            ref={fileInputRef}
-          />
-        )}
-        {!selectedFile && (
-          <Box display="flex" justifyContent="center" mt={2}>
-            <label htmlFor="csvFileInput">
+        <Box
+          {...getRootProps()}
+          border={selectedFile ? "none" : "1px dashed"}
+          borderRadius="8px"
+          p={selectedFile ? 0 : 4}
+          textAlign="center"
+          bgcolor={selectedFile ? "inherit" : "#e3f2fd"}
+          borderColor={selectedFile ? "none" : theme.palette.primary.main}
+          mb={2}
+        >
+          <input {...getInputProps()} />
+          {!selectedFile ? (
+            <Typography variant="body2" color="textSecondary">
+              Arraste o arquivo até aqui
+            </Typography>
+          ) : (
+            <Box display="flex" alignItems="center" justifyContent="center">
               <Box
-                display="inline-flex"
+                display="flex"
                 alignItems="center"
                 justifyContent="center"
                 border="1px solid"
-                borderRadius="8px"
-                padding="8px 16px"
-                color={theme.palette.primary.main}
-                style={{
-                  cursor: "pointer",
-                  borderColor: theme.palette.primary.main,
-                }}
+                borderRadius="24px"
+                padding="4px 12px"
+                marginRight="8px"
+                bgcolor="#e3f2fd"
+                borderColor={theme.palette.primary.main}
               >
-                <FolderIcon
-                  style={{ marginRight: 8, color: theme.palette.primary.main }}
-                />
-                <Typography variant="body2" fontWeight="bold">
-                  Selecionar arquivo CSV
+                <Typography variant="body2" color={theme.palette.primary.main}>
+                  {selectedFile.name}
                 </Typography>
               </Box>
-            </label>
-          </Box>
+              <DeleteIcon
+                onClick={handleFileRemove}
+                style={{ cursor: "pointer", color: theme.palette.primary.main }}
+              />
+            </Box>
+          )}
+        </Box>
+
+        {!selectedFile && (
+          <>
+            <Typography variant="body2" color="textSecondary" align="center">
+              ou
+            </Typography>
+            <Box display="flex" justifyContent="center" mt={1}>
+              <input
+                type="file"
+                id="csvFileInput"
+                style={{ display: "none" }}
+                onChange={(event) => {
+                  const file = event.target.files?.[0];
+                  if (file) {
+                    setSelectedFile(file);
+                  }
+                }}
+                accept=".csv"
+              />
+              <label htmlFor="csvFileInput">
+                <Box
+                  display="inline-flex"
+                  alignItems="center"
+                  justifyContent="center"
+                  border="1px solid"
+                  borderRadius="8px"
+                  padding="8px 16px"
+                  color={theme.palette.primary.main}
+                  style={{
+                    cursor: "pointer",
+                    borderColor: theme.palette.primary.main,
+                  }}
+                >
+                  <FolderIcon
+                    style={{
+                      marginRight: 8,
+                      color: theme.palette.primary.main,
+                    }}
+                  />
+                  <Typography variant="body2" fontWeight="bold">
+                    Selecionar arquivo CSV
+                  </Typography>
+                </Box>
+              </label>
+            </Box>
+          </>
         )}
       </DialogContent>
       <DialogActions>
