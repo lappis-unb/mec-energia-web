@@ -38,6 +38,23 @@ import { skipToken } from "@reduxjs/toolkit/dist/query";
 
 import { useGetContractQuery, usePostMultipleInvoicesMutation } from "@/api";
 
+import { format, parseISO } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+
+const formatDate = (dateString: string) => {
+  const date = parseISO(dateString);
+  const formattedDate = format(date, "MMMM yyyy", { locale: ptBR });
+  return formattedDate.charAt(0).toUpperCase() + formattedDate.slice(1);
+};
+
+const formatNumber = (numberString: string) => {
+  const number = parseFloat(numberString);
+  return number.toLocaleString('pt-BR', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+};
+
 interface CsvData {
   consumerUnit: { value: string; error: boolean };
   date: {
@@ -389,7 +406,7 @@ const CsvForm: React.FC<CsvFormProps> = ({ csvData }) => {
                                 borderBottom: hasError ? "none" : "1px solid #e0e0e0"
                               }}
                             >
-                              {item.date.value}
+                              {formatDate(item.date.value)}
                             </TableCell>
                             <TableCell
                               style={{
@@ -402,7 +419,7 @@ const CsvForm: React.FC<CsvFormProps> = ({ csvData }) => {
                                 borderBottom: hasError ? "none" : "1px solid #e0e0e0"
                               }}
                             >
-                              {item.peakConsumptionInKwh.value}
+                              {formatNumber(item.peakConsumptionInKwh.value)}
                             </TableCell>
                             <TableCell
                               style={{
@@ -416,7 +433,7 @@ const CsvForm: React.FC<CsvFormProps> = ({ csvData }) => {
                                 borderBottom: hasError ? "none" : "1px solid #e0e0e0"
                               }}
                             >
-                              {item.offPeakConsumptionInKwh.value}
+                              {formatNumber(item.offPeakConsumptionInKwh.value)}
                             </TableCell>
                             <TableCell
                               style={{
@@ -430,7 +447,7 @@ const CsvForm: React.FC<CsvFormProps> = ({ csvData }) => {
                                 borderBottom: hasError ? "none" : "1px solid #e0e0e0"
                               }}
                             >
-                              {item.peakMeasuredDemandInKw.value}
+                              {formatNumber(item.peakMeasuredDemandInKw.value)}
                             </TableCell>
                             <TableCell
                               style={{
@@ -444,7 +461,7 @@ const CsvForm: React.FC<CsvFormProps> = ({ csvData }) => {
                                 borderBottom: hasError ? "none" : "1px solid #e0e0e0"
                               }}
                             >
-                              {item.offPeakMeasuredDemandInKw.value}
+                              {formatNumber(item.offPeakMeasuredDemandInKw.value)}
                             </TableCell>
                             <TableCell
                               style={{
@@ -457,7 +474,7 @@ const CsvForm: React.FC<CsvFormProps> = ({ csvData }) => {
                                 borderBottom: hasError ? "none" : "1px solid #e0e0e0"
                               }}
                             >
-                              {item.invoiceInReais.value}
+                              {formatNumber(item.invoiceInReais.value)}
                             </TableCell>
                           </TableRow>
                           {hasError && (
