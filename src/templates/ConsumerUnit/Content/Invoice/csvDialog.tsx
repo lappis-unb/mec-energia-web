@@ -36,7 +36,7 @@ const CsvDialog: React.FC<CsvDialogProps> = ({
     setSelectedFile(acceptedFiles[0]);
   };
 
-  const { getRootProps, getInputProps } = useDropzone({
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: { "text/csv": [".csv"] },
     multiple: false,
@@ -102,9 +102,15 @@ const CsvDialog: React.FC<CsvDialogProps> = ({
       open={isCsvDialogOpen}
       onClose={handleClearCsvDialogAndClose}
       maxWidth="xs"
+      fullWidth
+      PaperProps={{
+        style: {
+          height: isDragActive ? "38vh" : "auto",
+        },
+      }}
     >
       <Box
-        display="flex"
+        display={isDragActive ? "none" : "flex"}
         justifyContent="space-between"
         alignItems="center"
         paddingRight={3}
@@ -126,8 +132,18 @@ const CsvDialog: React.FC<CsvDialogProps> = ({
           </Box>
         </Link>
       </Box>
-      <DialogContent sx={{ paddingTop: "8px" }}>
-        <Box pb={2}>
+      <DialogContent
+        sx={{
+          paddingTop: "8px",
+          position: "relative",
+          height: isDragActive ? "100%" : "auto",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <Box pb={2} display={isDragActive ? "none" : "block"}>
           <Typography variant="body2" color="textSecondary">
             Importe uma planilha para lançar várias faturas de uma só vez.{" "}
             <span
@@ -143,7 +159,7 @@ const CsvDialog: React.FC<CsvDialogProps> = ({
           </Typography>
         </Box>
 
-        {helpTextClicked ? (
+        {helpTextClicked && !isDragActive ? (
           <Box pb={2}>
             <Typography variant="body2" color="black">
               1. Baixe o arquivo modelo em formato CSV acima. <br />
@@ -162,16 +178,25 @@ const CsvDialog: React.FC<CsvDialogProps> = ({
           {...getRootProps()}
           border={selectedFile ? "none" : "1px dashed"}
           borderRadius="8px"
-          p={selectedFile ? 0 : 4}
+          p={4}
           textAlign="center"
           bgcolor={selectedFile ? "inherit" : "#e3f2fd"}
           borderColor={selectedFile ? "none" : theme.palette.primary.main}
-          mb={2}
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+          style={{
+            height: "100%",
+            width: "100%",
+            position: isDragActive ? "absolute" : "relative",
+            top: 0,
+            left: 0,
+          }}
         >
           <input {...getInputProps()} />
           {!selectedFile ? (
             <Typography variant="body2" color="textSecondary">
-              Arraste o arquivo até aqui
+              Solte o arquivo aqui
             </Typography>
           ) : (
             <Box display="flex" alignItems="center" justifyContent="center">
@@ -198,7 +223,7 @@ const CsvDialog: React.FC<CsvDialogProps> = ({
           )}
         </Box>
 
-        {!selectedFile && (
+        {!selectedFile && !isDragActive && (
           <>
             <Typography variant="body2" color="textSecondary" align="center">
               ou
@@ -245,7 +270,7 @@ const CsvDialog: React.FC<CsvDialogProps> = ({
           </>
         )}
       </DialogContent>
-      <DialogActions>
+      <DialogActions style={{ display: isDragActive ? "none" : "flex" }}>
         <Button onClick={handleClearCsvDialogAndClose}>Cancelar</Button>
         <Button onClick={handleUploadClick} disabled={!selectedFile}>
           Importar
