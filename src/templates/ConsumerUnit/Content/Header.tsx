@@ -67,6 +67,7 @@ const ConsumerUnitContentHeader = () => {
   const [isCsvDialogOpen, setIsCsvDialogOpen] = useState(false);
   const [csvData, setCsvData] = useState<CsvData[]>([]);
   const [postInvoiceCsvMutation] = usePostInvoiceCsvMutation();
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleEditConsumerUnitClick = () => {
     dispatch(setIsConsumerUnitEditFormOpen(true));
@@ -85,6 +86,7 @@ const ConsumerUnitContentHeader = () => {
   };
 
   const handleFileSelect = async (file: File) => {
+    setIsLoading(true);
     try {
       const formDataCsv = new FormData();
       formDataCsv.append("consumer_unit_id", (consumerUnitId ?? "").toString());
@@ -99,8 +101,11 @@ const ConsumerUnitContentHeader = () => {
       dispatch(setIsCsvFormOpen(true)); // Abre o CsvForm
     } catch (error) {
       console.error("Erro ao enviar o arquivo CSV:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
+
   const handleFavoriteButtonClick = useCallback<
     MouseEventHandler<HTMLButtonElement>
   >(async (event) => {
@@ -194,6 +199,7 @@ const ConsumerUnitContentHeader = () => {
           isCsvDialogOpen={isCsvDialogOpen}
           handleCloseCsvDialog={handleCloseCsvDialog}
           onFileSelect={handleFileSelect}
+          isLoading={isLoading}
         />
       </Container>
       {isCsvFormOpen && <CsvForm csvData={csvData} />}

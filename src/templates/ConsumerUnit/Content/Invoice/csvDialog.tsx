@@ -9,6 +9,7 @@ import {
   Link,
   Typography,
   useTheme,
+  CircularProgress,
 } from "@mui/material";
 import AttachFileRoundedIcon from "@mui/icons-material/AttachFileRounded";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -20,12 +21,14 @@ interface CsvDialogProps {
   isCsvDialogOpen: boolean;
   handleCloseCsvDialog: () => void;
   onFileSelect: (file: File) => void;
+  isLoading: boolean;
 }
 
 const CsvDialog: React.FC<CsvDialogProps> = ({
   isCsvDialogOpen,
   handleCloseCsvDialog,
   onFileSelect,
+  isLoading,
 }) => {
   const theme = useTheme();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -211,14 +214,25 @@ const CsvDialog: React.FC<CsvDialogProps> = ({
                 bgcolor="#e3f2fd"
                 borderColor={theme.palette.primary.main}
               >
+                {isLoading && (
+                  <CircularProgress
+                    size={16}
+                    style={{ marginLeft: 8, color: theme.palette.primary.main }}
+                  />
+                )}
                 <Typography variant="body2" color={theme.palette.primary.main}>
                   {selectedFile.name}
                 </Typography>
               </Box>
-              <DeleteIcon
-                onClick={handleFileRemove}
-                style={{ cursor: "pointer", color: theme.palette.primary.main }}
-              />
+              {!isLoading && (
+                <DeleteIcon
+                  onClick={handleFileRemove}
+                  style={{
+                    cursor: "pointer",
+                    color: theme.palette.primary.main,
+                  }}
+                />
+              )}
             </Box>
           )}
         </Box>
@@ -272,7 +286,10 @@ const CsvDialog: React.FC<CsvDialogProps> = ({
       </DialogContent>
       <DialogActions style={{ display: isDragActive ? "none" : "flex" }}>
         <Button onClick={handleClearCsvDialogAndClose}>Cancelar</Button>
-        <Button onClick={handleUploadClick} disabled={!selectedFile}>
+        <Button
+          onClick={handleUploadClick}
+          disabled={!selectedFile || isLoading}
+        >
           Importar
         </Button>
       </DialogActions>
