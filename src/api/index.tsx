@@ -88,6 +88,7 @@ export const mecEnergiaApi = createApi({
     "Tariffs",
     "Institution",
     "Person",
+    "Token",
   ],
   endpoints: (builder) => ({
     fetchConsumerUnits: builder.query<ConsumerUnitsPayload, number>({
@@ -421,6 +422,27 @@ export const mecEnergiaApi = createApi({
         method: "POST",
       }),
     }),
+    confirmResetPassword: builder.mutation<void, { user_token: string; user_new_password: string }>({
+      query: ({ user_token, user_new_password }) => ({
+        url: "/reset-password/confirm",
+        method: "POST",
+        body: {
+          user_token,
+          user_new_password,
+        },
+      }),
+    }),
+    resetPasswordRequest: builder.mutation<void, { email: string }>({
+      query: ({ email }) => ({
+        url: `/reset-password/?email=${email}`,
+        method: "POST",
+        body: {},
+      }),
+    }),
+    validateResetPasswordToken: builder.query<boolean, string>({
+      query: (token) => `reset-password/?token=${token}`,
+      providesTags: ["Token"],
+    }),
   }),
 });
 
@@ -466,4 +488,7 @@ export const {
   useDeleteEnergiBillMutation,
   useDeleteDistributorMutation,
   useLazyResetPasswordAdminRequestQuery,
+  useConfirmResetPasswordMutation,
+  useResetPasswordRequestMutation,
+  useValidateResetPasswordTokenQuery,
 } = mecEnergiaApi;

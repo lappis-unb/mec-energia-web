@@ -17,6 +17,13 @@ export enum ConsumerUnitTab {
   CONTRACT,
 }
 
+export enum TokenStatus {
+  RESET_PASSWORD_INVALID = "reset_password_invalid",
+  RESET_PASSWORD = "reset_password",
+  FIRST_TIME_CREATION_INVALID = "first_time_creation_invalid",
+  FIRST_TIME_CREATION = "first_time_creation"
+}
+
 export type ConsumerUnitInvoiceFilter = "pending" | string;
 
 export type AppState = {
@@ -65,6 +72,11 @@ export type AppState = {
   notifications: {
     success: NotificationProps;
     error: NotificationProps;
+  };
+  token: {
+    status: TokenStatus | null;
+    passwordAlreadyCreated: boolean | null;
+    userName: string;
   };
 };
 
