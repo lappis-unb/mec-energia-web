@@ -362,7 +362,7 @@ const ConsumerUnitInvoiceContentTable = () => {
       const buttonLabel =
         "Lançar " +
         getMonthFromNumber(month, year) +
-        `${activeFilter === "pending" ? " — " + year : ""}`;
+        `${activeFilter === "pending" ? "  " + year : ""}`;
 
       if (isEnergyBillPending) {
         return (
