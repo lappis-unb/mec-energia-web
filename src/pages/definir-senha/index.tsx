@@ -1,11 +1,11 @@
 import { getHeadTitle } from "@/utils/head";
-import { Alert, Box, Button, Grid, Paper, TextField, Typography } from "@mui/material";
+import { Alert, Box, Button, Grid, Paper, TextField, Typography, IconButton, InputAdornment } from "@mui/material";
 import { NextPage } from "next";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import Head from "next/head";
 import Image from "next/image";
 import { useMemo, useState, useEffect } from "react";
-import { ConfirmResetPasswordPayload } from "@/types/auth";
+import { ConfirmResetPasswordPayload, SignInRequestPayload } from "@/types/auth";
 import { useRouter } from "next/router";
 import Footer from "@/components/Footer";
 import { useConfirmResetPasswordMutation, useValidateResetPasswordTokenQuery } from "@/api";
@@ -15,6 +15,9 @@ import ReportIcon from '@mui/icons-material/Report';
 import { useDispatch } from "react-redux";
 import { setIsTokenValid } from "@/store/appSlice";
 import { TokenStatus } from "@/types/app";
+import { signIn } from "next-auth/react";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
 
 const defaultValues: ConfirmResetPasswordPayload = {
   newPassword: "",
@@ -37,13 +40,14 @@ const DefinePasswordPage: NextPage = () => {
   });
   const [nome, setNome] = useState<string>();
   const [token, setToken] = useState<string>("");
+  const [email, setEmail] = useState<undefined | string>("");
   const [shouldShowCancelDialog, setShouldShowCancelDialog] = useState(false);
   const [isTokenVerified, setIsTokenVerified] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const dispatch = useDispatch();
-
   const router = useRouter();
-
   const { query: { nome: nomeParam, token: tokenParam } } = router;
 
   useEffect(() => {
@@ -61,6 +65,7 @@ const DefinePasswordPage: NextPage = () => {
 
   useEffect(() => {
     if (status === 'fulfilled') {
+      setEmail(tokenStatus?.email)
       dispatch(setIsTokenValid(TokenStatus.FIRST_TIME_CREATION));
       setIsTokenVerified(true);
     } else if (status === 'rejected' || validationError) {
@@ -133,7 +138,9 @@ const DefinePasswordPage: NextPage = () => {
         user_new_password: password,
       }).unwrap();
 
-      router.push('/');
+      if(email !== undefined){
+        handleOnSubmit({username: email, password: password});
+      }
     } catch (error) {
       console.error('Erro ao definir a senha', error);
     }
@@ -167,20 +174,27 @@ const DefinePasswordPage: NextPage = () => {
 
   if (!isTokenVerified) {
     return (
-        <Box
-            display="flex"
-            justifyContent="center"
-            alignItems="center"
-            minHeight="100vh"
-        >
-            <Grid container justifyContent="center">
-                <Grid item>
-                    <Typography sx={{ color: "gray" }}>Carregando...</Typography>
-                </Grid>
-            </Grid>
-        </Box>
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        minHeight="100vh"
+      >
+        <Grid container justifyContent="center">
+          <Grid item>
+            <Typography sx={{ color: "gray" }}>Carregando...</Typography>
+          </Grid>
+        </Grid>
+      </Box>
     );
-}
+  }
+
+  const handleOnSubmit: SubmitHandler<SignInRequestPayload> = ({
+    username,
+    password,
+  }) => {
+    signIn("credentials", { username, password, callbackUrl: "/" });
+  };
 
   return (
     <>
@@ -247,12 +261,24 @@ const DefinePasswordPage: NextPage = () => {
                       ref={ref}
                       value={value}
                       label="Senha"
-                      type="password"
+                      type={showNewPassword ? "text" : "password"}
                       error={Boolean(error)}
                       helperText={error?.message ?? " "}
                       fullWidth
                       onChange={onChange}
                       onBlur={onBlur}
+                      InputProps={{
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <IconButton
+                              onClick={() => setShowNewPassword(!showNewPassword)}
+                              onMouseDown={(e) => e.preventDefault()}
+                            >
+                              {showNewPassword ? <VisibilityOff /> : <Visibility />}
+                            </IconButton>
+                          </InputAdornment>
+                        ),
+                      }}
                     />
                   )}
                 />
@@ -285,12 +311,24 @@ const DefinePasswordPage: NextPage = () => {
                       ref={ref}
                       value={value}
                       label="Repetir Senha"
-                      type="password"
+                      type={showConfirmPassword ? "text" : "password"}
                       error={Boolean(error)}
                       helperText={error?.message ?? " "}
                       fullWidth
                       onChange={onChange}
                       onBlur={onBlur}
+                      InputProps={{
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <IconButton
+                              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                              onMouseDown={(e) => e.preventDefault()}
+                            >
+                              {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                            </IconButton>
+                          </InputAdornment>
+                        ),
+                      }}
                     />
                   )}
                 />
