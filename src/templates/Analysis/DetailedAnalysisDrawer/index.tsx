@@ -39,6 +39,10 @@ import { ContractsComparisonTable } from "./ContractsComparisonTable";
 import { BaseCostComparisonTable } from "./BaseCostComparisonTable";
 import { DetailedBaseCostsComparisonPlot } from "./DetailedBaseCostsComparisonPlot";
 import { RecommendedContractDemandPlot } from "./RecommendedContractDemandPlot";
+import {
+  KeyboardDoubleArrowDown,
+  KeyboardDoubleArrowUp,
+} from "@mui/icons-material";
 
 interface Props {
   open: boolean;
@@ -97,6 +101,7 @@ export const DetailedAnalysisDrawer = ({
 }: Props) => {
   const toPrint = useRef(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [allDropdownsOpen, setAllDropdownsOpen] = useState(false);
 
   const tariffStartDate = getFormattedDate(
     recommendation.tariffDates.startDate
@@ -203,7 +208,7 @@ export const DetailedAnalysisDrawer = ({
           </Box>
 
           {/* NOTE: adicionar funcionalidade de abrir/fechar todas seções */}
-          {/* <Box
+          <Box
             sx={{
               my: 2,
               display: "flex",
@@ -213,20 +218,20 @@ export const DetailedAnalysisDrawer = ({
               },
             }}
           >
-            <Button disabled variant="outlined">
+            <Button variant="outlined" onClick={() => setAllDropdownsOpen(true)}>
               <KeyboardDoubleArrowDown />
               Abrir tudo
             </Button>
-            <Button disabled variant="outlined" sx={{ marginLeft: 2 }}>
+            <Button variant="outlined" sx={{ marginLeft: 2 }} onClick={() => setAllDropdownsOpen(false)}>
               <KeyboardDoubleArrowUp />
               Fechar tudo
             </Button>
-          </Box> */}
+          </Box>
 
-          <DropdownSectionManager>
+          <DropdownSectionManager openAll={allDropdownsOpen}>
             <DropdownSection
               title={<Typography variant="h5">Definições</Typography>}
-              open
+              open={allDropdownsOpen}
             >
               <TypographyBody1>
                 Esta seção apresenta todos os termos técnicos relevantes,
@@ -448,7 +453,7 @@ export const DetailedAnalysisDrawer = ({
 
             <DropdownSection
               title={<Typography variant="h5">Objetivo</Typography>}
-              open
+              open={allDropdownsOpen}
             >
               <TypographyBody1>
                 Analisar o contrato de fornecimento de energia elétrica desta
@@ -464,7 +469,7 @@ export const DetailedAnalysisDrawer = ({
 
             <DropdownSection
               title={<Typography variant="h5">Considerações gerais</Typography>}
-              open
+              open={allDropdownsOpen}
             >
               <List dense disablePadding>
                 <ListItem>
@@ -543,7 +548,7 @@ export const DetailedAnalysisDrawer = ({
               title={
                 <Typography variant="h5">Metodologia de Cálculo</Typography>
               }
-              open
+              open={allDropdownsOpen}
             >
               <TypographyBody1>
                 Para a apresentação de proposta de análise ddo contrato de
@@ -728,7 +733,7 @@ export const DetailedAnalysisDrawer = ({
                   Características de fornecimento
                 </Typography>
               }
-              open
+              open={allDropdownsOpen}
             >
               <Box sx={{ "@media print": { breakInside: "avoid" } }}>
                 <TypographyBody1>
@@ -764,7 +769,7 @@ export const DetailedAnalysisDrawer = ({
               title={
                 <Typography variant="h5">Custo de energia atual</Typography>
               }
-              open
+              open={allDropdownsOpen}
             >
               <Box sx={{ "@media print": { breakInside: "avoid" } }}>
                 <Typography>
@@ -818,7 +823,7 @@ export const DetailedAnalysisDrawer = ({
                   Comparativo do custo de energia
                 </Typography>
               }
-              open
+              open={allDropdownsOpen}
             >
               <TypographyBody1>
                 O gráfico abaixo compara a nova a demanda proposta à demanda
@@ -905,7 +910,7 @@ export const DetailedAnalysisDrawer = ({
                   )}
                 </>
               }
-              open
+              open={allDropdownsOpen}
             >
               <TypographyBody1>
                 A partir de análises do perfil de demanda e de consumo de
@@ -951,7 +956,7 @@ export const DetailedAnalysisDrawer = ({
                 "@media print": { breakInside: "avoid", breakBefore: "always" },
               }}
               title={<Typography variant="h5">Anexos I</Typography>}
-              open
+              open={allDropdownsOpen}
             >
               <TypographyBody1>
                 Considerações gerais sobre ajuste de contrato, conforme
