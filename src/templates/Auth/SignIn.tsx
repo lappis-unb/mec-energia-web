@@ -173,12 +173,6 @@ const SignInTemplate = () => {
                   Entrar
                 </Button>
               </Box>
-
-              <Box mt={5}>
-                <Box display="flex" justifyContent="center">
-                  <Link>Não tenho cadastro</Link>
-                </Box>
-              </Box>
             </Box>
           </Paper>
         </Box>

@@ -4,7 +4,6 @@ import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import ConfirmWarning from "@/components/ConfirmWarning/ConfirmWarning";
-import { GetApp } from "@mui/icons-material";
 import { formatToPtBrCurrency } from "@/utils/number";
 
 import { Box, Button, Grid, IconButton, styled } from "@mui/material";
@@ -168,17 +167,17 @@ const ConsumerUnitInvoiceContentTable = () => {
     setIsWarningOpen(false);
   };
 
-  const handleDownloadPDF = (energyBillId: number) => {
-    const pdfUrl = `/media/energy_bills/`;
+  // const handleDownloadPDF = (energyBillId: number) => {
+  //   const pdfUrl = `/media/energy_bills/`;
 
-    // Criando um novo link para realizar o download do arquivo PDF
-    const link = document.createElement("a");
-    link.href = pdfUrl;
-    link.download = `${energyBillId}.pdf`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
+  //   // Criando um novo link para realizar o download do arquivo PDF
+  //   const link = document.createElement("a");
+  //   link.href = pdfUrl;
+  //   link.download = `${energyBillId}.pdf`;
+  //   document.body.appendChild(link);
+  //   link.click();
+  //   document.body.removeChild(link);
+  // };
 
   const columns: GridColDef<InvoiceDataGridRow>[] = [
     {
@@ -287,31 +286,31 @@ const ConsumerUnitInvoiceContentTable = () => {
         );
       },
     },
-    {
-      field: "download",
-      headerClassName: "MuiDataGrid-columnHeaderMain",
-      headerName: "Download",
-      headerAlign: "center",
-      align: "center",
-      flex: 1.4,
-      sortable: false,
-      renderCell: ({ row: { energyBillId } }) => {
-        if (!energyBillId) {
-          return <></>;
-        }
+    // {
+    //   field: "download",
+    //   headerClassName: "MuiDataGrid-columnHeaderMain",
+    //   headerName: "Download",
+    //   headerAlign: "center",
+    //   align: "center",
+    //   flex: 1.4,
+    //   sortable: false,
+    //   renderCell: ({ row: { energyBillId } }) => {
+    //     if (!energyBillId) {
+    //       return <></>;
+    //     }
 
-        return (
-          <IconButton
-            onClick={() => {
-              handleDownloadPDF(energyBillId);
-            }}
-          >
-            <GetApp />{" "}
-            {/* Este é um ícone de download do Material Icons. Se não for adequado, você pode substituí-lo por outro ícone de sua preferência. */}
-          </IconButton>
-        );
-      },
-    },
+    //     return (
+    //       <IconButton
+    //         onClick={() => {
+    //           handleDownloadPDF(energyBillId);
+    //         }}
+    //       >
+    //         <GetApp />{" "}
+    //         {/* Este é um ícone de download do Material Icons. Se não for adequado, você pode substituí-lo por outro ícone de sua preferência. */}
+    //       </IconButton>
+    //     );
+    //   },
+    // },
   ];
 
   const columnGroupingModel: GridColumnGroupingModel = [
