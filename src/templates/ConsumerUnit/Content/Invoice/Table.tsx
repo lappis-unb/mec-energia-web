@@ -411,6 +411,9 @@ const ConsumerUnitInvoiceContentTable = () => {
       // remove the space left for the header
       marginTop: "0!important",
     },
+    "& .MuiDataGrid-row.pending-row": {
+      backgroundColor: "#FAAD101F",
+    },
   }));
 
   return (
@@ -426,6 +429,9 @@ const ConsumerUnitInvoiceContentTable = () => {
         autoHeight
         hideFooter
         disableColumnMenu
+        getRowClassName={(params) =>
+          params.row.isEnergyBillPending ? "pending-row" : ""
+        }
       />
       <ConfirmWarning
         open={isWarningOpen}
