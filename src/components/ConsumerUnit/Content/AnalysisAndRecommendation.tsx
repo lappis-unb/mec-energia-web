@@ -21,6 +21,7 @@ import { RecommendationCard } from "@/templates/Analysis/RecommendationCard";
 import { selectActiveConsumerUnitId, setActiveSubgroup, setConsumerUnitInvoiceActiveFilter, setConsumerUnitOpenedTab } from "@/store/appSlice";
 import { DetailedAnalysisDrawer } from "@/templates/Analysis/DetailedAnalysisDrawer";
 import { monthYearForPlot } from "@/utils/date";
+import { ErrorCode } from "@/api/Enums";
 
 import "./configChartjs";
 
@@ -69,7 +70,7 @@ export const AnalysisAndRecommendation = () => {
       {(hasErrors || hasWarnings) && (
         <Grid container spacing={1} sx={{ mb: 1 }}>
           {
-            recommendation.errors.map((error, i) => (
+            recommendation.errors.map(([code, msg], i) => (
               <Grid key={i} item xs={12}>
                 <Alert
                   key={i}
@@ -77,23 +78,28 @@ export const AnalysisAndRecommendation = () => {
                   variant="filled"
                   icon={<WarningAmberOutlined style={{ color: "#000" }} />}
                   onClick={() => {
-                    dispatch(setConsumerUnitOpenedTab(0));
-                    dispatch(setConsumerUnitInvoiceActiveFilter('pending'));
+                    if (code == ErrorCode.TariffsNotFoundError) {
+                      dispatch(setActiveSubgroup(contract?.subgroup || null));
+                      router.push(`/distribuidoras/${contract?.distributor}`);
+                    } else if (code == ErrorCode.NotEnoughEnergyBills || code == ErrorCode.NotEnoughEnergyBillsWithAtypical) {
+                      dispatch(setConsumerUnitOpenedTab(0));
+                      dispatch(setConsumerUnitInvoiceActiveFilter('pending'));
+                    }
                   }}
                   sx={{ cursor: 'pointer', whiteSpace: 'pre-line' }}
                 >
-                  {error}
+                  {msg}
                 </Alert>
               </Grid>
             ))}
-          {recommendation.warnings.map((warn, i) => (
+          {recommendation.warnings.map(([code, msg], i) => (
             <Grid key={i} item xs={12}>
               <Alert
                 onClick={() => {
-                  if (warn.charAt(0) == 'L') {
+                  if (code == ErrorCode.PendingBillsWarnning) {
                     dispatch(setConsumerUnitOpenedTab(0));
                     dispatch(setConsumerUnitInvoiceActiveFilter('pending'));
-                  } else if (warn.charAt(0) == 'A') {
+                  } else if (code == ErrorCode.ExpiredTariffWarnning) {
                     dispatch(setActiveSubgroup(contract?.subgroup || null));
                     router.push(`/distribuidoras/${contract?.distributor}`);
                   }
@@ -102,7 +108,7 @@ export const AnalysisAndRecommendation = () => {
                 severity="info"
                 variant="outlined"
               >
-                {warn}
+                {msg}
               </Alert>
             </Grid>
           ))}

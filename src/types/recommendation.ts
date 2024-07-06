@@ -8,8 +8,8 @@ export interface RecommendationSettings {
 
 export interface Recommendation {
   generatedOn: string,
-  errors: string[],
-  warnings: string[],
+  errors: [[number, string]],
+  warnings: [[number, string]],
   dates: string[],
   currentContract: RecommendationContract,
   energyBillsCount: number,
