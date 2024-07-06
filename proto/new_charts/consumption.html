@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+    <meta charset="utf-8">
+    <title>Consumo</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.1.0/chart.umd.js"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0 "></script>
+    <!-- https://chartjs-plugin-datalabels.netlify.app/-->
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend&display=swap" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Lexend&display=swap');
+        DIV {margin-bottom: 60px}
+    </style>
+</head>
+
+<body>
+    <div>
+        <canvas id="consumptionBlue"></canvas>
+    </div>
+    <div>
+        <canvas id="consumptionBlueFixed"></canvas>
+    </div>
+    <div>
+        <canvas id="consumptionGreen"></canvas>
+    </div>
+    <div>
+        <canvas id="consumptionGreenFixed"></canvas>
+    </div>
+</body>
+<script type="module" src="consumptionBlue.js"></script>
+<script type="module" src="consumptionBlueFixed.js"></script>
+<script type="module" src="consumptionGreen.js"></script>
+<script type="module" src="consumptionGreenFixed.js"></script>
+</html>
