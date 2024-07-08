@@ -447,6 +447,7 @@ const CreateEditEnergyBillForm = () => {
             control={control}
             name={"invoiceInReais"}
             rules={{
+              required: "Preencha esse campo",
               min: {
                 value: 0.01,
                 message: "Insira um valor maior que R$ 0,00",
@@ -460,8 +461,8 @@ const CreateEditEnergyBillForm = () => {
                 value={value}
                 width="20%"
                 customInput={TextField}
-                label="Valor total"
-                helperText={error?.message ?? "Campo opcional"}
+                label="Valor total *"
+                helperText={error?.message}
                 error={!!error}
                 fullWidth
                 InputProps={{
