@@ -89,10 +89,12 @@ var myChart = new Chart(ctx, {
                         return "Indisponível"
                     } else {
                         let prefix = '';
-                        if(context.dataset.label == 'Demanda Medida Ponta'){
-                            prefix = 'P: ';
-                        } else if(context.dataset.label == 'Demanda Medida Fora Ponta') {
-                            prefix = 'FP: ';
+                        if(context.dataset.label == 'Valor de Demanda'){
+                            prefix = 'D: R$';
+                        } else if(context.dataset.label == 'Valor de Consumo') {
+                            prefix = 'C: R$';
+                        } else if(context.dataset.label == 'Total') {
+                            prefix = 'T: R$';
                         }
                         return prefix + new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2 }).format(value);
                     }    
