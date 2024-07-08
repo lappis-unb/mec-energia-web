@@ -77,17 +77,18 @@ const ConsumerUnitContent = () => {
     );
   }
 
+  const contractTabIndex = activeConsumerUnitData.isActive ? ConsumerUnitTab.CONTRACT : ConsumerUnitTab.ANALYSIS;
   return (
     <>
       <TabPanel value={openedTab} index={ConsumerUnitTab.INVOICE}>
         <ConsumerUnitInvoiceContent />
       </TabPanel>
-
-      <TabPanel value={openedTab} index={ConsumerUnitTab.ANALYSIS}>
-        <AnalysisAndRecommendation />
-      </TabPanel>
-
-      <TabPanel value={openedTab} index={ConsumerUnitTab.CONTRACT}>
+      {activeConsumerUnitData.isActive && (
+        <TabPanel value={openedTab} index={ConsumerUnitTab.ANALYSIS}>
+          <AnalysisAndRecommendation />
+        </TabPanel>)
+      }
+      <TabPanel value={openedTab} index={contractTabIndex}>
         <ConsumerUnitContractContent />
       </TabPanel>
     </>

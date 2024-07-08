@@ -11,7 +11,9 @@ import {
   Tab,
   Tabs,
   Typography,
+  Alert,
 } from "@mui/material";
+import { FlashOffRounded } from "@mui/icons-material";
 import StarOutlineRoundedIcon from "@mui/icons-material/StarOutlineRounded";
 import StarRoundedIcon from "@mui/icons-material/StarRounded";
 import EditIcon from "@mui/icons-material/Edit";
@@ -172,17 +174,34 @@ const ConsumerUnitContentHeader = () => {
             </Typography>
           </Box>
         </Box>
+
+        {!consumerUnit?.isActive &&
+          (
+            <Alert
+              severity="warning"
+              variant="filled"
+              icon={<FlashOffRounded style={{ color: "#000", opacity: 0.5 }} />}
+              sx={{ cursor: 'pointer', whiteSpace: 'pre-line', mt: 3 }}
+            >
+              Unidade desativada
+            </Alert>
+          )
+        }
+
         <Tabs value={openedTab} variant="fullWidth" onChange={handleTabChange}>
           <Tab
             icon={<ReceiptLongRoundedIcon />}
             label="Faturas"
             iconPosition="start"
           />
-          <Tab
-            icon={<InsightsRoundedIcon />}
-            label="Análise"
-            iconPosition="start"
-          />
+          {
+            consumerUnit?.isActive && (
+              <Tab
+                icon={<InsightsRoundedIcon />}
+                label="Análise"
+                iconPosition="start"
+              />)
+          }
           <Tab
             icon={<StickyNote2RoundedIcon />}
             label="Contrato"
