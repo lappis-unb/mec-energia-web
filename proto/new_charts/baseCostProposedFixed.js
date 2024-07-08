@@ -1,6 +1,6 @@
 Chart.defaults.font.family = 'Lexend';
 Chart.defaults.color = '#000';
-var ctx = document.getElementById("baseCostFixed");
+var ctx = document.getElementById("baseCostProposedFixed");
 var myChart = new Chart(ctx, {
     plugins: [ChartDataLabels],
     type: 'bar',
@@ -10,22 +10,22 @@ var myChart = new Chart(ctx, {
             {
                 label: 'Valor de Demanda',
                 data: [25224.00, 25224.00, 27068.51, null, 25224.00, 25224.00, 25224.00, 25224.00, 30413.21, 31962.59, 35299.73, 30413.21],
-                backgroundColor: '#7C0AC1',
-                // backgroundColor: '#CB95EC',
+                // backgroundColor: '#7C0AC1',
+                backgroundColor: '#CB95EC',
                 pointStyle: 'triangle',
                 
             },
             {
                 label: 'Valor de Consumo',
                 data: [44528.33, 53256.95, 65511.84, null, 67791.08, 55204.31, 37672.03, 48279.07, 77418.41, 72900.48, 81090.99, 65857.87],
-                backgroundColor: '#003A7A',
-                // backgroundColor: '#729BCA',
+                // backgroundColor: '#003A7A',
+                backgroundColor: '#729BCA',
             },
             {
                 label: 'Total',
                 data: [69752.33, 78480.95, 92580.35, null, 93015.08, 80428.31, 62896.03, 73503.07, 107831.62, 104863.07, 116390.72, 96271.08],
-                backgroundColor: '#B31B0A',
-                // backgroundColor: '#EE8F84',
+                // backgroundColor: '#B31B0A',
+                backgroundColor: '#EE8F84',
                 pointStyle: 'rectRot',
             },
         ]

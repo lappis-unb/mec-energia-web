@@ -1,6 +1,6 @@
 Chart.defaults.font.family = 'Lexend';
 Chart.defaults.color = '#000';
-var ctx = document.getElementById("baseCost");
+var ctx = document.getElementById("baseCostCurrent");
 var myChart = new Chart(ctx, {
     plugins: [ChartDataLabels],
     type: 'bar',
