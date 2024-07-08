@@ -1,6 +1,6 @@
 Chart.defaults.font.family = 'Lexend';
 Chart.defaults.color = '#000';
-var ctx = document.getElementById("baseCostSimplifiedComparison");
+var ctx = document.getElementById("baseCostComparisonFixed");
 var myChart = new Chart(ctx, {
     plugins: [ChartDataLabels],
     type: 'bar',
@@ -11,17 +11,19 @@ var myChart = new Chart(ctx, {
                 label: 'Consumo + Demanda atuais',
                 data: [69752.33, 78480.95, 92580.35, null, 93015.08, 80428.31, 62896.03, 73503.07, 107831.62, 104863.07, 116390.71, 96271.07],
                 backgroundColor: '#55BF87',
+                pointStyle: 'rect',
             },
             {
                 label: 'Consumo + Demanda propostos',
                 data: [71885.96, 77871.87, 80615.97, null, 82629.15, 74301.37, 64757.12, 69971.75, 92285.47, 91423.45, 107447.38, 83667.60],
                 backgroundColor: '#EE8F84',
-                pointStyle: 'rect',
+                pointStyle: 'circle',
             },
         ]
     },
     options: {
         responsive: true,
+        aspectRatio: 1,
         interaction: {
             intersect: false,
             mode: 'nearest',
@@ -63,7 +65,17 @@ var myChart = new Chart(ctx, {
                 align: 'end',          
                 rotation: 270,    
                 formatter: function(value, context) {
-                    return value == null ? 'Indisponível' : null
+                    if(value == null) {
+                        return "Indisponível"
+                    } else {
+                        let prefix = '';
+                        if(context.dataset.label == 'Consumo + Demanda atuais'){
+                            prefix = 'Atual: ';
+                        } else if(context.dataset.label == 'Consumo + Demanda propostos') {
+                            prefix = 'Prop.: ';
+                        }
+                        return prefix + new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2 }).format(value);
+                    }    
                 }
             }
         },
@@ -77,6 +89,7 @@ var myChart = new Chart(ctx, {
                 },
             },
             y: {
+                grace:'50%',
                 title: {
                     display: true,
                     text: 'R$',
