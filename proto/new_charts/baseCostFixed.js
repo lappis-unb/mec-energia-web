@@ -90,11 +90,11 @@ var myChart = new Chart(ctx, {
                     } else {
                         let prefix = '';
                         if(context.dataset.label == 'Valor de Demanda'){
-                            prefix = 'D: R$';
+                            prefix = 'D: ';
                         } else if(context.dataset.label == 'Valor de Consumo') {
-                            prefix = 'C: R$';
+                            prefix = 'C: ';
                         } else if(context.dataset.label == 'Total') {
-                            prefix = 'T: R$';
+                            prefix = 'T: ';
                         }
                         return prefix + new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2 }).format(value);
                     }    
