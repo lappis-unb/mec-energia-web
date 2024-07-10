@@ -119,7 +119,7 @@ const ConsumerUnitEditForm = () => {
           if (!consumerUnit || !contract) {
             return;
           }
-          
+
           setValue("name", consumerUnit?.name ?? "");
           setValue("isActive", true);
           setValue("code", consumerUnit?.code ?? "");
@@ -815,7 +815,7 @@ const ConsumerUnitEditForm = () => {
                     <NumericFormat
                       value={value}
                       customInput={TextField}
-                      label="Potêcia Instalada *"
+                      label="Potência Instalada *"
                       fullWidth
                       InputProps={{
                         endAdornment: (
