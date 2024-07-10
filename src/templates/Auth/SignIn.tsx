@@ -1,16 +1,18 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useRouter } from "next/router";
 import Head from "next/head";
 import Image from "next/image";
 import { signIn } from "next-auth/react";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
-import { Alert, Box, Button, Link, Paper, TextField, Typography } from "@mui/material";
+import { Alert, Box, Button, IconButton, InputAdornment, Link, Paper, TextField, Typography } from "@mui/material";
 import { SignInRequestPayload } from "@/types/auth";
 import { getHeadTitle } from "@/utils/head";
 import Footer from "@/components/Footer";
 import { useSelector } from "react-redux";
 import { selectIsTokenValid, selectPasswordAlreadyCreated, selectUserAlreadyCreatedName } from "@/store/appSlice";
 import { TokenStatus } from "@/types/app";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
 
 const defaultValues: SignInRequestPayload = {
   username: "",
@@ -20,11 +22,11 @@ const defaultValues: SignInRequestPayload = {
 const SignInTemplate = () => {
   const headTitle = useMemo(() => getHeadTitle("Entrar"), []);
 
-  const router = useRouter();
-
   const tokenStatus = useSelector(selectIsTokenValid);
   const passwordAlreadyCreated = useSelector(selectPasswordAlreadyCreated);
   const userAlreadyCreatedName = useSelector(selectUserAlreadyCreatedName);
+
+  const [showPassword, setShowPassword] = useState(false);
 
   const {
     query: { error },
@@ -145,19 +147,31 @@ const SignInTemplate = () => {
                       ref={ref}
                       value={value}
                       label="Senha"
-                      type="password"
+                      type={showPassword ? "text" : "password"}
                       error={Boolean(error)}
                       helperText={error?.message ?? " "}
                       fullWidth
                       onChange={onChange}
                       onBlur={onBlur}
+                      InputProps={{
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <IconButton
+                              onClick={() => setShowPassword(!showPassword)}
+                              onMouseDown={(e) => e.preventDefault()}
+                            >
+                              {showPassword ? <VisibilityOff /> : <Visibility />}
+                            </IconButton>
+                          </InputAdornment>
+                        ),
+                      }}
                     />
                   )}
                 />
               </Box>
 
               <Box display="flex" flexDirection="row-reverse">
-                <Link variant="caption" onClick={() => router.push("/esqueci-senha")}>Esqueci minha senha</Link>
+                <Link variant="caption" href="/esqueci-senha">Esqueci minha senha</Link>
               </Box>
 
               {error && (

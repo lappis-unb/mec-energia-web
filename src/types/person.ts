@@ -65,6 +65,12 @@ export interface EditPersonRequestPayload extends CreatePersonRequestPayload {
   id: number;
 }
 
+export interface EditPasswordRequestPayload {
+  currentPassword: string,
+  newPassword: string,
+  confirmPassword: string
+}
+
 export type CreatePersonResponsePayload = GetPersonResponsePayload;
 
 export type EditPersonResponsePayload = GetPersonResponsePayload;

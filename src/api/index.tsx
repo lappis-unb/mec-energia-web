@@ -443,6 +443,16 @@ export const mecEnergiaApi = createApi({
       query: (token) => `reset-password/?token=${token}`,
       providesTags: ["Token"],
     }),
+    changeUserPassword: builder.mutation<void, { current_password: string; new_password: string }>({
+      query: ({ current_password, new_password }) => ({
+        url: "/users/change-user-password/",
+        method: "POST",
+        body: {
+          current_password,
+          new_password,
+        },
+      }),
+    }),
   }),
 });
 
@@ -491,4 +501,5 @@ export const {
   useConfirmResetPasswordMutation,
   useResetPasswordRequestMutation,
   useValidateResetPasswordTokenQuery,
+  useChangeUserPasswordMutation,
 } = mecEnergiaApi;

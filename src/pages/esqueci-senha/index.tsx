@@ -9,17 +9,19 @@ import { useMemo } from "react";
 import { useRouter } from "next/router";
 import Footer from "@/components/Footer";
 import { useResetPasswordRequestMutation } from "@/api";
+import { useDispatch } from "react-redux";
+import { setIsSuccessNotificationOpen } from "@/store/appSlice";
+import SuccessNotification from "@/components/Notification/SuccessNotification";
 
 const defaultValues: ResetPasswordRequestPayload = {
   email: ""
 };
 
-const DefinePasswordPage: NextPage = () => {
+const ForgotPasswordPage: NextPage = () => {
   const [ResetPasswordRequest] = useResetPasswordRequestMutation();
 
+  const dispatch = useDispatch();
   const headTitle = useMemo(() => getHeadTitle("Esqueci minha senha"), []);
-
-  const router = useRouter();
 
   const {
     query: { error },
@@ -43,10 +45,13 @@ const DefinePasswordPage: NextPage = () => {
         await ResetPasswordRequest({
           email: email,
         }).unwrap();
-        
-        // Redirect or show a success message
-        router.push("/")
 
+        dispatch(
+          setIsSuccessNotificationOpen({
+            isOpen: true,
+            text: "Você receberá instruções de como redefinir sua senha se este e-mail estiver cadastrado",
+          })
+        );
       } catch (error) {
         // Handle error
         console.error('Erro ao redefinir a senha', error);
@@ -141,7 +146,7 @@ const DefinePasswordPage: NextPage = () => {
 
               <Box mt={5}>
                 <Box display="flex" justifyContent="center">
-                  <Link onClick={() => router.push("/")}>Voltar</Link>
+                  <Link href="/">Voltar</Link>
                 </Box>
               </Box>
             </Box>
@@ -150,8 +155,9 @@ const DefinePasswordPage: NextPage = () => {
 
         <Footer />
       </Box>
+      <SuccessNotification />
     </>
   );
 };
 
-export default DefinePasswordPage;
+export default ForgotPasswordPage;

@@ -68,6 +68,7 @@ export type AppState = {
     activeId: number | null;
     isCreateFormOpen: boolean;
     isEditFormOpen: boolean;
+    isEditPasswordFormOpen: boolean;
   };
   notifications: {
     success: NotificationProps;

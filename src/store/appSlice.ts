@@ -59,6 +59,7 @@ const initialState: AppState = {
     activeId: null,
     isCreateFormOpen: false,
     isEditFormOpen: false,
+    isEditPasswordFormOpen: false,
   },
   notifications: {
     success: {
@@ -215,6 +216,9 @@ export const appSlice = createSlice({
     setIsPersonEditFormOpen: (state, action: PayloadAction<boolean>) => {
       state.person.isEditFormOpen = action.payload;
     },
+    setIsEditPasswordFormOpen: (state, action: PayloadAction<boolean>) => {
+      state.person.isEditPasswordFormOpen = action.payload;
+    },
     setIsSuccessNotificationOpen: (
       state,
       action: PayloadAction<NotificationProps>
@@ -286,6 +290,7 @@ export const {
   setActivePersonId,
   setIsPersonCreateFormOpen,
   setIsPersonEditFormOpen,
+  setIsEditPasswordFormOpen,
 
   setIsSuccessNotificationOpen,
   setIsErrorNotificationOpen,
@@ -403,6 +408,10 @@ export const selectIsPersonCreateFormOpen = (state: RootState) => {
 
 export const selectIsPersonEditFormOpen = (state: RootState) => {
   return state.app.person.isEditFormOpen;
+};
+
+export const selectIsPasswordEditFormOpen = (state: RootState) => {
+  return state.app.person.isEditPasswordFormOpen;
 };
 
 //Notification
