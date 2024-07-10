@@ -383,7 +383,13 @@ const CreateEditEnergyBillForm = () => {
             name="date"
             rules={{
               required: "Já existe uma fatura lançada neste mês",
-              validate: (value) => {
+              validate: (value: Date | string) => {
+                if (value == "Invalid Date") {
+                  const validationDateMessage =
+                    'Insira uma data válida no formato "mês"/aaaa" (ex.: janeiro/2024)';
+                  return validationDateMessage;
+                }
+
                 const selectedDate = new Date(value);
                 if (contracts && contracts.length > 0) {
                   const earliestContract = contracts.reduce(
