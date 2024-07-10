@@ -578,7 +578,11 @@ const CreateEditEnergyBillForm = () => {
               control={control}
               name="peakMeasuredDemandInKw"
               rules={{
-                required: "Preencha este campo",
+                validate: (value) => {
+                  if (contract?.tariffFlag !== 'G' && !value) {
+                    return "Preencha este campo";
+                  }
+                },
                 min: {
                   value: 0.1,
                   message: "Insira um valor maior que 0",
@@ -591,7 +595,7 @@ const CreateEditEnergyBillForm = () => {
                 <NumericFormat
                   value={value}
                   customInput={TextField}
-                  label="Ponta *"
+                  label={contract?.tariffFlag === 'G' ? 'Ponta' : 'Ponta *'}
                   fullWidth
                   InputProps={{
                     endAdornment: (
@@ -608,7 +612,7 @@ const CreateEditEnergyBillForm = () => {
                   decimalSeparator=","
                   thousandSeparator={"."}
                   error={Boolean(error)}
-                  helperText={error?.message ?? " "}
+                  helperText={error?.message ?? (contract?.tariffFlag !== 'G' ? "" : "Campo opcional")}
                   onValueChange={(values) => onChange(values.floatValue)}
                   onBlur={onBlur}
                 />
@@ -660,7 +664,11 @@ const CreateEditEnergyBillForm = () => {
         </Grid>
       </>
     ),
-    [control]
+    [
+      control,
+      activeConsumerUnitId,
+      contract?.tariffFlag,
+    ]
   );
 
   const MeasuredConsumption = useCallback(

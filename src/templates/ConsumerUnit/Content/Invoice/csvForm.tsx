@@ -409,7 +409,7 @@ const CsvForm: React.FC<CsvFormProps> = ({ csvData }) => {
                                 borderBottom: hasError ? "none" : "1px solid #e0e0e0"
                               }}
                             >
-                              {formatNumber(item.peakMeasuredDemandInKw.value)}
+                              {item.peakMeasuredDemandInKw.value ? formatNumber(item.peakMeasuredDemandInKw.value) : ""}
                             </TableCell>
                             <TableCell
                               style={{
