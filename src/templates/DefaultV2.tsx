@@ -42,7 +42,7 @@ const DefaultTemplateV2 = ({
             <Box sx={{ flexGrow: 1, position: "relative", pb: 5 }}>
               {contentHeader}
 
-              <Container maxWidth={contentContainerMaxWidth}>
+              <Container maxWidth={contentContainerMaxWidth} sx={{ height: '100%' }}>
                 {children}
               </Container>
             </Box>

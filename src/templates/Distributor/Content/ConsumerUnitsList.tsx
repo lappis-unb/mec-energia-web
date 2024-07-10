@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { useSelector } from "react-redux";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 
-import { Typography, Link } from "@mui/material";
+import { Box, Typography, Link } from "@mui/material";
 
 import { useGetDistributorSubgroupsQuery } from "@/api";
 import {
@@ -43,17 +43,30 @@ const DistributorContentConsumerUnitsList = () => {
 
   return (
     <>
-      <Typography variant="h5">Unidades consumidoras</Typography>
+      <Box display="flex" flexDirection="column" gap={2}>
+        <Typography variant="h5">Unidades consumidoras</Typography>
 
-      <ul>
-        {consumerUnits.map(({ id, name }) => (
-          <li key={id}>
-            <Link href={`/uc/${id}`} color="primary" underline="always">
-              {name}
-            </Link>
-          </li>
-        ))}
-      </ul>
+        {(consumerUnits.length <= 0) ? (<Typography 
+          variant="caption" 
+          fontSize="14px" 
+          color="text.secondary" 
+          lineHeight="20px"
+          letterSpacing="0.15px">
+          Nenhuma unidade consumidora associada
+        </Typography>) : (
+          <ul>
+            {consumerUnits.map(({ id, name }) => (
+              <li key={id}>
+                <Link href={`/uc/${id}`} color="primary" underline="always">
+                  {name}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        )}
+      </Box>
+
+      
     </>
   );
 };
