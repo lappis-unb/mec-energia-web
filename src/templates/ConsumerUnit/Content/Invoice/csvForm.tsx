@@ -59,15 +59,13 @@ interface CsvData {
   consumerUnit: { value: string; error: boolean };
   date: {
     value: string;
-    errorDoubleDateCsv: boolean;
-    errorDoubleDateRegistered: boolean;
-    errorDateNotCoveredByContract: boolean;
+    errors: [[number, string]] | null
   };
-  invoiceInReais: { value: string; error: boolean };
-  peakConsumptionInKwh: { value: string; error: boolean };
-  offPeakConsumptionInKwh: { value: string; error: boolean };
-  peakMeasuredDemandInKw: { value: string; error: boolean };
-  offPeakMeasuredDemandInKw: { value: string; error: boolean };
+  invoiceInReais: { value: string; errors: [[number, string]] | null };
+  peakConsumptionInKwh: { value: string; errors: [[number, string]] | null };
+  offPeakConsumptionInKwh: { value: string; errors: [[number, string]] | null };
+  peakMeasuredDemandInKw: { value: string; errors: [[number, string]] | null };
+  offPeakMeasuredDemandInKw: { value: string; errors: [[number, string]] | null };
 }
 
 interface CsvFormProps {
@@ -184,14 +182,12 @@ const CsvForm: React.FC<CsvFormProps> = ({ csvData }) => {
 
   const hasRowWithErrorInCsv = (item: CsvData) => {
     return (
-      item.date.errorDoubleDateCsv ||
-      item.date.errorDoubleDateRegistered ||
-      item.date.errorDateNotCoveredByContract ||
-      item.peakConsumptionInKwh.error ||
-      item.offPeakConsumptionInKwh.error ||
-      item.peakMeasuredDemandInKw.error ||
-      item.offPeakMeasuredDemandInKw.error ||
-      item.invoiceInReais.error
+      item.date.errors ||
+      item.peakConsumptionInKwh.errors ||
+      item.offPeakConsumptionInKwh.errors ||
+      item.peakMeasuredDemandInKw.errors ||
+      item.offPeakMeasuredDemandInKw.errors ||
+      item.invoiceInReais.errors
     );
   }
 
@@ -233,7 +229,7 @@ const CsvForm: React.FC<CsvFormProps> = ({ csvData }) => {
 
           <Box mt={4}>
             <Box p={2}>
-              <TableContainer component={Paper} sx={{boxShadow: "none"}}>
+              <TableContainer component={Paper} sx={{ boxShadow: "none" }}>
                 <Table>
                   <TableHead>
                     <TableRow
@@ -321,44 +317,14 @@ const CsvForm: React.FC<CsvFormProps> = ({ csvData }) => {
                   <TableBody>
                     {sortedData.map((item, index) => {
                       const hasError = hasRowWithErrorInCsv(item);
-
                       const errorMessages = [];
-                      if (item.date.errorDoubleDateCsv) {
-                        errorMessages.push(
-                          "- Este mês está duplicado na planilha"
-                        );
-                      }
-                      if (item.date.errorDoubleDateRegistered) {
-                        errorMessages.push(
-                          "- Já existe uma fatura lançada neste mês"
-                        );
-                      }
-                      if (item.date.errorDateNotCoveredByContract) {
-                        errorMessages.push(
-                          "- Este mês não é coberto por um contrato registrado no sistema"
-                        );
-                      }
-                      if (
-                        item.peakConsumptionInKwh.error ||
-                        item.offPeakConsumptionInKwh.error
-                      ) {
-                        errorMessages.push(
-                          "- Valores de Consumo devem ser números entre 0,1 e 99.999,99"
-                        );
-                      }
-                      if (
-                        item.peakMeasuredDemandInKw.error ||
-                        item.offPeakMeasuredDemandInKw.error
-                      ) {
-                        errorMessages.push(
-                          "- Valores de Demanda devem ser números entre 0,1 e 99.999,99"
-                        );
-                      }
-                      if (item.invoiceInReais.error) {
-                        errorMessages.push(
-                          "- O valor da fatura é opcional, mas se preenchido deve ser um número entre 0,1 e 99.999.999,99"
-                        );
-                      }
+                      Object.keys(item).forEach((key) => {
+                        if (item[key].errors) {
+                          item[key].errors.forEach(([, msg]) => {
+                            errorMessages.push("- " + msg)
+                          })
+                        }
+                      })
 
                       return (
                         <React.Fragment key={index}>
@@ -391,15 +357,11 @@ const CsvForm: React.FC<CsvFormProps> = ({ csvData }) => {
                             <TableCell
                               style={{
                                 backgroundColor:
-                                  item.date.errorDoubleDateCsv ||
-                                  item.date.errorDoubleDateRegistered ||
-                                  item.date.errorDateNotCoveredByContract
+                                  item.date.errors
                                     ? theme.palette.error.main
                                     : "inherit",
                                 color:
-                                  item.date.errorDoubleDateCsv ||
-                                  item.date.errorDoubleDateRegistered ||
-                                  item.date.errorDateNotCoveredByContract
+                                  item.date.errors
                                     ? "#FFFFFF"
                                     : "inherit",
                                 whiteSpace: "nowrap",
@@ -410,10 +372,10 @@ const CsvForm: React.FC<CsvFormProps> = ({ csvData }) => {
                             </TableCell>
                             <TableCell
                               style={{
-                                backgroundColor: item.peakConsumptionInKwh.error
+                                backgroundColor: item.peakConsumptionInKwh.errors
                                   ? theme.palette.error.main
                                   : "inherit",
-                                color: item.peakConsumptionInKwh.error
+                                color: item.peakConsumptionInKwh.errors
                                   ? "#FFFFFF"
                                   : "inherit",
                                 borderBottom: hasError ? "none" : "1px solid #e0e0e0"
@@ -427,7 +389,7 @@ const CsvForm: React.FC<CsvFormProps> = ({ csvData }) => {
                                   .error
                                   ? theme.palette.error.main
                                   : "inherit",
-                                color: item.offPeakConsumptionInKwh.error
+                                color: item.offPeakConsumptionInKwh.errors
                                   ? "#FFFFFF"
                                   : "inherit",
                                 borderBottom: hasError ? "none" : "1px solid #e0e0e0"
@@ -441,7 +403,7 @@ const CsvForm: React.FC<CsvFormProps> = ({ csvData }) => {
                                   .error
                                   ? theme.palette.error.main
                                   : "inherit",
-                                color: item.peakMeasuredDemandInKw.error
+                                color: item.peakMeasuredDemandInKw.errors
                                   ? "#FFFFFF"
                                   : "inherit",
                                 borderBottom: hasError ? "none" : "1px solid #e0e0e0"
@@ -455,7 +417,7 @@ const CsvForm: React.FC<CsvFormProps> = ({ csvData }) => {
                                   .error
                                   ? theme.palette.error.main
                                   : "inherit",
-                                color: item.offPeakMeasuredDemandInKw.error
+                                color: item.offPeakMeasuredDemandInKw.errors
                                   ? "#FFFFFF"
                                   : "inherit",
                                 borderBottom: hasError ? "none" : "1px solid #e0e0e0"
@@ -465,10 +427,10 @@ const CsvForm: React.FC<CsvFormProps> = ({ csvData }) => {
                             </TableCell>
                             <TableCell
                               style={{
-                                backgroundColor: item.invoiceInReais.error
+                                backgroundColor: item.invoiceInReais.errors
                                   ? theme.palette.error.main
                                   : "inherit",
-                                color: item.invoiceInReais.error
+                                color: item.invoiceInReais.errors
                                   ? "#FFFFFF"
                                   : "inherit",
                                 borderBottom: hasError ? "none" : "1px solid #e0e0e0"
@@ -478,10 +440,10 @@ const CsvForm: React.FC<CsvFormProps> = ({ csvData }) => {
                             </TableCell>
                           </TableRow>
                           {hasError && (
-                            <TableRow 
+                            <TableRow
                               style={{
-                              backgroundColor:
-                                index % 2 === 0 ? "#FFFFFF" : "#EEF4F4",
+                                backgroundColor:
+                                  index % 2 === 0 ? "#FFFFFF" : "#EEF4F4",
                               }}
                             >
                               <TableCell
@@ -515,7 +477,7 @@ const CsvForm: React.FC<CsvFormProps> = ({ csvData }) => {
                   severity="error"
                   style={{ marginBottom: "16px" }}
                 >
-                  Corrija os erros no arquivo CSV e importe-o novamente
+                  Corrija os erros na planilha e importe-a novamente
                 </Alert>
               ) : (
                 <Alert

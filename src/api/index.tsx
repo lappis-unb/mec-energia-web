@@ -194,10 +194,10 @@ export const mecEnergiaApi = createApi({
       providesTags: (result, error, arg) =>
         result
           ? [
-              { type: "CurrentContract", arg },
-              "CurrentContract",
-              "Recommendation",
-            ]
+            { type: "CurrentContract", arg },
+            "CurrentContract",
+            "Recommendation",
+          ]
           : ["CurrentContract", "Recommendation"],
     }),
     getAllContracts: builder.query<GetContractsResponsePayload[], number>({
@@ -206,10 +206,10 @@ export const mecEnergiaApi = createApi({
       providesTags: (result, error, arg) =>
         result
           ? [
-              { type: "CurrentContract", arg },
-              "CurrentContract",
-              "Recommendation",
-            ]
+            { type: "CurrentContract", arg },
+            "CurrentContract",
+            "Recommendation",
+          ]
           : ["CurrentContract", "Recommendation"],
     }),
     renewContract: builder.mutation<

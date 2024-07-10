@@ -24,6 +24,8 @@ import StickyNote2RoundedIcon from "@mui/icons-material/StickyNote2Rounded";
 import {
   useEditPersonFavoritesMutation,
   useFetchConsumerUnitsQuery,
+  usePostInvoiceCsvMutation,
+  useGetConsumerUnitQuery
 } from "@/api";
 
 import {
@@ -33,7 +35,6 @@ import {
   setIsConsumerUnitEditFormOpen,
   setIsCsvFormOpen,
 } from "@/store/appSlice";
-import { useGetConsumerUnitQuery, usePostInvoiceCsvMutation } from "@/api";
 import CsvDialog from "./Invoice/csvDialog";
 import CsvForm from "./Invoice/csvForm";
 import { RootState } from "@/types/app";
@@ -67,8 +68,10 @@ const ConsumerUnitContentHeader = () => {
     (state: RootState) => state.app.consumerUnit.isCsvFormOpen
   );
   const [isCsvDialogOpen, setIsCsvDialogOpen] = useState(false);
+  const [isCsvLoading, setIsCsvLoading] = useState(false);
+  const [isCsvError, setIsCsvError] = useState(false);
   const [csvData, setCsvData] = useState<CsvData[]>([]);
-  const [postInvoiceCsvMutation] = usePostInvoiceCsvMutation();
+  const [postInvoiceCsv] = usePostInvoiceCsvMutation();
 
   const handleEditConsumerUnitClick = () => {
     dispatch(setIsConsumerUnitEditFormOpen(true));
@@ -76,6 +79,10 @@ const ConsumerUnitContentHeader = () => {
 
   const handleTabChange = (_event: SyntheticEvent, tabIndex: number) => {
     dispatch(setConsumerUnitOpenedTab(tabIndex));
+  };
+
+  const removeError = () => {
+    setIsCsvError(false);
   };
 
   const handleOpenCsvDialog = () => {
@@ -87,22 +94,25 @@ const ConsumerUnitContentHeader = () => {
   };
 
   const handleFileSelect = async (file: File) => {
+    setIsCsvLoading(true);
     try {
       const formDataCsv = new FormData();
       formDataCsv.append("consumer_unit_id", (consumerUnitId ?? "").toString());
-      formDataCsv.append("csvFile", file);
-      const response = await postInvoiceCsvMutation(formDataCsv).unwrap();
-
+      formDataCsv.append("file", file);
+      const response = await postInvoiceCsv(formDataCsv).unwrap();
       if (response && typeof response === "object" && "data" in response) {
         setCsvData(response.data);
       }
-
       handleCloseCsvDialog();
-      dispatch(setIsCsvFormOpen(true)); // Abre o CsvForm
+      dispatch(setIsCsvFormOpen(true)); // Abre o csvForm
     } catch (error) {
-      console.error("Erro ao enviar o arquivo CSV:", error);
+      console.error("Erro ao enviar o arquivo csv:", error);
+      setIsCsvError(true);
+    } finally {
+      setIsCsvLoading(false);
     }
-  };
+  }
+
   const handleFavoriteButtonClick = useCallback<
     MouseEventHandler<HTMLButtonElement>
   >(async (event) => {
@@ -213,6 +223,9 @@ const ConsumerUnitContentHeader = () => {
           isCsvDialogOpen={isCsvDialogOpen}
           handleCloseCsvDialog={handleCloseCsvDialog}
           onFileSelect={handleFileSelect}
+          isLoading={isCsvLoading}
+          isError={isCsvError}
+          removeError={removeError}
         />
       </Container>
       {isCsvFormOpen && <CsvForm csvData={csvData} />}
