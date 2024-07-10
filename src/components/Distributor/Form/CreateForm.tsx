@@ -30,6 +30,7 @@ import {
 import { useDispatch } from "react-redux";
 import { SubmitButton } from "@/components/Form/SubmitButton";
 import { FormErrorsAlert } from "@/components/Form/FormErrorsAlert";
+import isValidCnpj from "@/utils/validations/isValidCnpj";
 
 const defaultValues: CreateDistributorForm = {
   name: "",
@@ -145,7 +146,13 @@ const DistributorCreateFormDialog = (
                 <Controller
                   control={control}
                   name="name"
-                  rules={{ required: "Preencha este campo" }}
+                  rules={{
+                    required: "Preencha este campo",
+                    minLength: {
+                      value: 3,
+                      message: "Insira ao menos 3 caracteres",
+                    },
+                  }}
                   render={({
                     field: { onChange, onBlur, value, ref },
                     fieldState: { error },
@@ -170,11 +177,9 @@ const DistributorCreateFormDialog = (
                   name="cnpj"
                   rules={{
                     required: "Preencha este campo",
-                    pattern: {
-                      value:
-                        /([0-9]{2}[\.]?[0-9]{3}[\.]?[0-9]{3}[\/]?[0-9]{4}[-]?[0-9]{2})/,
-                      message: "Insira um CNPJ válido com 14 dígitos",
-                    },
+                    validate: (value) =>
+                      isValidCnpj(value) ||
+                      "Insira um CNPJ válido com 14 dígitos",
                   }}
                   render={({
                     field: { onChange, onBlur, value },
