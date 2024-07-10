@@ -50,9 +50,6 @@ import { DistributorPropsTariffs } from "@/types/distributor";
 import { sendFormattedDate } from "@/utils/date";
 import FormDrawerV2 from "@/components/Form/DrawerV2";
 
-import CloudUploadIcon from "@mui/icons-material/CloudUpload"; // Importe o ícone do Material-UI
-import Button from "@mui/material/Button";
-
 const defaultValues: CreateAndEditEnergyBillForm = {
   date: new Date(),
   invoiceInReais: "",
@@ -761,18 +758,18 @@ const CreateEditEnergyBillForm = () => {
   const [selectedPdfFile, setSelectedPdfFile] = useState<File | null>(null);
 
   // Novo manipulador de upload de arquivo PDF
-  const handlePdfFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files && event.target.files.length > 0) {
-      const file = event.target.files[0];
-      if (file && file.type === "application/pdf") {
-        // Arquivo PDF válido, atualize o estado com o arquivo selecionado
-        setSelectedPdfFile(file);
-      } else {
-        // Arquivo inválido, você pode exibir uma mensagem de erro se desejar
-        setSelectedPdfFile(null);
-      }
-    }
-  };
+  // const handlePdfFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  //   if (event.target.files && event.target.files.length > 0) {
+  //     const file = event.target.files[0];
+  //     if (file && file.type === "application/pdf") {
+  //       // Arquivo PDF válido, atualize o estado com o arquivo selecionado
+  //       setSelectedPdfFile(file);
+  //     } else {
+  //       // Arquivo inválido, você pode exibir uma mensagem de erro se desejar
+  //       setSelectedPdfFile(null);
+  //     }
+  //   }
+  // };
 
   // Função auxiliar para converter o PDF em base64
   const convertPdfToBase64 = (file: File): Promise<string> => {
@@ -805,31 +802,31 @@ const CreateEditEnergyBillForm = () => {
           <MeasuredDemandSection key={1} />,
           <MeasuredConsumption key={2} />,
           // Adicione a seção de upload de PDF como parte do FormDrawerV2
-          <Grid item xs={4} key={3}>
-            <Grid item xs={8} mb={2}>
-              <Typography variant="h5">Anexo PDF</Typography>
-            </Grid>
-            <input
-              type="file"
-              accept=".pdf"
-              style={{ display: "none" }}
-              onChange={handlePdfFileUpload}
-              id="pdfFile" // Adicionei o ID para associá-lo ao label
-            />
-            <label htmlFor="pdfFile">
-              <Button
-                variant="contained"
-                color="primary"
-                component="span"
-                startIcon={<CloudUploadIcon />}
-              >
-                Upload de PDF
-              </Button>
-            </label>
-            {selectedPdfFile && (
-              <p>Arquivo PDF selecionado: {selectedPdfFile.name}</p>
-            )}
-          </Grid>,
+          // <Grid item xs={4} key={3}>
+          //   <Grid item xs={8} mb={2}>
+          //     <Typography variant="h5">Anexo PDF</Typography>
+          //   </Grid>
+          //   <input
+          //     type="file"
+          //     accept=".pdf"
+          //     style={{ display: "none" }}
+          //     onChange={handlePdfFileUpload}
+          //     id="pdfFile" // Adicionei o ID para associá-lo ao label
+          //   />
+          //   <label htmlFor="pdfFile">
+          //     <Button
+          //       variant="contained"
+          //       color="primary"
+          //       component="span"
+          //       startIcon={<CloudUploadIcon />}
+          //     >
+          //       Upload de PDF
+          //     </Button>
+          //   </label>
+          //   {selectedPdfFile && (
+          //     <p>Arquivo PDF selecionado: {selectedPdfFile.name}</p>
+          //   )}
+          // </Grid>,
         ]}
       />
       <FormWarningDialog

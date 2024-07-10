@@ -737,7 +737,7 @@ const ConsumerUnitCreateForm = () => {
                     <NumericFormat
                       value={value}
                       customInput={TextField}
-                      label="Potêcia Instalada *"
+                      label="Potência Instalada *"
                       fullWidth
                       InputProps={{
                         endAdornment: (

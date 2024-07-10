@@ -11,7 +11,9 @@ import {
   Tab,
   Tabs,
   Typography,
+  Alert,
 } from "@mui/material";
+import { FlashOffRounded } from "@mui/icons-material";
 import StarOutlineRoundedIcon from "@mui/icons-material/StarOutlineRounded";
 import StarRoundedIcon from "@mui/icons-material/StarRounded";
 import EditIcon from "@mui/icons-material/Edit";
@@ -22,6 +24,8 @@ import StickyNote2RoundedIcon from "@mui/icons-material/StickyNote2Rounded";
 import {
   useEditPersonFavoritesMutation,
   useFetchConsumerUnitsQuery,
+  usePostInvoiceCsvMutation,
+  useGetConsumerUnitQuery
 } from "@/api";
 
 import {
@@ -31,7 +35,6 @@ import {
   setIsConsumerUnitEditFormOpen,
   setIsCsvFormOpen,
 } from "@/store/appSlice";
-import { useGetConsumerUnitQuery, usePostInvoiceCsvMutation } from "@/api";
 import CsvDialog from "./Invoice/csvDialog";
 import CsvForm from "./Invoice/csvForm";
 import { RootState } from "@/types/app";
@@ -65,8 +68,10 @@ const ConsumerUnitContentHeader = () => {
     (state: RootState) => state.app.consumerUnit.isCsvFormOpen
   );
   const [isCsvDialogOpen, setIsCsvDialogOpen] = useState(false);
+  const [isCsvLoading, setIsCsvLoading] = useState(false);
+  const [isCsvError, setIsCsvError] = useState(false);
   const [csvData, setCsvData] = useState<CsvData[]>([]);
-  const [postInvoiceCsvMutation] = usePostInvoiceCsvMutation();
+  const [postInvoiceCsv] = usePostInvoiceCsvMutation();
 
   const handleEditConsumerUnitClick = () => {
     dispatch(setIsConsumerUnitEditFormOpen(true));
@@ -74,6 +79,10 @@ const ConsumerUnitContentHeader = () => {
 
   const handleTabChange = (_event: SyntheticEvent, tabIndex: number) => {
     dispatch(setConsumerUnitOpenedTab(tabIndex));
+  };
+
+  const removeError = () => {
+    setIsCsvError(false);
   };
 
   const handleOpenCsvDialog = () => {
@@ -85,22 +94,25 @@ const ConsumerUnitContentHeader = () => {
   };
 
   const handleFileSelect = async (file: File) => {
+    setIsCsvLoading(true);
     try {
       const formDataCsv = new FormData();
       formDataCsv.append("consumer_unit_id", (consumerUnitId ?? "").toString());
-      formDataCsv.append("csvFile", file);
-      const response = await postInvoiceCsvMutation(formDataCsv).unwrap();
-
+      formDataCsv.append("file", file);
+      const response = await postInvoiceCsv(formDataCsv).unwrap();
       if (response && typeof response === "object" && "data" in response) {
         setCsvData(response.data);
       }
-
       handleCloseCsvDialog();
-      dispatch(setIsCsvFormOpen(true)); // Abre o CsvForm
+      dispatch(setIsCsvFormOpen(true)); // Abre o csvForm
     } catch (error) {
-      console.error("Erro ao enviar o arquivo CSV:", error);
+      console.error("Erro ao enviar o arquivo csv:", error);
+      setIsCsvError(true);
+    } finally {
+      setIsCsvLoading(false);
     }
-  };
+  }
+
   const handleFavoriteButtonClick = useCallback<
     MouseEventHandler<HTMLButtonElement>
   >(async (event) => {
@@ -172,17 +184,34 @@ const ConsumerUnitContentHeader = () => {
             </Typography>
           </Box>
         </Box>
+
+        {!consumerUnit?.isActive &&
+          (
+            <Alert
+              severity="warning"
+              variant="filled"
+              icon={<FlashOffRounded style={{ color: "#000", opacity: 0.5 }} />}
+              sx={{ cursor: 'pointer', whiteSpace: 'pre-line', mt: 3 }}
+            >
+              Unidade desativada
+            </Alert>
+          )
+        }
+
         <Tabs value={openedTab} variant="fullWidth" onChange={handleTabChange}>
           <Tab
             icon={<ReceiptLongRoundedIcon />}
             label="Faturas"
             iconPosition="start"
           />
-          <Tab
-            icon={<InsightsRoundedIcon />}
-            label="Análise"
-            iconPosition="start"
-          />
+          {
+            consumerUnit?.isActive && (
+              <Tab
+                icon={<InsightsRoundedIcon />}
+                label="Análise"
+                iconPosition="start"
+              />)
+          }
           <Tab
             icon={<StickyNote2RoundedIcon />}
             label="Contrato"
@@ -194,6 +223,9 @@ const ConsumerUnitContentHeader = () => {
           isCsvDialogOpen={isCsvDialogOpen}
           handleCloseCsvDialog={handleCloseCsvDialog}
           onFileSelect={handleFileSelect}
+          isLoading={isCsvLoading}
+          isError={isCsvError}
+          removeError={removeError}
         />
       </Container>
       {isCsvFormOpen && <CsvForm csvData={csvData} />}

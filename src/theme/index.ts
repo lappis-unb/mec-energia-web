@@ -23,7 +23,7 @@ const theme = createTheme(
         contrastText: "#fff",
       },
       secondary: {
-        main: "#FB736C",
+        main: "#FAAD10",
       },
       background: {
         default: "#EEF4F4",
@@ -33,7 +33,7 @@ const theme = createTheme(
         main: "#B31B0A",
       },
       warning: {
-        main: "#FB736C",
+        main: "#FAAD10",
         contrastText: "#000",
       },
       highlighted: {
@@ -66,64 +66,73 @@ const theme = createTheme(
         },
       },
       MuiAlert: {
+        defaultProps: {
+          variant: "filled",
+        },
         styleOverrides: {
           standardError: {
-            backgroundColor: "#F8E9E7",
-            color: "#520D05",
+            backgroundColor: "#FDEDED",
+            color: "#5F2120",
+            "& .MuiAlert-icon": {
+              color: "#B31B0A",
+            },
           },
           standardSuccess: {
-            backgroundColor: "#ECF2E9",
-            color: "#25401A",
+            backgroundColor: "#EDF7ED",
+            color: "#1E4620",
+            "& .MuiAlert-icon": {
+              color: "#008940",
+            },
           },
           standardWarning: {
-            backgroundColor: "#FBF4E7",
-            color: "#613E05",
+            backgroundColor: "#FFF4E5",
+            color: "#663C00",
             "& .MuiAlert-icon": {
               color: "#D98A0B",
             },
           },
           standardInfo: {
-            backgroundColor: "#E6ECF3",
-            color: "#0F294D",
+            backgroundColor: "#E5F6FD",
+            color: "#014361",
+            "& .MuiAlert-icon": {
+              color: "#003A7A",
+            },
           },
           filledError: {
             backgroundColor: "#B31B0A",
             color: "#FFF",
           },
           filledSuccess: {
-            backgroundColor: "#418026",
+            backgroundColor: "#008940",
             color: "#FFF",
           },
           filledWarning: {
             backgroundColor: "#D98A0B",
-            color: "#000",
-            "& .MuiAlert-icon": {
-              color: "#000",
-            },
+            color: "#FFF",
           },
           filledInfo: {
-            backgroundColor: "#0E438C",
+            backgroundColor: "#003A7A",
             color: "#FFF",
           },
           outlinedError: {
-            backgroundColor: "#FFF",
+            backgroundColor: "#F7F7F7",
             borderColor: "#B31B0A",
-            color: "#520D05",
+            color: "#5F2120",
           },
           outlinedSuccess: {
-            backgroundColor: "#FFF",
-            borderColor: "#418026",
-            color: "#25401A",
+            backgroundColor: "#F7F7F7",
+            borderColor: "#008940",
+            color: "#1E4620",
           },
           outlinedWarning: {
-            backgroundColor: "#FFF",
+            backgroundColor: "#F7F7F7",
             borderColor: "#D98A0B",
-            color: "#613E05",
+            color: "#663C00",
           },
           outlinedInfo: {
-            backgroundColor: "#FFF",
-            borderColor: "#0E438C",
-            color: "#0F294D",
+            backgroundColor: "#F7F7F7",
+            borderColor: "#003A7A",
+            color: "#014361",
           },
           icon: {
             color: "#FFFFFF",
@@ -179,7 +188,7 @@ const theme = createTheme(
             button: {
               color: "white",
             },
-            // Remove o último separador de coluna dos componentes baseados no MuiDataGrid
+
             "&:last-of-type": {
               "& .MuiDataGrid-columnSeparator": {
                 display: "none",

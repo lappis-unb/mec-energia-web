@@ -156,10 +156,7 @@ const DistributorContentTariffsTable = () => {
                     title="Vencida"
                     open={isTooltipOpen}
                   >
-                    <Typography
-                      variant="body2"
-                      {...(overdue && { color: "warning.main" })}
-                    >
+                    <Typography variant="body2" {...overdue}>
                       {endDate}
                     </Typography>
                   </Tooltip>
@@ -286,7 +283,7 @@ const DistributorContentTariffsTable = () => {
 
                       <TableRow>
                         <TableCell>Fora ponta</TableCell>
-                        
+
                         <TableCell align="right">-</TableCell>
                         <TableCell align="right">
                           {green.offPeakTusdInReaisPerMwh}

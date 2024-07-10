@@ -4,10 +4,13 @@ import Head from "next/head";
 import Image from "next/image";
 import { signIn } from "next-auth/react";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
-import { Alert, Box, Button, Link, Paper, TextField } from "@mui/material";
+import { Alert, Box, Button, Link, Paper, TextField, Typography } from "@mui/material";
 import { SignInRequestPayload } from "@/types/auth";
 import { getHeadTitle } from "@/utils/head";
 import Footer from "@/components/Footer";
+import { useSelector } from "react-redux";
+import { selectIsTokenValid, selectPasswordAlreadyCreated, selectUserAlreadyCreatedName } from "@/store/appSlice";
+import { TokenStatus } from "@/types/app";
 
 const defaultValues: SignInRequestPayload = {
   username: "",
@@ -16,6 +19,12 @@ const defaultValues: SignInRequestPayload = {
 
 const SignInTemplate = () => {
   const headTitle = useMemo(() => getHeadTitle("Entrar"), []);
+
+  const router = useRouter();
+
+  const tokenStatus = useSelector(selectIsTokenValid);
+  const passwordAlreadyCreated = useSelector(selectPasswordAlreadyCreated);
+  const userAlreadyCreatedName = useSelector(selectUserAlreadyCreatedName);
 
   const {
     query: { error },
@@ -66,6 +75,33 @@ const SignInTemplate = () => {
                   width="144px"
                 />
               </Box>
+
+              {passwordAlreadyCreated === true && (
+                <Box mt={4}>
+                  <Typography variant="h5">Olá, {userAlreadyCreatedName}</Typography>
+                  <Typography variant="subtitle1">Você já tem uma senha de acesso ao sistema.</Typography>
+                  <Typography variant="subtitle1">Preencha os campos abaixo para entrar ou clique em</Typography>
+                  <Typography variant="subtitle1">&quot;Esqueci minha senha&quot; para criar uma nova senha.</Typography>
+                </Box>
+              )}
+
+              {tokenStatus === TokenStatus.RESET_PASSWORD_INVALID && (
+                <Box mt={4}>
+                  <Alert severity="error" variant="filled">
+                    O link clicado para cadastrar a senha de acesso está vencido.
+                    Você receberá um novo link por e-mail em 1 hora.
+                  </Alert>
+                </Box>
+              )}
+
+              {tokenStatus === TokenStatus.FIRST_TIME_CREATION_INVALID && (
+                <Box mt={4}>
+                  <Alert severity="error" variant="filled">
+                    O link clicado para cadastrar a senha de acesso está vencido.
+                    Você receberá um novo link por e-mail em 30 minutos.
+                  </Alert>
+                </Box>
+              )}
 
               <Box mt={8}>
                 <Controller
@@ -121,7 +157,7 @@ const SignInTemplate = () => {
               </Box>
 
               <Box display="flex" flexDirection="row-reverse">
-                <Link variant="caption">Esqueci minha senha</Link>
+                <Link variant="caption" onClick={() => router.push("/esqueci-senha")}>Esqueci minha senha</Link>
               </Box>
 
               {error && (
@@ -136,12 +172,6 @@ const SignInTemplate = () => {
                 <Button type="submit" variant="contained" fullWidth>
                   Entrar
                 </Button>
-              </Box>
-
-              <Box mt={5}>
-                <Box display="flex" justifyContent="center">
-                  <Link>Não tenho cadastro</Link>
-                </Box>
               </Box>
             </Box>
           </Paper>

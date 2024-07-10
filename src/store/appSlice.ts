@@ -4,6 +4,7 @@ import {
   ConsumerUnitFilter,
   ConsumerUnitInvoiceFilter,
   ConsumerUnitTab,
+  TokenStatus,
   DashboardFilter,
   EnergyBillEdiFormParams,
   NotificationProps,
@@ -69,6 +70,11 @@ const initialState: AppState = {
       text: "",
     },
   },
+  token: {
+    status: null,
+    passwordAlreadyCreated: null,
+    userName: "",
+  }
 };
 
 export const appSlice = createSlice({
@@ -221,6 +227,24 @@ export const appSlice = createSlice({
     ) => {
       state.notifications.error = action.payload;
     },
+    setIsTokenValid: (
+      state,
+      action: PayloadAction<TokenStatus | null>
+    ) => {
+      state.token.status = action.payload;
+    },
+    setPasswordAlreadyCreated: (
+      state,
+      action: PayloadAction<boolean | null>
+    ) => {
+      state.token.passwordAlreadyCreated = action.payload;
+    },
+    setUserAlreadyCreatedName: (
+      state,
+      action: PayloadAction<string>
+    ) => {
+      state.token.userName = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(STORE_HYDRATE, (state, action) => {
@@ -265,6 +289,10 @@ export const {
 
   setIsSuccessNotificationOpen,
   setIsErrorNotificationOpen,
+
+  setIsTokenValid,
+  setPasswordAlreadyCreated,
+  setUserAlreadyCreatedName,
 } = appSlice.actions;
 
 // App
@@ -385,4 +413,18 @@ export const selectSuccessNotification = (state: RootState) => {
 
 export const selectErrorNotification = (state: RootState) => {
   return state.app.notifications.error;
+};
+
+// Token
+
+export const selectIsTokenValid = (state: RootState) => {
+  return state.app.token.status;
+};
+
+export const selectPasswordAlreadyCreated = (state: RootState) => {
+  return state.app.token.passwordAlreadyCreated;
+};
+
+export const selectUserAlreadyCreatedName = (state: RootState) => {
+  return state.app.token.userName;
 };
