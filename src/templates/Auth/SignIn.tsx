@@ -9,7 +9,7 @@ import { SignInRequestPayload } from "@/types/auth";
 import { getHeadTitle } from "@/utils/head";
 import Footer from "@/components/Footer";
 import { useSelector } from "react-redux";
-import { selectIsTokenValid, selectPasswordAlreadyCreated, selectUserAlreadyCreatedName } from "@/store/appSlice";
+import { selectIsTokenValid, selectUserAlreadyCreatedName } from "@/store/appSlice";
 import { TokenStatus } from "@/types/app";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
@@ -23,7 +23,6 @@ const SignInTemplate = () => {
   const headTitle = useMemo(() => getHeadTitle("Entrar"), []);
 
   const tokenStatus = useSelector(selectIsTokenValid);
-  const passwordAlreadyCreated = useSelector(selectPasswordAlreadyCreated);
   const userAlreadyCreatedName = useSelector(selectUserAlreadyCreatedName);
 
   const [showPassword, setShowPassword] = useState(false);
@@ -78,7 +77,7 @@ const SignInTemplate = () => {
                 />
               </Box>
 
-              {passwordAlreadyCreated === true && (
+              {tokenStatus === TokenStatus.TOKEN_ALREADY_USED && (
                 <Box mt={4}>
                   <Typography variant="h5">Olá, {userAlreadyCreatedName}</Typography>
                   <Typography variant="subtitle1">Você já tem uma senha de acesso ao sistema.</Typography>

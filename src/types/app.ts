@@ -21,7 +21,8 @@ export enum TokenStatus {
   RESET_PASSWORD_INVALID = "reset_password_invalid",
   RESET_PASSWORD = "reset_password",
   FIRST_TIME_CREATION_INVALID = "first_time_creation_invalid",
-  FIRST_TIME_CREATION = "first_time_creation"
+  FIRST_TIME_CREATION = "first_time_creation",
+  TOKEN_ALREADY_USED = "token_already_used"
 }
 
 export type ConsumerUnitInvoiceFilter = "pending" | string;
@@ -77,7 +78,7 @@ export type AppState = {
   token: {
     status: TokenStatus | null;
     passwordAlreadyCreated: boolean | null;
-    userName: string;
+    userName: string | undefined;
   };
 };
 
@@ -100,7 +101,7 @@ export interface CardProps extends CardWrapperProps {
   actionIcon?: ReactNode;
   onActionIconClick?: IconButtonProps["onClick"];
   onFavoriteButtonClick?: IconButtonProps["onClick"];
-  addFavorites?: () => void;
+  addFavorites?: () => void; 
 }
 
 export interface NotificationProps {

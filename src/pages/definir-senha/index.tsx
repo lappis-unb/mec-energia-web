@@ -13,7 +13,7 @@ import FormWarningDialog from "@/components/ConsumerUnit/Form/WarningDialog";
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ReportIcon from '@mui/icons-material/Report';
 import { useDispatch } from "react-redux";
-import { setIsTokenValid } from "@/store/appSlice";
+import { setIsTokenValid, setUserAlreadyCreatedName } from "@/store/appSlice";
 import { TokenStatus } from "@/types/app";
 import { signIn } from "next-auth/react";
 import Visibility from "@mui/icons-material/Visibility";
@@ -38,7 +38,7 @@ const DefinePasswordPage: NextPage = () => {
     hasSpecialChar: null,
     minLength: null
   });
-  const [nome, setNome] = useState<string>();
+  const [nome, setNome] = useState<string>("");
   const [token, setToken] = useState<string>("");
   const [email, setEmail] = useState<undefined | string>("");
   const [shouldShowCancelDialog, setShouldShowCancelDialog] = useState(false);
@@ -65,18 +65,23 @@ const DefinePasswordPage: NextPage = () => {
 
   useEffect(() => {
     if (status === 'fulfilled') {
-      setEmail(tokenStatus?.email)
-      dispatch(setIsTokenValid(TokenStatus.FIRST_TIME_CREATION));
-      setIsTokenVerified(true);
+      if (tokenStatus?.code === 1) {
+        setEmail(tokenStatus?.email)
+        dispatch(setIsTokenValid(TokenStatus.FIRST_TIME_CREATION));
+        setIsTokenVerified(true);
+      } else if (tokenStatus?.code === 2) {
+        dispatch(setIsTokenValid(TokenStatus.FIRST_TIME_CREATION_INVALID));
+        router.push('/');
+      }
     } else if (status === 'rejected' || validationError) {
-      dispatch(setIsTokenValid(TokenStatus.FIRST_TIME_CREATION_INVALID));
+      dispatch(setIsTokenValid(TokenStatus.TOKEN_ALREADY_USED));
+      dispatch(setUserAlreadyCreatedName(nome))
       router.push('/');
     }
   }, [tokenStatus, validationError, status]);
 
 
   useEffect(() => {
-    // Acesso aos parâmetros da rota
     const { nome: nomeParam, token: tokenParam } = router.query;
 
     if (nomeParam) {
@@ -84,7 +89,6 @@ const DefinePasswordPage: NextPage = () => {
     }
     if (tokenParam) {
       setToken(tokenParam as string);
-      // Chama a API para validar o token
     }
   }, [router.query]);
 
@@ -138,8 +142,8 @@ const DefinePasswordPage: NextPage = () => {
         user_new_password: password,
       }).unwrap();
 
-      if(email !== undefined){
-        handleOnSubmit({username: email, password: password});
+      if (email !== undefined) {
+        handleOnSubmit({ username: email, password: password });
       }
     } catch (error) {
       console.error('Erro ao definir a senha', error);
