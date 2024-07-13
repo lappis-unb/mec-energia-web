@@ -5,12 +5,10 @@ import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import Head from "next/head";
 import Image from "next/image";
 import { ResetPasswordRequestPayload } from "@/types/auth";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useRouter } from "next/router";
 import Footer from "@/components/Footer";
 import { useResetPasswordRequestMutation } from "@/api";
-import { useDispatch } from "react-redux";
-import { setIsSuccessNotificationOpen } from "@/store/appSlice";
 import SuccessNotification from "@/components/Notification/SuccessNotification";
 
 const defaultValues: ResetPasswordRequestPayload = {
@@ -18,10 +16,11 @@ const defaultValues: ResetPasswordRequestPayload = {
 };
 
 const ForgotPasswordPage: NextPage = () => {
-  const [ResetPasswordRequest] = useResetPasswordRequestMutation();
+  const [ResetPasswordRequest, { isLoading }] = useResetPasswordRequestMutation();
 
-  const dispatch = useDispatch();
   const headTitle = useMemo(() => getHeadTitle("Esqueci minha senha"), []);
+
+  const [isSuccessMessageVisible, setIsSuccessMessageVisible] = useState(false);
 
   const {
     query: { error },
@@ -31,7 +30,6 @@ const ForgotPasswordPage: NextPage = () => {
   const { control, handleSubmit, setError, clearErrors } = form;
 
   const handleOnSubmit: SubmitHandler<ResetPasswordRequestPayload> = async ({ email }) => {
-    // Validação do e-mail
     const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     if (!emailPattern.test(email)) {
       setError("email", { type: "manual", message: "Formato de e-mail inválido" });
@@ -40,23 +38,18 @@ const ForgotPasswordPage: NextPage = () => {
 
     clearErrors("email");
 
-    
-    try {
-        await ResetPasswordRequest({
-          email: email,
-        }).unwrap();
 
-        dispatch(
-          setIsSuccessNotificationOpen({
-            isOpen: true,
-            text: "Você receberá instruções de como redefinir sua senha se este e-mail estiver cadastrado",
-          })
-        );
-      } catch (error) {
-        // Handle error
-        console.error('Erro ao redefinir a senha', error);
-      }
-    // Chame a função de confirmação de redefinição de senha aqui com o email
+    try {
+      await ResetPasswordRequest({
+        email: email,
+      }).unwrap();
+
+      setIsSuccessMessageVisible(true)
+    } catch (error) {
+      setIsSuccessMessageVisible(false)
+
+      console.error('Erro ao redefinir a senha', error);
+    }
   };
 
   return (
@@ -82,6 +75,7 @@ const ForgotPasswordPage: NextPage = () => {
             >
               <Box
                 mt={4}
+                mb={4}
                 height="112px"
                 display="flex"
                 alignItems="center"
@@ -94,6 +88,12 @@ const ForgotPasswordPage: NextPage = () => {
                   width="144px"
                 />
               </Box>
+
+              {isSuccessMessageVisible && (
+                <Alert severity="success" sx={{ width: "100%" }}>
+                  Você receberá instruções de como redefinir sua senha se este e-mail estiver cadastrado
+                </Alert>
+              )}
 
               <Box mt={4}>
                 <Typography variant="h5">Esqueci minha senha</Typography>
@@ -139,8 +139,8 @@ const ForgotPasswordPage: NextPage = () => {
               )}
 
               <Box mt={2}>
-                <Button type="submit" variant="contained" fullWidth>
-                  Enviar
+                <Button disabled={isLoading} type="submit" variant="contained" fullWidth>
+                  {isLoading ? 'Enviando...' : 'Enviar'}
                 </Button>
               </Box>
 
@@ -149,13 +149,13 @@ const ForgotPasswordPage: NextPage = () => {
                   <Link href="/">Voltar</Link>
                 </Box>
               </Box>
+              <SuccessNotification />
             </Box>
           </Paper>
         </Box>
 
         <Footer />
       </Box>
-      <SuccessNotification />
     </>
   );
 };
