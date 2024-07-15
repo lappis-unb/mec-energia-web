@@ -24,7 +24,10 @@ var myChart = new Chart(ctx, {
         },
         plugins: {
             legend: {
-                display: false,
+                position: 'bottom',
+                labels: {
+                    usePointStyle: true,
+                },
             },
             tooltip: {
                 usePointStyle: true,

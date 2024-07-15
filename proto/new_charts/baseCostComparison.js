@@ -30,7 +30,7 @@ var myChart = new Chart(ctx, {
         },
         plugins: {
             legend: {
-                position: 'top',
+                position: 'bottom',
                 labels: {
                     usePointStyle: true,
                 },
