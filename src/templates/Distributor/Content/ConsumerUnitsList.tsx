@@ -1,9 +1,8 @@
 import { useMemo } from "react";
-import Link from "next/link";
 import { useSelector } from "react-redux";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 
-import { Typography } from "@mui/material";
+import { Typography, Link } from "@mui/material";
 
 import { useGetDistributorSubgroupsQuery } from "@/api";
 import {
@@ -49,7 +48,9 @@ const DistributorContentConsumerUnitsList = () => {
       <ul>
         {consumerUnits.map(({ id, name }) => (
           <li key={id}>
-            <Link href={`/uc/${id}`}>{name}</Link>
+            <Link href={`/uc/${id}`} color="primary" underline="always">
+              {name}
+            </Link>
           </li>
         ))}
       </ul>
