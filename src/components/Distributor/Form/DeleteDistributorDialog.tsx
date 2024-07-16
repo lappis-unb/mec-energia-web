@@ -31,15 +31,17 @@ const DeleteDistributorDialog = ({
     <DialogTitle>{titleText}</DialogTitle>
 
     <DialogContent>
-      <DialogContentText>{dataLossMessage}</DialogContentText>
+      <DialogContentText>
+        {dataLossMessage} <br /> Essa ação não poderá ser desfeita.
+      </DialogContentText>
     </DialogContent>
 
     <DialogActions>
-      <Button autoFocus onClick={onClose}>
+      <Button onClick={onDiscard}>{cancelText}</Button>
+
+      <Button autoFocus color="error" onClick={onClose}>
         {confirmText}
       </Button>
-
-      <Button onClick={onDiscard}>{cancelText}</Button>
     </DialogActions>
   </Dialog>
 );
