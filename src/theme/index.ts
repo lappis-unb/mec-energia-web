@@ -200,6 +200,20 @@ const theme = createTheme(
       MuiDrawer: {
         styleOverrides: { paper: { backgroundColor: "#EEF4F4" } },
       },
+      MuiFormHelperText:{
+        styleOverrides:{
+          root:{
+              marginLeft: "0px",
+          }
+        }
+      },
+      MuiFormControlLabel: {
+        styleOverrides:{
+          root:{
+              marginRight: "8px",
+          }
+        }
+      },
     },
   },
   ptBR,
