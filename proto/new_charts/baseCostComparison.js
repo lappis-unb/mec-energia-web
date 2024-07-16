@@ -8,13 +8,13 @@ var myChart = new Chart(ctx, {
         labels: [['Jan', '2022'], ['Fev', '2022'], ['Mar', '2022'], ['Abr', '2022'], ['Mai', '2022'], ['Jun', '2022'], ['Jul', '2022'], ['Ago', '2022'], ['Set', '2022'], ['Out', '2022'], ['Nov', '2022'], ['Dez', '2022'],],
         datasets: [
             {
-                label: 'Consumo + Demanda atuais',
+                label: 'Consumo + Demanda-carga atuais',
                 data: [69752.33, 78480.95, 92580.35, null, 93015.08, 80428.31, 62896.03, 73503.07, 107831.62, 104863.07, 116390.71, 96271.07],
                 backgroundColor: '#55BF87',
                 pointStyle: 'rect',
             },
             {
-                label: 'Consumo + Demanda propostos',
+                label: 'Consumo + Demanda-carga propostos',
                 data: [71885.96, 77871.87, 80615.97, null, 82629.15, 74301.37, 64757.12, 69971.75, 92285.47, 91423.45, 107447.38, 83667.60],
                 backgroundColor: '#EE8F84',
                 pointStyle: 'circle',
