@@ -49,9 +49,8 @@ const DistributorEditForm = () => {
     editDistributor,
     { isError, isSuccess, isLoading, reset: resetMutation },
   ] = useEditDistributorMutation();
-  const { data: distributor, refetch: refetchDistributor } = useGetDistributorQuery(
-    activeDistributor || skipToken
-  );
+  const { data: distributor, refetch: refetchDistributor } =
+    useGetDistributorQuery(activeDistributor || skipToken);
   const form = useForm({ defaultValues });
   const {
     control,
@@ -79,15 +78,15 @@ const DistributorEditForm = () => {
           const { data: distributor } = await refetchDistributor();
 
           if (!distributor) return;
-          
+
           const { name, isActive, cnpj } = distributor;
           setValue("name", name);
           setValue("cnpj", cnpj);
           setValue("isActive", isActive);
         } catch (err) {
-          console.error('Failed to refetch:', err);
+          console.error("Failed to refetch:", err);
         }
-      }
+      };
 
       fetchData();
     }
@@ -187,7 +186,7 @@ const DistributorEditForm = () => {
               <TextField
                 ref={ref}
                 value={value}
-                label="Nome (ao menos 3 caracteres)"
+                label="Nome *"
                 placeholder="Ex.: CEMIG, Enel, Neonergia"
                 error={Boolean(error)}
                 helperText={error?.message ?? " "}
@@ -245,7 +244,7 @@ const DistributorEditForm = () => {
               <PatternFormat
                 value={value}
                 customInput={TextField}
-                label="CNPJ * (14 dígitos)"
+                label="CNPJ *"
                 format="##.###.###/####-##"
                 placeholder="Ex.: 12345678000167"
                 error={Boolean(error) || !cnpjValid}

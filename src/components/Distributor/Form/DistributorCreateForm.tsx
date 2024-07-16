@@ -144,7 +144,7 @@ const DistributorCreateForm = () => {
               <TextField
                 ref={ref}
                 value={value}
-                label="Nome * (ao menos 3 caracteres)"
+                label="Nome *"
                 placeholder="Ex.: CEMIG, Enel, Neonergia"
                 error={Boolean(error)}
                 helperText={error?.message ?? " "}
@@ -202,7 +202,7 @@ const DistributorCreateForm = () => {
               <PatternFormat
                 value={value}
                 customInput={TextField}
-                label="CNPJ * (14 dígitos)"
+                label="CNPJ *"
                 format="##.###.###/####-##"
                 placeholder="Ex.: 12345678000167"
                 error={Boolean(error) || !cnpjValid}
