@@ -8,7 +8,7 @@ var myChart = new Chart(ctx, {
         labels: [['Jan', '2022'], ['Fev', '2022'], ['Mar', '2022'], ['Abr', '2022'], ['Mai', '2022'], ['Jun', '2022'], ['Jul', '2022'], ['Ago', '2022'], ['Set', '2022'], ['Out', '2022'], ['Nov', '2022'], ['Dez', '2022'],],
         datasets: [
             {
-                label: 'Valor de Demanda-carga',
+                label: 'Valor de Demanda',
                 data: [25224.00, 25224.00, 27068.51, null, 25224.00, 25224.00, 25224.00, 25224.00, 30413.21, 31962.59, 35299.73, 30413.21],
                 backgroundColor: '#7C0AC1',
                 // backgroundColor: '#CB95EC',
