@@ -1,4 +1,4 @@
-import { Fragment, useCallback, useEffect, useState } from "react";
+import React, { Fragment, useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import {
@@ -13,6 +13,7 @@ import {
   InputAdornment,
   InputLabel,
   MenuItem,
+  Paper,
   Radio,
   RadioGroup,
   Select,
@@ -49,7 +50,7 @@ import { sendFormattedDate } from "@/utils/date";
 import { getSubgroupsText } from "@/utils/get-subgroup-text";
 import { isInSomeSubgroups } from "@/utils/validations/form-validations";
 import FormDrawerV2 from "@/components/Form/DrawerV2";
-import FormFieldError from "@/components/FormFieldError";
+import SupplyVoltageTooltip from "@/components/SupplyVoltageTooltip";
 
 const defaultValues: CreateConsumerUnitForm = {
   name: "",
@@ -79,7 +80,9 @@ const ConsumerUnitCreateForm = () => {
     session?.user?.universityId || skipToken
   );
 
-  const sortedDistributorList = distributorList?.slice().sort((a, b) => a.name.localeCompare(b.name));
+  const sortedDistributorList = distributorList
+    ?.slice()
+    .sort((a, b) => a.name.localeCompare(b.name));
 
   const [
     createConsumerUnit,
@@ -90,7 +93,9 @@ const ConsumerUnitCreateForm = () => {
   const [shouldShowCancelDialog, setShouldShowCancelDialog] = useState(false);
   const [shouldShowDistributorFormDialog, setShouldShowDistributorFormDialog] =
     useState(false);
-  const [shouldShowGreenDemand, setShouldShowGreenDemand] = useState(true);
+  // const [shouldShowGreenDemand, setShouldShowGreenDemand] = useState(true);
+  const shouldShowGreenDemand = true;
+  const [isTooltipOpen, setIsTooltipOpen] = useState(false);
 
   //Formulário
   const form = useForm({ mode: "all", defaultValues });
@@ -106,6 +111,7 @@ const ConsumerUnitCreateForm = () => {
 
   const tariffFlag = watch("tariffFlag");
   const shouldShowInstalledPower = watch("shouldShowInstalledPower");
+  const supplyVoltage = watch("supplyVoltage");
 
   useEffect(() => {
     const {
@@ -155,6 +161,18 @@ const ConsumerUnitCreateForm = () => {
       | CreateConsumerUnitForm["offPeakContractedDemandInKw"]
   ) => {
     if (value <= 0) return "Insira um valor maior que 0";
+  };
+
+  const shouldHideTooltip = (value) => {
+    if (value === undefined) return false;
+    return (
+      value <= 2.3 ||
+      (value > 2.3 && value <= 25) ||
+      (value >= 30 && value <= 44) ||
+      value === 69 ||
+      (value >= 88 && value <= 138) ||
+      value >= 230
+    );
   };
 
   // Modal
@@ -263,7 +281,7 @@ const ConsumerUnitCreateForm = () => {
     () => (
       <>
         <Grid item xs={12}>
-          <Typography variant="h5" style={{ marginBottom: '16px' }} >Unidade Consumidora</Typography>
+          <Typography variant="h5">Unidade Consumidora</Typography>
         </Grid>
         <Grid item xs={12}>
           <Controller
@@ -284,7 +302,7 @@ const ConsumerUnitCreateForm = () => {
                 label="Nome *"
                 placeholder="Ex.: Campus Gama, Biblioteca, Faculdade de Medicina"
                 error={Boolean(error)}
-                helperText={FormFieldError(error?.message)}
+                helperText={error?.message ?? " "}
                 fullWidth
                 onChange={onChange}
                 onBlur={onBlur}
@@ -302,7 +320,7 @@ const ConsumerUnitCreateForm = () => {
     () => (
       <>
         <Grid item xs={12}>
-          <Typography variant="h5" style={{ marginBottom: '13px' }}>Contrato</Typography>
+          <Typography variant="h5">Contrato</Typography>
         </Grid>
 
         <Grid item xs={12}>
@@ -322,12 +340,10 @@ const ConsumerUnitCreateForm = () => {
                 value={value}
                 label="Número da Unidade *"
                 placeholder="Número da Unidade Consumidora conforme a fatura"
-                error={!!error}
+                error={Boolean(error)}
                 helperText={
-                  FormFieldError(
-                    error?.message,
-                    "Nº ou código da Unidade Consumidora conforme a fatura"
-                  )
+                  error?.message ??
+                  "Nº ou código da Unidade Consumidora conforme a fatura"
                 }
                 fullWidth
                 onChange={(e) => handleNumericInputChange(e, onChange)}
@@ -350,47 +366,51 @@ const ConsumerUnitCreateForm = () => {
               <FormControl
                 sx={{ minWidth: "200px", maxWidth: "100%" }}
                 error={!!error}
-                style={{ marginTop: '20px' }}
               >
                 <InputLabel>Distribuidora *</InputLabel>
 
-                <Select
-                  ref={ref}
-                  value={value}
-                  label="Distribuidora *"
-                  autoWidth
-                  MenuProps={{
-                    anchorOrigin: {
-                      vertical: "bottom",
-                      horizontal: "left",
-                    },
-                    transformOrigin: {
-                      vertical: "top",
-                      horizontal: "left",
-                    },
-                  }}
-                  onChange={onChange}
-                  onBlur={onBlur}
-                >
-                  {sortedDistributorList?.map(
-                    (distributor: DistributorPropsTariffs) => {
-                      return (
-                        <MenuItem key={distributor.id} value={distributor.id}>
-                          {distributor.name}
+                      <Select
+                        ref={ref}
+                        value={value}
+                        label="Distribuidora *"
+                        autoWidth
+                        MenuProps={{
+                          anchorOrigin: {
+                            vertical: "bottom",
+                            horizontal: "left",
+                          },
+                          transformOrigin: {
+                            vertical: "top",
+                            horizontal: "left",
+                          },
+                        }}
+                        onChange={onChange}
+                        onBlur={onBlur}
+                      >
+                        {distributorList?.map(
+                          (distributor: DistributorPropsTariffs) => {
+                            return (
+                              <MenuItem
+                                key={distributor.id}
+                                value={distributor.id}
+                              >
+                                {distributor.name}
+                              </MenuItem>
+                            );
+                          }
+                        )}
+                        <MenuItem>
+                          <Button
+                            onClick={() =>
+                              setShouldShowDistributorFormDialog(true)
+                            }
+                          >
+                            Adicionar
+                          </Button>
                         </MenuItem>
-                      );
-                    }
-                  )}
-                  <MenuItem>
-                    <Button
-                      onClick={() => setShouldShowDistributorFormDialog(true)}
-                    >
-                      Adicionar
-                    </Button>
-                  </MenuItem>
-                </Select>
+                      </Select>
 
-                <FormHelperText>{FormFieldError(error?.message)}</FormHelperText>
+                <FormHelperText>{error?.message ?? " "}</FormHelperText>
               </FormControl>
             )}
           />
@@ -408,7 +428,6 @@ const ConsumerUnitCreateForm = () => {
               <DatePicker
                 value={value}
                 label="Início da vigência *"
-                views={["month", "year"]}
                 minDate={new Date("2010")}
                 disableFuture
                 renderInput={(params) => (
@@ -418,7 +437,7 @@ const ConsumerUnitCreateForm = () => {
                       ...params.inputProps,
                       placeholder: "dd/mm/aaaa",
                     }}
-                    helperText={FormFieldError(error?.message)}
+                    helperText={error?.message ?? " "}
                     error={!!error}
                   />
                 )}
@@ -467,10 +486,8 @@ const ConsumerUnitCreateForm = () => {
                   customInput={TextField}
                   label="Tensão contratada *"
                   helperText={
-                    FormFieldError(
-                      error?.message,
-                      "Se preciso, converta a tensão de V para kV dividindo o valor por 1.000."
-                    )
+                    error?.message ??
+                    "Se preciso, converta a tensão de V para kV dividindo o valor por 1.000."
                   }
                   error={!!error}
                   fullWidth
@@ -491,11 +508,7 @@ const ConsumerUnitCreateForm = () => {
                     const newVoltage = values ? values.floatValue : 0;
                     if (newVoltage === 69) {
                       setShouldShowGreenDemand(false);
-                    } else if (
-                      newVoltage !== undefined &&
-                      newVoltage >= 88 &&
-                      newVoltage <= 138
-                    ) {
+                    } else if (newVoltage !== undefined && newVoltage >= 88 && newVoltage <= 138) {
                       setShouldShowGreenDemand(false);
                     } else {
                       setShouldShowGreenDemand(true);
@@ -513,53 +526,55 @@ const ConsumerUnitCreateForm = () => {
     [control, distributorList, subgroupsList]
   );
 
-  const ContractedDemandSection = useCallback(
-    () => (
-      <>
-        <Grid item xs={12}>
-          <Typography variant="h5">Demanda Contratada</Typography>
-        </Grid>
+          <Paper>
+            <Box p={2} mb={4}>
+              <Grid item xs={12}>
+                <Typography variant="h5">Demanda Contratada</Typography>
+              </Grid>
 
-        <Grid item xs={12}>
-          <Controller
-            control={control}
-            name="tariffFlag"
-            rules={{ required: "Preencha este campo" }}
-            render={({ field: { onChange, value }, fieldState: { error } }) => (
-              <FormControl error={!!error}>
-                <FormLabel>Modalidade tarifária *</FormLabel>
+              <Grid item xs={12}>
+                <Controller
+                  control={control}
+                  name="tariffFlag"
+                  rules={{ required: "Preencha este campo" }}
+                  render={({
+                    field: { onChange, value },
+                    fieldState: { error },
+                  }) => (
+                    <FormControl error={!!error}>
+                      <FormLabel>Modalidade tarifária *</FormLabel>
 
-                <RadioGroup value={value} onChange={onChange}>
-                  <Box
-                    display={"flex"}
-                    justifyContent="flex-start"
-                    alignItems="center"
-                  >
-                    <FormControlLabel
-                      value="G"
-                      control={<Radio />}
-                      label="Verde"
-                      disabled={!shouldShowGreenDemand}
-                    />
-                    <FormHelperText>(Demanda única)</FormHelperText>
-                  </Box>
-                  <Box
-                    display={"flex"}
-                    justifyContent="flex-start"
-                    alignItems="center"
-                  >
-                    <FormControlLabel
-                      value="B"
-                      control={<Radio />}
-                      label="Azul"
-                    />
-                    <FormHelperText>
-                      (Demanda de ponta e fora ponta)
-                    </FormHelperText>
-                  </Box>
-                </RadioGroup>
+                      <RadioGroup value={value} onChange={onChange}>
+                        <Box
+                          display={"flex"}
+                          justifyContent="flex-start"
+                          alignItems="center"
+                        >
+                          <FormControlLabel
+                            value="G"
+                            control={<Radio />}
+                            label="Verde"
+                            disabled={!shouldShowGreenDemand}
+                          />
+                          <FormHelperText>(Demanda única)</FormHelperText>
+                        </Box>
+                        <Box
+                          display={"flex"}
+                          justifyContent="flex-start"
+                          alignItems="center"
+                        >
+                          <FormControlLabel
+                            value="B"
+                            control={<Radio />}
+                            label="Azul"
+                          />
+                          <FormHelperText>
+                            (Demanda de ponta e fora ponta)
+                          </FormHelperText>
+                        </Box>
+                      </RadioGroup>
 
-                <FormHelperText>{FormFieldError(error?.message)}</FormHelperText>
+                <FormHelperText>{error?.message ?? " "}</FormHelperText>
               </FormControl>
             )}
           />
@@ -597,7 +612,7 @@ const ConsumerUnitCreateForm = () => {
                   decimalSeparator=","
                   thousandSeparator={"."}
                   error={Boolean(error)}
-                  helperText={FormFieldError(error?.message)}
+                  helperText={error?.message ?? " "}
                   onValueChange={(values) => onChange(values.floatValue)}
                   onBlur={onBlur}
                 />
@@ -637,7 +652,7 @@ const ConsumerUnitCreateForm = () => {
                     decimalSeparator=","
                     thousandSeparator={"."}
                     error={Boolean(error)}
-                    helperText={FormFieldError(error?.message)}
+                    helperText={error?.message ?? " "}
                     onValueChange={(values) => onChange(values.floatValue)}
                     onBlur={onBlur}
                   />
@@ -676,7 +691,7 @@ const ConsumerUnitCreateForm = () => {
                     decimalSeparator=","
                     thousandSeparator={"."}
                     error={Boolean(error)}
-                    helperText={FormFieldError(error?.message)}
+                    helperText={error?.message ?? " "}
                     onValueChange={(values) => onChange(values.floatValue)}
                     onBlur={onBlur}
                   />
@@ -685,10 +700,10 @@ const ConsumerUnitCreateForm = () => {
             </Grid>
             {!shouldShowGreenDemand && (
               <Typography variant="body2" sx={{ px: 2 }}>
-                O valor de tensão contratada inserido é compatível apenas com a
-                modalidade azul
+                O valor de tensão contratada inserido é compatível apenas com a modalidade azul
               </Typography>
             )}
+
           </Box>
         )}
       </>
@@ -700,14 +715,7 @@ const ConsumerUnitCreateForm = () => {
     () => (
       <>
         <Grid container spacing={2}>
-          <Grid
-            item
-            xs={12}
-            display="flex"
-            flexDirection={"row"}
-            justifyContent={"begin"}
-            alignItems={"center"}
-          >
+          <Grid item xs={12} display="flex" flexDirection={"row"} justifyContent={"begin"} alignItems={"center"}>
             <Typography variant="h5">Geração de energia</Typography>
             <Controller
               name="shouldShowInstalledPower"
@@ -728,13 +736,15 @@ const ConsumerUnitCreateForm = () => {
               )}
             />
           </Grid>
-          {shouldShowInstalledPower ? (
+          {(shouldShowInstalledPower) ? (
             <>
               <Grid item xs={12}>
-                <Alert severity="info" variant="standard">
-                  Insira o valor total da potência de geração instalada na
-                  Unidade Consumidora. Some a potência de todas as plantas
-                  fotovoltaicas instaladas, se houver mais de uma.
+                <Alert
+                  severity="info"
+                  variant="standard"
+                >
+                  Insira o valor total da potência de geração instalada na Unidade Consumidora.
+                  Some a potência de todas as plantas fotovoltaicas instaladas, se houver mais de uma.
                 </Alert>
               </Grid>
 
@@ -746,8 +756,9 @@ const ConsumerUnitCreateForm = () => {
                     required: "Preencha este campo",
                     min: {
                       value: 0.01,
-                      message: "Insira um valor maior que 0,00",
+                      message: "Insira um valor maior que R$ 0,00",
                     },
+
                   }}
                   render={({
                     field: { onChange, onBlur, value },
@@ -771,8 +782,8 @@ const ConsumerUnitCreateForm = () => {
                       decimalScale={2}
                       decimalSeparator=","
                       thousandSeparator={"."}
-                      error={!!error}
-                      helperText={FormFieldError(error?.message)}
+                      error={Boolean(error)}
+                      helperText={error?.message ?? " "}
                       onValueChange={(values) => onChange(values.floatValue)}
                       onBlur={onBlur}
                     />
@@ -781,7 +792,7 @@ const ConsumerUnitCreateForm = () => {
               </Grid>
             </>
           ) : null}
-        </Grid>
+        </Grid >
       </>
     ),
     [control, shouldShowInstalledPower]
@@ -801,7 +812,7 @@ const ConsumerUnitCreateForm = () => {
           <ConsumerUnitSection key={0} />,
           <ContractSection key={1} />,
           <ContractedDemandSection key={2} />,
-          <InstalledPower key={3} />,
+          <InstalledPower key={3} />
         ]}
       />
 
