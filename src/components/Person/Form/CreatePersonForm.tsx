@@ -89,10 +89,10 @@ const CreatePersonForm = () => {
 
   const onSubmitHandler: SubmitHandler<CreatePersonForm> = async (data) => {
     const { email, firstName, lastName, type, university } = data;
-    
+
     // Verifica se o usuário não é um super usuário e define o ID da universidade com base na sessão do usuário
     const universityId = session?.user?.type !== UserRole.SUPER_USER ? (session?.user?.universityId ?? 0) : (university?.id ?? 0);
-  
+
     const body: CreatePersonRequestPayload = {
       email,
       firstName,

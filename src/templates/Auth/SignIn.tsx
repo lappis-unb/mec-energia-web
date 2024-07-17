@@ -38,7 +38,8 @@ const SignInTemplate = () => {
     username,
     password,
   }) => {
-    signIn("credentials", { username, password, callbackUrl: "/" });
+    const normalizedEmail = username.toLowerCase();
+    signIn("credentials", { username: normalizedEmail, password, callbackUrl: "/" });
   };
 
   return (
