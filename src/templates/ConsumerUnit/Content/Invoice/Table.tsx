@@ -189,8 +189,12 @@ const ConsumerUnitInvoiceContentTable = () => {
       flex: 1,
       valueGetter: ({ row: { id } }) => id,
       renderCell: ({ row }) => renderMonthCell(row),
-      colSpan: ({ row: { isEnergyBillPending } }) => {
+      colSpan: ({ row: { isEnergyBillPending, energyBillId } }) => {
         if (isEnergyBillPending) {
+          return columns.length;
+        }
+
+        if (!energyBillId) {
           return columns.length;
         }
       },
