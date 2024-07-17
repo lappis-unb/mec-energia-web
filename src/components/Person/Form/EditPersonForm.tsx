@@ -73,7 +73,7 @@ const EditPersonForm = () => {
       try {
         const { data: currentPerson } = await refetchPerson();
         if (!currentPerson) return;
-        
+
         setValue("firstName", currentPerson.firstName);
         setValue("lastName", currentPerson.lastName);
         setValue("email", currentPerson.email);
