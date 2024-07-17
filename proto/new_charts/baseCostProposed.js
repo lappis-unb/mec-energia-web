@@ -2,6 +2,7 @@ Chart.defaults.font.family = 'Lexend';
 Chart.defaults.color = '#000';
 var ctx = document.getElementById("baseCostProposed");
 var myChart = new Chart(ctx, {
+    plugins: [ChartDataLabels],
     type: 'bar',
     data: {
         labels: [['Jan', '2022'], ['Fev', '2022'], ['Mar', '2022'], ['Abr', '2022'], ['Mai', '2022'], ['Jun', '2022'], ['Jul', '2022'], ['Ago', '2022'], ['Set', '2022'], ['Out', '2022'], ['Nov', '2022'], ['Dez', '2022'],],
