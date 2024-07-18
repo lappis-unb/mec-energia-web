@@ -29,14 +29,22 @@ const ConsumerUnitInvoiceContentFilter = () => {
 
   const invoices = invoicesQuery.data;
   const consumerUnit = consumerUnitQuery.data;
+  console.log(invoices);
 
   const invoicesFilters = useMemo(() => {
-    if (!invoices) {
+    if (!invoices || !consumerUnit) {
       return [];
     }
 
-    return Object.keys(invoices).reverse();
-  }, [invoices]);
+    return Object.keys(invoices)
+      .filter((year) => {
+        const hasValidInvoice = invoices[year].some(
+          (invoice) => invoice.energyBill !== null
+        );
+        return consumerUnit.isActive || hasValidInvoice;
+      })
+      .reverse();
+  }, [invoices, consumerUnit]);
 
   useEffect(() => {
     const pending = consumerUnit?.pendingEnergyBillsNumber ?? -1;
@@ -53,23 +61,27 @@ const ConsumerUnitInvoiceContentFilter = () => {
       <Box display="flex" alignItems="center" px={2} py={1.5}>
         <Typography variant="caption">Mostrar:</Typography>
 
-        <Box ml={2}>
-          <Button
-            disabled={!isPendingFilterActive}
-            sx={{ borderRadius: 10 }}
-            size="small"
-            disableElevation
-            variant={
-              invoiceActiveFilter === "pending" ? "contained" : "outlined"
-            }
-            onClick={handleFilterButtonClick("pending")}
-            {...(invoiceActiveFilter === "pending" && {
-              startIcon: <DoneRoundedIcon />,
-            })}
-          >
-            {pendingFilterLabel}
-          </Button>
-        </Box>
+        {consumerUnit.isActive ? (
+          <Box ml={2}>
+            <Button
+              disabled={!isPendingFilterActive}
+              sx={{ borderRadius: 10 }}
+              size="small"
+              disableElevation
+              variant={
+                invoiceActiveFilter === "pending" ? "contained" : "outlined"
+              }
+              onClick={handleFilterButtonClick("pending")}
+              {...(invoiceActiveFilter === "pending" && {
+                startIcon: <DoneRoundedIcon />,
+              })}
+            >
+              {pendingFilterLabel}
+            </Button>
+          </Box>
+        ) : (
+          ""
+        )}
 
         {invoicesFilters.map((year) => (
           <Box ml={2} key={year}>

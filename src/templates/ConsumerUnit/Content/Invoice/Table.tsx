@@ -22,7 +22,11 @@ import {
   Delete,
 } from "@mui/icons-material";
 
-import { useFetchInvoicesQuery, useDeleteEnergiBillMutation } from "@/api";
+import {
+  useFetchInvoicesQuery,
+  useDeleteEnergiBillMutation,
+  useGetConsumerUnitQuery,
+} from "@/api";
 import {
   selectActiveConsumerUnitId,
   selectConsumerUnitInvoiceActiveFilter,
@@ -101,8 +105,8 @@ const getDataGridRows = (
   invoicesPayload: InvoicePayload[],
   activeFilter: ConsumerUnitInvoiceFilter
 ): InvoiceDataGridRow[] => {
-  return invoicesPayload.map(
-    ({ month, year, isEnergyBillPending, energyBill }) => ({
+  return invoicesPayload
+    .map(({ month, year, isEnergyBillPending, energyBill }) => ({
       ...energyBill,
       id: parseInt(`${year}${month >= 10 ? month : "0" + month}`),
       ...(energyBill && {
@@ -113,8 +117,10 @@ const getDataGridRows = (
       year,
       isEnergyBillPending,
       activeFilter,
-    })
-  );
+    }))
+    .filter(
+      (row) => !(row.isEnergyBillPending && row.energyBillId === undefined)
+    );
 };
 
 const NoRowsOverlay = () => (
@@ -129,6 +135,10 @@ const ConsumerUnitInvoiceContentTable = () => {
   const [deleteEnergiBill] = useDeleteEnergiBillMutation();
   const [isWarningOpen, setIsWarningOpen] = useState(false);
   const [selectedBillenergyId, setSelectedEnergyBillId] = useState<number>(0);
+
+  const { data: consumerUnit } = useGetConsumerUnitQuery(
+    consumerUnitId ?? skipToken
+  );
 
   const { data: invoicesPayload } = useFetchInvoicesQuery(
     consumerUnitId ?? skipToken,
@@ -334,9 +344,7 @@ const ConsumerUnitInvoiceContentTable = () => {
       groupId: "separator",
       headerName: "|",
       headerAlign: "center",
-      children: [
-        { field: "demandSeparator" },
-      ],
+      children: [{ field: "demandSeparator" }],
     },
     {
       groupId: "demand",
@@ -373,10 +381,18 @@ const ConsumerUnitInvoiceContentTable = () => {
       const { activeFilter, isEnergyBillPending, month, year, energyBillId } =
         invoiceRow;
 
+      if (isEnergyBillPending && energyBillId === undefined) {
+        return null;
+      }
+
       const buttonLabel =
         "Lançar " +
         getMonthFromNumber(month, year) +
         `${activeFilter === "pending" ? "  " + year : ""}`;
+
+      if (!consumerUnit?.isActive) {
+        return getMonthFromNumber(month, year, true);
+      }
 
       if (isEnergyBillPending) {
         return (
@@ -404,7 +420,7 @@ const ConsumerUnitInvoiceContentTable = () => {
 
       return getMonthFromNumber(month, year, true);
     },
-    [handleOpenAddEnergyBillForm]
+    [handleOpenAddEnergyBillForm, consumerUnit]
   );
 
   /**
