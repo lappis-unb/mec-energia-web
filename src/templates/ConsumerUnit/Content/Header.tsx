@@ -140,7 +140,7 @@ const ConsumerUnitContentHeader = () => {
                   </Button>
 
                   <Button
-                    disabled
+                    disabled={!consumerUnit?.isActive}
                     variant="outlined"
                     startIcon={<UploadFileIcon />}
                     size="small"
