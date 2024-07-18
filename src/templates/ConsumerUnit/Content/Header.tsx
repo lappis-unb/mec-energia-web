@@ -1,4 +1,4 @@
-import React, { SyntheticEvent, useState, useCallback } from "react";
+import React, { SyntheticEvent, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import {
@@ -6,7 +6,6 @@ import {
   Button,
   Container,
   Divider,
-  IconButton,
   Stack,
   Tab,
   Tabs,
@@ -14,18 +13,15 @@ import {
   Alert,
 } from "@mui/material";
 import { FlashOffRounded } from "@mui/icons-material";
-import StarOutlineRoundedIcon from "@mui/icons-material/StarOutlineRounded";
-import StarRoundedIcon from "@mui/icons-material/StarRounded";
 import EditIcon from "@mui/icons-material/Edit";
 import UploadFileIcon from "@mui/icons-material/UploadFileRounded";
 import ReceiptLongRoundedIcon from "@mui/icons-material/ReceiptLongRounded";
 import InsightsRoundedIcon from "@mui/icons-material/InsightsRounded";
 import StickyNote2RoundedIcon from "@mui/icons-material/StickyNote2Rounded";
 import {
-  useEditPersonFavoritesMutation,
   useFetchConsumerUnitsQuery,
   usePostInvoiceCsvMutation,
-  useGetConsumerUnitQuery
+  useGetConsumerUnitQuery,
 } from "@/api";
 
 import {
@@ -57,7 +53,6 @@ const ConsumerUnitContentHeader = () => {
   const { data: consumerUnit } = useGetConsumerUnitQuery(
     consumerUnitId ?? skipToken
   );
-  const [editPersonFavorites] = useEditPersonFavoritesMutation();
 
   const { data: session } = useSession();
   const { data: consumerUnitsData } = useFetchConsumerUnitsQuery(
@@ -111,19 +106,7 @@ const ConsumerUnitContentHeader = () => {
     } finally {
       setIsCsvLoading(false);
     }
-  }
-
-  const handleFavoriteButtonClick = useCallback<
-    MouseEventHandler<HTMLButtonElement>
-  >(async (event) => {
-    event.stopPropagation();
-    const body: EditFavoritesRequestPayload = {
-      consumerUnitId: consumerUnit?.id,
-      personId: session?.user?.id,
-      action: consumerUnit?.isFavorite ? "remove" : "add",
-    };
-    await editPersonFavorites(body);
-  });
+  };
 
   const activeConsumerUnitData = consumerUnitsData?.find(
     (consumerUnit) => consumerUnit?.id === consumerUnitId
@@ -142,23 +125,6 @@ const ConsumerUnitContentHeader = () => {
     >
       <Container>
         <Box display="flex">
-          <Box mt={-0.5}>
-            {
-              consumerUnit?.isActive && (
-                <IconButton
-                  color="primary"
-                  edge="start"
-                  onClick={handleFavoriteButtonClick}
-                >
-                  {consumerUnit?.isFavorite ? (
-                    <StarRoundedIcon fontSize="large" />
-                  ) : (
-                    <StarOutlineRoundedIcon fontSize="large" />
-                  )}
-                </IconButton>
-              )
-            }
-          </Box>
           <Box pl={1}>
             <Box display="flex" alignItems="center">
               <Typography variant="h4">{consumerUnit?.name}</Typography>
@@ -172,18 +138,16 @@ const ConsumerUnitContentHeader = () => {
                   >
                     Editar
                   </Button>
-                  {
-                    consumerUnit?.isActive && (
-                      <Button
-                        variant="outlined"
-                        startIcon={<UploadFileIcon />}
-                        size="small"
-                        onClick={handleOpenCsvDialog}
-                      >
-                        Importar planilha
-                      </Button>
-                    )
-                  }
+
+                  <Button
+                    disabled
+                    variant="outlined"
+                    startIcon={<UploadFileIcon />}
+                    size="small"
+                    onClick={handleOpenCsvDialog}
+                  >
+                    Importar planilha
+                  </Button>
                 </Stack>
               </Box>
             </Box>
@@ -193,18 +157,16 @@ const ConsumerUnitContentHeader = () => {
           </Box>
         </Box>
 
-        {!consumerUnit?.isActive &&
-          (
-            <Alert
-              severity="warning"
-              variant="filled"
-              icon={<FlashOffRounded style={{ color: "#000", opacity: 0.5 }} />}
-              sx={{ cursor: 'pointer', whiteSpace: 'pre-line', mt: 3 }}
-            >
-              Unidade desativada
-            </Alert>
-          )
-        }
+        {!consumerUnit?.isActive && (
+          <Alert
+            severity="warning"
+            variant="filled"
+            icon={<FlashOffRounded style={{ color: "#000", opacity: 0.5 }} />}
+            sx={{ cursor: "pointer", whiteSpace: "pre-line", mt: 3 }}
+          >
+            Unidade desativada
+          </Alert>
+        )}
 
         <Tabs value={openedTab} variant="fullWidth" onChange={handleTabChange}>
           <Tab
@@ -212,14 +174,13 @@ const ConsumerUnitContentHeader = () => {
             label="Faturas"
             iconPosition="start"
           />
-          {
-            consumerUnit?.isActive && (
-              <Tab
-                icon={<InsightsRoundedIcon />}
-                label="Análise"
-                iconPosition="start"
-              />)
-          }
+          {consumerUnit?.isActive && (
+            <Tab
+              icon={<InsightsRoundedIcon />}
+              label="Análise"
+              iconPosition="start"
+            />
+          )}
           <Tab
             icon={<StickyNote2RoundedIcon />}
             label="Contrato"
