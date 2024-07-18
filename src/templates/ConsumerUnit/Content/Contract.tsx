@@ -148,10 +148,13 @@ const ConsumerUnitContractContent = () => {
           <Button size="small" onClick={handleEditFormClick}>
             Editar
           </Button>
-
-          <Button size="small" onClick={handleRenewContractClick}>
-            Renovar contrato
-          </Button>
+          {
+            consumerUnit?.isActive && (
+              <Button size="small" onClick={handleRenewContractClick}>
+                Renovar contrato
+              </Button>
+            )
+          }
         </CardActions>
       </Card>
 
