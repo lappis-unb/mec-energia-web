@@ -61,7 +61,7 @@ const ConsumerUnitInvoiceContentFilter = () => {
       <Box display="flex" alignItems="center" px={2} py={1.5}>
         <Typography variant="caption">Mostrar:</Typography>
 
-        {consumerUnit.isActive ? (
+        {consumerUnit?.isActive ? (
           <Box ml={2}>
             <Button
               disabled={!isPendingFilterActive}
