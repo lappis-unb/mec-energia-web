@@ -99,7 +99,7 @@ const SignInTemplate = () => {
                 <Box mt={4}>
                   <Alert severity="error" variant="filled">
                     O link clicado para cadastrar a senha de acesso está vencido.
-                    Você receberá um novo link por e-mail em 30 minutos.
+                    Você receberá um novo link por e-mail em 1 hora.
                   </Alert>
                 </Box>
               )}

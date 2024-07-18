@@ -3,25 +3,25 @@ import { useDispatch, useSelector } from "react-redux";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { useRouter } from "next/router";
 
-import { 
-  Box, 
-  Button, 
-  Collapse, 
-  Container, 
-  Grid, 
-  IconButton, 
-  Link, 
-  Modal, 
-  Typography
+import {
+  Box,
+  Button,
+  Collapse,
+  Container,
+  Grid,
+  IconButton,
+  Link,
+  Modal,
+  Typography,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
-import HelpOutlineSharpIcon from '@mui/icons-material/HelpOutlineSharp';
+import HelpOutlineSharpIcon from "@mui/icons-material/HelpOutlineSharp";
 
 import {
   useGetDistributorSubgroupsQuery,
   useGetDistributorQuery,
   useDeleteDistributorMutation,
-  useFetchDistributorsQuery
+  useFetchDistributorsQuery,
 } from "@/api";
 import {
   selectActiveDistributorId,
@@ -47,9 +47,9 @@ const DistributorContentHeader = () => {
   );
 
   const activeDistributorData = distributors?.find(
-    distributor => distributor?.id === distributorId
+    (distributor) => distributor?.id === distributorId
   );
-  
+
   const router = useRouter();
 
   const { data: distributor } = useGetDistributorQuery(
@@ -61,7 +61,10 @@ const DistributorContentHeader = () => {
   const { data: tariffsSubgroups, isLoading: isTariffsSubgroupsLoading } =
     useGetDistributorSubgroupsQuery(distributorId ?? skipToken);
 
-  const [isOpenModalInfoAboutSubGroupsAndTariff, setOpenModalInfoAboutSubGroupsAndTariff] = useState(false);
+  const [
+    isOpenModalInfoAboutSubGroupsAndTariff,
+    setOpenModalInfoAboutSubGroupsAndTariff,
+  ] = useState(false);
 
   useEffect(() => {
     if (!tariffsSubgroups || tariffsSubgroups.length === 0) {
@@ -128,7 +131,6 @@ const DistributorContentHeader = () => {
   }, [dispatch, deleteDistributor, distributorId, router]);
 
   const ModalInfoAboutSubGroupsAndTariff = () => {
-
     const handleDownloadClick = async (
       event: React.MouseEvent<HTMLButtonElement>
     ) => {
@@ -164,67 +166,69 @@ const DistributorContentHeader = () => {
     };
 
     return (
-      <Modal
-        open={isOpenModalInfoAboutSubGroupsAndTariff}
-      >
+      <Modal open={isOpenModalInfoAboutSubGroupsAndTariff}>
         <Grid
-        container
-        spacing={1}
-        sx={{
-          borderRadius: 1,
-          position: "absolute",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-          width: 600,
-          bgcolor: "background.paper",
-          boxShadow: 24,
-          p: 4,
-          "@media print": {
+          container
+          spacing={1}
+          sx={{
             borderRadius: 1,
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
             width: 600,
             bgcolor: "background.paper",
             boxShadow: 24,
             p: 4,
-          },
-        }}
-      >
-        <Grid item marginBottom={2}>
-          <Typography variant="h6">Subgrupos e Tarifas</Typography>
-        </Grid>
-        <Grid item>
-          <Typography variant="body1">
-            Os subgrupos correspondem à tensão de fornecimento contratada para 
-            uma unidade Consumidora. Apenas os subgrupos usados em unidades 
-            consumidoras ativas precisam estar atualizadas.
-          </Typography>
-        </Grid>
-        <Grid item>
-          <Typography variant="body1">
-            A vigência e os valores das tarifas são determinadas pela ANEEL. Os
-            valores podem variar de um subgrupo a outro.
-          </Typography>
-        </Grid>
-        <Grid item>
-          <Typography variant="body1">
-            Siga <Link 
-              style={{cursor: "pointer"}}
-              fontWeight="bold" 
-              onClick={handleDownloadClick}
-              target="_blank"
-            >este passo-a-passo</Link> para encontrar as informações de tarifa no site da ANEEL.
-          </Typography>
-        </Grid>
+            "@media print": {
+              borderRadius: 1,
+              width: 600,
+              bgcolor: "background.paper",
+              boxShadow: 24,
+              p: 4,
+            },
+          }}
+        >
+          <Grid item marginBottom={2}>
+            <Typography variant="h6">Subgrupos e Tarifas</Typography>
+          </Grid>
+          <Grid item>
+            <Typography variant="body1">
+              Os subgrupos correspondem à tensão de fornecimento contratada para
+              uma unidade Consumidora. Apenas os subgrupos usados em unidades
+              consumidoras ativas precisam estar atualizadas.
+            </Typography>
+          </Grid>
+          <Grid item>
+            <Typography variant="body1">
+              A vigência e os valores das tarifas são determinadas pela ANEEL.
+              Os valores podem variar de um subgrupo a outro.
+            </Typography>
+          </Grid>
+          <Grid item>
+            <Typography variant="body1">
+              Siga{" "}
+              <Link
+                style={{ cursor: "pointer" }}
+                fontWeight="bold"
+                onClick={handleDownloadClick}
+                target="_blank"
+              >
+                este passo-a-passo
+              </Link>{" "}
+              para encontrar as informações de tarifa no site da ANEEL.
+            </Typography>
+          </Grid>
 
-        <Grid item width="100%" display="flex" justifyContent="end">
-          <Button 
-            onClick={() => setOpenModalInfoAboutSubGroupsAndTariff(false)} 
-            variant="text"
-          >
-            Fechar
-          </Button>
+          <Grid item width="100%" display="flex" justifyContent="end">
+            <Button
+              onClick={() => setOpenModalInfoAboutSubGroupsAndTariff(false)}
+              variant="text"
+            >
+              Fechar
+            </Button>
+          </Grid>
         </Grid>
-      </Grid>
       </Modal>
     );
   };
@@ -294,11 +298,11 @@ const DistributorContentHeader = () => {
               open={shouldShowCancelDialog}
               onClose={() => handleDeleteDistributor()}
               onDiscard={() => setShouldShowCancelDialog(false)}
-              titleText="Deseja excluir esta distribuidora?"
-              confirmText="Excluir"
+              titleText={`Apagar ${distributor?.name}?`}
+              confirmText="Apagar"
               cancelText="Cancelar"
-              dataLossMessage="Ao excluir esta distribuidora, todos os dados relacionados a ela serão perdidos. Essa ação não poderá ser desfeita."
-            ></DeleteDistributorDialog>
+              dataLossMessage="Os dados lançados serão perdidos."
+            />
 
             <Typography>
               CNPJ: <strong>{distributor?.cnpj}</strong>
@@ -316,7 +320,9 @@ const DistributorContentHeader = () => {
       </Container>
 
       <Box>
-        <IconButton onClick={() => setOpenModalInfoAboutSubGroupsAndTariff(true)}>
+        <IconButton
+          onClick={() => setOpenModalInfoAboutSubGroupsAndTariff(true)}
+        >
           <HelpOutlineSharpIcon />
         </IconButton>
       </Box>

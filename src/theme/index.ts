@@ -172,6 +172,9 @@ const theme = createTheme(
             "& .MuiDataGrid-columnHeader--emptyGroup": {
               backgroundColor: "unset",
             },
+            "& .MuiDataGrid-columnSeparator": {
+              color: primaryMain,
+            },
             border: "unset",
           },
           row: {

@@ -29,7 +29,7 @@ import {
   USER_LIST_ROUTE,
 } from "@/routes";
 import { Route } from "@/types/router";
-import { useGetPersonQuery } from "@/api";
+import { useFetchConsumerUnitsQuery, useGetPersonQuery } from "@/api";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { Session } from "next-auth";
 import { getTimeFromDateUTC } from "@/utils/date";
@@ -110,6 +110,9 @@ const Drawer = () => {
       refetchOnMountOrArgChange: true
     }
   );
+  const { data: consumerUnitsData } = useFetchConsumerUnitsQuery(
+    session?.user.universityId ?? skipToken
+  );
 
   const isDrawerOpen = useSelector(selectIsDrawerOpen);
 
@@ -152,6 +155,15 @@ const Drawer = () => {
   const handleToggleDrawer = () => {
     dispatch(setIsDrawerOpen(!isDrawerOpen));
   };
+
+  const disableRoute = (index: number) => {
+    const routesToDisable: Route[] = [
+      CONSUMER_UNITS_ROUTE,
+      DISTRIBUTORS_ROUTE,
+    ];
+
+    return (consumerUnitsData && consumerUnitsData?.length <= 0) && routesToDisable.findIndex(it => it.href === allowedRoutes[index].href) != -1;
+  }
 
   return (
     <StyledDrawer
@@ -224,6 +236,7 @@ const Drawer = () => {
               text={title}
               href={href}
               active={active}
+              disable={disableRoute(index)}
             />
           </Box>
         ))}

@@ -15,6 +15,7 @@ interface DrawerListItemProps {
   Icon: ComponentType<SvgIconProps>;
   active?: boolean;
   href?: string;
+  disable?: boolean;
   onClick?: () => void;
 }
 
@@ -40,6 +41,7 @@ const DrawerListItem = ({
   Icon,
   href,
   active,
+  disable,
   onClick,
 }: DrawerListItemProps) => {
   const isDrawerOpen = useSelector(selectIsDrawerOpen);
@@ -55,7 +57,7 @@ const DrawerListItem = ({
           }}
           selected={active}
           onClick={onClick}
-          disabled={!href && !onClick}
+          disabled={disable || (!href && !onClick)}
         >
           <ListItemIcon
             sx={{
