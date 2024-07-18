@@ -3,7 +3,7 @@ import {
   KeyboardArrowUp as ChevronUp,
 } from "@mui/icons-material";
 import { Box, Button, Card, CardContent, SxProps } from "@mui/material";
-import { ReactNode, useState } from "react";
+import { ReactNode, useState, useEffect } from "react";
 
 const ChevronButton = ({
   onClick,
@@ -26,6 +26,7 @@ export interface DropdownSectionProps {
   title: ReactNode;
   complementTitle?: ReactNode;
   children: ReactNode;
+  initialOpen?: boolean;
   open?: boolean;
   sx?: SxProps;
 }
@@ -35,9 +36,15 @@ const DropdownSection = ({
   children,
   title,
   complementTitle,
+  initialOpen = false,
   open,
 }: DropdownSectionProps) => {
-  const [isOpen, setIsOpen] = useState(open);
+  const [isOpen, setIsOpen] = useState(initialOpen || open);
+
+  useEffect(() => {
+    setIsOpen(open);
+  }, [open]);
+
   return (
     <Card
       className="dropdown-section"
@@ -49,8 +56,6 @@ const DropdownSection = ({
         ...sx,
       }}
     >
-      {/* Todos os filhos diretos de CardContent devem ter um espacinho sobrando 
-      embaixo. Sem esse estilo fica tudo grudado verticalmente */}
       <CardContent sx={{ "> *": { mb: 2 } }}>
         <Box
           sx={{
@@ -63,7 +68,6 @@ const DropdownSection = ({
           <Box sx={{ h5: { display: "inline" } }}>
             {title} {complementTitle}
           </Box>
-
           <ChevronButton open={isOpen} onClick={() => setIsOpen(!isOpen)} />
         </Box>
 
@@ -81,7 +85,6 @@ const DropdownSection = ({
         >
           {children}
         </Box>
-        {/* {isOpen && children} */}
       </CardContent>
     </Card>
   );

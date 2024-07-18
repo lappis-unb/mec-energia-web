@@ -1,5 +1,6 @@
 import { Box } from "@mui/material";
 import { ReactElement } from "react";
+import React from "react";
 import { DropdownSectionProps } from "./DropdownSection";
 
 interface Props {
@@ -8,12 +9,6 @@ interface Props {
     | ReactElement<DropdownSectionProps>[];
 }
 
-/**
- * Esse componente é pra gerenciar o estado de aberto/fechado
- * dos filhos que são DropdownSection
- *
- * Por enquanto faz nada mesmo.
- */
 const DropdownSectionManager = ({ children }: Props) => {
   return <Box>{children}</Box>;
 };
