@@ -168,14 +168,18 @@ const ConsumerUnitContentHeader = () => {
                   >
                     Editar
                   </Button>
-                  <Button
-                    variant="outlined"
-                    startIcon={<UploadFileIcon />}
-                    size="small"
-                    onClick={handleOpenCsvDialog}
-                  >
-                    Importar planilha
-                  </Button>
+                  {
+                    consumerUnit?.isActive && (
+                      <Button
+                        variant="outlined"
+                        startIcon={<UploadFileIcon />}
+                        size="small"
+                        onClick={handleOpenCsvDialog}
+                      >
+                        Importar planilha
+                      </Button>
+                    )
+                  }
                 </Stack>
               </Box>
             </Box>
