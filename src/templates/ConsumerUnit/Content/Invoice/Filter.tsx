@@ -29,7 +29,6 @@ const ConsumerUnitInvoiceContentFilter = () => {
 
   const invoices = invoicesQuery.data;
   const consumerUnit = consumerUnitQuery.data;
-  console.log(invoices);
 
   const invoicesFilters = useMemo(() => {
     if (!invoices || !consumerUnit) {
