@@ -102,6 +102,7 @@ export const DetailedAnalysisDrawer = ({
   const toPrint = useRef(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [allDropdownsOpen, setAllDropdownsOpen] = useState(false);
+  const [startDropdownOpen, setStartDropdownOpen] = useState(true);
 
   const tariffStartDate = getFormattedDate(
     recommendation.tariffDates.startDate
@@ -117,8 +118,9 @@ export const DetailedAnalysisDrawer = ({
 
   const generatedOn = getFormattedDateAndTime(recommendation.generatedOn);
 
-  const documentPrintTitle = `Relatório MEC Energia  ${consumerUnit.name
-    } ${generatedOn.replaceAll("/", "-")}`;
+  const documentPrintTitle = `Relatório MEC Energia  ${
+    consumerUnit.name
+  } ${generatedOn.replaceAll("/", "-")}`;
 
   const isRecommendationGreen =
     recommendation.recommendedContract.tariffFlag === "G";
@@ -218,17 +220,30 @@ export const DetailedAnalysisDrawer = ({
               },
             }}
           >
-            <Button variant="outlined" onClick={() => setAllDropdownsOpen(true)}>
+            <Button
+              variant="outlined"
+              onClick={() => {
+                setAllDropdownsOpen(true);
+                setStartDropdownOpen(false);
+              }}
+            >
               <KeyboardDoubleArrowDown />
               Abrir tudo
             </Button>
-            <Button variant="outlined" sx={{ marginLeft: 2 }} onClick={() => setAllDropdownsOpen(false)}>
+            <Button
+              variant="outlined"
+              sx={{ marginLeft: 2 }}
+              onClick={() => {
+                setAllDropdownsOpen(false);
+                setStartDropdownOpen(false);
+              }}
+            >
               <KeyboardDoubleArrowUp />
               Fechar tudo
             </Button>
           </Box>
 
-          <DropdownSectionManager openAll={allDropdownsOpen}>
+          <DropdownSectionManager>
             <DropdownSection
               title={<Typography variant="h5">Definições</Typography>}
               open={allDropdownsOpen}
@@ -769,7 +784,7 @@ export const DetailedAnalysisDrawer = ({
               title={
                 <Typography variant="h5">Custo de energia atual</Typography>
               }
-              open={allDropdownsOpen}
+              open={startDropdownOpen || allDropdownsOpen}
             >
               <Box sx={{ "@media print": { breakInside: "avoid" } }}>
                 <Typography>
@@ -823,7 +838,7 @@ export const DetailedAnalysisDrawer = ({
                   Comparativo do custo de energia
                 </Typography>
               }
-              open={allDropdownsOpen}
+              open={startDropdownOpen || allDropdownsOpen}
             >
               <TypographyBody1>
                 O gráfico abaixo compara a nova a demanda proposta à demanda
@@ -910,7 +925,7 @@ export const DetailedAnalysisDrawer = ({
                   )}
                 </>
               }
-              open={allDropdownsOpen}
+              open={startDropdownOpen || allDropdownsOpen}
             >
               <TypographyBody1>
                 A partir de análises do perfil de demanda e de consumo de
@@ -937,18 +952,18 @@ export const DetailedAnalysisDrawer = ({
 
               {recommendation.energyBillsCount <
                 recommendationSettings.IDEAL_ENERGY_BILLS_FOR_RECOMMENDATION && (
-                  <>
-                    <br />
-                    <Alert
-                      variant="filled"
-                      severity="info"
-                      sx={{ bgcolor: "#242a8e" }}
-                    >
-                      Uma ou mais faturas estão indisponíveis. Isso reduz a
-                      precisão da análise.
-                    </Alert>
-                  </>
-                )}
+                <>
+                  <br />
+                  <Alert
+                    variant="filled"
+                    severity="info"
+                    sx={{ bgcolor: "#242a8e" }}
+                  >
+                    Uma ou mais faturas estão indisponíveis. Isso reduz a
+                    precisão da análise.
+                  </Alert>
+                </>
+              )}
             </DropdownSection>
 
             <DropdownSection
@@ -956,7 +971,7 @@ export const DetailedAnalysisDrawer = ({
                 "@media print": { breakInside: "avoid", breakBefore: "always" },
               }}
               title={<Typography variant="h5">Anexos I</Typography>}
-              open={allDropdownsOpen}
+              open={startDropdownOpen || allDropdownsOpen}
             >
               <TypographyBody1>
                 Considerações gerais sobre ajuste de contrato, conforme

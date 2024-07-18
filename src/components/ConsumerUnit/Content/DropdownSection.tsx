@@ -26,6 +26,7 @@ export interface DropdownSectionProps {
   title: ReactNode;
   complementTitle?: ReactNode;
   children: ReactNode;
+  initialOpen?: boolean;
   open?: boolean;
   sx?: SxProps;
 }
@@ -35,9 +36,10 @@ const DropdownSection = ({
   children,
   title,
   complementTitle,
-  open = false,
+  initialOpen = false,
+  open,
 }: DropdownSectionProps) => {
-  const [isOpen, setIsOpen] = useState(open);
+  const [isOpen, setIsOpen] = useState(initialOpen || open);
 
   useEffect(() => {
     setIsOpen(open);
