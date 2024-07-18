@@ -143,17 +143,21 @@ const ConsumerUnitContentHeader = () => {
       <Container>
         <Box display="flex">
           <Box mt={-0.5}>
-            <IconButton
-              color="primary"
-              edge="start"
-              onClick={handleFavoriteButtonClick}
-            >
-              {consumerUnit?.isFavorite ? (
-                <StarRoundedIcon fontSize="large" />
-              ) : (
-                <StarOutlineRoundedIcon fontSize="large" />
-              )}
-            </IconButton>
+            {
+              consumerUnit?.isActive && (
+                <IconButton
+                  color="primary"
+                  edge="start"
+                  onClick={handleFavoriteButtonClick}
+                >
+                  {consumerUnit?.isFavorite ? (
+                    <StarRoundedIcon fontSize="large" />
+                  ) : (
+                    <StarOutlineRoundedIcon fontSize="large" />
+                  )}
+                </IconButton>
+              )
+            }
           </Box>
           <Box pl={1}>
             <Box display="flex" alignItems="center">
