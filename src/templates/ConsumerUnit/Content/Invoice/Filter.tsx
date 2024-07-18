@@ -29,14 +29,22 @@ const ConsumerUnitInvoiceContentFilter = () => {
 
   const invoices = invoicesQuery.data;
   const consumerUnit = consumerUnitQuery.data;
+  console.log(invoices);
 
   const invoicesFilters = useMemo(() => {
-    if (!invoices) {
+    if (!invoices || !consumerUnit) {
       return [];
     }
 
-    return Object.keys(invoices).reverse();
-  }, [invoices]);
+    return Object.keys(invoices)
+      .filter((year) => {
+        const hasValidInvoice = invoices[year].some(
+          (invoice) => invoice.energyBill !== null
+        );
+        return consumerUnit.isActive || hasValidInvoice;
+      })
+      .reverse();
+  }, [invoices, consumerUnit]);
 
   useEffect(() => {
     const pending = consumerUnit?.pendingEnergyBillsNumber ?? -1;
@@ -51,7 +59,9 @@ const ConsumerUnitInvoiceContentFilter = () => {
   return (
     <Paper>
       <Box display="flex" alignItems="flex-start" px={2} py={1.5}>
-        <Typography variant="caption" mt={0.5}>Mostrar:</Typography>
+        <Typography variant="caption" mt={0.5}>
+          Mostrar:
+        </Typography>
 
         <Box display="flex" flexWrap="wrap" rowGap={2}>
           <Box ml={2}>
@@ -71,6 +81,27 @@ const ConsumerUnitInvoiceContentFilter = () => {
               {pendingFilterLabel}
             </Button>
           </Box>
+          {consumerUnit.isActive ? (
+            <Box ml={2}>
+              <Button
+                disabled={!isPendingFilterActive}
+                sx={{ borderRadius: 10 }}
+                size="small"
+                disableElevation
+                variant={
+                  invoiceActiveFilter === "pending" ? "contained" : "outlined"
+                }
+                onClick={handleFilterButtonClick("pending")}
+                {...(invoiceActiveFilter === "pending" && {
+                  startIcon: <DoneRoundedIcon />,
+                })}
+              >
+                {pendingFilterLabel}
+              </Button>
+            </Box>
+          ) : (
+            ""
+          )}
 
           {invoicesFilters.map((year) => (
             <Box ml={2} key={year}>
@@ -78,7 +109,9 @@ const ConsumerUnitInvoiceContentFilter = () => {
                 sx={{ borderRadius: 10 }}
                 size="small"
                 disableElevation
-                variant={invoiceActiveFilter === year ? "contained" : "outlined"}
+                variant={
+                  invoiceActiveFilter === year ? "contained" : "outlined"
+                }
                 {...(invoiceActiveFilter === year && {
                   startIcon: <DoneRoundedIcon />,
                 })}
