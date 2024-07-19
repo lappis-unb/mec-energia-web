@@ -212,7 +212,7 @@ const CsvForm: React.FC<CsvFormProps> = ({ csvData }) => {
               </IconButton>
 
               <Box ml={3}>
-                <Typography variant="h6">Importar CSV</Typography>
+                <Typography variant="h6">Importar planilha</Typography>
               </Box>
             </Box>
           </Container>
@@ -221,12 +221,6 @@ const CsvForm: React.FC<CsvFormProps> = ({ csvData }) => {
 
       <Container maxWidth="lg">
         <Box mt={3} mb={6} component="form" onSubmit={handleSubmitDrawer}>
-          <Box my={4}>
-            <Typography variant="body2" color="primary.main">
-              * campos obrigatórios
-            </Typography>
-          </Box>
-
           <Box mt={4}>
             <Box p={2}>
               <TableContainer component={Paper} sx={{ boxShadow: "none" }}>
