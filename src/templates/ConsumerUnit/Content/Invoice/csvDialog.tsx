@@ -85,8 +85,7 @@ const CsvDialog: React.FC<CsvDialogProps> = ({
   ) => {
     event?.preventDefault();
     try {
-      const session = await getSession();
-      console.log("aqui", file)
+      const session = await getSession()
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/energy-bills/download-${file}-model/`,
         {

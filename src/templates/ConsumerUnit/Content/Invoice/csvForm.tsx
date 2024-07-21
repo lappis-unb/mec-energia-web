@@ -42,13 +42,19 @@ import { format, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
 const formatDate = (dateString: string) => {
-  const date = parseISO(dateString);
-  const formattedDate = format(date, "MMMM yyyy", { locale: ptBR });
-  return formattedDate.charAt(0).toUpperCase() + formattedDate.slice(1);
+  try {
+    const formattedDate = format(parseISO(dateString), "MMMM yyyy", { locale: ptBR });
+    return formattedDate.charAt(0).toUpperCase() + formattedDate.slice(1);
+  }
+  catch {
+    return dateString;
+  }
 };
 
 const formatNumber = (numberString: string) => {
   const number = parseFloat(numberString);
+  if (isNaN(number))
+    return numberString
   return number.toLocaleString('pt-BR', {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
@@ -311,11 +317,11 @@ const CsvForm: React.FC<CsvFormProps> = ({ csvData }) => {
                   <TableBody>
                     {sortedData.map((item, index) => {
                       const hasError = hasRowWithErrorInCsv(item);
-                      const errorMessages = [];
+                      const errorMessages = new Set();
                       Object.keys(item).forEach((key) => {
                         if (item[key].errors) {
                           item[key].errors.forEach(([, msg]) => {
-                            errorMessages.push("- " + msg)
+                            errorMessages.add("- " + msg)
                           })
                         }
                       })
@@ -379,8 +385,7 @@ const CsvForm: React.FC<CsvFormProps> = ({ csvData }) => {
                             </TableCell>
                             <TableCell
                               style={{
-                                backgroundColor: item.offPeakConsumptionInKwh
-                                  .error
+                                backgroundColor: item.offPeakConsumptionInKwh.errors
                                   ? theme.palette.error.main
                                   : "inherit",
                                 color: item.offPeakConsumptionInKwh.errors
@@ -448,7 +453,7 @@ const CsvForm: React.FC<CsvFormProps> = ({ csvData }) => {
                                   paddingLeft: "0px"
                                 }}
                               >
-                                {errorMessages.map((msg, idx) => (
+                                {Array.from(errorMessages).map((msg, idx) => (
                                   <div key={idx}>{msg}</div>
                                 ))}
                               </TableCell>
