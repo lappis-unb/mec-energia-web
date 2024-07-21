@@ -22,7 +22,7 @@ const DashboardCardGrid = () => {
     session?.user.universityId ?? skipToken
   );
 
-  const { data: consumerUnitsData } = useFetchConsumerUnitsQuery(
+  const { data: consumerUnitsData, isFetching } = useFetchConsumerUnitsQuery(
     session?.user.universityId ?? skipToken
   );
 
@@ -68,13 +68,13 @@ const DashboardCardGrid = () => {
     dispatch(setIsConsumerUnitCreateFormOpen(true));
   }, [dispatch]);
 
-  return (consumerUnits.length <= 0) ? (
-    <Box display="flex" justifyContent="center" alignItems="center" height="100%">
+  return (!isFetching && (consumerUnitsData && consumerUnitsData.length <= 0)) ? (
+    <Box display={consumerUnitsData.length <= 0 ? 'flex' : 'none'} justifyContent="center" alignItems="center" height="100%">
       <Box display="flex" flexDirection="column" justifyContent="center" alignItems="center">
         <FlagRoundedIcon color="primary" sx={{ width: "75px", height: "85px" }} />
-      
+
         <Typography variant="h1" fontSize="48px" color="primary" lineHeight="60px" marginBottom="32px" fontWeight="regular">
-          Olá, boas-vindas ao MEPA 
+          Olá, boas-vindas ao MEPA
         </Typography>
 
         <Typography variant="h2" fontSize="20px" color="rgba(0, 0, 0, 0.87)" lineHeight="32px" fontWeight="600" marginBottom="16px">
@@ -91,7 +91,7 @@ const DashboardCardGrid = () => {
       </Box>
     </Box>
   ) : (
-    <Grid container spacing={5} py={3}>
+    <Grid display={consumerUnitsData && consumerUnitsData.length <= 0 ? 'none' : 'flex'} container spacing={5} py={3}>
       {distributors?.map((card) => (
         <Grid
           key={card.id}
