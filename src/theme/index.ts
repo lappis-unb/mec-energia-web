@@ -6,10 +6,28 @@ import { ptBR } from "@mui/x-date-pickers";
 declare module "@mui/material/styles" {
   interface Palette {
     highlighted: Palette["primary"];
+    secondaryFocus: string;
+    graph: {
+      baseCostMain: string;
+      baseCostSecondary: string;
+      measuredConsumptionMain: string;
+      measuredConsumptionSecondary: string;
+      measuredDemandMain: string;
+      measuredDemandSecondary: string;
+    };
   }
 
   interface PaletteOptions {
     highlighted: PaletteOptions["primary"];
+    secondaryFocus?: string;
+    graph?: {
+      baseCostMain?: string;
+      baseCostSecondary?: string;
+      measuredConsumptionMain?: string;
+      measuredConsumptionSecondary?: string;
+      measuredDemandMain?: string;
+      measuredDemandSecondary?: string;
+    };
   }
 }
 
@@ -38,6 +56,15 @@ const theme = createTheme(
       },
       highlighted: {
         main: "rgba(10, 92, 103, 0.12)",
+      },
+      secondaryFocus: "#FAAD101F",
+      graph: {
+        baseCostMain: "#54BF86",
+        baseCostSecondary: "#EE9083",
+        measuredConsumptionMain: "#0E438C",
+        measuredConsumptionSecondary: "#296DCC",
+        measuredDemandMain: "#7C07C0",
+        measuredDemandSecondary: "#D1A3E8",
       },
     },
     typography: {
@@ -203,19 +230,19 @@ const theme = createTheme(
       MuiDrawer: {
         styleOverrides: { paper: { backgroundColor: "#EEF4F4" } },
       },
-      MuiFormHelperText:{
-        styleOverrides:{
-          root:{
-              marginLeft: "0px",
-          }
-        }
+      MuiFormHelperText: {
+        styleOverrides: {
+          root: {
+            marginLeft: "0px",
+          },
+        },
       },
       MuiFormControlLabel: {
-        styleOverrides:{
-          root:{
-              marginRight: "8px",
-          }
-        }
+        styleOverrides: {
+          root: {
+            marginRight: "8px",
+          },
+        },
       },
     },
   },

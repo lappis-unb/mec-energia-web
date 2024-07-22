@@ -14,7 +14,6 @@ export const CurrentBaseCostPlot = ({
   currentContractCostsPlot,
   displayTitle,
 }: Props) => {
-
   return (
     <Chart
       type="bar"
@@ -24,13 +23,13 @@ export const CurrentBaseCostPlot = ({
           {
             label: "Valor de Demanda",
             data: currentContractCostsPlot.demandCostInReais,
-            backgroundColor: "#0A5C67",
+            backgroundColor: theme.palette.graph.baseCostMain,
             pointStyle: "rect",
           },
           {
             label: "Valor de Consumo",
             data: currentContractCostsPlot.consumptionCostInReais,
-            backgroundColor: "#FB736C",
+            backgroundColor: theme.palette.graph.baseCostSecondary,
             pointStyle: "triangle",
           },
         ],

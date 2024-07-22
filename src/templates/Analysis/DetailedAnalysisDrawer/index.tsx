@@ -112,8 +112,9 @@ export const DetailedAnalysisDrawer = ({
 
   const generatedOn = getFormattedDateAndTime(recommendation.generatedOn);
 
-  const documentPrintTitle = `Relatório MEC Energia  ${consumerUnit.name
-    } ${generatedOn.replaceAll("/", "-")}`;
+  const documentPrintTitle = `Relatório MEC Energia  ${
+    consumerUnit.name
+  } ${generatedOn.replaceAll("/", "-")}`;
 
   const isRecommendationGreen =
     recommendation.recommendedContract.tariffFlag === "G";
@@ -896,11 +897,11 @@ export const DetailedAnalysisDrawer = ({
                   <Typography variant="h5"> Recomendação: </Typography>
                   {recommendation.shouldRenewContract ? (
                     <ColoredText color="warning.main">
-                      Ajuste o contrato
+                      Ajustar contrato
                     </ColoredText>
                   ) : (
                     <ColoredText color="primary.main">
-                      Manutenção de contrato
+                      Manter contrato
                     </ColoredText>
                   )}
                 </>
@@ -932,18 +933,18 @@ export const DetailedAnalysisDrawer = ({
 
               {recommendation.energyBillsCount <
                 recommendationSettings.IDEAL_ENERGY_BILLS_FOR_RECOMMENDATION && (
-                  <>
-                    <br />
-                    <Alert
-                      variant="filled"
-                      severity="info"
-                      sx={{ bgcolor: "#242a8e" }}
-                    >
-                      Uma ou mais faturas estão indisponíveis. Isso reduz a
-                      precisão da análise.
-                    </Alert>
-                  </>
-                )}
+                <>
+                  <br />
+                  <Alert
+                    variant="filled"
+                    severity="info"
+                    sx={{ bgcolor: "#242a8e" }}
+                  >
+                    Uma ou mais faturas estão indisponíveis. Isso reduz a
+                    precisão da análise.
+                  </Alert>
+                </>
+              )}
             </DropdownSection>
 
             <DropdownSection
