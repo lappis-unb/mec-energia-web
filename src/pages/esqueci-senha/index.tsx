@@ -5,11 +5,9 @@ import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import Head from "next/head";
 import Image from "next/image";
 import { ResetPasswordRequestPayload } from "@/types/auth";
-import { useMemo, useState } from "react";
-import { useRouter } from "next/router";
+import { useEffect, useMemo, useState } from "react";
 import Footer from "@/components/Footer";
 import { useResetPasswordRequestMutation } from "@/api";
-import SuccessNotification from "@/components/Notification/SuccessNotification";
 
 const defaultValues: ResetPasswordRequestPayload = {
   email: ""
@@ -21,13 +19,10 @@ const ForgotPasswordPage: NextPage = () => {
   const headTitle = useMemo(() => getHeadTitle("Esqueci minha senha"), []);
 
   const [isSuccessMessageVisible, setIsSuccessMessageVisible] = useState(false);
-
-  const {
-    query: { error },
-  } = useRouter();
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
   const form = useForm({ defaultValues });
-  const { control, handleSubmit, setError, clearErrors } = form;
+  const { control, handleSubmit, setError, clearErrors, watch } = form;
 
   const handleOnSubmit: SubmitHandler<ResetPasswordRequestPayload> = async ({ email }) => {
     const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -38,19 +33,26 @@ const ForgotPasswordPage: NextPage = () => {
 
     clearErrors("email");
 
-
     try {
       await ResetPasswordRequest({
         email: email,
       }).unwrap();
 
-      setIsSuccessMessageVisible(true)
     } catch (error) {
-      setIsSuccessMessageVisible(false)
 
       console.error('Erro ao redefinir a senha', error);
+    } finally {
+      setIsSuccessMessageVisible(true);
+      setIsSubmitted(true);
     }
   };
+
+  const emailValue = watch("email");
+
+  useEffect(() => {
+    setIsSubmitted(false);
+    setIsSuccessMessageVisible(false);
+  }, [emailValue]);
 
   return (
     <>
@@ -130,17 +132,9 @@ const ForgotPasswordPage: NextPage = () => {
                 />
               </Box>
 
-              {error && (
-                <Box mt={2}>
-                  <Alert severity="error" variant="filled">
-                    E-mail não cadastrado
-                  </Alert>
-                </Box>
-              )}
-
               <Box mt={2}>
-                <Button disabled={isLoading} type="submit" variant="contained" fullWidth>
-                  {isLoading ? 'Enviando...' : 'Enviar'}
+                <Button disabled={isLoading || isSubmitted} type="submit" variant="contained" fullWidth>
+                  {isLoading ? 'Enviando...' : 'Enviar'} 
                 </Button>
               </Box>
 
@@ -149,7 +143,6 @@ const ForgotPasswordPage: NextPage = () => {
                   <Link href="/">Voltar</Link>
                 </Box>
               </Box>
-              <SuccessNotification />
             </Box>
           </Paper>
         </Box>
