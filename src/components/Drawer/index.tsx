@@ -219,8 +219,8 @@ const Drawer = () => {
           }}
         >
           <Image
-            src="/icons/mec-energia.svg"
-            alt="MEC Energia"
+            src="/icons/logo_mepa_cor_nome.svg"
+            alt="MEPA"
             layout="responsive"
             width="144px"
             height="144px"

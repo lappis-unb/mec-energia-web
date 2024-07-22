@@ -70,10 +70,10 @@ const SignInTemplate = () => {
                 justifyContent="center"
               >
                 <Image
-                  src="/icons/mec-energia.svg"
-                  alt="Logo do MEC Energia"
-                  height="144px"
-                  width="144px"
+                  src="/icons/logo_mepa_cor_nome.svg"
+                  alt="Logo MEPA"
+                  height="250px"
+                  width="250px"
                 />
               </Box>
 
