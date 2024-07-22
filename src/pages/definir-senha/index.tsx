@@ -349,7 +349,9 @@ const DefinePasswordPage: NextPage = () => {
               {mutationError && (
                 <Box mt={2}>
                   <Alert severity="error" variant="filled">
-                    {mutationError.message}
+                    O limite de tempo para cadastrar a senha foi atingido.
+                    <br />
+                    Por segurança, você reberá um novo link por e-mail em 1 hora.
                   </Alert>
                 </Box>
               )}
