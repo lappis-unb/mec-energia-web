@@ -6,10 +6,12 @@ import { ptBR } from "@mui/x-date-pickers";
 declare module "@mui/material/styles" {
   interface Palette {
     highlighted: Palette["primary"];
+    secondaryFocus: string;
   }
 
   interface PaletteOptions {
     highlighted: PaletteOptions["primary"];
+    secondaryFocus?: string;
   }
 }
 
@@ -26,7 +28,7 @@ const theme = createTheme(
         main: "#FAAD10",
       },
       background: {
-        default: "#EEF4F4",
+        default: "#F7F7F7",
         paper: "#fff",
       },
       error: {
@@ -39,6 +41,8 @@ const theme = createTheme(
       highlighted: {
         main: "rgba(10, 92, 103, 0.12)",
       },
+
+      secondaryFocus: "#FAAD101F",
     },
     typography: {
       fontFamily: ["Lexend", "sans-serif"].join(","),
@@ -108,7 +112,7 @@ const theme = createTheme(
           },
           filledWarning: {
             backgroundColor: "#D98A0B",
-            color: "#FFF",
+            color: "#000",
           },
           filledInfo: {
             backgroundColor: "#003A7A",

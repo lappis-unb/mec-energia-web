@@ -39,6 +39,7 @@ import {
   InvoicePayload,
   InvoicesPayload,
 } from "@/types/consumerUnit";
+import theme from "@/theme";
 
 const getMonthFromNumber = (
   month: number,
@@ -427,7 +428,7 @@ const ConsumerUnitInvoiceContentTable = () => {
       marginTop: "0!important",
     },
     "& .MuiDataGrid-row.pending-row": {
-      backgroundColor: "#FAAD101F",
+      backgroundColor: theme.palette.secondaryFocus,
     },
   }));
 
