@@ -79,8 +79,8 @@ export const MeasuredDemandPlot = ({
     {
       label: "Med. Fora Ponta",
       data: recommendation.consumptionHistoryPlot.offPeakMeasuredDemandInKw,
-      backgroundColor: "#0E438C",
-      borderColor: "#0E438C",
+      backgroundColor: theme.palette.graph.measuredDemandMain,
+      borderColor: theme.palette.graph.measuredDemandMain,
       pointStyle: "circle",
       pointRadius: 5,
       pointHoverRadius: 9,
@@ -89,8 +89,8 @@ export const MeasuredDemandPlot = ({
     {
       label: "Med. Fora Ponta",
       data: recommendation.consumptionHistoryPlot.peakMeasuredDemandInKw,
-      backgroundColor: "#296DCC",
-      borderColor: "#296DCC",
+      backgroundColor: theme.palette.graph.measuredDemandSecondary,
+      borderColor: theme.palette.graph.measuredDemandSecondary,
       pointStyle: "triangle",
       pointRadius: 7,
       pointHoverRadius: 11,
@@ -99,8 +99,8 @@ export const MeasuredDemandPlot = ({
     {
       label: "Contrat. Fora Ponta",
       data: contractOffPeakDemands,
-      backgroundColor: "#CC443D",
-      borderColor: "#CC443D",
+      backgroundColor: theme.palette.primary.main,
+      borderColor: theme.palette.primary.main,
       pointStyle: "rect",
       pointRadius: 4,
       pointHoverRadius: 7,
