@@ -21,10 +21,10 @@ export const ConsumerUnitInfo = ({
         bgcolor: "rgba(10, 92, 103, 0.08)",
         border: "1px solid rgba(10, 92, 103, 0.16)",
         borderRadius: 2,
-        p: 2,
+        p: 4,
       }}
     >
-      <Typography variant="h4" mt="8px">{consumerUnitName}</Typography>
+      <Typography variant="h4">{consumerUnitName}</Typography>
       <Typography variant="h6">
         Unidade consumidora: {consumerUnitCode}
       </Typography>

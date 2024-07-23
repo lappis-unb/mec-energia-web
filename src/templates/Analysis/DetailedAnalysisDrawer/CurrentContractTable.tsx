@@ -9,50 +9,34 @@ import {
   TableRow,
 } from "@mui/material";
 import Paper from "@mui/material/Paper";
-import { Subtitle } from "./Subtitle";
-import { GetContractsResponsePayload } from "@/types/contract";
-import { sendFormattedDate } from "@/utils/date";
 
 interface Props {
   recommendationCurrentContract: RecommendationContract;
-  actualContract: GetContractsResponsePayload | undefined;
 }
 
 export const CurrentContractTable = ({
   recommendationCurrentContract: currentContract,
-  actualContract,
 }: Props) => {
   const rows = [
-    { label: "Identificação da Instituição", value: currentContract.university },
-    { label: "Identificação da Distribuidora", value: currentContract.distributor },
-    { label: "Número da unidade consumidora", value: currentContract.consumerUnitCode },
+    { label: "Distribuidora", value: currentContract.distributor },
+    { label: "Instiuição", value: currentContract.university },
+    { label: "Unidade Consumidora", value: currentContract.consumerUnit },
+    { label: "UC código", value: currentContract.consumerUnitCode },
     {
-      label: "Tensão de fornecimento",
+      label: "Tensão primária de distribuição",
       value: currentContract.supplyVoltage + " kV",
     },
+    { label: "Subgrupo", value: currentContract.subgroup },
     {
       label: "Modalidade tarifária",
       value: currentContract.tariffFlag === "B" ? "Azul" : "Verde",
     },
-    { label: "Subgrupo", value: currentContract.subgroup },
     {
-      label: "Demanda contratada no horário de ponta - carga",
+      label: "Demanda contratada atual de ponta",
       value: currentContract.peakDemandInKw + " kW",
     },
     {
-      label: "Demanda contratada no horário fora de ponta - carga",
-      value: currentContract.offPeakDemandInKw + " kW",
-    },
-    {
-      label: "Validade do contrato",
-      value: actualContract?.endDate ? sendFormattedDate(actualContract.endDate) : null,
-    },
-    {
-      label: "Sistema de Geração - Potência instalada",
-      value: currentContract.offPeakDemandInKw + " kW",
-    },
-    {
-      label: "Sistema de Geração - Demanda de geração contratada",
+      label: "Demanda contratada atual fora de ponta",
       value: currentContract.offPeakDemandInKw + " kW",
     },
   ];
@@ -60,10 +44,6 @@ export const CurrentContractTable = ({
   return (
     <>
       <Box>
-        <Subtitle
-          id="Tabela 1"
-          title="Informações características de fornecimento da unidade consumidora"
-        />
         <TableContainer component={Paper} sx={{ boxShadow: 0 }}>
           <Table sx={{ minWidth: 650 }} aria-label="simple table">
             <TableHead
@@ -81,17 +61,15 @@ export const CurrentContractTable = ({
                 "tr:nth-of-type(even)": { bgcolor: "background.default" },
               }}
             >
-              {rows.map((row) => {
-                return row.value && (
-                  <TableRow
-                    key={row.label}
-                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                  >
-                    <TableCell>{row.label}</TableCell>
-                    <TableCell align="left">{row.value}</TableCell>
-                  </TableRow>
-                )
-              })}
+              {rows.map((row) => (
+                <TableRow
+                  key={row.label}
+                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                >
+                  <TableCell>{row.label}</TableCell>
+                  <TableCell align="left">{row.value}</TableCell>
+                </TableRow>
+              ))}
             </TableBody>
           </Table>
         </TableContainer>

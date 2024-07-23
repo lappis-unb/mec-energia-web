@@ -6,15 +6,12 @@ import {
 } from "@mui/material";
 import Paper from "@mui/material/Paper";
 import { GridColDef } from "@mui/x-data-grid";
-import { Subtitle } from "./Subtitle";
 
 interface Props {
   rows: TariffsTableRow[];
-  tariffStartDate: string | null;
-  tariffEndDate: string | null;
 }
 
-export const TariffsTable = ({ rows, tariffStartDate, tariffEndDate }: Props) => {
+export const TariffsTable = ({ rows }: Props) => {
   const copy = [...rows].sort((a, b) => {
     if (a.billingTime > b.billingTime) return -1;
     if (a.billingTime < b.billingTime) return 1;
@@ -36,50 +33,50 @@ export const TariffsTable = ({ rows, tariffStartDate, tariffEndDate }: Props) =>
   const columns: GridColDef<TariffsTableRow>[] = [
     {
       field: "label",
-      headerName: "Tarifa",
+      headerName: "Tipo de tarifa",
       headerAlign: "left",
       align: "left",
       flex: 2,
-      sortable: false,
+      sortable: false
+    },
+    {
+      field: "billingTime",
+      headerClassName: "MuiDataGrid-columnHeaderMain",
+      headerName: "Posto tarifário",
+      headerAlign: "center",
+      align: "center",
+      flex: 1,
+      sortable: false
     },
     {
       field: "blue",
       headerClassName: "MuiDataGrid-columnHeaderMain",
-      headerName: "Valor tarifa Azul",
+      headerName: "Valor tarifa azul",
       headerAlign: "right",
       align: "right",
-      flex: 0.65,
-      sortable: false,
+      flex: 1,
+      sortable: false
     },
     {
       field: "green",
       headerClassName: "MuiDataGrid-columnHeaderMain",
-      headerName: "Valor tarifa Verde",
+      headerName: "Valor tarifa verde",
       headerAlign: "right",
       align: "right",
-      flex: 0.65,
-      sortable: false,
+      flex: 1,
+      sortable: false
     },
   ];
 
   const getDataGridRows = (
-    tariffsTableRow: TariffsTableRow[],
+    tariffsTableRow: TariffsTableRow[]
   ): TariffsTableRow[] => {
-    const reorderedTariffsTableRow = [
-      tariffsTableRow[2],
-      tariffsTableRow[5],
-      tariffsTableRow[0],
-      tariffsTableRow[3],
-      tariffsTableRow[1],
-      tariffsTableRow[4],
-      tariffsTableRow[6],
-    ];
-
-    return reorderedTariffsTableRow.map(
+    return tariffsTableRow.map(
       (row, index) => ({
         ...row,
         id: index,
         label: tariffLabelToPtBr[row.label],
+        billingTime: row.billingTime,
         blue: row.blue,
         green: row.green,
       })
@@ -89,11 +86,8 @@ export const TariffsTable = ({ rows, tariffStartDate, tariffEndDate }: Props) =>
   return (
     <>
       <Box>
-        <Subtitle id="Tabela 2">
-          <span>Tarifas utilizadas para metodologia de cálculo comparativo, com vigência de <strong>{tariffStartDate}</strong> a <strong>{tariffEndDate}</strong></span>
-        </Subtitle>
         <TableContainer component={Paper} sx={{ boxShadow: 0 }}>
-          <StripedDataGrid
+          <StripedDataGrid 
             columns={columns}
             rows={getDataGridRows(tableRows)}
           />

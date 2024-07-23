@@ -8,25 +8,39 @@ import Image from "next/image";
 export const Logos = () => (
   <Box
     display="flex"
-    justifyContent="center"
-    alignItems="center"
-    gap="27px"
-    sx={{ p: 2, marginBottom: "17px" }}
+    justifyContent="space-between"
+    sx={{ p: 2, bgcolor: "primary.main", borderRadius: 2 }}
   >
     <Box>
       <Image
-        src="/icons/marca_UnB_colorida.svg"
-        alt="Logo UnB Básica Horizontal"
-        height="38px"
-        width="151px"
+        src="/icons/lappis.svg"
+        alt="LAPPIS"
+        height="40px"
+        width={`${324 / 2.075}px`}
       />
     </Box>
     <Box>
       <Image
-        src="/icons/marca_governo_colorida.svg"
-        alt="Logo Governo Federal - União e Reconstrução"
-        height="72px"
-        width="161,95px"
+        src="/icons/unb-energia.svg"
+        alt="LAPPIS"
+        height="40px"
+        width={`${324 / 2.075}px`}
+      />
+    </Box>
+    <Box>
+      <Image
+        src="/icons/cgee.svg"
+        alt="LAPPIS"
+        height="40px"
+        width={`${324 / 2.075}px`}
+      />
+    </Box>
+    <Box>
+      <Image
+        src="/icons/mec.svg"
+        alt="LAPPIS"
+        height="40px"
+        width={`${324 / 2.075}px`}
       />
     </Box>
   </Box>

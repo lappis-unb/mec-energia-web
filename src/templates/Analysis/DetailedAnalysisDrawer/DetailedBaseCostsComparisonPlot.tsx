@@ -1,127 +1,135 @@
 import { DetailedContractCostsComparisonPlot } from "@/types/recommendation";
-import { Box } from "@mui/material";
 import { Chart } from "react-chartjs-2";
-import { Subtitle } from "./Subtitle";
 
 interface Props {
   dates: string[][];
   costs: DetailedContractCostsComparisonPlot;
 }
 
-export const DetailedBaseCostsComparisonPlot = ({ dates, costs }: Props) => {
-  return (
-    <Box mt={4}>
-      <Subtitle
-        id="Figura 5"
-        title="Gráfico dos valores de consumo e demanda-carga em reais considerando as condições de contrato propostas"
-      />
-      <Chart
-        type="bar"
-        data={{
-          labels: dates,
-          datasets: [
-            {
-              label: 'Valor de Demanda',
-              data: costs.demandCostInReaisInRecommended,
-              // backgroundColor: '#7C0AC1',
-              backgroundColor: '#CB95EC',
-              pointStyle: 'triangle',
-            },
-            {
-              label: 'Valor de Consumo',
-              data: costs.consumptionCostInReaisInRecommended,
-              backgroundColor: '#003A7A',
-              // backgroundColor: '#729BCA',
-            },
-          ]
-        }}
-        options={{
-          responsive: true,
-          interaction: {
-            intersect: false,
-            mode: 'nearest',
-            axis: 'x',
+export const DetailedBaseCostsComparisonPlot = ({ dates, costs }: Props) => (
+  <Chart
+    type="bar"
+    datasetIdKey="DetailedBaseCostsComparisonPlot"
+    options={{
+      responsive: true,
+      interaction: {
+        intersect: false,
+        mode: "nearest",
+        axis: "x",
+      },
+      plugins: {
+        title: {
+          display: true,
+          text: "Custo-base atual vs. estimado",
+          font: {
+            size: 16,
+            weight: "normal",
           },
-          plugins: {
-            legend: {
-              position: 'bottom',
-              labels: {
-                usePointStyle: true,
-              },
+        },
+        legend: {
+          position: "top",
+          labels: {
+            usePointStyle: true,
+          },
+        },
+        tooltip: {
+          usePointStyle: true,
+          callbacks: {
+            title: function (context) {
+              let title = context[0].label || "";
+              title = title.replace(",", "/");
+              if (context[0].parsed.y == null) {
+                title += " - Indisponível";
+              }
+              return title;
             },
-            tooltip: {
-              usePointStyle: true,
-              xAlign: 'center',
-              yAlign: 'bottom',
-              callbacks: {
-                title: function (context) {
-                  let title = context[0].label || '';
-                  title = title.replace(',', ' ');
-                  if (context[0].parsed.y == null) {
-                    title += ' - Indisponível';
-                  }
-                  return title;
-                },
-                label: function (context) {
-                  if (context.parsed.y == null) {
-                    return null;
-                  } else {
-                    let label = context.dataset.label || '';
-                    label += ': ' + new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(context.parsed.y);
-                    return label;
-                  }
-                },
-                footer: function (tooltipItems) {
-                  if (tooltipItems[0].parsed.y == null || tooltipItems.length <= 1) {
-                    return null
-                  }
+            label: function (context) {
+              if (context.parsed.y == null) {
+                return;
+              } else {
+                let label = context.dataset.label || "";
+                label +=
+                  ": " +
+                  new Intl.NumberFormat("pt-BR", {
+                    style: "currency",
+                    currency: "BRL",
+                  }).format(context.parsed.y);
+                return label;
+              }
+            },
+            footer: function (tooltipItems) {
+              if (
+                tooltipItems[0].parsed.y == null ||
+                tooltipItems.length <= 1
+              ) {
+                return;
+              }
 
-                  let sum = 0;
-                  tooltipItems.forEach(function (tooltipItem) {
-                    sum += tooltipItem.parsed.y;
-                  });
-                  return 'Total: ' + new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(sum);
-                },
-              },
-            },
-            datalabels: {
-              anchor: 'end',
-              align: 'end',
-              rotation: 270,
-              formatter: function (value) {
-                return value == null ? 'Indisponível' : null
-              }
-            }
-          },
-          scales: {
-            x: {
-              stacked: true,
-              grid: {
-                display: false,
-              },
-              ticks: {
-                maxRotation: 0,
-              },
-            },
-            y: {
-              stacked: true,
-              title: {
-                display: true,
-                text: 'R$',
-              },
-              grid: {
-                color: "#C3C3C3",
-              }
+              let sum = 0;
+              tooltipItems.forEach(function (tooltipItem) {
+                sum += tooltipItem.parsed.y;
+              });
+              return (
+                "Total: " +
+                new Intl.NumberFormat("pt-BR", {
+                  style: "currency",
+                  currency: "BRL",
+                }).format(sum)
+              );
             },
           },
-          datasets: {
-            bar: {
-              barPercentage: 1,
-              skipNull: true,
-            },
+        },
+      },
+      scales: {
+        x: {
+          stacked: true,
+          grid: {
+            display: false,
           },
-        }}
-      />
-    </Box>
-  );
-};
+          ticks: {
+            maxRotation: 0,
+          },
+        },
+        y: {
+          stacked: true,
+          title: {
+            display: true,
+            text: "R$",
+          },
+          grid: {
+            color: "#C3C3C3",
+          },
+        },
+      },
+    }}
+    data={{
+      labels: dates,
+      datasets: [
+        {
+          label: "Valor Dem. + Cons. atuais",
+          data: costs.totalCostInReaisInCurrent,
+          backgroundColor: "#CC443D",
+          pointStyle: "circle",
+          stack: "Atual",
+          barPercentage: 0.5,
+        },
+        {
+          label: "Valor Dem. proposta",
+          data: costs.demandCostInReaisInRecommended,
+          backgroundColor: "#0E438C",
+          pointStyle: "rect",
+          stack: "Proposto",
+          barPercentage: 1.1,
+        },
+        {
+          label: "Valor Cons. proposto",
+          data: costs.consumptionCostInReaisInRecommended,
+          backgroundColor: "#F2B63D",
+          pointStyle: "triangle",
+          stack: "Proposto",
+          barPercentage: 1.1,
+        },
+      ],
+    }}
+  />
+);

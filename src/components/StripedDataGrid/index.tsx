@@ -14,7 +14,7 @@ export default function StripedDataGrid(props: DataGridComponents) {
   }));
 
   return (
-    <StripedDataGrid
+    <StripedDataGrid 
       style={{ marginTop: "8px", marginBottom: "8px" }}
       getRowClassName={(params) =>
         params.indexRelativeToCurrentPage % 2 === 0 ? 'even' : 'odd'
