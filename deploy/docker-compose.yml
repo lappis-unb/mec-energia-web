@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  mepa-web:
+    container_name: mepa-web-prod
+    image: mepa-web-prod
+    build:
+      context: ../
+      dockerfile: deploy/Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
+    ports:
+      - 3001:3000
+    environment:
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
+      NEXTAUTH_URL: ${NEXTAUTH_URL}
+      API_URL: ${API_URL}
+    networks:
+      - mepa-network
+    restart: unless-stopped
+
+networks:
+  mepa-network:
+    name: mepa-network
+    external: true
