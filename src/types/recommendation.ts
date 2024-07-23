@@ -106,13 +106,13 @@ export interface RecommendationContract {
 
 export const tariffLabelToPtBr = {
   // Por algum motivo a API não transforma esses campos em camel case
-  peak_tusd_in_reais_per_kw: 'TUSD - Tarifa de uso do sistema de distribuição (R$/MW)',
-  off_peak_tusd_in_reais_per_kw: 'TUSD - Tarifa de uso do sistema de distribuição (R$/MW)',
-  na_tusd_in_reais_per_kw: 'TUSD - Tarifa de uso do sistema de distribuição (R$/MW)',
-  off_peak_te_in_reais_per_mwh: 'TE - Tarifa de energia (R$/MWh)',
-  off_peak_tusd_in_reais_per_mwh: 'TUSD - Tarifa de uso do sistema de distribuição (R$/MWh)',
-  peak_tusd_in_reais_per_mwh: 'TUSD - Tarifa de uso do sistema de distribuição (R$/MWh)',
-  peak_te_in_reais_per_mwh: 'TE - Tarifa de energia (R$/MWh)',
+  peak_te_in_reais_per_mwh: 'Tarifa de energia (TE) ponta (R$/MWh)',
+  off_peak_te_in_reais_per_mwh: 'Tarifa de energia (TE) fora ponta (R$/MWh)',
+  peak_tusd_in_reais_per_mwh: 'Tarifa de uso do sistema de distribuição (TUSD) ponta (R$/MWh)',
+  off_peak_tusd_in_reais_per_mwh: 'Tarifa de uso do sistema de distribuição (TUSD) fora ponta (R$/MWh)',
+  peak_tusd_in_reais_per_kw: 'Tarifa de uso do sistema de distribuição (TUSD) ponta (R$/kW)',
+  off_peak_tusd_in_reais_per_kw: 'Tarifa de uso do sistema de distribuição (TUSD) fora ponta (R$/kW)',
+  na_tusd_in_reais_per_kw: 'Tarifa de uso do sistema de distribuição (TUSD) (R$/kW)',
 }
 
 export interface TariffsTableRow {

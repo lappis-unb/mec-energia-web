@@ -3,7 +3,7 @@ import {
   KeyboardArrowUp as ChevronUp,
 } from "@mui/icons-material";
 import { Box, Button, Card, CardContent, SxProps } from "@mui/material";
-import { ReactNode, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 
 const ChevronButton = ({
   onClick,
@@ -26,8 +26,15 @@ export interface DropdownSectionProps {
   title: ReactNode;
   complementTitle?: ReactNode;
   children: ReactNode;
+  htmlId?: string;
   open?: boolean;
   sx?: SxProps;
+
+  /** 
+   * O tipo não é importante. A ideia é utilizar esse campo para atualizar o
+   * <DropdownSection /> sempre que algum DropdownSection alterar seu estado.
+  */
+  dropdownSectionState: object;
 }
 
 const DropdownSection = ({
@@ -36,10 +43,18 @@ const DropdownSection = ({
   title,
   complementTitle,
   open,
+  htmlId,
+  dropdownSectionState,
 }: DropdownSectionProps) => {
   const [isOpen, setIsOpen] = useState(open);
+
+  useEffect(() => {
+    setIsOpen(open);
+  }, [open, dropdownSectionState]);
+
   return (
     <Card
+      id={htmlId}
       className="dropdown-section"
       sx={{
         p: 1,

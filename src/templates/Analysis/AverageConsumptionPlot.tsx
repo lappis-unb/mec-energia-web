@@ -1,43 +1,62 @@
-import { ContractCostsPlot } from "@/types/recommendation";
-
 import { Chart } from "react-chartjs-2";
 import { Subtitle } from "./DetailedAnalysisDrawer/Subtitle";
 import { Box } from "@mui/material";
+import { ChartDataset } from "chart.js";
 
 interface Props {
     dates: string[][];
-    currentContractCostsPlot: ContractCostsPlot;
+    data: {
+        peakConsumptionInKwh: number[];
+        offPeakConsumptionInKwh: number[];
+    },
+    isGreen: boolean;
 }
 
-export const CurrentBaseCostPlot = ({
+export const AverageConsumptionPlot = ({
     dates,
-    currentContractCostsPlot,
+    data,
+    isGreen,
 }: Props) => {
+    const { peakConsumptionInKwh, offPeakConsumptionInKwh } = data;
+
+    const greenDatasets: ChartDataset[] = [
+        {
+            label: 'Consumo',
+            data: peakConsumptionInKwh,
+            backgroundColor: '#003A7A',
+            borderColor: '#003A7A',
+            pointStyle: 'triangle',
+        },
+    ];
+
+    const blueDatasets: ChartDataset[] = [
+        {
+            label: 'Consumo Ponta',
+            data: peakConsumptionInKwh,
+            backgroundColor: '#003A7A',
+            borderColor: '#003A7A',
+            pointStyle: 'triangle',
+        },
+        {
+            label: 'Consumo Fora Ponta',
+            data: offPeakConsumptionInKwh,
+            backgroundColor: '#729BCA',
+            borderColor: '#729BCA',
+            pointStyle: 'circle',
+        },
+    ];
+
     return (
-        <Box mt={4}>
+        <Box mt={2}>
             <Subtitle
-                id="Figura 1"
-                title="Representação da composição da fatura de energia elétrica da unidade consumidora"
+                id="Figura 2"
+                title="Consumo medido nos horários de ponta e fora de ponta"
             />
             <Chart
                 type="bar"
                 data={{
                     labels: dates,
-                    datasets: [
-                        {
-                            label: 'Valor de Demanda',
-                            data: currentContractCostsPlot.demandCostInReais,
-                            backgroundColor: '#7C0AC1',
-                            // backgroundColor: '#CB95EC',
-                            pointStyle: 'triangle',
-                        },
-                        {
-                            label: 'Valor de Consumo',
-                            data: currentContractCostsPlot.consumptionCostInReais,
-                            // backgroundColor: '#003A7A',
-                            backgroundColor: '#729BCA',
-                        },
-                    ]
+                    datasets: isGreen ? greenDatasets : blueDatasets,
                 }}
                 options={{
                     responsive: true,
@@ -65,28 +84,18 @@ export const CurrentBaseCostPlot = ({
                                         title += ' - Indisponível';
                                     }
                                     return title;
+
                                 },
                                 label: function (context) {
                                     if (context.parsed.y == null) {
                                         return null;
                                     } else {
                                         let label = context.dataset.label || '';
-                                        label += ': ' + new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(context.parsed.y);
+                                        label += ': ' + new Intl.NumberFormat('pt-BR').format(context.parsed.y) + " kWh";
                                         return label;
                                     }
-                                },
-                                footer: function (tooltipItems) {
-                                    if (tooltipItems[0].parsed.y == null || tooltipItems.length <= 1) {
-                                        return null
-                                    }
-
-                                    let sum = 0;
-                                    tooltipItems.forEach(function (tooltipItem) {
-                                        sum += tooltipItem.parsed.y;
-                                    });
-                                    return 'Total: ' + new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(sum);
-                                },
-                            },
+                                }
+                            }
                         },
                         datalabels: {
                             anchor: 'end',
@@ -99,7 +108,6 @@ export const CurrentBaseCostPlot = ({
                     },
                     scales: {
                         x: {
-                            stacked: true,
                             grid: {
                                 display: false,
                             },
@@ -108,10 +116,12 @@ export const CurrentBaseCostPlot = ({
                             },
                         },
                         y: {
-                            stacked: true,
+                            ticks: {
+                                beginAtZero: true
+                            },
                             title: {
                                 display: true,
-                                text: 'R$',
+                                text: 'kWh',
                             },
                             grid: {
                                 color: "#C3C3C3",

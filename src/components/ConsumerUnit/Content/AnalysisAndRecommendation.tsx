@@ -192,6 +192,7 @@ export const AnalysisAndRecommendation = () => {
           recommendation={recommendation}
           dates={recommendation.dates}
           recommendationSettings={recommendationSettings}
+          actualContract={contract}
           onClose={() => setIsDetailedAnalysisOpen(false)}
         />
       )}
