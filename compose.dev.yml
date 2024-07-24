@@ -1,25 +1,24 @@
-version: '3.8'
-
 services:
   mepa-web:
     container_name: mepa-web-dev
     image: mepa-web-dev
     build:
       context: ./
-      dockerfile: Dockerfile
+      target: dev
       args:
         NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
-    ports:
-      - 3000:3000
-    volumes:
-      - ./src:/app/src
-      - ./public:/app/public
-      - /app/node_modules
+        NODE_ENV: 'development'
+    command: npm run dev
     environment:
       NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
       NEXTAUTH_URL: ${NEXTAUTH_URL}
       API_URL: ${API_URL}
-      NODE_ENV: development
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/.next
+    ports:
+      - 3000:3000
     networks:
       - mepa-network
     restart: unless-stopped
