@@ -106,6 +106,7 @@ const DistributorCard = ({
         />
       }
       onActionIconClick={handleActionIconClick}
+      isDashboard = {true}
     />
   );
 };

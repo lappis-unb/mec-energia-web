@@ -190,7 +190,7 @@ const ConsumerUnitCard = ({
     async (event) => {
       const consumerUnitCardActionHtmlButton = (event.target as HTMLButtonElement);
       const applyMultipleRedirectOnlyInPanelPage = router.pathname === '/';
-      
+
       // Verifica se o alvo da ação de clique é diferente do botão de Lançar
       if ((applyMultipleRedirectOnlyInPanelPage || id !== activeConsumerUnit) && consumerUnitCardActionHtmlButton.type !== 'button') {
         router.push(`/uc/${id}`);
@@ -238,6 +238,7 @@ const ConsumerUnitCard = ({
       isFavorite={isFavorite}
       dense={dense}
       selected={selected}
+      isDashboard={true}
       onClick={handleConsumerUnitClick}
       action={
         <ConsumerUnitCardAction
