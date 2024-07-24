@@ -14,6 +14,8 @@ declare module "@mui/material/styles" {
       measuredConsumptionSecondary: string;
       measuredDemandMain: string;
       measuredDemandSecondary: string;
+      measuredDemandPeakLine: string;
+      measuredDemandOffPeakLine: string;
     };
   }
 
@@ -27,6 +29,8 @@ declare module "@mui/material/styles" {
       measuredConsumptionSecondary?: string;
       measuredDemandMain?: string;
       measuredDemandSecondary?: string;
+      measuredDemandPeakLine?: string;
+      measuredDemandOffPeakLine?: string;
     };
   }
 }
@@ -65,6 +69,8 @@ const theme = createTheme(
         measuredConsumptionSecondary: "#296DCC",
         measuredDemandMain: "#7C07C0",
         measuredDemandSecondary: "#D1A3E8",
+        measuredDemandPeakLine: "#008940",
+        measuredDemandOffPeakLine: "#55BF87",
       },
     },
     typography: {

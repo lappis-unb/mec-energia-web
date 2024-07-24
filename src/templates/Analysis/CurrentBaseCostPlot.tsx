@@ -3,6 +3,7 @@ import { ContractCostsPlot } from "@/types/recommendation";
 import { Chart } from "react-chartjs-2";
 import { Subtitle } from "./DetailedAnalysisDrawer/Subtitle";
 import { Box } from "@mui/material";
+import theme from "@/theme";
 
 interface Props {
   dates: string[][];
@@ -27,7 +28,7 @@ export const CurrentBaseCostPlot = ({
             {
               label: "Valor de Demanda",
               data: currentContractCostsPlot.demandCostInReais,
-              backgroundColor: "#7C0AC1",
+              backgroundColor: theme.palette.graph.measuredDemandMain,
               // backgroundColor: '#CB95EC',
               pointStyle: "triangle",
             },

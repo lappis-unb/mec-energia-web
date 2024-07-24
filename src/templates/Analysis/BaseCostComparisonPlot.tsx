@@ -1,3 +1,4 @@
+import theme from "@/theme";
 import { Recommendation } from "@/types/recommendation";
 
 import { Chart } from "react-chartjs-2";
@@ -17,14 +18,15 @@ export const BaseCostComparisonPlot = ({ dates, recommendation }: Props) => {
           {
             label: "Custo-base atual",
             data: recommendation?.costsComparisonPlot.totalCostInReaisInCurrent,
-            backgroundColor: "#0A5C67",
+            backgroundColor: theme.palette.graph.baseCostMain,
             pointStyle: "rect",
             stack: "Atual",
           },
           {
             label: "Custo-base proposto",
-            data: recommendation?.costsComparisonPlot.totalCostInReaisInRecommended,
-            backgroundColor: "#FB736C",
+            data: recommendation?.costsComparisonPlot
+              .totalCostInReaisInRecommended,
+            backgroundColor: theme.palette.graph.baseCostSecondary,
             pointStyle: "circle",
             stack: "Proposto",
           },

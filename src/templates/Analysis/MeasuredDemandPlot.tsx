@@ -3,6 +3,7 @@ import { ChartDataset } from "chart.js";
 import { Chart } from "react-chartjs-2";
 import { Box } from "@mui/material";
 import { Subtitle } from "./DetailedAnalysisDrawer/Subtitle";
+import theme from "@/theme";
 
 interface Props {
   dates: string[][];
@@ -56,8 +57,8 @@ export const MeasuredDemandPlot = ({
         332.64,
         296.1,
       ],
-      backgroundColor: "#7C0AC1",
-      borderColor: "#7C0AC1",
+      backgroundColor: theme.palette.graph.measuredDemandMain,
+      borderColor: theme.palette.graph.measuredDemandMain,
     },
   ];
 
@@ -66,8 +67,8 @@ export const MeasuredDemandPlot = ({
       type: "line",
       label: "Demanda Contratada Ponta",
       data: contractPeakDemands,
-      backgroundColor: "#008940",
-      borderColor: "#008940",
+      backgroundColor: theme.palette.graph.measuredDemandPeakLine,
+      borderColor: theme.palette.graph.measuredDemandPeakLine,
       pointStyle: "rectRot",
       pointRadius: 4,
     },
@@ -75,8 +76,8 @@ export const MeasuredDemandPlot = ({
       type: "line",
       label: "Demanda Contratada Fora Ponta",
       data: contractOffPeakDemands,
-      backgroundColor: "#55BF87",
-      borderColor: "#55BF87",
+      backgroundColor: theme.palette.graph.measuredDemandOffPeakLine,
+      borderColor: theme.palette.graph.measuredDemandOffPeakLine,
       pointStyle: "rect",
       pointRadius: 4,
     },
