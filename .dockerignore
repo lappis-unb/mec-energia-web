@@ -5,8 +5,10 @@ npm-debug.log
 # Ignore local environment files
 .env
 .env.local
+.env.development
 .env.development.local
 .env.test.local
+.env.production
 .env.production.local
 
 # Ignore logs and temporary files
@@ -29,6 +31,8 @@ dist
 # Ignore Docker-specific files
 Dockerfile*
 docker-compose*
+compose*
+*.dockerignore
 
 # Ignore IDE/editor specific files
 .vscode/
