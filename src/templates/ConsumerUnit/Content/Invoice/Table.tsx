@@ -39,6 +39,7 @@ import {
   InvoicePayload,
   InvoicesPayload,
 } from "@/types/consumerUnit";
+import theme from "@/theme";
 
 const getMonthFromNumber = (
   month: number,
@@ -188,8 +189,12 @@ const ConsumerUnitInvoiceContentTable = () => {
       flex: 1,
       valueGetter: ({ row: { id } }) => id,
       renderCell: ({ row }) => renderMonthCell(row),
-      colSpan: ({ row: { isEnergyBillPending } }) => {
+      colSpan: ({ row: { isEnergyBillPending, energyBillId } }) => {
         if (isEnergyBillPending) {
+          return columns.length;
+        }
+
+        if (!energyBillId) {
           return columns.length;
         }
       },
@@ -427,7 +432,7 @@ const ConsumerUnitInvoiceContentTable = () => {
       marginTop: "0!important",
     },
     "& .MuiDataGrid-row.pending-row": {
-      backgroundColor: "#FAAD101F",
+      backgroundColor: theme.palette.secondaryFocus,
     },
   }));
 

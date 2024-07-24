@@ -11,6 +11,7 @@ const Card = ({
   dense,
   variant,
   isFavorite,
+  isDashboard,
   action,
   actionIcon,
   onClick,
@@ -35,11 +36,11 @@ const Card = ({
       <Box
         display="flex"
         flexDirection="column"
-        justifyContent="space-between"
         height="100%"
+        sx={{ justifyContent: !shouldShowFavoriteIconButton && isDashboard ? "flex-end" : "space-between" }}
       >
-        <Box display="flex" minHeight="30px">
-          {shouldShowFavoriteIconButton && (
+        {shouldShowFavoriteIconButton && (
+          <Box display="flex" minHeight="30px">
             <IconButton
               edge="start"
               sx={{
@@ -50,9 +51,8 @@ const Card = ({
             >
               {isFavorite ? <StarRoundedIcon /> : <StarOutlineRoundedIcon />}
             </IconButton>
-          )}
-        </Box>
-
+          </Box>
+        )}
 
         <Box display="flex" flexDirection="column" justifyContent="end">
           <Box
@@ -67,7 +67,6 @@ const Card = ({
               fontSize="20px"
               lineHeight="24px"
               minWidth={150}
-              minHeight={48}
             >
               {name}
             </Typography>

@@ -8,12 +8,12 @@ interface Props {
   costs: DetailedContractCostsComparisonPlot;
 }
 
-export const DetailedBaseCostsComparisonPlot = ({ dates, costs }: Props) => {
+export const ComparativeScenarioCurrentNewContractPlot = ({ dates, costs }: Props) => {
   return (
     <Box mt={4}>
       <Subtitle
-        id="Figura 5"
-        title="Gráfico dos valores de consumo e demanda-carga em reais considerando as condições de contrato propostas"
+        id="Figura 6"
+        title="Gráfico comparativo considerando o contrato atual e o contrato proposto"
       />
       <Chart
         type="bar"
@@ -21,17 +21,16 @@ export const DetailedBaseCostsComparisonPlot = ({ dates, costs }: Props) => {
           labels: dates,
           datasets: [
             {
-              label: 'Valor de Demanda',
-              data: costs.demandCostInReaisInRecommended,
-              // backgroundColor: '#7C0AC1',
-              backgroundColor: '#CB95EC',
-              pointStyle: 'triangle',
+              label: 'Consumo + Demanda atuais',
+              data: costs.totalCostInReaisInCurrent,
+              backgroundColor: '#55BF87',
+              pointStyle: 'rect',
             },
             {
-              label: 'Valor de Consumo',
-              data: costs.consumptionCostInReaisInRecommended,
-              backgroundColor: '#003A7A',
-              // backgroundColor: '#729BCA',
+              label: 'Consumo + Demanda propostos',
+              data: costs.consumptionCostInReaisInRecommended.map((num, index) => num + costs.demandCostInReaisInRecommended[index]),
+              backgroundColor: '#EE8F84',
+              pointStyle: 'circle',
             },
           ]
         }}
@@ -71,18 +70,7 @@ export const DetailedBaseCostsComparisonPlot = ({ dates, costs }: Props) => {
                     return label;
                   }
                 },
-                footer: function (tooltipItems) {
-                  if (tooltipItems[0].parsed.y == null || tooltipItems.length <= 1) {
-                    return null
-                  }
-
-                  let sum = 0;
-                  tooltipItems.forEach(function (tooltipItem) {
-                    sum += tooltipItem.parsed.y;
-                  });
-                  return 'Total: ' + new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(sum);
-                },
-              },
+              }
             },
             datalabels: {
               anchor: 'end',
@@ -95,7 +83,6 @@ export const DetailedBaseCostsComparisonPlot = ({ dates, costs }: Props) => {
           },
           scales: {
             x: {
-              stacked: true,
               grid: {
                 display: false,
               },
@@ -104,7 +91,6 @@ export const DetailedBaseCostsComparisonPlot = ({ dates, costs }: Props) => {
               },
             },
             y: {
-              stacked: true,
               title: {
                 display: true,
                 text: 'R$',

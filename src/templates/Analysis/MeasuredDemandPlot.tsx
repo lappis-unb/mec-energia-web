@@ -1,33 +1,26 @@
-import theme from "@/theme";
 import { Recommendation } from "@/types/recommendation";
 import { ChartDataset } from "chart.js";
 import { Chart } from "react-chartjs-2";
-import { findMaxValue } from "./findMaxValue";
+import { Box } from "@mui/material";
+import { Subtitle } from "./DetailedAnalysisDrawer/Subtitle";
 
 interface Props {
   dates: string[][];
   recommendation: Recommendation;
-  displayTitle?: boolean;
   isGreen?: boolean;
 }
 
 export const MeasuredDemandPlot = ({
   dates,
   recommendation,
-  displayTitle,
   isGreen,
 }: Props) => {
-  const maxValue = findMaxValue([
-    recommendation.consumptionHistoryPlot.offPeakMeasuredDemandInKw,
-    recommendation.consumptionHistoryPlot.peakMeasuredDemandInKw,
-    [recommendation.currentContract.peakDemandInKw],
-    [recommendation.currentContract.offPeakDemandInKw],
-  ]);
-
-  const missingData =
-    recommendation.consumptionHistoryPlot.offPeakMeasuredDemandInKw.map((n) =>
-      n === null ? maxValue * 1.2 : null
-    ) as number[];
+  // const maxValue = findMaxValue([
+  //   recommendation.consumptionHistoryPlot.offPeakMeasuredDemandInKw,
+  //   recommendation.consumptionHistoryPlot.peakMeasuredDemandInKw,
+  //   [recommendation.currentContract.peakDemandInKw],
+  //   [recommendation.currentContract.offPeakDemandInKw],
+  // ]);
 
   const contractPeakDemands = Array(12).fill(
     recommendation.currentContract.peakDemandInKw
@@ -38,178 +31,168 @@ export const MeasuredDemandPlot = ({
 
   const greenDatasets: ChartDataset[] = [
     {
-      label: "Med. Fora Ponta",
-      data: recommendation.consumptionHistoryPlot.offPeakMeasuredDemandInKw,
-      backgroundColor: theme.palette.graph.measuredDemandMain,
-      borderColor: theme.palette.graph.measuredDemandMain,
-      pointStyle: "circle",
-      pointRadius: 5,
-      pointHoverRadius: 9,
-    },
-    {
-      label: "Med. Ponta",
-      data: recommendation.consumptionHistoryPlot.peakMeasuredDemandInKw,
-      backgroundColor: theme.palette.graph.measuredDemandSecondary,
-      borderColor: theme.palette.graph.measuredDemandSecondary,
-      pointStyle: "triangle",
-      pointRadius: 7,
-      pointHoverRadius: 11,
-    },
-    {
-      label: "Contratada",
-      data: contractPeakDemands,
-      backgroundColor: theme.palette.primary.main,
-      borderColor: theme.palette.primary.main,
+      type: "line",
+      label: "Demanda Contratada",
+      data: [220, 220, 220, 220, 220, 220, 220, 220, 220, 220, 220, 220],
+      backgroundColor: "#008940",
+      borderColor: "#008940",
       pointStyle: "rect",
       pointRadius: 4,
-      pointHoverRadius: 7,
     },
     {
-      label: "Indisponível",
-      data: missingData,
       type: "bar",
-      backgroundColor: "#F5F5F5",
-      borderColor: "#C3C3C3",
-      borderWidth: 1,
-      pointStyle: "star",
+      label: "Demanda Medida",
+      data: [
+        152.46,
+        141.12,
+        294.89,
+        null,
+        260.82,
+        217.98,
+        153.72,
+        207.9,
+        313.74,
+        309.96,
+        332.64,
+        296.1,
+      ],
+      backgroundColor: "#7C0AC1",
+      borderColor: "#7C0AC1",
     },
   ];
 
   const blueDatasets: ChartDataset[] = [
     {
-      label: "Med. Fora Ponta",
-      data: recommendation.consumptionHistoryPlot.offPeakMeasuredDemandInKw,
-      backgroundColor: theme.palette.graph.measuredDemandMain,
-      borderColor: theme.palette.graph.measuredDemandMain,
-      pointStyle: "circle",
-      pointRadius: 5,
-      pointHoverRadius: 9,
-      type: "line" as const,
-    },
-    {
-      label: "Med. Fora Ponta",
-      data: recommendation.consumptionHistoryPlot.peakMeasuredDemandInKw,
-      backgroundColor: theme.palette.graph.measuredDemandSecondary,
-      borderColor: theme.palette.graph.measuredDemandSecondary,
-      pointStyle: "triangle",
-      pointRadius: 7,
-      pointHoverRadius: 11,
-      type: "line" as const,
-    },
-    {
-      label: "Contrat. Fora Ponta",
-      data: contractOffPeakDemands,
-      backgroundColor: theme.palette.primary.main,
-      borderColor: theme.palette.primary.main,
-      pointStyle: "rect",
-      pointRadius: 4,
-      pointHoverRadius: 7,
-    },
-    {
-      label: "Contrat. Ponta",
+      type: "line",
+      label: "Demanda Contratada Ponta",
       data: contractPeakDemands,
-      backgroundColor: "#FB736C",
-      borderColor: "#FB736C",
+      backgroundColor: "#008940",
+      borderColor: "#008940",
       pointStyle: "rectRot",
       pointRadius: 4,
-      pointHoverRadius: 7,
     },
     {
-      label: "Indisponível",
-      data: missingData,
-      type: "bar" as const,
-      backgroundColor: "#F5F5F5",
-      borderColor: "#C3C3C3",
-      borderWidth: 1,
-      pointStyle: "star",
+      type: "line",
+      label: "Demanda Contratada Fora Ponta",
+      data: contractOffPeakDemands,
+      backgroundColor: "#55BF87",
+      borderColor: "#55BF87",
+      pointStyle: "rect",
+      pointRadius: 4,
+    },
+    {
+      type: "bar",
+      label: "Demanda Medida Ponta",
+      data: recommendation.consumptionHistoryPlot.peakMeasuredDemandInKw,
+      backgroundColor: "#7C0AC1",
+      borderColor: "#7C0AC1",
+      pointStyle: "triangle",
+    },
+    {
+      type: "bar",
+      label: "Demanda Medida Fora Ponta",
+      data: recommendation.consumptionHistoryPlot.offPeakMeasuredDemandInKw,
+      backgroundColor: "#CB95EC",
+      borderColor: "#CB95EC",
+      pointStyle: "circle",
     },
   ];
 
   return (
-    <Chart
-      type="line"
-      datasetIdKey="measured-demand"
-      options={{
-        responsive: true,
-        interaction: {
-          intersect: false,
-          mode: "nearest",
-          axis: "x",
-        },
-        plugins: {
-          title: {
-            display: displayTitle,
-            text: "Demanda - Contrato atual",
-            font: {
-              family: theme.typography.fontFamily,
-              size: 16,
-            },
+    <Box mt={4}>
+      <Subtitle
+        id="Figura 3"
+        title="Gráfico comparativo entre a demanda contratada - carga e os 
+          valores de demanda medidas - carga nos horários de ponta e fora 
+          de ponta"
+      />
+      <Chart
+        type="line"
+        datasetIdKey="measured-demand"
+        data={{
+          labels: dates,
+          datasets: isGreen ? greenDatasets : blueDatasets,
+        }}
+        options={{
+          responsive: true,
+          interaction: {
+            intersect: false,
+            mode: "nearest",
+            axis: "x",
           },
-          legend: {
-            position: "top",
-            labels: {
+          plugins: {
+            legend: {
+              position: "bottom",
+              labels: {
+                usePointStyle: true,
+              },
+            },
+            tooltip: {
               usePointStyle: true,
-            },
-          },
-          tooltip: {
-            usePointStyle: true,
-            callbacks: {
-              title: function (context) {
-                const title = context[0].label || "";
-                return title.replace(",", "/");
-              },
-              label: function (context) {
-                let label = context.dataset.label || "";
-
-                if (label == "Indisponível") {
-                  if (context.parsed.y == null) {
-                    return;
+              xAlign: "center",
+              yAlign: "bottom",
+              callbacks: {
+                title: function (context) {
+                  let title = context[0].label || "";
+                  title = title.replace(",", " ");
+                  if (context[0].parsed.y == null) {
+                    title += " - Indisponível";
                   }
-                  return "Informações indisponíveis";
-                }
-                if (label) {
-                  label = "Consumo " + label + ": ";
-                }
-                if (context.parsed.y !== null) {
-                  label +=
-                    new Intl.NumberFormat("pt-BR").format(context.parsed.y) +
-                    " kWh";
-                }
-
-                return label;
+                  return title;
+                },
+                label: function (context) {
+                  const label = context.dataset.label || "";
+                  let suffix = "";
+                  if (context.parsed.y != null) {
+                    suffix =
+                      new Intl.NumberFormat("pt-BR").format(context.parsed.y) +
+                      " kW";
+                  } else {
+                    suffix = "Indisponível";
+                  }
+                  return label + ": " + suffix;
+                },
+              },
+            },
+            datalabels: {
+              anchor: "end",
+              align: "end",
+              rotation: 270,
+              formatter: function (value) {
+                return value == null ? "Indisponível" : null;
               },
             },
           },
-        },
-        scales: {
-          x: {
-            grid: {
-              display: false,
+          scales: {
+            x: {
+              grid: {
+                display: false,
+              },
+              ticks: {
+                maxRotation: 0,
+              },
             },
-            ticks: {
-              maxRotation: 0,
+            y: {
+              ticks: {
+                beginAtZero: true,
+              },
+              title: {
+                display: true,
+                text: "kW",
+              },
+              grid: {
+                color: "#C3C3C3",
+              },
             },
           },
-          y: {
-            title: {
-              display: true,
-              text: "kWh",
-            },
-            grid: {
-              color: "#C3C3C3",
+          datasets: {
+            bar: {
+              barPercentage: 1,
+              skipNull: true,
             },
           },
-        },
-        datasets: {
-          bar: {
-            barPercentage: 1.2,
-          },
-        },
-      }}
-      data={{
-        labels: dates,
-        datasets: isGreen ? greenDatasets : blueDatasets,
-      }}
-    />
+        }}
+      />
+    </Box>
   );
 };

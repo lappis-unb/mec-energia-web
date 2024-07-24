@@ -44,7 +44,7 @@ const theme = createTheme(
         main: "#FAAD10",
       },
       background: {
-        default: "#EEF4F4",
+        default: "#F7F7F7",
         paper: "#fff",
       },
       error: {
@@ -135,7 +135,7 @@ const theme = createTheme(
           },
           filledWarning: {
             backgroundColor: "#D98A0B",
-            color: "#FFF",
+            color: "#000",
           },
           filledInfo: {
             backgroundColor: "#003A7A",

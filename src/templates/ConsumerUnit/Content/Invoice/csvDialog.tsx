@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   Box,
   Button,
@@ -48,8 +48,7 @@ const CsvDialog: React.FC<CsvDialogProps> = ({
     setIsInvalidFile(false);
     if (rejectedFiles.length > 0) {
       setIsInvalidFile(true);
-    }
-    else {
+    } else {
       setSelectedFile(acceptedFiles[0]);
     }
   };
@@ -58,7 +57,16 @@ const CsvDialog: React.FC<CsvDialogProps> = ({
     onDrop,
     disabled: !!selectedFile,
     accept: {
-      "text/csv/xslx": [".csv", ".xls", ".xlsx", ".xlsm", ".xlsb", ".odf", ".ods", ".odt"]
+      "text/csv/xslx": [
+        ".csv",
+        ".xls",
+        ".xlsx",
+        ".xlsm",
+        ".xlsb",
+        ".odf",
+        ".ods",
+        ".odt",
+      ],
     },
     multiple: false,
     noClick: true,
@@ -85,7 +93,7 @@ const CsvDialog: React.FC<CsvDialogProps> = ({
   ) => {
     event?.preventDefault();
     try {
-      const session = await getSession()
+      const session = await getSession();
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/energy-bills/download-${file}-model/`,
         {
@@ -120,6 +128,12 @@ const CsvDialog: React.FC<CsvDialogProps> = ({
     setHelpTextClicked(false);
     handleCloseCsvDialog();
   };
+  useEffect(() => {
+    if (!isCsvDialogOpen && !isLoading && !isError) {
+      handleFileRemove();
+      setHelpTextClicked(false);
+    }
+  }, [isCsvDialogOpen, handleFileRemove, isLoading, isError]);
 
   return (
     <Dialog
@@ -140,7 +154,9 @@ const CsvDialog: React.FC<CsvDialogProps> = ({
         paddingRight={3}
       >
         <DialogTitle>Importar planilha</DialogTitle>
-        <Typography variant="body2" sx={{ marginLeft: 20 }}>Modelos: </Typography>
+        <Typography variant="body2" sx={{ marginLeft: 20 }}>
+          Modelos:{" "}
+        </Typography>
         <Link
           component="button"
           onClick={(event) => handleDownloadClick(event, "xlsx")}
@@ -151,9 +167,18 @@ const CsvDialog: React.FC<CsvDialogProps> = ({
             marginLeft: "auto",
           }}
         >
-          <Box display="flex" alignItems="center" justifyContent="center" xs={{}}>
-            <DescriptionRoundedIcon style={{ marginLeft: 2, marginRight: 4, fontSize: 19 }} />
-            <Typography sx={{ fontSize: "13px", fontWeight: 600 }}>Excel</Typography>
+          <Box
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+            xs={{}}
+          >
+            <DescriptionRoundedIcon
+              style={{ marginLeft: 2, marginRight: 4, fontSize: 19 }}
+            />
+            <Typography sx={{ fontSize: "13px", fontWeight: 600 }}>
+              Excel
+            </Typography>
           </Box>
         </Link>
         <Link
@@ -167,11 +192,15 @@ const CsvDialog: React.FC<CsvDialogProps> = ({
           }}
         >
           <Box display="flex" alignItems="center" justifyContent="center">
-            <DescriptionRoundedIcon style={{ marginLeft: 2, marginRight: 4, fontSize: 19 }} />
-            <Typography sx={{ fontSize: "13px", fontWeight: 600 }}>CSV</Typography>
+            <DescriptionRoundedIcon
+              style={{ marginLeft: 2, marginRight: 4, fontSize: 19 }}
+            />
+            <Typography sx={{ fontSize: "13px", fontWeight: 600 }}>
+              CSV
+            </Typography>
           </Box>
         </Link>
-      </Box >
+      </Box>
       <DialogContent
         sx={{
           paddingTop: "8px",
@@ -183,34 +212,54 @@ const CsvDialog: React.FC<CsvDialogProps> = ({
           alignItems: "center",
         }}
       >
-        <Box pb={helpTextClicked ? 0 : 2} display={isDragActive ? "none" : "block"}>
+        <Box
+          pb={helpTextClicked ? 0 : 2}
+          display={isDragActive ? "none" : "block"}
+        >
           <Typography variant="body1" color="textSecondary">
             Importe uma planilha para lançar várias faturas de uma só vez.{" "}
-            {!helpTextClicked && <span
-              style={{
-                cursor: "pointer",
-                color: theme.palette.primary.main,
-                textDecoration: "underline",
-              }}
-              onClick={handleHelpTextClick}
-            >
-              Saiba como fazer
-            </span>
-            }
-          </Typography >
+            {!helpTextClicked && (
+              <span
+                style={{
+                  cursor: "pointer",
+                  color: theme.palette.primary.main,
+                  textDecoration: "underline",
+                }}
+                onClick={handleHelpTextClick}
+              >
+                Saiba como fazer
+              </span>
+            )}
+          </Typography>
         </Box>
 
         {helpTextClicked && !isDragActive ? (
           <Box pb={2}>
-            <Typography variant="body1" color="black" marginLeft="24px" marginRight="24px" sx={{ opacity: "87%", fontSize: "16px", mt: "-8px", lineHeight: "28px" }}>
+            <Typography
+              variant="body1"
+              color="black"
+              marginLeft="24px"
+              marginRight="24px"
+              sx={{
+                opacity: "87%",
+                fontSize: "16px",
+                mt: "-8px",
+                lineHeight: "28px",
+              }}
+            >
               <ol>
                 <li>Baixe a planilha modelo em um dos formatos acima.</li>
                 <li> Abra a planilha modelo.</li>
-                <li>Insira os dados das faturas sem alterar os cabeçalhos ou a
-                  ordem das colunas. </li>
+                <li>
+                  Insira os dados das faturas sem alterar os cabeçalhos ou a
+                  ordem das colunas.{" "}
+                </li>
                 <li>Grave o arquivo mantendo o mesmo formato. </li>
 
-                <li>Arraste o arquivo até aqui, ou use o botão “Selecionar” abaixo.{" "}</li>
+                <li>
+                  Arraste o arquivo até aqui, ou use o botão “Selecionar”
+                  abaixo.{" "}
+                </li>
                 <li>Por fim, clique em “Importar”. </li>
               </ol>
             </Typography>
@@ -224,7 +273,9 @@ const CsvDialog: React.FC<CsvDialogProps> = ({
           p={4}
           textAlign="center"
           bgcolor={selectedFile && !isDragActive ? "inherit" : "#cedee1"}
-          borderColor={selectedFile && !isDragActive ? "none" : theme.palette.primary.main}
+          borderColor={
+            selectedFile && !isDragActive ? "none" : theme.palette.primary.main
+          }
           display="flex"
           alignItems="center"
           justifyContent="center"
@@ -241,7 +292,9 @@ const CsvDialog: React.FC<CsvDialogProps> = ({
           <input {...getInputProps()} />
           {!selectedFile || isDragActive ? (
             <Typography variant="h6" sx={{ fontWeight: 500 }} color={"#0A5C67"}>
-              {isDragActive ? "Solte o arquivo aqui" : "Arraste o arquivo até aqui"}
+              {isDragActive
+                ? "Solte o arquivo aqui"
+                : "Arraste o arquivo até aqui"}
             </Typography>
           ) : (
             <Box display="flex" alignItems="center" justifyContent="center">
@@ -254,21 +307,40 @@ const CsvDialog: React.FC<CsvDialogProps> = ({
                 padding="12px 13px"
                 marginRight="8px"
                 bgcolor={isError ? "#f7e8e6" : "#e3f2fd"}
-                borderColor={isError ? theme.palette.error.main : theme.palette.primary.main}
+                borderColor={
+                  isError
+                    ? theme.palette.error.main
+                    : theme.palette.primary.main
+                }
               >
                 {isLoading && (
                   <CircularProgress
                     size={16}
-                    style={{ marginLeft: 8, marginRight: 8, color: theme.palette.primary.main }}
+                    style={{
+                      marginLeft: 8,
+                      marginRight: 8,
+                      color: theme.palette.primary.main,
+                    }}
                   />
                 )}
                 {isError && (
                   <ReportRounded
                     size={10}
-                    style={{ marginLeft: 6, marginRight: 6, color: theme.palette.error.main }}
+                    style={{
+                      marginLeft: 6,
+                      marginRight: 6,
+                      color: theme.palette.error.main,
+                    }}
                   />
                 )}
-                <Typography variant="body2" color={isError ? theme.palette.error.main : theme.palette.primary.main}>
+                <Typography
+                  variant="body2"
+                  color={
+                    isError
+                      ? theme.palette.error.main
+                      : theme.palette.primary.main
+                  }
+                >
                   {selectedFile.name}
                 </Typography>
               </Box>
@@ -285,19 +357,24 @@ const CsvDialog: React.FC<CsvDialogProps> = ({
           )}
         </Box>
 
-        {isInvalidFile && !isDragActive &&
+        {isInvalidFile && !isDragActive && (
           <Alert
             severity="error"
             variant="filled"
             icon={<ErrorOutlineIcon style={{ color: "#FFF" }} />}
-            sx={{ cursos: 'pointer', whiteSpace: 'pre-line', mt: 1 }}
+            sx={{ cursos: "pointer", whiteSpace: "pre-line", mt: 1 }}
           >
             Somente arquivos Excel e Csv são aceitos
           </Alert>
-        }
+        )}
         {!selectedFile && !isDragActive && (
           <>
-            <Typography variant="body2" color="textSecondary" align="center" sx={{ mt: 1 }}>
+            <Typography
+              variant="body2"
+              color="textSecondary"
+              align="center"
+              sx={{ mt: 1 }}
+            >
               ou
             </Typography>
             <Box display="flex" justifyContent="center" mt={1}>
@@ -307,12 +384,14 @@ const CsvDialog: React.FC<CsvDialogProps> = ({
                 style={{ display: "none" }}
                 onChange={(event) => {
                   const file = event.target.files?.[0];
-                  const extension = file?.name.substring((file.name).lastIndexOf('.'))
-                  const acceptedFilesCsv = ".csv, .xls, .xlsx, .xlsm, .xlsb, .odf, .ods, .odt";
+                  const extension = file?.name.substring(
+                    file.name.lastIndexOf(".")
+                  );
+                  const acceptedFilesCsv =
+                    ".csv, .xls, .xlsx, .xlsm, .xlsb, .odf, .ods, .odt";
                   if (!acceptedFilesCsv.includes(extension)) {
                     setIsInvalidFile(true);
-                  }
-                  else if (file) {
+                  } else if (file) {
                     setSelectedFile(file);
                     setIsInvalidFile(false);
                   }
@@ -345,26 +424,22 @@ const CsvDialog: React.FC<CsvDialogProps> = ({
                 </Box>
               </label>
             </Box>
-
           </>
-        )
-        }
-        {
-          isError ?
-            <Alert
-              severity="error"
-              variant="filled"
-              title="Arquivo não segue o modelo"
-              icon={<ErrorOutlineIcon style={{ color: "#FFF" }} />}
-              sx={{ cursor: 'pointer', whiteSpace: 'pre-line', mt: 1 }}
-            >
-              <AlertTitle>Arquivo não segue o modelo</AlertTitle>
-              Caracteres como vírgula e ponto-e-vírgula podem afetar o formato.
-              Corrija a formatação e tente novamente.
-            </Alert>
-            : null
-        }
-      </DialogContent >
+        )}
+        {isError ? (
+          <Alert
+            severity="error"
+            variant="filled"
+            title="Arquivo não segue o modelo"
+            icon={<ErrorOutlineIcon style={{ color: "#FFF" }} />}
+            sx={{ cursor: "pointer", whiteSpace: "pre-line", mt: 1 }}
+          >
+            <AlertTitle>Arquivo não segue o modelo</AlertTitle>
+            Caracteres como vírgula e ponto-e-vírgula podem afetar o formato.
+            Corrija a formatação e tente novamente.
+          </Alert>
+        ) : null}
+      </DialogContent>
       <DialogActions style={{ display: isDragActive ? "none" : "flex" }}>
         <Button onClick={handleClearCsvDialogAndClose}>Cancelar</Button>
         <Button
@@ -374,7 +449,7 @@ const CsvDialog: React.FC<CsvDialogProps> = ({
           Importar
         </Button>
       </DialogActions>
-    </Dialog >
+    </Dialog>
   );
 };
 
