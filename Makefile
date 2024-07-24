@@ -31,8 +31,8 @@ clean: confirm
 # Temp: testes com backend remoto
 
 build-test:
-	docker compose -f $(COMPOSE_FILE_TEST) --env-file $(ENV_TEST) -f compose.remote.yml up --build -d --remove-orphans
+	docker compose -f $(COMPOSE_FILE_TEST) --env-file $(ENV_TEST) up --build -d --remove-orphans
 up-test:
-	docker compose -f $(COMPOSE_FILE_TEST) --env-file $(ENV_TEST) -f compose.remote.yml up -d
+	docker compose -f $(COMPOSE_FILE_TEST) --env-file $(ENV_TEST) up -d
 down-test:
-	docker compose -f $(COMPOSE_FILE_TEST) --env-file $(ENV_TEST) -f compose.remote.yml down
+	docker compose -f $(COMPOSE_FILE_TEST) --env-file $(ENV_TEST) down

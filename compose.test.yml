@@ -1,0 +1,18 @@
+services:
+  mepa-web:
+    container_name: mepa-web-test
+    image: mepa-web-test
+    build:
+      context: ./
+      args:
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
+        NODE_ENV: 'production'
+    ports:
+      - 3002:3000
+    env_file:
+      - ./.envs/.env.test
+    environment:
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
+      NEXTAUTH_URL: ${NEXTAUTH_URL}
+      API_URL: ${API_URL}
+    restart: unless-stopped
