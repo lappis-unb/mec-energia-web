@@ -70,7 +70,7 @@ const SignInTemplate = () => {
                 justifyContent="center"
               >
                 <Image
-                  src="/icons/logo_mepa_cor_nome.svg"
+                  src="/icons/logo_mepa_nome.svg"
                   alt="Logo MEPA"
                   height="250px"
                   width="250px"

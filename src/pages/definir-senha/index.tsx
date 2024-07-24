@@ -229,7 +229,7 @@ const DefinePasswordPage: NextPage = () => {
                 justifyContent="center"
               >
                 <Image
-                  src="/icons/logo_mepa_cor_nome.svg"
+                  src="/icons/logo_mepa_nome.svg"
                   alt="Logo do MEPA"
                   height="250px"
                   width="250px"

@@ -84,7 +84,7 @@ const ForgotPasswordPage: NextPage = () => {
                 justifyContent="center"
               >
                 <Image
-                  src="/icons/logo_mepa_cor_nome.svg"
+                  src="/icons/logo_mepa_nome.svg"
                   alt="Logo MEPA"
                   height="250px"
                   width="250px"
@@ -134,7 +134,7 @@ const ForgotPasswordPage: NextPage = () => {
 
               <Box mt={2}>
                 <Button disabled={isLoading || isSubmitted} type="submit" variant="contained" fullWidth>
-                  {isLoading ? 'Enviando...' : 'Enviar'} 
+                  {isLoading ? 'Enviando...' : 'Enviar'}
                 </Button>
               </Box>
 

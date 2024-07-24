@@ -229,7 +229,7 @@ const RedefinePasswordPage: NextPage = () => {
                                 justifyContent="center"
                             >
                                 <Image
-                                    src="/icons/logo_mepa_cor_nome.svg"
+                                    src="/icons/logo_mepa_nome.svg"
                                     alt="Logo MEPA"
                                     height="250px"
                                     width="250px"
@@ -350,7 +350,7 @@ const RedefinePasswordPage: NextPage = () => {
                                 <Box mt={2}>
                                     <Alert severity="error" variant="filled">
                                         O limite de tempo para cadastrar a senha foi atingido.
-                                        <br/>
+                                        <br />
                                         Por segurança, você reberá um novo link por e-mail em 1 hora.
                                     </Alert>
                                 </Box>
