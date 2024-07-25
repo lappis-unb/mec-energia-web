@@ -14,10 +14,9 @@ services:
     environment:
       NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
       NEXTAUTH_URL: ${NEXTAUTH_URL}
-      API_URL: ${API_URL}
     networks:
       - mepa-network
-    restart: unless-stopped
+    restart: always
 
 networks:
   mepa-network:
