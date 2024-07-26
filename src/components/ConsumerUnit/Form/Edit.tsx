@@ -559,7 +559,7 @@ const ConsumerUnitEditForm = () => {
               rules={{
                 required: "Preencha este campo",
                 validate: (v) =>
-                  isInSomeSubgroups(v, subgroupsList?.subgroups || []),
+                  isInSomeSubgroups(v, subgroupsList?.subgroups || []) && isValueGreaterThenZero(v),
               }}
               render={({
                 field: { onChange, value },
