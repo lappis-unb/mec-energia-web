@@ -1,19 +1,20 @@
 services:
   mepa-web:
-    container_name: mepa-web-prod
-    image: mepa-web-prod
+    container_name: mepa-web
+    image: mepa-web:${TAG:-latest-prod}
     build:
       context: ./
       args:
         NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
-        NODE_ENV: 'production'
+        NODE_ENV: ${NODE_ENV:-production}
     ports:
-      - 3001:3000
+      - ${PORT}:${PORT}
     env_file:
       - ./.envs/.env.prod
     environment:
       NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
       NEXTAUTH_URL: ${NEXTAUTH_URL}
+      API_URL: ${API_URL}
     networks:
       - mepa-network
     restart: always
