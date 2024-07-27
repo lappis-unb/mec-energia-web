@@ -1,16 +1,16 @@
 services:
   mepa-web:
-    container_name: mepa-web-dev
-    image: mepa-web-dev
+    container_name: mepa-web
+    image: mepa-web:${TAG:-latest-dev}
     build:
       context: ./
       target: dev
       args:
         NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
-        NODE_ENV: 'development'
+        NODE_ENV: ${NODE_ENV:-development}
+    command: bash -c "npm ci && npm run dev"
     ports:
-      - 3000:3000
-    command: npm run dev
+      - ${PORT}:${PORT}
     env_file:
       - ./.envs/.env.dev
     environment:
@@ -19,8 +19,6 @@ services:
       API_URL: ${API_URL}
     volumes:
       - .:/app
-      - /app/node_modules
-      - /app/.next
     networks:
       - mepa-network
     restart: unless-stopped
