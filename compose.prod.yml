@@ -16,10 +16,10 @@ services:
       NEXTAUTH_URL: ${NEXTAUTH_URL}
       API_URL: ${API_URL}
     networks:
-      - mepa-network
+      - mec-energia-network
     restart: always
 
 networks:
-  mepa-network:
-    name: mepa-network
+  mec-energia-network:
+    name: mec-energia-network
     external: true
