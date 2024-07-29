@@ -1,9 +1,10 @@
 image: node:18.20.4-alpine
 
 stages:
-  - build
+  - setup
   - lint
   - test
+  - build
   - deploy
 
 workflow:
@@ -21,11 +22,33 @@ cache:
   paths:
     - node_modules/
 
-install_dependencies:
-  stage: build
+install_ci_deps:
+  stage: setup
   script:
-    - echo "Install dependencies"
+    - echo "Installing Clean dependencies"
     - npm ci
+  artifacts:
+    paths:
+      - node_modules/
+    expire_in: 1 hour
+
+lint:
+  stage: lint
+  script:
+    - echo "Running linter"
+    - npm run lint
+  needs:
+    - job: install_ci_deps
+      artifacts: true
+
+unit_test:
+  stage: test
+  script:
+    - echo "Running unit tests"
+    - npm test
+  needs:
+    - job: install_ci_deps
+      artifacts: true
 
 build:
   stage: build
@@ -35,25 +58,10 @@ build:
   artifacts:
     paths:
       - .next/
-    expire_in: 1 hour
-
-lint:
-  stage: lint
-  script:
-    - echo "Running linter"
-    - npm run lint
-
-unit_test:
-  stage: test
-  script:
-    - echo "Running unit tests"
-    - npm test
-  artifacts:
-    when: always
-    paths:
-      - coverage/
-    reports:
-      junit: coverage/junit.xml
+    expire_in: 1 day
+  needs:
+    - job: install_ci_deps
+      artifacts: true
 
 docker_build:
   stage: deploy
