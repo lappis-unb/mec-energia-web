@@ -1,6 +1,7 @@
 import { Recommendation } from "@/types/recommendation";
 import { Chart } from "react-chartjs-2";
 import { findMaxValue } from "./findMaxValue";
+import theme from "@/theme";
 
 interface Props {
   dates: string[][];
@@ -98,8 +99,8 @@ export const MeasuredConsumptionPlot = ({ dates, recommendation }: Props) => {
             type: "line" as const,
             label: "Fora ponta",
             data: recommendation.consumptionHistoryPlot.offPeakConsumptionInKwh,
-            backgroundColor: "#0E438C",
-            borderColor: "#0E438C",
+            backgroundColor: theme.palette.graph.measuredConsumptionMain,
+            borderColor: theme.palette.graph.measuredConsumptionMain,
             pointStyle: "circle",
             pointRadius: 5,
             pointHoverRadius: 9,
@@ -108,8 +109,8 @@ export const MeasuredConsumptionPlot = ({ dates, recommendation }: Props) => {
             type: "line" as const,
             label: "Ponta",
             data: recommendation.consumptionHistoryPlot.peakConsumptionInKwh,
-            backgroundColor: "#296DCC",
-            borderColor: "#296DCC",
+            backgroundColor: theme.palette.graph.measuredConsumptionSecondary,
+            borderColor: theme.palette.graph.measuredConsumptionSecondary,
             pointStyle: "triangle",
             pointRadius: 7,
             pointHoverRadius: 11,

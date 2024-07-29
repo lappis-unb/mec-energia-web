@@ -3,6 +3,7 @@ import { ChartDataset } from "chart.js";
 import { Chart } from "react-chartjs-2";
 import { Box } from "@mui/material";
 import { Subtitle } from "./DetailedAnalysisDrawer/Subtitle";
+import theme from "@/theme";
 
 interface Props {
   dates: string[][];
@@ -31,57 +32,70 @@ export const MeasuredDemandPlot = ({
 
   const greenDatasets: ChartDataset[] = [
     {
-      type: 'line',
-      label: 'Demanda Contratada',
-      data: [220, 220, 220, 220, 220, 220, 220, 220, 220, 220, 220, 220,],
-      backgroundColor: '#008940',
-      borderColor: '#008940',
-      pointStyle: 'rect',
+      type: "line",
+      label: "Demanda Contratada",
+      data: [220, 220, 220, 220, 220, 220, 220, 220, 220, 220, 220, 220],
+      backgroundColor: "#008940",
+      borderColor: "#008940",
+      pointStyle: "rect",
       pointRadius: 4,
     },
     {
-      type: 'bar',
-      label: 'Demanda Medida',
-      data: [152.46, 141.12, 294.89, null, 260.82, 217.98, 153.72, 207.90, 313.74, 309.96, 332.64, 296.10],
-      backgroundColor: '#7C0AC1',
-      borderColor: '#7C0AC1',
+      type: "bar",
+      label: "Demanda Medida",
+      data: [
+        152.46,
+        141.12,
+        294.89,
+        null,
+        260.82,
+        217.98,
+        153.72,
+        207.9,
+        313.74,
+        309.96,
+        332.64,
+        296.1,
+      ],
+      backgroundColor: theme.palette.graph.measuredDemandMain,
+      borderColor: theme.palette.graph.measuredDemandMain,
     },
   ];
 
   const blueDatasets: ChartDataset[] = [
     {
-      type: 'line',
-      label: 'Demanda Contratada Ponta',
+      type: "line",
+      label: "Demanda Contratada Ponta",
       data: contractPeakDemands,
-      backgroundColor: '#008940',
-      borderColor: '#008940',
-      pointStyle: 'rectRot',
+      backgroundColor: theme.palette.graph.measuredDemandPeakLine,
+      borderColor: theme.palette.graph.measuredDemandPeakLine,
+      pointStyle: "rectRot",
       pointRadius: 4,
     },
     {
-      type: 'line',
-      label: 'Demanda Contratada Fora Ponta',
+      type: "line",
+      label: "Demanda Contratada Fora Ponta",
       data: contractOffPeakDemands,
-      backgroundColor: '#55BF87',
-      borderColor: '#55BF87',
-      pointStyle: 'rect',
+      backgroundColor: theme.palette.graph.measuredDemandOffPeakLine,
+      borderColor: theme.palette.graph.measuredDemandOffPeakLine,
+      pointStyle: "rect",
       pointRadius: 4,
     },
     {
-      type: 'bar',
-      label: 'Demanda Medida Ponta',
+      type: "bar",
+      label: "Demanda Medida Ponta",
       data: recommendation.consumptionHistoryPlot.peakMeasuredDemandInKw,
-      backgroundColor: '#7C0AC1',
-      borderColor: '#7C0AC1',
-      pointStyle: 'triangle',
+      backgroundColor: "#7C0AC1",
+      borderColor: "#7C0AC1",
+      pointStyle: "triangle",
     },
     {
-      type: 'bar',
-      label: 'Demanda Medida Fora Ponta',
+      type: "bar",
+      label: "Demanda Medida Fora Ponta",
       data: recommendation.consumptionHistoryPlot.offPeakMeasuredDemandInKw,
-      backgroundColor: '#CB95EC',
-      borderColor: '#CB95EC',
-      pointStyle: 'circle',
+      backgroundColor: "#CB95EC",
+      borderColor: "#CB95EC",
+      pointStyle: "circle",
     },
   ];
 
@@ -104,49 +118,51 @@ export const MeasuredDemandPlot = ({
           responsive: true,
           interaction: {
             intersect: false,
-            mode: 'nearest',
-            axis: 'x',
+            mode: "nearest",
+            axis: "x",
           },
           plugins: {
             legend: {
-              position: 'bottom',
+              position: "bottom",
               labels: {
                 usePointStyle: true,
               },
             },
             tooltip: {
               usePointStyle: true,
-              xAlign: 'center',
-              yAlign: 'bottom',
+              xAlign: "center",
+              yAlign: "bottom",
               callbacks: {
                 title: function (context) {
-                  let title = context[0].label || '';
-                  title = title.replace(',', ' ');
+                  let title = context[0].label || "";
+                  title = title.replace(",", " ");
                   if (context[0].parsed.y == null) {
-                    title += ' - Indisponível';
+                    title += " - Indisponível";
                   }
                   return title;
                 },
                 label: function (context) {
-                  const label = context.dataset.label || '';
-                  let suffix = '';
+                  const label = context.dataset.label || "";
+                  let suffix = "";
                   if (context.parsed.y != null) {
-                    suffix = new Intl.NumberFormat('pt-BR').format(context.parsed.y) + " kW";
+                    suffix =
+                      new Intl.NumberFormat("pt-BR").format(context.parsed.y) +
+                      " kW";
                   } else {
-                    suffix = 'Indisponível';
+                    suffix = "Indisponível";
                   }
-                  return label + ': ' + suffix;
-                }
-              }
+                  return label + ": " + suffix;
+                },
+              },
             },
             datalabels: {
-              anchor: 'end',
-              align: 'end',
+              anchor: "end",
+              align: "end",
               rotation: 270,
               formatter: function (value) {
-                return value == null ? 'Indisponível' : null
-              }
-            }
+                return value == null ? "Indisponível" : null;
+              },
+            },
           },
           scales: {
             x: {
@@ -163,13 +179,12 @@ export const MeasuredDemandPlot = ({
               },
               title: {
                 display: true,
-                text: 'kW',
+                text: "kW",
               },
               grid: {
                 color: "#C3C3C3",
               },
             },
-
           },
           datasets: {
             bar: {

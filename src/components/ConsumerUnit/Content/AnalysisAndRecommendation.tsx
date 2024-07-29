@@ -12,13 +12,22 @@ import {
 } from "@mui/material";
 import { useRouter } from "next/router";
 import Alert from "@mui/material/Alert";
-import { useGetContractQuery, useRecommendationQuery, useRecommendationSettingsQuery } from "@/api";
+import {
+  useGetContractQuery,
+  useRecommendationQuery,
+  useRecommendationSettingsQuery,
+} from "@/api";
 
 import { BaseCostComparisonCard } from "@/templates/Analysis/BaseCostComparisonCard";
 import { MeasuredConsumptionPlot } from "@/templates/Analysis/MeasuredConsumptionPlot";
 import { MeasuredDemandPlot } from "@/templates/Analysis/MeasuredDemandPlot";
 import { RecommendationCard } from "@/templates/Analysis/RecommendationCard";
-import { selectActiveConsumerUnitId, setActiveSubgroup, setConsumerUnitInvoiceActiveFilter, setConsumerUnitOpenedTab } from "@/store/appSlice";
+import {
+  selectActiveConsumerUnitId,
+  setActiveSubgroup,
+  setConsumerUnitInvoiceActiveFilter,
+  setConsumerUnitOpenedTab,
+} from "@/store/appSlice";
 import { DetailedAnalysisDrawer } from "@/templates/Analysis/DetailedAnalysisDrawer";
 import { monthYearForPlot } from "@/utils/date";
 import { ErrorCode } from "@/api/Enums";
@@ -36,9 +45,7 @@ export const AnalysisAndRecommendation = () => {
   const { data: recommendationSettings } = useRecommendationSettingsQuery();
   const [isDetailedAnalysisOpen, setIsDetailedAnalysisOpen] = useState(false);
 
-  const { data: contract } = useGetContractQuery(
-    consumerUnitId || skipToken
-  );
+  const { data: contract } = useGetContractQuery(consumerUnitId || skipToken);
 
   if (isLoading || !recommendation || !recommendationSettings)
     return (
@@ -69,42 +76,44 @@ export const AnalysisAndRecommendation = () => {
     <Box>
       {(hasErrors || hasWarnings) && (
         <Grid container spacing={1} sx={{ mb: 1 }}>
-          {
-            recommendation.errors.map(([code, msg], i) => (
-              <Grid key={i} item xs={12}>
-                <Alert
-                  key={i}
-                  severity="warning"
-                  variant="filled"
-                  icon={<WarningAmberOutlined style={{ color: "#000" }} />}
-                  onClick={() => {
-                    if (code == ErrorCode.TariffsNotFoundError) {
-                      dispatch(setActiveSubgroup(contract?.subgroup || null));
-                      router.push(`/distribuidoras/${contract?.distributor}`);
-                    } else if (code == ErrorCode.NotEnoughEnergyBills || code == ErrorCode.NotEnoughEnergyBillsWithAtypical) {
-                      dispatch(setConsumerUnitOpenedTab(0));
-                      dispatch(setConsumerUnitInvoiceActiveFilter('pending'));
-                    }
-                  }}
-                  sx={{ cursor: 'pointer', whiteSpace: 'pre-line' }}
-                >
-                  {msg}
-                </Alert>
-              </Grid>
-            ))}
+          {recommendation.errors.map(([code, msg], i) => (
+            <Grid key={i} item xs={12}>
+              <Alert
+                key={i}
+                severity="warning"
+                variant="filled"
+                icon={<WarningAmberOutlined style={{ color: "#000" }} />}
+                onClick={() => {
+                  if (code == ErrorCode.TariffsNotFoundError) {
+                    dispatch(setActiveSubgroup(contract?.subgroup || null));
+                    router.push(`/distribuidoras/${contract?.distributor}`);
+                  } else if (
+                    code == ErrorCode.NotEnoughEnergyBills ||
+                    code == ErrorCode.NotEnoughEnergyBillsWithAtypical
+                  ) {
+                    dispatch(setConsumerUnitOpenedTab(0));
+                    dispatch(setConsumerUnitInvoiceActiveFilter("pending"));
+                  }
+                }}
+                sx={{ cursor: "pointer", whiteSpace: "pre-line" }}
+              >
+                {msg}
+              </Alert>
+            </Grid>
+          ))}
           {recommendation.warnings.map(([code, msg], i) => (
             <Grid key={i} item xs={12}>
               <Alert
                 onClick={() => {
                   if (code == ErrorCode.PendingBillsWarnning) {
                     dispatch(setConsumerUnitOpenedTab(0));
-                    dispatch(setConsumerUnitInvoiceActiveFilter('pending'));
+                    dispatch(setConsumerUnitInvoiceActiveFilter("pending"));
                   } else if (code == ErrorCode.ExpiredTariffWarnning) {
                     dispatch(setActiveSubgroup(contract?.subgroup || null));
                     router.push(`/distribuidoras/${contract?.distributor}`);
                   }
                 }}
-                sx={{ cursor: 'pointer' }}
+                sx={{ cursor: "pointer" }}
                 severity="info"
                 variant="outlined"
               >
@@ -132,7 +141,7 @@ export const AnalysisAndRecommendation = () => {
         alignItems="stretch"
         justifyContent="center"
       >
-        <Grid item xs={6}>
+        <Grid item xs={4}>
           <RecommendationCard
             recommendation={recommendation}
             hasErrors={hasErrors}
@@ -142,8 +151,7 @@ export const AnalysisAndRecommendation = () => {
           />
         </Grid>
 
-
-        <Grid item xs={6}>
+        <Grid item xs={8}>
           <BaseCostComparisonCard
             dates={dates}
             recommendation={recommendation}
@@ -171,7 +179,7 @@ export const AnalysisAndRecommendation = () => {
         <Grid item xs={6}>
           <Card>
             <CardContent>
-              <Typography variant="h5">{"Demanda medida"}</Typography>
+              <Typography variant="h5">{"Demanda medida - carga"}</Typography>
               <Typography variant="body2" sx={{ color: "gray" }}>
                 Últimos 12 meses
               </Typography>

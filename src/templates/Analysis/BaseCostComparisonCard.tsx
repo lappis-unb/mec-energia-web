@@ -24,7 +24,6 @@ export const BaseCostComparisonCard = ({
   recommendation,
   hasRecommendation,
 }: Props) => {
-
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const KnowMore = () => (
@@ -63,21 +62,31 @@ export const BaseCostComparisonCard = ({
   return (
     <Card>
       <CardContent>
-        <Typography variant="h5">{hasRecommendation ? "Comparativo custo-base" : "Custo-base atual"}</Typography>
+        <Typography variant="h5">
+          {" "}
+          Comparativo de consumo e demanda-carga*{" "}
+        </Typography>
 
         <Typography sx={{ color: "gray" }} variant="body2">
           Últimos 12 meses
         </Typography>
 
-        {hasRecommendation ? <BaseCostComparisonPlot recommendation={recommendation} dates={dates} /> :
-          <CurrentBaseCostPlot displayTitle={false} dates={dates} currentContractCostsPlot={recommendation.currentContractCostsPlot} />}
+        {hasRecommendation ? (
+          <BaseCostComparisonPlot
+            recommendation={recommendation}
+            dates={dates}
+          />
+        ) : (
+          <CurrentBaseCostPlot
+            displayTitle={false}
+            dates={dates}
+            currentContractCostsPlot={recommendation.currentContractCostsPlot}
+          />
+        )}
 
         <br />
         <Typography>
-          Total atual:{" "}
-          {formatMoney(
-            recommendation.currentTotalCost
-          )}
+          Total atual: {formatMoney(recommendation.currentTotalCost)}
         </Typography>
 
         {hasRecommendation && (
@@ -102,10 +111,14 @@ export const BaseCostComparisonCard = ({
               {recommendation.nominalSavingsPercentage.toFixed(1)}% de economia
               nominal
             </Typography>
-          </Box>)}
+          </Box>
+        )}
 
         <br />
-        <KnowMore />
+        <Typography sx={{ color: "gray" }} variant="body2">
+          *Consumo e demanda-carga multiplicados pelas tarifas atuais
+          cadastradas na plataforma
+        </Typography>
       </CardContent>
     </Card>
   );

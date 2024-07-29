@@ -18,7 +18,7 @@ export const RecommendationCard = ({
 }: Props) => {
   if (hasErrors)
     return (
-      <Card sx={{height: "100%"}}>
+      <Card sx={{ height: "100%" }}>
         <CardContent>
           <Typography variant="h5" sx={{ marginBottom: 1 }}>
             Recomendação
@@ -30,7 +30,7 @@ export const RecommendationCard = ({
     );
 
   return (
-    <Card sx={{height: "100%"}}>
+    <Card sx={{ height: "100%" }}>
       <CardContent>
         <Typography variant="h5" sx={{ marginBottom: 1 }}>
           Recomendação
@@ -40,7 +40,7 @@ export const RecommendationCard = ({
           {recommendation?.shouldRenewContract ? (
             <>
               <Grid item>
-                <ColoredText text="Ajuste do contrato" highlighted />
+                <ColoredText text="Ajustar contrato" highlighted />
               </Grid>
               <CardRecommendationItem
                 label="Modalidade tarifária"
@@ -53,20 +53,20 @@ export const RecommendationCard = ({
               {recommendation.recommendedContract.tariffFlag === "B" ? (
                 <>
                   <CardRecommendationItem
-                    label="Demanda contratada ponta"
+                    label="Demanda contratada ponta - carga"
                     current={`${recommendation.currentContract.peakDemandInKw} kW`}
                     recommended={`${recommendation.recommendedContract.peakDemandInKw} kW`}
                   />
 
                   <CardRecommendationItem
-                    label="Demanda contratada fora ponta"
+                    label="Demanda contratada fora ponta - carga"
                     current={`${recommendation.currentContract.offPeakDemandInKw} kW`}
                     recommended={`${recommendation.recommendedContract.offPeakDemandInKw} kW`}
                   />
                 </>
               ) : (
                 <CardRecommendationItem
-                  label="Demanda contratada"
+                  label="Demanda contratada - carga"
                   current={`${recommendation.currentContract.offPeakDemandInKw} kW`}
                   recommended={`${recommendation.recommendedContract.offPeakDemandInKw} kW`}
                 />
@@ -85,13 +85,13 @@ export const RecommendationCard = ({
                     display: "inline",
                   }}
                 >
-                  Manutenção do contrato
+                  Manter contrato
                 </Typography>
               </Grid>
               <Grid item>
                 <Typography>
-                  A alteração de contrato só é recomendada se for identificada uma economia nominal
-                  igual ou superior a{" "}
+                  A alteração de contrato só é recomendada se for identificada
+                  uma economia nominal igual ou superior a{" "}
                   {minimumPercentageForContractRenovation * 100}
                   %.
                 </Typography>

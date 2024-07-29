@@ -83,16 +83,14 @@ const ConsumerUnitEditForm = () => {
   const { data: contract } = useGetContractQuery(
     activeConsumerUnit || skipToken
   );
-  const { data: consumerUnit, refetch: refetchConsumerUnit } = useGetConsumerUnitQuery(
-    activeConsumerUnit || skipToken
-  );
+  const { data: consumerUnit, refetch: refetchConsumerUnit } =
+    useGetConsumerUnitQuery(activeConsumerUnit || skipToken);
   const [
     editConsumerUnit,
     { isError, isSuccess, isLoading, reset: resetMutation },
   ] = useEditConsumerUnitMutation();
 
   const form = useForm({ mode: "all", defaultValues });
-
 
   const {
     control,
@@ -125,17 +123,26 @@ const ConsumerUnitEditForm = () => {
           setValue("code", consumerUnit?.code ?? "");
           setValue("distributor", contract?.distributor);
           setValue("supplyVoltage", contract?.supplyVoltage);
-          setValue("shouldShowInstalledPower", (consumerUnit?.totalInstalledPower != null));
-          setValue("totalInstalledPower", consumerUnit?.totalInstalledPower)
+          setValue(
+            "shouldShowInstalledPower",
+            consumerUnit?.totalInstalledPower != null
+          );
+          setValue("totalInstalledPower", consumerUnit?.totalInstalledPower);
 
           if (contract?.supplyVoltage === 69) {
             setShouldShowGreenDemand(false);
-          } else if (contract?.supplyVoltage >= 88 && contract?.supplyVoltage <= 138) {
+          } else if (
+            contract?.supplyVoltage >= 88 &&
+            contract?.supplyVoltage <= 138
+          ) {
             setShouldShowGreenDemand(false);
           } else {
             setShouldShowGreenDemand(true);
           }
-          setValue("peakContractedDemandInKw", contract?.peakContractedDemandInKw);
+          setValue(
+            "peakContractedDemandInKw",
+            contract?.peakContractedDemandInKw
+          );
           setValue(
             "offPeakContractedDemandInKw",
             contract?.offPeakContractedDemandInKw
@@ -145,9 +152,9 @@ const ConsumerUnitEditForm = () => {
           currentDate.setDate(currentDate.getDate() + 1);
           setValue("startDate", currentDate);
         } catch (err) {
-          console.error('Failed to refetch:', err);
+          console.error("Failed to refetch:", err);
         }
-      }
+      };
 
       // Garante que o refetch não seja executado antes do fetch
       if (isEditFormOpen) {
@@ -184,7 +191,6 @@ const ConsumerUnitEditForm = () => {
       // Atualiza o estado tariffFlag para "B" (azul)
       setValue("tariffFlag", "B");
     }
-
   }, [shouldShowGreenDemand]);
 
   // Validações
@@ -251,7 +257,9 @@ const ConsumerUnitEditForm = () => {
           code: data.code,
           isActive: data.isActive,
           university: session?.user.universityId || 0,
-          totalInstalledPower: (!data.shouldShowInstalledPower ? null : data.totalInstalledPower)
+          totalInstalledPower: !data.shouldShowInstalledPower
+            ? null
+            : data.totalInstalledPower,
         },
         contract: {
           contractId: contract?.id as number,
@@ -393,7 +401,7 @@ const ConsumerUnitEditForm = () => {
           </Grid>
 
           <Grid item xs={12}>
-            <Alert severity="warning">
+            <Alert severity="warning" variant="standard">
               Modifique o contrato apenas em caso de erro de digitação. Para
               alterações legais ou novo contrato, use a opção{" "}
               <strong>Renovar</strong> na tela anterior.
@@ -561,7 +569,11 @@ const ConsumerUnitEditForm = () => {
                     const newVoltage = values ? values.floatValue : 0;
                     if (newVoltage === 69) {
                       setShouldShowGreenDemand(false);
-                    } else if (newVoltage !== undefined && newVoltage >= 88 && newVoltage <= 138) {
+                    } else if (
+                      newVoltage !== undefined &&
+                      newVoltage >= 88 &&
+                      newVoltage <= 138
+                    ) {
                       setShouldShowGreenDemand(false);
                     } else {
                       setShouldShowGreenDemand(true);
@@ -748,11 +760,11 @@ const ConsumerUnitEditForm = () => {
             </Grid>
             {!shouldShowGreenDemand && (
               <Typography variant="body2" sx={{ px: 2 }}>
-                O valor de tensão contratada inserido é compatível apenas com a modalidade azul
+                O valor de tensão contratada inserido é compatível apenas com a
+                modalidade azul
               </Typography>
             )}
           </>
-
         )}
       </>
     ),
@@ -763,7 +775,14 @@ const ConsumerUnitEditForm = () => {
     () => (
       <>
         <Grid container spacing={2}>
-          <Grid item xs={12} display="flex" flexDirection={"row"} justifyContent={"begin"} alignItems={"center"}>
+          <Grid
+            item
+            xs={12}
+            display="flex"
+            flexDirection={"row"}
+            justifyContent={"begin"}
+            alignItems={"center"}
+          >
             <Typography variant="h5">Geração de energia</Typography>
             <Controller
               name="shouldShowInstalledPower"
@@ -784,15 +803,13 @@ const ConsumerUnitEditForm = () => {
               )}
             />
           </Grid>
-          {(shouldShowInstalledPower) ? (
+          {shouldShowInstalledPower ? (
             <>
               <Grid item xs={12}>
-                <Alert
-                  severity="info"
-                  variant="standard"
-                >
-                  Insira o valor total da potência de geração instalada na Unidade Consumidora.
-                  Some a potência de todas as plantas fotovoltaicas instaladas, se houver mais de uma.
+                <Alert severity="info" variant="standard">
+                  Insira o valor total da potência de geração instalada na
+                  Unidade Consumidora. Some a potência de todas as plantas
+                  fotovoltaicas instaladas, se houver mais de uma.
                 </Alert>
               </Grid>
 
@@ -806,7 +823,6 @@ const ConsumerUnitEditForm = () => {
                       value: 0.01,
                       message: "Insira um valor maior que R$ 0,00",
                     },
-
                   }}
                   render={({
                     field: { onChange, onBlur, value },
@@ -840,7 +856,7 @@ const ConsumerUnitEditForm = () => {
               </Grid>
             </>
           ) : null}
-        </Grid >
+        </Grid>
       </>
     ),
     [control, shouldShowInstalledPower]
