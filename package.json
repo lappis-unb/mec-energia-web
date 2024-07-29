@@ -9,7 +9,7 @@
     "lint": "next lint",
     "format": "prettier --write src/",
     "lint-staged": "lint-staged",
-    "postinstall": "husky install",
+    "postinstall": "if [ \"$NODE_ENV\" != \"production\" ]; then husky install; fi",
     "test": "npx jest"
   },
   "dependencies": {
