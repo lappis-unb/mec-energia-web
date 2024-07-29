@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { ReactElement, ReactNode } from "react";
 import {
   AppBar,
   Box,
@@ -24,9 +24,11 @@ interface FormDrawerV2Props {
   errorsLength: number;
   handleCloseDrawer: () => void;
   handleSubmitDrawer: () => void;
+  children: ReactElement;
 }
 
 const FormDrawerV2 = ({
+  children,
   open,
   title,
   header,
@@ -84,10 +86,10 @@ const FormDrawerV2 = ({
             ))}
           </Box>
 
+          {children}
+
           <Box mt={4}>
-            <FormErrorsAlert
-              hasErrors={errorsLength > 0 ? true : false}
-            />
+            <FormErrorsAlert hasErrors={errorsLength > 0 ? true : false} />
             <Grid item xs={12}>
               <SubmitButton isLoading={isLoading} />
               <Button variant="text" onClick={handleCloseDrawer} size="large">
@@ -99,7 +101,7 @@ const FormDrawerV2 = ({
           </Box>
         </Box>
       </Container>
-    </Drawer >
+    </Drawer>
   );
 };
 
