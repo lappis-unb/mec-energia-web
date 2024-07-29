@@ -234,7 +234,7 @@ const theme = createTheme(
         },
       },
       MuiDrawer: {
-        styleOverrides: { paper: { backgroundColor: "#EEF4F4" } },
+        styleOverrides: { paper: { backgroundColor: "#F7F7F7" } },
       },
       MuiFormHelperText: {
         styleOverrides: {

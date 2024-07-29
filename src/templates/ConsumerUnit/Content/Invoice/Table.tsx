@@ -339,9 +339,7 @@ const ConsumerUnitInvoiceContentTable = () => {
       groupId: "separator",
       headerName: "|",
       headerAlign: "center",
-      children: [
-        { field: "demandSeparator" },
-      ],
+      children: [{ field: "demandSeparator" }],
     },
     {
       groupId: "demand",
@@ -423,7 +421,7 @@ const ConsumerUnitInvoiceContentTable = () => {
     },
     "& .MuiDataGrid-columnHeaders": {
       position: "sticky",
-      backgroundColor: "#EEF4F4",
+      backgroundColor: theme.palette.background.default,
       zIndex: 1,
       top: 70,
     },
