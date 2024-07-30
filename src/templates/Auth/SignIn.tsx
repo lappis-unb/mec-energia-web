@@ -13,6 +13,7 @@ import { selectIsTokenValid, selectUserAlreadyCreatedName } from "@/store/appSli
 import { TokenStatus } from "@/types/app";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import ReportRounded from '@mui/icons-material/Error';
 
 const defaultValues: SignInRequestPayload = {
   username: "",
@@ -63,7 +64,7 @@ const SignInTemplate = () => {
               onSubmit={handleSubmit(handleOnSubmit)}
             >
               <Box
-                mt={8}
+                mt={3}
                 height="112px"
                 display="flex"
                 alignItems="center"
@@ -124,16 +125,25 @@ const SignInTemplate = () => {
                       value={value}
                       label="E-mail institucional"
                       error={Boolean(error)}
-                      helperText={error?.message ?? " "}
                       fullWidth
                       onChange={onChange}
                       onBlur={onBlur}
+                      helperText={
+                        error ? (
+                          <Box display="flex" alignItems="center" gap={0.5} ml={-2}>
+                            <ReportRounded color="error" fontSize="small"/>
+                            {error.message}
+                          </Box>
+                        ) : (
+                          " "
+                        )
+                      }
                     />
                   )}
                 />
               </Box>
 
-              <Box mt={3}>
+              <Box mt={1}>
                 <Controller
                   control={control}
                   name="password"
@@ -148,7 +158,6 @@ const SignInTemplate = () => {
                       label="Senha"
                       type={showPassword ? "text" : "password"}
                       error={Boolean(error)}
-                      helperText={error?.message ?? " "}
                       fullWidth
                       onChange={onChange}
                       onBlur={onBlur}
@@ -158,18 +167,28 @@ const SignInTemplate = () => {
                             <IconButton
                               onClick={() => setShowPassword(!showPassword)}
                               onMouseDown={(e) => e.preventDefault()}
-                            >
+                              >
                               {showPassword ? <VisibilityOff /> : <Visibility />}
                             </IconButton>
                           </InputAdornment>
                         ),
                       }}
+                      helperText={
+                        error ? (
+                          <Box display="flex" alignItems="center" gap={0.5} ml={-2}>
+                            <ReportRounded color="error" fontSize="small"/>
+                            {error.message}
+                          </Box>
+                        ) : (
+                          " "
+                        )
+                      }
                     />
                   )}
                 />
               </Box>
 
-              <Box display="flex" flexDirection="row-reverse">
+              <Box display="flex" mt={-2} flexDirection="row-reverse">
                 <Link variant="caption" href="/esqueci-senha">Esqueci minha senha</Link>
               </Box>
 
@@ -182,7 +201,7 @@ const SignInTemplate = () => {
               )}
 
               <Box mt={2}>
-                <Button type="submit" variant="contained" fullWidth>
+                <Button type="submit" variant="contained" fullWidth size="large">
                   Entrar
                 </Button>
               </Box>
