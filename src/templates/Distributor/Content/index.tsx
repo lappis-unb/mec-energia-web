@@ -1,9 +1,15 @@
 import { useSelector } from "react-redux";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
+import { useMemo } from "react";
+import Head from "next/head";
 
 import { Alert, AlertTitle, Box, Grid, Typography } from "@mui/material";
 
-import { useFetchDistributorsQuery, useGetDistributorQuery, useGetDistributorSubgroupsQuery } from "@/api";
+import {
+  useFetchDistributorsQuery,
+  useGetDistributorQuery,
+  useGetDistributorSubgroupsQuery,
+} from "@/api";
 import {
   selectActiveDistributorId,
   selectActiveSubgroup,
@@ -14,6 +20,8 @@ import DistributorContentTariffsTable from "./TariffsTable";
 import { FlashOffRounded } from "@mui/icons-material";
 import { useSession } from "next-auth/react";
 
+import { getHeadTitle } from "@/utils/head";
+
 export const EmptyDistributorContent = () => {
   return (
     <Box
@@ -22,7 +30,9 @@ export const EmptyDistributorContent = () => {
       justifyContent="center"
       alignItems="center"
     >
-      <h2 style={{ color: "#0A5C67" }}>Não existem distribuidoras cadastradas</h2>
+      <h2 style={{ color: "#0A5C67" }}>
+        Não existem distribuidoras cadastradas
+      </h2>
     </Box>
   );
 };
@@ -33,12 +43,11 @@ const DistributorContent = () => {
 
   const { data: session } = useSession();
 
-  const { data: distributors, isLoading: isDistributorsLoading } = useFetchDistributorsQuery(
-    session?.user.universityId ?? skipToken
-  );
+  const { data: distributors, isLoading: isDistributorsLoading } =
+    useFetchDistributorsQuery(session?.user.universityId ?? skipToken);
 
   const activeDistributorData = distributors?.find(
-    distributor => distributor?.id === distributorId
+    (distributor) => distributor?.id === distributorId
   );
 
   const { data: distributor, isLoading: isDistributorLoading } =
@@ -48,6 +57,8 @@ const DistributorContent = () => {
     distributorId ?? skipToken
   );
 
+  const headTitle = useMemo(() => getHeadTitle("Distribuidoras"), []);
+
   if (isDistributorLoading || isSubgroupLoading || isDistributorsLoading) {
     return <Box pt={2}>Carregando...</Box>;
   }
@@ -55,6 +66,9 @@ const DistributorContent = () => {
   if (!activeDistributorData) {
     return (
       <Box marginRight={3}>
+        <Head>
+          <title>{headTitle}</title>
+        </Head>
         <Alert
           sx={{ ml: 4, width: 1, mt: 2 }}
           severity="error"
@@ -70,6 +84,9 @@ const DistributorContent = () => {
   if (distributor && !distributor.isActive) {
     return (
       <Box pt={2}>
+        <Head>
+          <title>{headTitle}</title>
+        </Head>
         <Alert
           color="warning"
           icon={
@@ -99,6 +116,9 @@ const DistributorContent = () => {
   if (!selectedSubgroupTariff) {
     return (
       <Box pt={2}>
+        <Head>
+          <title>{headTitle}</title>
+        </Head>
         <Typography variant="h5">
           Nenhuma unidade consumidora associada
         </Typography>
@@ -114,15 +134,20 @@ const DistributorContent = () => {
   }
 
   return (
-    <Grid container pt={2} spacing={2}>
-      <Grid item xs={8}>
-        <DistributorContentTariffsTable />
-      </Grid>
+    <Box pt={2}>
+      <Head>
+        <title>{headTitle}</title>
+      </Head>
+      <Grid container pt={2} spacing={2}>
+        <Grid item xs={8}>
+          <DistributorContentTariffsTable />
+        </Grid>
 
-      <Grid item xs={4}>
-        <DistributorContentConsumerUnitsList />
+        <Grid item xs={4}>
+          <DistributorContentConsumerUnitsList />
+        </Grid>
       </Grid>
-    </Grid>
+    </Box>
   );
 };
 

@@ -1,9 +1,13 @@
-import { ReactNode } from "react";
+import { ReactNode, useMemo } from "react";
 import { useSelector } from "react-redux";
+import Head from "next/head";
 
 import { Alert, AlertTitle, Box } from "@mui/material";
 
-import { selectActiveConsumerUnitId, selectConsumerUnitOpenedTab } from "@/store/appSlice";
+import {
+  selectActiveConsumerUnitId,
+  selectConsumerUnitOpenedTab,
+} from "@/store/appSlice";
 import { ConsumerUnitTab } from "@/types/app";
 
 import ConsumerUnitInvoiceContent from "@/templates/ConsumerUnit/Content/Invoice";
@@ -13,6 +17,7 @@ import { useSession } from "next-auth/react";
 import { useFetchConsumerUnitsQuery } from "@/api";
 import { skipToken } from "@reduxjs/toolkit/query";
 
+import { getHeadTitle } from "@/utils/head";
 interface TabPanelProps {
   children?: ReactNode;
   dir?: string;
@@ -32,7 +37,6 @@ const TabPanel = ({ children, value, index, ...other }: TabPanelProps) => (
   </div>
 );
 
-
 export const EmptyConsumerUnitContent = () => {
   return (
     <Box
@@ -49,14 +53,18 @@ export const EmptyConsumerUnitContent = () => {
 const ConsumerUnitContent = () => {
   const openedTab = useSelector(selectConsumerUnitOpenedTab);
   const { data: session } = useSession();
-  const { data: consumerUnitsData, isLoading: isConsumerUnitsLoading, data } = useFetchConsumerUnitsQuery(
-    session?.user.universityId ?? skipToken
-  );
+  const {
+    data: consumerUnitsData,
+    isLoading: isConsumerUnitsLoading,
+    data,
+  } = useFetchConsumerUnitsQuery(session?.user.universityId ?? skipToken);
   const activeConsumerUnit = useSelector(selectActiveConsumerUnitId);
 
   const activeConsumerUnitData = consumerUnitsData?.find(
-    consumerUnit => consumerUnit?.id === activeConsumerUnit
+    (consumerUnit) => consumerUnit?.id === activeConsumerUnit
   );
+
+  const headTitle = useMemo(() => getHeadTitle("Unidades Consumidoras"), []);
 
   if (isConsumerUnitsLoading || !data) {
     return <Box pt={2}>Carregando...</Box>;
@@ -65,6 +73,9 @@ const ConsumerUnitContent = () => {
   if (!activeConsumerUnitData) {
     return (
       <Box marginRight={3}>
+        <Head>
+          <title>{headTitle}</title>
+        </Head>
         <Alert
           sx={{ ml: 4, width: 1, mt: 2 }}
           severity="error"
@@ -77,21 +88,27 @@ const ConsumerUnitContent = () => {
     );
   }
 
-  const contractTabIndex = activeConsumerUnitData.isActive ? ConsumerUnitTab.CONTRACT : ConsumerUnitTab.ANALYSIS;
+  const contractTabIndex = activeConsumerUnitData.isActive
+    ? ConsumerUnitTab.CONTRACT
+    : ConsumerUnitTab.ANALYSIS;
   return (
-    <>
+    <Box marginRight={3}>
+      <Head>
+        <title>{headTitle}</title>
+      </Head>
+
       <TabPanel value={openedTab} index={ConsumerUnitTab.INVOICE}>
         <ConsumerUnitInvoiceContent />
       </TabPanel>
       {activeConsumerUnitData.isActive && (
         <TabPanel value={openedTab} index={ConsumerUnitTab.ANALYSIS}>
           <AnalysisAndRecommendation />
-        </TabPanel>)
-      }
+        </TabPanel>
+      )}
       <TabPanel value={openedTab} index={contractTabIndex}>
         <ConsumerUnitContractContent />
       </TabPanel>
-    </>
+    </Box>
   );
 };
 

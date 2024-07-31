@@ -20,6 +20,8 @@ import UserRoleSelect from "./RoleSelect";
 import UserListPasswordResetButton from "./PasswordResetButton";
 import { Session } from "next-auth";
 import { useMemo } from "react";
+import Head from "next/head";
+import { getHeadTitle } from "@/utils/head";
 
 const isUniversityAdmin = (user: User) =>
   user.type === UserRole.UNIVERSITY_ADMIN;
@@ -48,73 +50,86 @@ const UserListTemplate = () => {
 
   const { data: users } = useGetUsersQuery(usersQueryPayload);
 
+  const headTitle = useMemo(() => getHeadTitle("Pessoas"), []);
+
   if (!session) {
     return <Typography>Carregando...</Typography>;
   }
 
   return (
-    <TableContainer>
-      <Table size="small">
-        <TableHead>
-          <TableRow>
-            <TableCell>Nome completo</TableCell>
+    <>
+      <Head>
+        <title>{headTitle}</title>
+      </Head>
+      <TableContainer>
+        <Table size="small">
+          <TableHead>
+            <TableRow>
+              <TableCell>Nome completo</TableCell>
 
-            <TableCell>E-mail</TableCell>
+              <TableCell>E-mail</TableCell>
 
-            <TableCell width="200px">
-              <Box
-                display="flex"
-                alignItems="center"
-                justifyContent="space-between"
-              >
-                <Typography variant="inherit">Perfil</Typography>
+              <TableCell width="200px">
+                <Box
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="space-between"
+                >
+                  <Typography variant="inherit">Perfil</Typography>
 
-                <UniversityUserRoleDialog />
-              </Box>
-            </TableCell>
+                  <UniversityUserRoleDialog />
+                </Box>
+              </TableCell>
 
-            <TableCell width="56px" />
-          </TableRow>
-        </TableHead>
+              <TableCell width="56px" />
+            </TableRow>
+          </TableHead>
 
-        <TableBody>
-          {users &&
-            users.map((user) => (
-              <TableRow key={user.id}>
-                <TableCell>
-                  <Typography
-                    variant="body2"
-                    fontWeight={isUniversityAdmin(user) ? "bold" : "normal"}
-                  >
-                    {user.firstName} {user.lastName}
-                  </Typography>
-                </TableCell>
+          <TableBody>
+            {users &&
+              users.map((user) => (
+                <TableRow key={user.id}>
+                  <TableCell>
+                    <Typography
+                      variant="body2"
+                      fontWeight={isUniversityAdmin(user) ? "bold" : "normal"}
+                    >
+                      {user.firstName} {user.lastName}
+                    </Typography>
+                  </TableCell>
 
-                <TableCell>
-                  <Typography
-                    variant="body2"
-                    fontWeight={isUniversityAdmin(user) ? "bold" : "normal"}
-                  >
-                    <Link href={`mailto:${user.email}`}>{user.email}</Link>
-                  </Typography>
-                </TableCell>
+                  <TableCell>
+                    <Typography
+                      variant="body2"
+                      fontWeight={isUniversityAdmin(user) ? "bold" : "normal"}
+                    >
+                      <Link href={`mailto:${user.email}`}>{user.email}</Link>
+                    </Typography>
+                  </TableCell>
 
-                <TableCell>
-                  {user.id === session?.user.id ? (
-                    <Chip color="primary" label={UserRoleLabelMap[user.type]} />
-                  ) : (
-                    <UserRoleSelect id={user.id} type={user.type} />
-                  )}
-                </TableCell>
+                  <TableCell>
+                    {user.id === session?.user.id ? (
+                      <Chip
+                        color="primary"
+                        label={UserRoleLabelMap[user.type]}
+                      />
+                    ) : (
+                      <UserRoleSelect id={user.id} type={user.type} />
+                    )}
+                  </TableCell>
 
-                <TableCell>
-                <UserListPasswordResetButton id={user.id} userName={`${user.firstName}`} />
-                </TableCell>
-              </TableRow>
-            ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+                  <TableCell>
+                    <UserListPasswordResetButton
+                      id={user.id}
+                      userName={`${user.firstName}`}
+                    />
+                  </TableCell>
+                </TableRow>
+              ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </>
   );
 };
 
