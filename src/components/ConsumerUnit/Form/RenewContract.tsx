@@ -24,6 +24,7 @@ import {
   Typography,
 } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers";
+import Alerta from "@mui/icons-material/Report";
 
 import {
   selectActiveConsumerUnitId,
@@ -135,7 +136,6 @@ const ConsumerUnitRenewContractForm = () => {
       // Atualiza o estado tariffFlag para "B" (azul)
       setValue("tariffFlag", "B");
     }
-
   }, [shouldShowGreenDemand]);
 
   // Validações de Formulário
@@ -244,7 +244,7 @@ const ConsumerUnitRenewContractForm = () => {
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
     onChange: (value: string) => void
   ) => {
-    const numericValue = e.target.value.replace(/\D/g, '');
+    const numericValue = e.target.value.replace(/\D/g, "");
     onChange(numericValue);
   };
 
@@ -434,7 +434,11 @@ const ConsumerUnitRenewContractForm = () => {
                     const newVoltage = values ? values.floatValue : 0;
                     if (newVoltage === 69) {
                       setShouldShowGreenDemand(false);
-                    } else if (newVoltage !== undefined && newVoltage >= 88 && newVoltage <= 138) {
+                    } else if (
+                      newVoltage !== undefined &&
+                      newVoltage >= 88 &&
+                      newVoltage <= 138
+                    ) {
                       setShouldShowGreenDemand(false);
                     } else {
                       setShouldShowGreenDemand(true);
@@ -575,7 +579,24 @@ const ConsumerUnitRenewContractForm = () => {
                     decimalScale={2}
                     decimalSeparator=","
                     thousandSeparator={"."}
-                    error={Boolean(error)}
+                    helperText={
+                      error ? (
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                          }}
+                        >
+                          <Alerta
+                            style={{ marginRight: "5px" }}
+                            fontSize="small"
+                          />
+                          {error.message}
+                        </div>
+                      ) : (
+                        " "
+                      )
+                    }
                     helperText={error?.message ?? " "}
                     onValueChange={(values) => onChange(values.floatValue)}
                     onBlur={onBlur}
@@ -615,7 +636,24 @@ const ConsumerUnitRenewContractForm = () => {
                     decimalSeparator=","
                     thousandSeparator={"."}
                     error={!!error}
-                    helperText={error?.message ?? " "}
+                    helperText={
+                      error ? (
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                          }}
+                        >
+                          <Alerta
+                            style={{ marginRight: "5px" }}
+                            fontSize="small"
+                          />
+                          {error.message}
+                        </div>
+                      ) : (
+                        " "
+                      )
+                    }
                     onValueChange={(values) => onChange(values.floatValue)}
                     onBlur={onBlur}
                   />
@@ -624,7 +662,8 @@ const ConsumerUnitRenewContractForm = () => {
             </Grid>
             {!shouldShowGreenDemand && (
               <Typography variant="body2" sx={{ px: 2 }}>
-                O valor de tensão contratada inserido é compatível apenas com a modalidade azul
+                O valor de tensão contratada inserido é compatível apenas com a
+                modalidade azul
               </Typography>
             )}
           </Box>
