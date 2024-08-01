@@ -105,7 +105,8 @@ const formatConsumptionDemandToPtBrCurrency = (energyBill: EnergyBill) => {
 
 const getDataGridRows = (
   invoicesPayload: InvoicePayload[],
-  activeFilter: ConsumerUnitInvoiceFilter
+  activeFilter: ConsumerUnitInvoiceFilter,
+  isActive: boolean | undefined
 ): InvoiceDataGridRow[] => {
   return invoicesPayload
     .map(({ month, year, isEnergyBillPending, energyBill }) => ({
@@ -119,10 +120,24 @@ const getDataGridRows = (
       year,
       isEnergyBillPending,
       activeFilter,
+      isActive,
     }))
-    .filter(
-      (row) => !(row.isEnergyBillPending && row.energyBillId === undefined)
-    );
+    .filter((row) => {
+      if (
+        row.isActive === false &&
+        row.isEnergyBillPending === false &&
+        row.invoiceInReais === undefined
+      ) {
+        return false;
+      }
+      if (activeFilter === "pending" && !row.isEnergyBillPending) {
+        return false;
+      }
+      if (activeFilter !== "pending" && row.isEnergyBillPending) {
+        return false;
+      }
+      return true;
+    });
 };
 
 const NoRowsOverlay = () => (
@@ -380,15 +395,19 @@ const ConsumerUnitInvoiceContentTable = () => {
   ];
 
   useEffect(() => {
-    if (!invoicesPayload) {
+    if (!invoicesPayload || consumerUnit === undefined) {
       return;
     }
 
     const filteredInvoices = getFilteredInvoices(invoicesPayload, activeFilter);
-    const dataGridRows = getDataGridRows(filteredInvoices, activeFilter);
+    const dataGridRows = getDataGridRows(
+      filteredInvoices,
+      activeFilter,
+      consumerUnit?.isActive
+    );
 
     dispatch(setConsumerUnitInvoiceDataGridRows(dataGridRows));
-  }, [activeFilter, invoicesPayload, dispatch]);
+  }, [activeFilter, invoicesPayload, consumerUnit, dispatch]);
 
   const handleOpenAddEnergyBillForm = useCallback(
     (month: number, year: number) => {
@@ -400,19 +419,21 @@ const ConsumerUnitInvoiceContentTable = () => {
 
   const renderMonthCell = useCallback(
     (invoiceRow: InvoiceDataGridRow) => {
-      const { activeFilter, isEnergyBillPending, month, year, energyBillId } =
-        invoiceRow;
-
-      if (isEnergyBillPending && energyBillId === undefined) {
-        return null;
-      }
+      const {
+        activeFilter,
+        isEnergyBillPending,
+        month,
+        year,
+        energyBillId,
+        isActive,
+      } = invoiceRow;
 
       const buttonLabel =
         "Lançar " +
         getMonthFromNumber(month, year) +
         `${activeFilter === "pending" ? "  " + year : ""}`;
 
-      if (!consumerUnit?.isActive) {
+      if (!isActive) {
         return getMonthFromNumber(month, year, true);
       }
 
@@ -442,7 +463,7 @@ const ConsumerUnitInvoiceContentTable = () => {
 
       return getMonthFromNumber(month, year, true);
     },
-    [handleOpenAddEnergyBillForm, consumerUnit]
+    [handleOpenAddEnergyBillForm]
   );
 
   /**
