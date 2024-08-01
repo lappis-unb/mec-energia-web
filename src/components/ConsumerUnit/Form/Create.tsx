@@ -26,6 +26,7 @@ import { NumericFormat } from "react-number-format";
 
 import {
   selectIsConsumerUnitCreateFormOpen,
+  setActiveConsumerUnitId,
   setIsConsumerUnitCreateFormOpen,
   setIsErrorNotificationOpen,
   setIsSuccessNotificationOpen,
@@ -201,8 +202,12 @@ const ConsumerUnitCreateForm = () => {
         },
       };
 
-      await createConsumerUnit(body);
-    },
+      const createdUc = await createConsumerUnit(body);
+
+      if('data' in createdUc)
+        dispatch(setActiveConsumerUnitId(createdUc.data.id ?? null));
+      },
+
     [createConsumerUnit, session?.user.universityId]
   );
 
