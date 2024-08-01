@@ -62,7 +62,7 @@ const DashboardCardGrid = () => {
   }, [consumerUnits, dispatch]);
 
   return (
-    <Grid container spacing={5} py={3}>
+    <Grid container spacing={3} py={3} style={{ display: 'flex', flexWrap: 'wrap' }}>
       {distributors?.map((card) => (
         <Grid
           key={card.id}
@@ -70,9 +70,9 @@ const DashboardCardGrid = () => {
           xs={12}
           sm={6}
           md={4}
-          lg={3}
-          display="flex"
-          justifyContent="center"
+          lg={2.4}
+          xl={2.4}
+          style={{ display: 'flex', justifyContent: 'center', flex: '1 1 calc(20% - 24px)', maxWidth: 'calc(20% - 24px)' }}
         >
           <DistributorCard
             id={card.id}
@@ -91,9 +91,9 @@ const DashboardCardGrid = () => {
           xs={12}
           sm={6}
           md={4}
-          lg={3}
-          display="flex"
-          justifyContent="center"
+          lg={2.4}
+          xl={2.4}
+          style={{ display: 'flex', justifyContent: 'center', flex: '1 1 calc(20% - 24px)', maxWidth: 'calc(20% - 24px)' }}
         >
           <ConsumerUnitCard
             isActive={card.isActive}
