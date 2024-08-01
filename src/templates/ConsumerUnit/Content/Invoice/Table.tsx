@@ -121,6 +121,7 @@ const getDataGridRows = (
       isActive,
     }))
     .filter((row) => {
+      console.log(row);
       if (
         row.isActive === false &&
         row.isEnergyBillPending === false &&
@@ -128,10 +129,7 @@ const getDataGridRows = (
       ) {
         return false;
       }
-      if (activeFilter === "pending" && !row.isEnergyBillPending) {
-        return false;
-      }
-      if (activeFilter !== "pending" && row.isEnergyBillPending) {
+      if (!row.isActive && row.isEnergyBillPending) {
         return false;
       }
       return true;
