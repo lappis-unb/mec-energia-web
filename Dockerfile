@@ -23,6 +23,9 @@ FROM base AS dev
 RUN apk add --no-cache bash curl wget git vim
 WORKDIR /app
 
+RUN chown -R node:node /app
+USER node
+
 CMD [tail -f /dev/null]
 
 # -----------------------------------------------------------------------------
