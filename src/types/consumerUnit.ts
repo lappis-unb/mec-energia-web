@@ -12,7 +12,8 @@ export interface CreateConsumerUnitForm {
   peakContractedDemandInKw: number | "";
   offPeakContractedDemandInKw: number | "";
   totalInstalledPower: number | null;
-  shouldShowInstalledPower: boolean | null;
+  shouldShowGeneration: boolean | null;
+  generationDemand: number | null;
 }
 
 export interface EditConsumerUnitForm {
@@ -26,7 +27,8 @@ export interface EditConsumerUnitForm {
   supplyVoltage: number | "";
   distributor: number | "";
   totalInstalledPower: number | null;
-  shouldShowInstalledPower: boolean | null;
+  shouldShowGeneration: boolean | null;
+  generationDemand: number | null;
 }
 
 export type ConsumerUnit = {
@@ -48,6 +50,7 @@ export interface ConsumerUnitRequestPayload {
   isActive: boolean;
   university: number;
   totalInstalledPower: number | null;
+  generationDemand: number | null;
 }
 
 export interface ConsumerUnitRequestPayloadEdit {
@@ -57,6 +60,7 @@ export interface ConsumerUnitRequestPayloadEdit {
   isActive: boolean;
   university: number;
   totalInstalledPower: number | null;
+  generationDemand: number | null;
 }
 
 export interface ContractRequestPayload {

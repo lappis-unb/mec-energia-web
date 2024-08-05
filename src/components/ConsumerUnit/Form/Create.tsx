@@ -23,6 +23,7 @@ import {
 } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers";
 import { NumericFormat } from "react-number-format";
+import LinkIcon from "@mui/icons-material/Link";
 
 import {
   selectIsConsumerUnitCreateFormOpen,
@@ -49,6 +50,7 @@ import { sendFormattedDate } from "@/utils/date";
 import { getSubgroupsText } from "@/utils/get-subgroup-text";
 import { isInSomeSubgroups } from "@/utils/validations/form-validations";
 import FormDrawerV2 from "@/components/Form/DrawerV2";
+import theme from "@/theme";
 
 const defaultValues: CreateConsumerUnitForm = {
   name: "",
@@ -61,7 +63,8 @@ const defaultValues: CreateConsumerUnitForm = {
   peakContractedDemandInKw: "",
   offPeakContractedDemandInKw: "",
   totalInstalledPower: null,
-  shouldShowInstalledPower: false,
+  shouldShowGeneration: false,
+  generationDemand: null,
 };
 
 const ConsumerUnitCreateForm = () => {
@@ -87,6 +90,7 @@ const ConsumerUnitCreateForm = () => {
   const [shouldShowDistributorFormDialog, setShouldShowDistributorFormDialog] =
     useState(false);
   const [shouldShowGreenDemand, setShouldShowGreenDemand] = useState(true);
+  const [sharedValue, setSharedValue] = useState<numeric>();
 
   //Formulário
   const form = useForm({ mode: "all", defaultValues });
@@ -101,7 +105,7 @@ const ConsumerUnitCreateForm = () => {
   } = form;
 
   const tariffFlag = watch("tariffFlag");
-  const shouldShowInstalledPower = watch("shouldShowInstalledPower");
+  const shouldShowGeneration = watch("shouldShowGeneration");
 
   useEffect(() => {
     const {
@@ -126,7 +130,6 @@ const ConsumerUnitCreateForm = () => {
       // Atualiza o estado tariffFlag para "B" (azul)
       setValue("tariffFlag", "B");
     }
-
   }, [shouldShowGreenDemand]);
 
   // Validações de Formulário
@@ -188,7 +191,12 @@ const ConsumerUnitCreateForm = () => {
           code: data.code,
           isActive: true,
           university: session?.user.universityId || 0,
-          totalInstalledPower: (!data.shouldShowInstalledPower ? null : data.totalInstalledPower)
+          totalInstalledPower: !data.shouldShowGeneration
+            ? null
+            : data.totalInstalledPower,
+          generationDemand: !data.shouldShowGeneration
+            ? null
+            : data.generationDemand,
         },
         contract: {
           startDate: data.startDate ? sendFormattedDate(data.startDate) : "",
@@ -480,7 +488,11 @@ const ConsumerUnitCreateForm = () => {
                     const newVoltage = values ? values.floatValue : 0;
                     if (newVoltage === 69) {
                       setShouldShowGreenDemand(false);
-                    } else if (newVoltage !== undefined && newVoltage >= 88 && newVoltage <= 138) {
+                    } else if (
+                      newVoltage !== undefined &&
+                      newVoltage >= 88 &&
+                      newVoltage <= 138
+                    ) {
                       setShouldShowGreenDemand(false);
                     } else {
                       setShouldShowGreenDemand(true);
@@ -502,7 +514,7 @@ const ConsumerUnitCreateForm = () => {
     () => (
       <>
         <Grid item xs={12}>
-          <Typography variant="h5">Demanda Contratada</Typography>
+          <Typography variant="h5">Demanda Contratada - Carga </Typography>
         </Grid>
 
         <Grid item xs={12}>
@@ -670,10 +682,10 @@ const ConsumerUnitCreateForm = () => {
             </Grid>
             {!shouldShowGreenDemand && (
               <Typography variant="body2" sx={{ px: 2 }}>
-                O valor de tensão contratada inserido é compatível apenas com a modalidade azul
+                O valor de tensão contratada inserido é compatível apenas com a
+                modalidade azul
               </Typography>
             )}
-
           </Box>
         )}
       </>
@@ -685,10 +697,17 @@ const ConsumerUnitCreateForm = () => {
     () => (
       <>
         <Grid container spacing={2}>
-          <Grid item xs={12} display="flex" flexDirection={"row"} justifyContent={"begin"} alignItems={"center"}>
-            <Typography variant="h5">Geração de energia</Typography>
+          <Grid
+            item
+            xs={12}
+            display="flex"
+            flexDirection={"row"}
+            justifyContent={"begin"}
+            alignItems={"center"}
+          >
+            <Typography variant="h5">Demanda Contratada - Geração</Typography>
             <Controller
-              name="shouldShowInstalledPower"
+              name="shouldShowGeneration"
               control={control}
               render={({ field: { onChange, value } }) => (
                 <FormControl>
@@ -697,7 +716,7 @@ const ConsumerUnitCreateForm = () => {
                     control={
                       <Switch
                         value={value}
-                        defaultChecked={shouldShowInstalledPower}
+                        defaultChecked={shouldShowGeneration}
                         onChange={onChange}
                       />
                     }
@@ -706,66 +725,125 @@ const ConsumerUnitCreateForm = () => {
               )}
             />
           </Grid>
-          {(shouldShowInstalledPower) ? (
-            <>
+          {shouldShowGeneration ? (
+            <Grid
+              container
+              spacing={2}
+              style={{ marginTop: "16px", marginLeft: "4px" }}
+            >
               <Grid item xs={12}>
-                <Alert
-                  severity="info"
-                  variant="standard"
-                >
-                  Insira o valor total da potência de geração instalada na Unidade Consumidora.
-                  Some a potência de todas as plantas fotovoltaicas instaladas, se houver mais de uma.
+                <Alert severity="info" variant="standard">
+                  Insira o valor total da potência de geração instalada na
+                  Unidade Consumidora. Some a potência de todas as plantas
+                  fotovoltaicas instaladas, se houver mais de uma.
                 </Alert>
               </Grid>
 
-              <Grid item xs={12}>
-                <Controller
-                  control={control}
-                  name="totalInstalledPower"
-                  rules={{
-                    required: "Preencha este campo",
-                    min: {
-                      value: 0.01,
-                      message: "Insira um valor maior que R$ 0,00",
-                    },
+              <Grid container item xs={12} spacing={2} alignItems="center">
+                <Grid item style={{ flex: 1 }}>
+                  <Controller
+                    control={control}
+                    name="totalInstalledPower"
+                    rules={{
+                      required: "Preencha este campo",
+                      min: {
+                        value: 0.01,
+                        message: "Insira um valor maior que R$ 0,00",
+                      },
+                    }}
+                    render={({
+                      field: { onChange, onBlur },
+                      fieldState: { error },
+                    }) => (
+                      <NumericFormat
+                        value={sharedValue}
+                        customInput={TextField}
+                        label="Potência Instalada *"
+                        fullWidth
+                        InputProps={{
+                          endAdornment: (
+                            <InputAdornment position="end">kW</InputAdornment>
+                          ),
+                        }}
+                        type="text"
+                        allowNegative={false}
+                        isAllowed={({ floatValue }) =>
+                          !floatValue || floatValue <= 99999.99
+                        }
+                        decimalScale={2}
+                        decimalSeparator=","
+                        thousandSeparator={"."}
+                        error={Boolean(error)}
+                        helperText={error?.message ?? " "}
+                        onValueChange={(values) => {
+                          const newValue = values.floatValue;
+                          setSharedValue(newValue);
+                          onChange(newValue);
+                          setValue("generationDemand", newValue);
+                        }}
+                        onBlur={onBlur}
+                      />
+                    )}
+                  />
+                </Grid>
 
-                  }}
-                  render={({
-                    field: { onChange, onBlur, value },
-                    fieldState: { error },
-                  }) => (
-                    <NumericFormat
-                      value={value}
-                      customInput={TextField}
-                      label="Potência Instalada *"
-                      fullWidth
-                      InputProps={{
-                        endAdornment: (
-                          <InputAdornment position="end">kW</InputAdornment>
-                        ),
-                      }}
-                      type="text"
-                      allowNegative={false}
-                      isAllowed={({ floatValue }) =>
-                        !floatValue || floatValue <= 99999.99
-                      }
-                      decimalScale={2}
-                      decimalSeparator=","
-                      thousandSeparator={"."}
-                      error={Boolean(error)}
-                      helperText={error?.message ?? " "}
-                      onValueChange={(values) => onChange(values.floatValue)}
-                      onBlur={onBlur}
-                    />
-                  )}
-                />
+                <Grid item style={{ flexBasis: "40px", textAlign: "center" }}>
+                  <LinkIcon style={{ color: theme.palette.primary.main }} />
+                </Grid>
+
+                <Grid item style={{ flex: 1 }}>
+                  <Controller
+                    control={control}
+                    name="generationDemand"
+                    rules={{
+                      required: "Preencha este campo",
+                      min: {
+                        value: 0.01,
+                        message: "Insira um valor maior que 0",
+                      },
+                    }}
+                    render={({
+                      field: { onChange, onBlur },
+                      fieldState: { error },
+                    }) => (
+                      <NumericFormat
+                        value={sharedValue}
+                        customInput={TextField}
+                        label="Demanda de Geração *"
+                        fullWidth
+                        InputProps={{
+                          endAdornment: (
+                            <InputAdornment position="end">kW</InputAdornment>
+                          ),
+                        }}
+                        type="text"
+                        allowNegative={false}
+                        isAllowed={({ floatValue }) =>
+                          !floatValue || floatValue <= 99999.99
+                        }
+                        decimalScale={2}
+                        decimalSeparator=","
+                        thousandSeparator={"."}
+                        error={Boolean(error)}
+                        helperText={error?.message ?? " "}
+                        onValueChange={(values) => {
+                          const newValue = values.floatValue;
+                          setSharedValue(newValue);
+                          onChange(newValue);
+                          setValue("totalInstalledPower", newValue); // Sincronizar o outro campo
+                        }}
+                        onBlur={onBlur}
+                      />
+                    )}
+                  />
+                </Grid>
               </Grid>
-            </>
+            </Grid>
           ) : null}
-        </Grid >
+        </Grid>
       </>
     ),
-    [control, shouldShowInstalledPower]
+    [control, shouldShowGeneration]
   );
 
   return (
@@ -782,7 +860,7 @@ const ConsumerUnitCreateForm = () => {
           <ConsumerUnitSection key={0} />,
           <ContractSection key={1} />,
           <ContractedDemandSection key={2} />,
-          <InstalledPower key={3} />
+          <InstalledPower key={3} />,
         ]}
       />
 

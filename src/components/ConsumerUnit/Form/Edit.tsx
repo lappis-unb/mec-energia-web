@@ -62,7 +62,7 @@ const defaultValues: EditConsumerUnitForm = {
   peakContractedDemandInKw: "",
   offPeakContractedDemandInKw: "",
   totalInstalledPower: null,
-  shouldShowInstalledPower: true,
+  shouldShowGeneration: true,
 };
 
 const ConsumerUnitEditForm = () => {
@@ -73,7 +73,7 @@ const ConsumerUnitEditForm = () => {
     useState(false);
   const [shouldShowCancelDialog, setShouldShowCancelDialog] = useState(false);
   const [shouldShowGreenDemand, setShouldShowGreenDemand] = useState(true);
-  // const [shouldShowInstalledPower, setShouldShowInstalledPower] = useState(false);
+  // const [shouldShowGeneration, setshouldShowGeneration] = useState(false);
 
   const { data: session } = useSession();
   const { data: subgroupsList } = useGetSubgroupsQuery();
@@ -106,7 +106,7 @@ const ConsumerUnitEditForm = () => {
   const peakContractedDemandInKw = watch("peakContractedDemandInKw");
   const offPeakContractedDemandInKw = watch("offPeakContractedDemandInKw");
   const isActive = watch("isActive");
-  const shouldShowInstalledPower = watch("shouldShowInstalledPower");
+  const shouldShowGeneration = watch("shouldShowGeneration");
 
   useEffect(() => {
     if (isEditFormOpen && consumerUnit && contract) {
@@ -124,7 +124,7 @@ const ConsumerUnitEditForm = () => {
           setValue("distributor", contract?.distributor);
           setValue("supplyVoltage", contract?.supplyVoltage);
           setValue(
-            "shouldShowInstalledPower",
+            "shouldShowGeneration",
             consumerUnit?.totalInstalledPower != null
           );
           setValue("totalInstalledPower", consumerUnit?.totalInstalledPower);
@@ -257,7 +257,7 @@ const ConsumerUnitEditForm = () => {
           code: data.code,
           isActive: data.isActive,
           university: session?.user.universityId || 0,
-          totalInstalledPower: !data.shouldShowInstalledPower
+          totalInstalledPower: !data.shouldShowGeneration
             ? null
             : data.totalInstalledPower,
         },
@@ -785,7 +785,7 @@ const ConsumerUnitEditForm = () => {
           >
             <Typography variant="h5">Geração de energia</Typography>
             <Controller
-              name="shouldShowInstalledPower"
+              name="shouldShowGeneration"
               control={control}
               render={({ field: { onChange, value } }) => (
                 <FormControl>
@@ -794,7 +794,7 @@ const ConsumerUnitEditForm = () => {
                     control={
                       <Switch
                         value={value}
-                        defaultChecked={shouldShowInstalledPower}
+                        defaultChecked={shouldShowGeneration}
                         onChange={onChange}
                       />
                     }
@@ -803,7 +803,7 @@ const ConsumerUnitEditForm = () => {
               )}
             />
           </Grid>
-          {shouldShowInstalledPower ? (
+          {shouldShowGeneration ? (
             <>
               <Grid item xs={12}>
                 <Alert severity="info" variant="standard">
@@ -859,7 +859,7 @@ const ConsumerUnitEditForm = () => {
         </Grid>
       </>
     ),
-    [control, shouldShowInstalledPower]
+    [control, shouldShowGeneration]
   );
 
   return (
