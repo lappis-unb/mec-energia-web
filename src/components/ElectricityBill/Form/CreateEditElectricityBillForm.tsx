@@ -405,8 +405,18 @@ const CreateEditEnergyBillForm = () => {
                     earliestContract.startDate
                   );
 
+                  const contractStartDateMonth = (contractStartDate.getMonth())
+                  const contractStartDateYear = (contractStartDate.getFullYear())
+
+                  const fixedDate = new Date(`${contractStartDateYear}/${contractStartDateMonth + 2}`);
+                  
+                  const options = { year: 'numeric', month: 'long' };
+                  const formattedDate = fixedDate.toLocaleDateString('pt-BR', options);
+                  
+                  const message = `Selecione uma data a partir de ${formattedDate}. Não existem contratos registrados antes disso.`;
+
                   if (selectedDate <= contractStartDate) {
-                    return "Este mês não é coberto por um contrato registrado no sistema";
+                    return message;
                   }
                 }
                 return true;
