@@ -50,7 +50,7 @@ const ConsumerUnitInvoiceContentFilter = () => {
 
   return (
     <Paper>
-      <Box display="flex" alignItems="center" px={2} py={1.5}>
+      <Box display="flex" flexWrap="wrap" rowGap={2} alignItems="center" px={2} py={1.5}>
         <Typography variant="caption">Mostrar:</Typography>
 
         <Box ml={2}>
