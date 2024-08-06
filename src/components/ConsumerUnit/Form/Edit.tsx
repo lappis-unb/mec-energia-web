@@ -11,6 +11,7 @@ import {
   FormControlLabel,
   FormHelperText,
   FormLabel,
+  FormGroup,
   Grid,
   InputAdornment,
   InputLabel,
@@ -50,6 +51,7 @@ import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { sendFormattedDate } from "@/utils/date";
 import { isInSomeSubgroups } from "@/utils/validations/form-validations";
 import FormDrawerV2 from "@/components/Form/DrawerV2";
+import FlashOnIcon from "@mui/icons-material/FlashOn";
 
 const defaultValues: EditConsumerUnitForm = {
   isActive: true,
@@ -358,34 +360,48 @@ const ConsumerUnitEditForm = () => {
             />
           </Grid>
         </Grid>
+        
         <Grid item xs={12}>
-          <Box>
-            <Controller
-              name="isActive"
-              control={control}
-              render={({ field: { onChange, value } }) => (
-                <FormControl>
-                  <FormControlLabel
-                    sx={{ marginLeft: 0 }}
-                    control={
-                      <Switch
-                        value={value}
-                        defaultChecked={consumerUnit?.isActive}
-                        onChange={onChange}
-                      />
-                    }
-                    label="Unidade ativa"
-                    labelPlacement="start"
-                  />
-                </FormControl>
-              )}
-            />
-          </Box>
+          <Controller
+            name="isActive"
+            control={control}
+            render={({ field: { onChange, value } }) => (
+              <FormGroup>
+                <Box
+                  display="flex"
+                  justifyContent="flex-start"
+                  alignItems="center"
+                  marginTop={0}
+                  style={{ marginTop: 0, paddingTop: 0 }}
+                >
+                  <FlashOnIcon color="primary" />
+                  {consumerUnit && (
+                    <FormControlLabel
+                      label="Unidade ativa"
+                      labelPlacement="start"
+                      sx={{ margin: 0.5}}
+                      control={
+                        <Box>
+                          <Switch
+                            value={value}
+                            defaultChecked={consumerUnit?.isActive}
+                            onChange={onChange}
+                          />
+                        </Box>
+                      }
+                    />
+                  )}
+                </Box>
 
-          <Typography variant="caption">
-            Só unidades ativas geram recomendações e recebem faturas. Não é
-            possível excluir unidades, apenas desativá-las.
-          </Typography>
+                <FormHelperText>
+                  <p>
+                  Só unidades ativas geram recomendações e recebem faturas. Não é
+                  possível excluir unidades, apenas desativá-las.
+                  </p>
+                </FormHelperText>
+              </FormGroup>
+            )}
+          />
         </Grid>
       </>
     ),
