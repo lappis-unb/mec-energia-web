@@ -6,7 +6,7 @@ import { ptBR } from "date-fns/locale";
 import ConfirmWarning from "@/components/ConfirmWarning/ConfirmWarning";
 import { formatToPtBrCurrency } from "@/utils/number";
 
-import { Box, Button, Grid, IconButton, styled } from "@mui/material";
+import { Box, Button, Grid, IconButton, styled, Tooltip } from "@mui/material";
 import {
   DataGrid,
   GridColDef,
@@ -279,21 +279,25 @@ const ConsumerUnitInvoiceContentTable = () => {
 
         return (
           <>
-            <IconButton
-              onClick={() => {
-                handleEditInvoiceFormOpen({ month, year, id: energyBillId });
-              }}
-            >
-              <Edit />
-            </IconButton>
-            <IconButton
-              onClick={() => {
-                setSelectedEnergyBillId(energyBillId);
-                setIsWarningOpen(true);
-              }}
-            >
-              <Delete />
-            </IconButton>
+            <Tooltip title="Editar" arrow placement="top">
+              <IconButton
+                onClick={() => {
+                  handleEditInvoiceFormOpen({ month, year, id: energyBillId });
+                }}
+              >
+                <Edit />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Excluir" arrow placement="top">
+              <IconButton
+                onClick={() => {
+                  setSelectedEnergyBillId(energyBillId);
+                  setIsWarningOpen(true);
+                }}
+              >
+                <Delete />
+              </IconButton>
+            </Tooltip>
           </>
         );
       },
@@ -312,6 +316,11 @@ const ConsumerUnitInvoiceContentTable = () => {
     //     }
 
     //     return (
+    //       <Tooltip
+    //          title="Baixar"
+    //          arrow
+    //          placement="top"
+    //       >
     //       <IconButton
     //         onClick={() => {
     //           handleDownloadPDF(energyBillId);
@@ -320,6 +329,7 @@ const ConsumerUnitInvoiceContentTable = () => {
     //         <GetApp />{" "}
     //         {/* Este é um ícone de download do Material Icons. Se não for adequado, você pode substituí-lo por outro ícone de sua preferência. */}
     //       </IconButton>
+    // </Tooltip>
     //     );
     //   },
     // },
