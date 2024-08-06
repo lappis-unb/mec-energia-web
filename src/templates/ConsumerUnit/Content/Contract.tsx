@@ -116,29 +116,39 @@ const ConsumerUnitContractContent = () => {
             </Grid>
 
             <Grid item xs={6}>
-              <Typography variant="subtitle2">Demanda contratada</Typography>
+              {(contract.tariffFlag === 'Azul') ? (<>
+                <Typography variant="subtitle2">Demanda contratada</Typography>
+                <Box display="flex">
+                  <Box>
+                    <Typography variant="body2" color="GrayText">
+                      Ponta
+                    </Typography>
 
-              <Box display="flex">
-                <Box>
-                  <Typography variant="body2" color="GrayText">
-                    Ponta
-                  </Typography>
+                    <Typography variant="body1">
+                      {contract?.peakContractedDemandInKw} kW
+                    </Typography>
+                  </Box>
 
+                  <Box ml={3}>
+                    <Typography variant="body2" color="GrayText">
+                      Fora Ponta
+                    </Typography>
+
+                    <Typography variant="body1">
+                      {contract?.offPeakContractedDemandInKw} kW
+                    </Typography>
+                  </Box>
+                </Box>
+              </>) : (<>
+                <Typography variant="body2" color="GrayText">
+                  Demanda contratada
+                </Typography>
+                <Box display="flex">
                   <Typography variant="body1">
                     {contract?.peakContractedDemandInKw} kW
                   </Typography>
                 </Box>
-
-                <Box ml={3}>
-                  <Typography variant="body2" color="GrayText">
-                    Fora Ponta
-                  </Typography>
-
-                  <Typography variant="body1">
-                    {contract?.offPeakContractedDemandInKw} kW
-                  </Typography>
-                </Box>
-              </Box>
+              </>)}
             </Grid>
           </Grid>
         </CardContent>

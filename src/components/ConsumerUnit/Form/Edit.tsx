@@ -195,6 +195,10 @@ const ConsumerUnitEditForm = () => {
     }
   }, [shouldShowGreenDemand]);
 
+  useEffect(() => {
+    setValue("tariffFlag", contract?.tariffFlag ?? "B");
+  }, [isEditFormOpen]);
+
   // Validações
 
   const isValidDate = (date: EditConsumerUnitForm["startDate"]) => {
