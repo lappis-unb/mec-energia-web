@@ -128,6 +128,10 @@ const CreateEditEnergyBillForm = () => {
   const offPeakMeasuredDemandInKw = watch("offPeakMeasuredDemandInKw");
 
   useEffect(() => {
+    reset();
+  }, [isCreateEnergyBillFormOpen]);
+
+  useEffect(() => {
     if (isEditEnergyBillFormOpen) {
       const fetchData = async () => {
         try {
