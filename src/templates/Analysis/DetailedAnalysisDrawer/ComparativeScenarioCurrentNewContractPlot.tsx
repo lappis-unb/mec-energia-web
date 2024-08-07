@@ -1,7 +1,6 @@
 import { DetailedContractCostsComparisonPlot } from "@/types/recommendation";
 import { Box } from "@mui/material";
 import { Chart } from "react-chartjs-2";
-import { Subtitle } from "./Subtitle";
 
 interface Props {
   dates: string[][];
@@ -10,11 +9,7 @@ interface Props {
 
 export const ComparativeScenarioCurrentNewContractPlot = ({ dates, costs }: Props) => {
   return (
-    <Box mt={4}>
-      <Subtitle
-        id="Figura 6"
-        title="Gráfico comparativo considerando o contrato atual e o contrato proposto"
-      />
+    <Box>
       <Chart
         type="bar"
         data={{

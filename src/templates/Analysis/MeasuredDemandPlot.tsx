@@ -2,7 +2,6 @@ import { Recommendation } from "@/types/recommendation";
 import { ChartDataset } from "chart.js";
 import { Chart } from "react-chartjs-2";
 import { Box } from "@mui/material";
-import { Subtitle } from "./DetailedAnalysisDrawer/Subtitle";
 import theme from "@/theme";
 
 interface Props {
@@ -34,7 +33,7 @@ export const MeasuredDemandPlot = ({
     {
       type: "line",
       label: "Demanda Contratada",
-      data: [220, 220, 220, 220, 220, 220, 220, 220, 220, 220, 220, 220],
+      data: contractPeakDemands,
       backgroundColor: "#008940",
       borderColor: "#008940",
       pointStyle: "rect",
@@ -43,20 +42,7 @@ export const MeasuredDemandPlot = ({
     {
       type: "bar",
       label: "Demanda Medida",
-      data: [
-        152.46,
-        141.12,
-        294.89,
-        null,
-        260.82,
-        217.98,
-        153.72,
-        207.9,
-        313.74,
-        309.96,
-        332.64,
-        296.1,
-      ],
+      data: recommendation.consumptionHistoryPlot.peakMeasuredDemandInKw,
       backgroundColor: theme.palette.graph.measuredDemandMain,
       borderColor: theme.palette.graph.measuredDemandMain,
     },
@@ -100,13 +86,7 @@ export const MeasuredDemandPlot = ({
   ];
 
   return (
-    <Box mt={4}>
-      <Subtitle
-        id="Figura 3"
-        title="Gráfico comparativo entre a demanda contratada - carga e os 
-          valores de demanda medidas - carga nos horários de ponta e fora 
-          de ponta"
-      />
+    <Box>
       <Chart
         type="line"
         datasetIdKey="measured-demand"
