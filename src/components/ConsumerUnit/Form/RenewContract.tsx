@@ -652,6 +652,7 @@ const ConsumerUnitRenewContractForm = () => {
         open={shouldShowCancelDialog}
         onClose={handleCloseDialog}
         onDiscard={handleDiscardForm}
+        type="create"
       />
 
       <FormConfirmDialog

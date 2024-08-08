@@ -791,6 +791,7 @@ const ConsumerUnitCreateForm = () => {
         entity={"unidade consumidora"}
         onClose={handleCloseDialog}
         onDiscard={handleDiscardForm}
+        type="create"
       />
 
       <DistributorCreateFormDialog

@@ -863,6 +863,7 @@ const CreateEditEnergyBillForm = () => {
         open={shouldShowCancelDialog}
         onClose={handleCloseDialog}
         onDiscard={handleDiscardForm}
+        type={isCreateEnergyBillFormOpen ? "create" : "update"}
       />
     </Fragment>
   );

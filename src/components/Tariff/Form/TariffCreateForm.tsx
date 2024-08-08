@@ -62,6 +62,7 @@ const defaultValues: CreateAndEditTariffForm = {
 
 const TariffCreateEditForm = () => {
   const dispatch = useDispatch();
+
   const isCreateTariffFormOpen = useSelector(selectIsTariffCreateFormOpen);
   const isEditTariffFormOpen = useSelector(selectIsTariffEditFormOpen);
   const activeDistributorId = useSelector(selectActiveDistributorId);
@@ -1017,9 +1018,10 @@ const TariffCreateEditForm = () => {
       />
       <FormWarningDialog
         open={shouldShowCancelDialog}
-        entity={"distribuidora"}
+        entity={"tarifa"}
         onClose={handleCloseDialog}
         onDiscard={handleDiscardForm}
+        type={isCreateTariffFormOpen ? "create" : "update"}
       />
     </Fragment>
   );

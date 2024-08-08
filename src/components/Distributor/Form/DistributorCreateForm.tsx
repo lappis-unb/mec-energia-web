@@ -248,6 +248,7 @@ const DistributorCreateForm = () => {
         entity={"distribuidora"}
         onClose={handleCloseDialog}
         onDiscard={handleDiscardForm}
+        type="create"
       />
     </Fragment>
   );

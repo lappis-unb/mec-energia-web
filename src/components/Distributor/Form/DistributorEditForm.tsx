@@ -334,6 +334,7 @@ const DistributorEditForm = () => {
         entity={"distribuidora"}
         onClose={handleCloseDialog}
         onDiscard={handleDiscardForm}
+        type="update"
       />
     </Fragment>
   );

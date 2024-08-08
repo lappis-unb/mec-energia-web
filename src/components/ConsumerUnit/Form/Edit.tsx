@@ -901,6 +901,7 @@ const ConsumerUnitEditForm = () => {
         onClose={handleCloseDialog}
         onDiscard={handleDiscardForm}
         entity={"unidade consumidora"}
+        type="update"
       />
 
       <DistributorCreateFormDialog

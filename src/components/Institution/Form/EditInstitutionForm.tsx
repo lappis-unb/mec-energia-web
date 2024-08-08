@@ -250,6 +250,7 @@ const EditInstitutionForm = () => {
         entity={"instituição"}
         onClose={handleCloseDialog}
         onDiscard={handleDiscardForm}
+        type="update"
       />
 
 
