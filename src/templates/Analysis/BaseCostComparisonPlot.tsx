@@ -59,7 +59,7 @@ export const BaseCostComparisonPlot = ({ dates, recommendation }: Props) => {
               },
               label: function (context) {
                 if (context.parsed.y == null) {
-                  return;
+                  return null;
                 } else {
                   let label = context.dataset.label || "";
                   label +=
@@ -71,6 +71,14 @@ export const BaseCostComparisonPlot = ({ dates, recommendation }: Props) => {
                   return label;
                 }
               },
+            },
+          },
+          datalabels: {
+            anchor: "end",
+            align: "end",
+            rotation: 270,
+            formatter: function (value) {
+              return value == null ? "Indisponível" : null;
             },
           },
         },
@@ -91,6 +99,12 @@ export const BaseCostComparisonPlot = ({ dates, recommendation }: Props) => {
             grid: {
               color: "#C3C3C3",
             },
+          },
+        },
+        datasets: {
+          bar: {
+            barPercentage: 1,
+            skipNull: true,
           },
         },
       }}

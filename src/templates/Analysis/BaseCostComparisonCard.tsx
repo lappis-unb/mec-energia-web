@@ -116,7 +116,7 @@ export const BaseCostComparisonCard = ({
 
         <br />
         <Typography sx={{ color: "gray" }} variant="body2">
-          *Consumo e demanda-carga multiplicados pelas tarifas atuais
+          *Consumo e demanda de carga multiplicados pelas tarifas atuais
           cadastradas na plataforma
         </Typography>
       </CardContent>

@@ -3,17 +3,20 @@ import { ChartDataset } from "chart.js";
 import { Chart } from "react-chartjs-2";
 import { Box } from "@mui/material";
 import theme from "@/theme";
+import { Subtitle } from "./DetailedAnalysisDrawer/Subtitle";
 
 interface Props {
   dates: string[][];
   recommendation: Recommendation;
   isGreen?: boolean;
+  isDetailedAnalysis: boolean;
 }
 
 export const MeasuredDemandPlot = ({
   dates,
   recommendation,
   isGreen,
+  isDetailedAnalysis,
 }: Props) => {
   // const maxValue = findMaxValue([
   //   recommendation.consumptionHistoryPlot.offPeakMeasuredDemandInKw,
@@ -71,22 +74,30 @@ export const MeasuredDemandPlot = ({
       type: "bar",
       label: "Demanda Medida Ponta",
       data: recommendation.consumptionHistoryPlot.peakMeasuredDemandInKw,
-      backgroundColor: "#7C0AC1",
-      borderColor: "#7C0AC1",
+      backgroundColor: theme.palette.graph.measuredDemandMain,
+      borderColor: theme.palette.graph.measuredDemandMain,
       pointStyle: "triangle",
     },
     {
       type: "bar",
       label: "Demanda Medida Fora Ponta",
       data: recommendation.consumptionHistoryPlot.offPeakMeasuredDemandInKw,
-      backgroundColor: "#CB95EC",
-      borderColor: "#CB95EC",
+      backgroundColor: theme.palette.graph.measuredDemandSecondary,
+      borderColor: theme.palette.graph.measuredDemandSecondary,
       pointStyle: "circle",
     },
   ];
 
   return (
-    <Box>
+    <Box mt={2}>
+      {isDetailedAnalysis ? (
+        <Subtitle
+          id="Figura 3"
+          title="Gráfico comparativo entre a demanda contratada - carga e os 
+          valores de demanda medidas - carga nos horários de ponta e fora 
+          de ponta"
+        />
+      ) : null}
       <Chart
         type="line"
         datasetIdKey="measured-demand"

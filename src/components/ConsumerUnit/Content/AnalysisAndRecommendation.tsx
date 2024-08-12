@@ -19,9 +19,10 @@ import {
 } from "@/api";
 
 import { BaseCostComparisonCard } from "@/templates/Analysis/BaseCostComparisonCard";
-import { MeasuredConsumptionPlot } from "@/templates/Analysis/MeasuredConsumptionPlot";
 import { MeasuredDemandPlot } from "@/templates/Analysis/MeasuredDemandPlot";
 import { RecommendationCard } from "@/templates/Analysis/RecommendationCard";
+import { AverageConsumptionPlot } from "@/templates/Analysis/AverageConsumptionPlot";
+
 import {
   selectActiveConsumerUnitId,
   setActiveSubgroup,
@@ -161,22 +162,29 @@ export const AnalysisAndRecommendation = () => {
         </Grid>
 
         <Grid item xs={6}>
-          <Card>
+          <Card style={{ minHeight: "100%" }}>
             <CardContent>
               <Typography variant="h5">Consumo medido</Typography>
               <Typography variant="body2" sx={{ color: "gray" }}>
                 Últimos 12 meses
               </Typography>
 
-              <MeasuredConsumptionPlot
+              <AverageConsumptionPlot
                 dates={dates}
-                recommendation={recommendation}
+                data={{
+                  peakConsumptionInKwh:
+                    recommendation.consumptionHistoryPlot.peakConsumptionInKwh,
+                  offPeakConsumptionInKwh:
+                    recommendation.consumptionHistoryPlot
+                      .offPeakConsumptionInKwh,
+                }}
+                isGreen={recommendation.currentContract.tariffFlag === "G"}
               />
             </CardContent>
           </Card>
         </Grid>
 
-        <Grid item xs={6}>
+        <Grid item xs={6} style={{ height: "100%" }}>
           <Card>
             <CardContent>
               <Typography variant="h5">{"Demanda medida - carga"}</Typography>
@@ -188,6 +196,7 @@ export const AnalysisAndRecommendation = () => {
                 dates={dates}
                 recommendation={recommendation}
                 isGreen={recommendation.currentContract.tariffFlag === "G"}
+                isDetailedAnalysis={false}
               />
             </CardContent>
           </Card>
