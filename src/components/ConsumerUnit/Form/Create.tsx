@@ -590,93 +590,94 @@ const ConsumerUnitCreateForm = () => {
             />
           </Grid>
         ) : (
-          <Box>
-            <Grid item xs={8}>
-              <Controller
-                control={control}
-                name="peakContractedDemandInKw"
-                rules={{
-                  required: "Preencha este campo",
-                  validate: isValueGreaterThenZero,
-                }}
-                render={({
-                  field: { onChange, onBlur, value },
-                  fieldState: { error },
-                }) => (
-                  <NumericFormat
-                    value={value}
-                    customInput={TextField}
-                    label="Dema. Ponta *"
-                    fullWidth
-                    InputProps={{
-                      endAdornment: (
-                        <InputAdornment position="end">kW</InputAdornment>
-                      ),
-                    }}
-                    type="text"
-                    allowNegative={false}
-                    isAllowed={({ floatValue }) =>
-                      !floatValue || floatValue <= 99999.99
-                    }
-                    decimalScale={2}
-                    decimalSeparator=","
-                    thousandSeparator={"."}
-                    error={Boolean(error)}
-                    helperText={error?.message ?? " "}
-                    onValueChange={(values) => onChange(values.floatValue)}
-                    onBlur={onBlur}
-                  />
-                )}
-              />
-            </Grid>
-
-            <Grid item xs={8}>
-              <Controller
-                control={control}
-                name="offPeakContractedDemandInKw"
-                rules={{
-                  required: "Preencha este campo",
-                  validate: isValueGreaterThenZero,
-                }}
-                render={({
-                  field: { onChange, onBlur, value },
-                  fieldState: { error },
-                }) => (
-                  <NumericFormat
-                    value={value}
-                    customInput={TextField}
-                    label="Dem. Fora Ponta *"
-                    fullWidth
-                    InputProps={{
-                      endAdornment: (
-                        <InputAdornment position="end">kW</InputAdornment>
-                      ),
-                    }}
-                    type="text"
-                    allowNegative={false}
-                    isAllowed={({ floatValue }) =>
-                      !floatValue || floatValue <= 99999.99
-                    }
-                    decimalScale={2}
-                    decimalSeparator=","
-                    thousandSeparator={"."}
-                    error={Boolean(error)}
-                    helperText={error?.message ?? " "}
-                    onValueChange={(values) => onChange(values.floatValue)}
-                    onBlur={onBlur}
-                  />
-                )}
-              />
-            </Grid>
-            {!shouldShowGreenDemand && (
-              <Typography variant="body2" sx={{ px: 2 }}>
-                O valor de tensão contratada inserido é compatível apenas com a modalidade azul
-              </Typography>
-            )}
-
-          </Box>
-        )}
-      </>
+          <>
+          <Grid item xs={12} container spacing={2}>
+          <Grid item xs={6}>
+          <Controller
+          control={control}
+          name="offPeakContractedDemandInKw"
+          rules={{
+            required: "Preencha este campo",
+            validate: isValueGreaterThenZero,
+          }}
+          render={({
+            field: { onChange, onBlur, value },
+            fieldState: { error },
+          }) => (
+            <NumericFormat
+              value={value}
+              customInput={TextField}
+              label="Dem. Fora Ponta *"
+              fullWidth
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">kW</InputAdornment>
+                ),
+              }}
+              type="text"
+              allowNegative={false}
+              isAllowed={({ floatValue }) =>
+                !floatValue || floatValue <= 99999.99
+              }
+              decimalScale={2}
+              decimalSeparator=","
+              thousandSeparator={"."}
+              error={Boolean(error)}
+              helperText={error?.message ?? " "}
+              onValueChange={(values) => onChange(values.floatValue)}
+              onBlur={onBlur}
+            />
+          )}
+        />
+      </Grid>
+      <Grid item xs={6}>
+      <Controller
+          control={control}
+          name="peakContractedDemandInKw"
+          rules={{
+            required: "Preencha este campo",
+            validate: isValueGreaterThenZero,
+          }}
+          render={({
+            field: { onChange, onBlur, value },
+            fieldState: { error },
+          }) => (
+            <NumericFormat
+              value={value}
+              customInput={TextField}
+              label="De. Ponta *"
+              fullWidth
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">kW</InputAdornment>
+                ),
+              }}
+              type="text"
+              allowNegative={false}
+              isAllowed={({ floatValue }) =>
+                !floatValue || floatValue <= 99999.99
+              }
+              decimalScale={2}
+              decimalSeparator=","
+              thousandSeparator={"."}
+              error={Boolean(error)}
+              helperText={error?.message ?? " "}
+              onValueChange={(values) => onChange(values.floatValue)}
+              onBlur={onBlur}
+            />
+          )}
+        />
+      </Grid>
+    </Grid>
+              {!shouldShowGreenDemand && (
+                <Typography variant="body2" sx={{ px: 2 }}>
+                  O valor de tensão contratada inserido é compatível apenas com a
+                  modalidade azul
+                </Typography>
+              )}
+            </>
+          )}
+        </>
     ),
     [control, tariffFlag, shouldShowGreenDemand]
   );
