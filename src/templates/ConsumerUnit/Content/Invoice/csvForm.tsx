@@ -469,7 +469,7 @@ const CsvForm: React.FC<CsvFormProps> = ({ csvData }) => {
                               <TableRow
                                 style={{
                                   backgroundColor:
-                                    index % 2 === 0 ? "#FFFFFF" : "#EEF4F4",
+                                    index % 2 === 0 ? "#FFFFFF" : theme.palette.background.default,
                                 }}
                               >
                                 <TableCell
