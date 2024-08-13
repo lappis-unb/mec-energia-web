@@ -16,14 +16,14 @@ export const BaseCostComparisonPlot = ({ dates, recommendation }: Props) => {
         labels: dates,
         datasets: [
           {
-            label: "Custo-base atual",
+            label: "Consumo + Demanda Atuais",
             data: recommendation?.costsComparisonPlot.totalCostInReaisInCurrent,
             backgroundColor: theme.palette.graph.baseCostMain,
             pointStyle: "rect",
             stack: "Atual",
           },
           {
-            label: "Custo-base proposto",
+            label: "Consumo + Demanda propostos",
             data: recommendation?.costsComparisonPlot
               .totalCostInReaisInRecommended,
             backgroundColor: theme.palette.graph.baseCostSecondary,
@@ -41,7 +41,7 @@ export const BaseCostComparisonPlot = ({ dates, recommendation }: Props) => {
         },
         plugins: {
           legend: {
-            position: "top",
+            position: "bottom",
             labels: {
               usePointStyle: true,
             },

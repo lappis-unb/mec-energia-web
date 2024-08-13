@@ -67,7 +67,7 @@ export const BaseCostComparisonCard = ({
           Comparativo de consumo e demanda-carga*{" "}
         </Typography>
 
-        <Typography sx={{ color: "gray" }} variant="body2">
+        <Typography sx={{ color: "gray" }} variant="body2" mb={2}>
           Últimos 12 meses
         </Typography>
 

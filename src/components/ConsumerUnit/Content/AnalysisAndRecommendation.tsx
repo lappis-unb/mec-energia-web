@@ -165,7 +165,7 @@ export const AnalysisAndRecommendation = () => {
           <Card style={{ minHeight: "100%" }}>
             <CardContent>
               <Typography variant="h5">Consumo medido</Typography>
-              <Typography variant="body2" sx={{ color: "gray" }}>
+              <Typography variant="body2" sx={{ color: "gray" }} mb={2}>
                 Últimos 12 meses
               </Typography>
 
