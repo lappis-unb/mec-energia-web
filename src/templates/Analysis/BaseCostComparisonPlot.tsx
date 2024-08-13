@@ -16,7 +16,7 @@ export const BaseCostComparisonPlot = ({ dates, recommendation }: Props) => {
         labels: dates,
         datasets: [
           {
-            label: "Consumo + Demanda Atuais",
+            label: "Consumo + Demanda atuais",
             data: recommendation?.costsComparisonPlot.totalCostInReaisInCurrent,
             backgroundColor: theme.palette.graph.baseCostMain,
             pointStyle: "rect",
@@ -48,10 +48,12 @@ export const BaseCostComparisonPlot = ({ dates, recommendation }: Props) => {
           },
           tooltip: {
             usePointStyle: true,
+            xAlign: "center",
+            yAlign: "bottom",
             callbacks: {
               title: function (context) {
                 let title = context[0].label || "";
-                title = title.replace(",", "/");
+                title = title.replace(",", " ");
                 if (context[0].parsed.y == null) {
                   title += " - Indisponível";
                 }
