@@ -90,7 +90,7 @@ const ConsumerUnitCreateForm = () => {
   const [shouldShowDistributorFormDialog, setShouldShowDistributorFormDialog] =
     useState(false);
   const [shouldShowGreenDemand, setShouldShowGreenDemand] = useState(true);
-  const [sharedValue, setSharedValue] = useState<numeric>();
+  const [sharedValue, setSharedValue] = useState();
 
   //Formulário
   const form = useForm({ mode: "all", defaultValues });
@@ -123,6 +123,10 @@ const ConsumerUnitCreateForm = () => {
       setValue("offPeakContractedDemandInKw", offPeakContractedDemandInKw);
     }
   }, [setValue, tariffFlag]);
+
+  useEffect(() => {
+    console.log(sharedValue);
+  }, [sharedValue]);
 
   useEffect(() => {
     // Verifica se shouldShowGreenDemand é false
@@ -765,7 +769,6 @@ const ConsumerUnitCreateForm = () => {
                             <InputAdornment position="end">kW</InputAdornment>
                           ),
                         }}
-                        type="text"
                         allowNegative={false}
                         isAllowed={({ floatValue }) =>
                           !floatValue || floatValue <= 99999.99
@@ -779,7 +782,6 @@ const ConsumerUnitCreateForm = () => {
                           const newValue = values.floatValue;
                           setSharedValue(newValue);
                           onChange(newValue);
-                          setValue("generationDemand", newValue);
                         }}
                         onBlur={onBlur}
                       />
@@ -830,7 +832,8 @@ const ConsumerUnitCreateForm = () => {
                           const newValue = values.floatValue;
                           setSharedValue(newValue);
                           onChange(newValue);
-                          setValue("totalInstalledPower", newValue); // Sincronizar o outro campo
+                          console.log("dentro", sharedValue);
+                          setValue("totalInstalledPower", newValue);
                         }}
                         onBlur={onBlur}
                       />
@@ -843,7 +846,7 @@ const ConsumerUnitCreateForm = () => {
         </Grid>
       </>
     ),
-    [control, shouldShowGeneration]
+    [control, shouldShowGeneration, sharedValue]
   );
 
   return (
