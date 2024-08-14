@@ -686,7 +686,7 @@ const ConsumerUnitEditForm = () => {
                   type="text"
                   allowNegative={false}
                   isAllowed={({ floatValue }) =>
-                    !floatValue || floatValue <= 99999.99
+                    !floatValue || floatValue <= 9999999.99
                   }
                   decimalScale={2}
                   decimalSeparator=","
@@ -726,7 +726,7 @@ const ConsumerUnitEditForm = () => {
                     type="text"
                     allowNegative={false}
                     isAllowed={({ floatValue }) =>
-                      !floatValue || floatValue <= 99999.99
+                      !floatValue || floatValue <= 9999999.99
                     }
                     decimalScale={2}
                     decimalSeparator=","
@@ -765,7 +765,7 @@ const ConsumerUnitEditForm = () => {
                     type="text"
                     allowNegative={false}
                     isAllowed={({ floatValue }) =>
-                      !floatValue || floatValue <= 99999.99
+                      !floatValue || floatValue <= 9999999.99
                     }
                     decimalScale={2}
                     decimalSeparator=","

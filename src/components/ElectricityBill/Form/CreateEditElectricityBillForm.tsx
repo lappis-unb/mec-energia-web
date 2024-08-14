@@ -648,7 +648,7 @@ const CreateEditEnergyBillForm = () => {
                   type="text"
                   allowNegative={false}
                   isAllowed={({ floatValue }) =>
-                    !floatValue || floatValue <= 99999.99
+                    !floatValue || floatValue <= 9999999.99
                   }
                   placeholder="0"
                   decimalScale={2}
@@ -690,7 +690,7 @@ const CreateEditEnergyBillForm = () => {
                   type="text"
                   allowNegative={false}
                   isAllowed={({ floatValue }) =>
-                    !floatValue || floatValue <= 99999.99
+                    !floatValue || floatValue <= 9999999.99
                   }
                   placeholder="0"
                   decimalScale={2}
@@ -750,7 +750,7 @@ const CreateEditEnergyBillForm = () => {
                   type="text"
                   allowNegative={false}
                   isAllowed={({ floatValue }) =>
-                    !floatValue || floatValue <= 99999.99
+                    !floatValue || floatValue <= 9999999.99
                   }
                   decimalScale={2}
                   placeholder="0"
@@ -792,7 +792,7 @@ const CreateEditEnergyBillForm = () => {
                   type="text"
                   allowNegative={false}
                   isAllowed={({ floatValue }) =>
-                    !floatValue || floatValue <= 99999.99
+                    !floatValue || floatValue <= 9999999.99
                   }
                   placeholder="0"
                   decimalScale={2}
