@@ -322,6 +322,7 @@ const DistributorContentHeader = () => {
 
       <Box>
         <IconButton
+          style={{ color: '#000000DE' }}
           onClick={() => setOpenModalInfoAboutSubGroupsAndTariff(true)}
         >
           <HelpOutlineSharpIcon />

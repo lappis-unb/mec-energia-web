@@ -150,6 +150,7 @@ const EditPasswordForm = () => {
                                 endAdornment: (
                                     <InputAdornment position="end">
                                         <IconButton
+                                            style={{ color: '#000000DE' }}
                                             onClick={() => setShowCurrentPassword(!showCurrentPassword)}
                                             onMouseDown={(e) => e.preventDefault()}
                                         >
@@ -206,6 +207,7 @@ const EditPasswordForm = () => {
                                 endAdornment: (
                                     <InputAdornment position="end">
                                         <IconButton
+                                            style={{ color: '#000000DE' }}
                                             onClick={() => setShowNewPassword(!showNewPassword)}
                                             onMouseDown={(e) => e.preventDefault()}
                                         >
@@ -258,6 +260,7 @@ const EditPasswordForm = () => {
                                 endAdornment: (
                                     <InputAdornment position="end">
                                         <IconButton
+                                            style={{ color: '#000000DE' }}
                                             onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                                             onMouseDown={(e) => e.preventDefault()}
                                         >

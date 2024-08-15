@@ -104,7 +104,7 @@ const ConsumerUnitCard = ({
     >
       {!disabled && (
         <CardActions>
-          <IconButton color="inherit">
+          <IconButton style={{ color: '#000000DE' }}>
             {favorite ? <StarIcon /> : <StarOutlineIcon />}
           </IconButton>
         </CardActions>
@@ -149,13 +149,13 @@ const ConsumerUnitCard = ({
               )}
 
               <Box>
-                <IconButton color="inherit">
+                <IconButton style={{ color: '#000000DE' }}>
                   <Badge badgeContent={badgeCount} color="warning">
                     <ReceiptIcon />
                   </Badge>
                 </IconButton>
 
-                <IconButton color="inherit">
+                <IconButton style={{ color: '#000000DE' }}>
                   <TrendingUpIcon />
                 </IconButton>
               </Box>

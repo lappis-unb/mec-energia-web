@@ -213,7 +213,7 @@ const CsvForm: React.FC<CsvFormProps> = ({ csvData }) => {
             <Box display="flex" alignItems="center">
               <IconButton
                 edge="start"
-                color="inherit"
+                style={{ color: '#000000DE' }}
                 aria-label="Fechar formulário"
                 onClick={handleCloseDrawer}
               >
