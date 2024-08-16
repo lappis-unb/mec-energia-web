@@ -255,9 +255,10 @@ const EditPersonForm = () => {
 
       <FormWarningDialog
         open={shouldShowCancelDialog}
-        entity={"pessoa"}
+        entity={"registro"}
         onClose={handleCloseDialog}
         onDiscard={handleDiscardForm}
+        type="update"
       />
 
     </Fragment>

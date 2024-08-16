@@ -195,6 +195,10 @@ const ConsumerUnitEditForm = () => {
     }
   }, [shouldShowGreenDemand]);
 
+  useEffect(() => {
+    setValue("tariffFlag", contract?.tariffFlag ?? "B");
+  }, [isEditFormOpen]);
+
   // Validações
 
   const isValidDate = (date: EditConsumerUnitForm["startDate"]) => {
@@ -682,7 +686,7 @@ const ConsumerUnitEditForm = () => {
                   type="text"
                   allowNegative={false}
                   isAllowed={({ floatValue }) =>
-                    !floatValue || floatValue <= 99999.99
+                    !floatValue || floatValue <= 9999999.99
                   }
                   decimalScale={2}
                   decimalSeparator=","
@@ -722,7 +726,7 @@ const ConsumerUnitEditForm = () => {
                     type="text"
                     allowNegative={false}
                     isAllowed={({ floatValue }) =>
-                      !floatValue || floatValue <= 99999.99
+                      !floatValue || floatValue <= 9999999.99
                     }
                     decimalScale={2}
                     decimalSeparator=","
@@ -761,7 +765,7 @@ const ConsumerUnitEditForm = () => {
                     type="text"
                     allowNegative={false}
                     isAllowed={({ floatValue }) =>
-                      !floatValue || floatValue <= 99999.99
+                      !floatValue || floatValue <= 9999999.99
                     }
                     decimalScale={2}
                     decimalSeparator=","
@@ -901,6 +905,7 @@ const ConsumerUnitEditForm = () => {
         onClose={handleCloseDialog}
         onDiscard={handleDiscardForm}
         entity={"unidade consumidora"}
+        type="update"
       />
 
       <DistributorCreateFormDialog

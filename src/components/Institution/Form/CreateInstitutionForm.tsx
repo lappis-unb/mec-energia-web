@@ -221,6 +221,7 @@ const CreateInstitutionForm = () => {
         entity={"instituição"}
         onClose={handleCloseDialog}
         onDiscard={handleDiscardForm}
+        type="create"
       />
     </Fragment>
   )

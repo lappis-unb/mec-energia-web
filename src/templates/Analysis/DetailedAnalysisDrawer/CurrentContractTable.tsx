@@ -9,9 +9,12 @@ import {
   TableRow,
 } from "@mui/material";
 import Paper from "@mui/material/Paper";
-import { Subtitle } from "./Subtitle";
 import { GetContractsResponsePayload } from "@/types/contract";
-import { sendFormattedDate } from "@/utils/date";
+import { getFormattedDateUTC, sendFormattedDate } from "@/utils/date";
+import { useSelector } from "react-redux";
+import { useGetConsumerUnitQuery } from "@/api";
+import { skipToken } from "@reduxjs/toolkit/query";
+import { selectActiveConsumerUnitId } from "@/store/appSlice";
 
 interface Props {
   recommendationCurrentContract: RecommendationContract;
@@ -22,6 +25,24 @@ export const CurrentContractTable = ({
   recommendationCurrentContract: currentContract,
   actualContract,
 }: Props) => {
+  const consumerUnitId = useSelector(selectActiveConsumerUnitId);
+  const { data: consumerUnit } = useGetConsumerUnitQuery(
+    consumerUnitId || skipToken
+  );
+
+  const getValidityOfTheContract: () => string | null = () => {
+    if (actualContract?.startDate) {
+      const startDate = getFormattedDateUTC(actualContract?.startDate);
+      const endDate = new Date(startDate!);
+
+      endDate.setFullYear(startDate!.getFullYear() + 1);
+
+      return sendFormattedDate(endDate, "dd/MM/yyyy");
+    }
+
+    return null;
+  };
+
   const rows = [
     { label: "Identificação da Instituição", value: currentContract.university },
     { label: "Identificação da Distribuidora", value: currentContract.distributor },
@@ -35,6 +56,29 @@ export const CurrentContractTable = ({
       value: currentContract.tariffFlag === "B" ? "Azul" : "Verde",
     },
     { label: "Subgrupo", value: currentContract.subgroup },
+
+  ];
+
+  const greenRows = [
+    {
+      label: "Demanda contratada - carga",
+      value: currentContract.peakDemandInKw + " kW",
+    },
+    {
+      label: "Validade do contrato",
+      value: actualContract?.startDate ? getValidityOfTheContract() : null,
+    },
+    {
+      label: "Sistema de Geração - Potência instalada",
+      value: consumerUnit?.totalInstalledPower ? consumerUnit.totalInstalledPower + " kW" : null,
+    },
+    {
+      label: "Sistema de Geração - Demanda de geração contratada",
+      value: consumerUnit?.totalInstalledPower ? consumerUnit.totalInstalledPower + " kW" : null,
+    },
+  ];
+
+  const blueRows = [
     {
       label: "Demanda contratada no horário de ponta - carga",
       value: currentContract.peakDemandInKw + " kW",
@@ -45,25 +89,35 @@ export const CurrentContractTable = ({
     },
     {
       label: "Validade do contrato",
-      value: actualContract?.endDate ? sendFormattedDate(actualContract.endDate) : null,
+      value: actualContract?.startDate ? getValidityOfTheContract() : null,
     },
     {
       label: "Sistema de Geração - Potência instalada",
-      value: currentContract.offPeakDemandInKw + " kW",
+      value: consumerUnit?.totalInstalledPower ? consumerUnit.totalInstalledPower + " kW" : null,
     },
     {
       label: "Sistema de Geração - Demanda de geração contratada",
-      value: currentContract.offPeakDemandInKw + " kW",
+      value: consumerUnit?.totalInstalledPower ? consumerUnit.totalInstalledPower + " kW" : null,
     },
   ];
+
+  const getRows = () => {
+    if (currentContract.tariffFlag == 'B') {
+      return [
+        ...rows,
+        ...blueRows,
+      ];
+    } else {
+      return [
+        ...rows,
+        ...greenRows,
+      ];
+    }
+  };
 
   return (
     <>
       <Box>
-        <Subtitle
-          id="Tabela 1"
-          title="Informações características de fornecimento da unidade consumidora"
-        />
         <TableContainer component={Paper} sx={{ boxShadow: 0 }}>
           <Table sx={{ minWidth: 650 }} aria-label="simple table">
             <TableHead
@@ -81,7 +135,7 @@ export const CurrentContractTable = ({
                 "tr:nth-of-type(even)": { bgcolor: "background.default" },
               }}
             >
-              {rows.map((row) => {
+              {getRows().map((row) => {
                 return row.value && (
                   <TableRow
                     key={row.label}

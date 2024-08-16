@@ -43,6 +43,7 @@ import {
   useGetCurrentInvoiceQuery,
   useGetDistributorsQuery,
   usePostInvoiceMutation,
+  useFetchInvoicesQuery
 } from "@/api";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { useSession } from "next-auth/react";
@@ -105,6 +106,10 @@ const CreateEditEnergyBillForm = () => {
   );
   const { data: currentInvoice, refetch: refetchCurrentInvoice } =
     useGetCurrentInvoiceQuery(currentInvoiceId || skipToken);
+  
+  const { data: invoices } = useFetchInvoicesQuery(
+    activeConsumerUnitId || skipToken
+  );
 
   const [currentDistributor, setCurrentDistributor] =
     useState<DistributorPropsTariffs>();
@@ -364,6 +369,20 @@ const CreateEditEnergyBillForm = () => {
     handleNotification();
   }, [handleNotification, isPostInvoiceSuccess, isPostInvoiceError]);
 
+  const checkIfInvoiceExists = (year: number, month: number): boolean => {
+    if (isEditEnergyBillFormOpen) {
+      return false;
+    }
+
+    if (invoices && year in invoices) {
+      return invoices[year].some(
+        (invoice) =>
+          invoice.month === month && !invoice.isEnergyBillPending
+      );
+    }
+    return false;
+  };
+
   const Header = useCallback(
     () => (
       <>
@@ -386,7 +405,7 @@ const CreateEditEnergyBillForm = () => {
             control={control}
             name="date"
             rules={{
-              required: "Já existe uma fatura lançada neste mês",
+              required: "Preencha esse campo",
               validate: (value: Date | string) => {
                 if (value == "Invalid Date") {
                   const validationDateMessage =
@@ -395,6 +414,16 @@ const CreateEditEnergyBillForm = () => {
                 }
 
                 const selectedDate = new Date(value);
+
+                const month = selectedDate.getMonth();
+                const year = selectedDate.getFullYear();
+
+                const existingInvoice = checkIfInvoiceExists(year, month);
+
+                if (existingInvoice) {
+                  return "Já existe uma fatura lançada neste mês";
+                }
+
                 if (contracts && contracts.length > 0) {
                   const earliestContract = contracts.reduce(
                     (earliest, current) => {
@@ -619,7 +648,7 @@ const CreateEditEnergyBillForm = () => {
                   type="text"
                   allowNegative={false}
                   isAllowed={({ floatValue }) =>
-                    !floatValue || floatValue <= 99999.99
+                    !floatValue || floatValue <= 9999999.99
                   }
                   placeholder="0"
                   decimalScale={2}
@@ -661,7 +690,7 @@ const CreateEditEnergyBillForm = () => {
                   type="text"
                   allowNegative={false}
                   isAllowed={({ floatValue }) =>
-                    !floatValue || floatValue <= 99999.99
+                    !floatValue || floatValue <= 9999999.99
                   }
                   placeholder="0"
                   decimalScale={2}
@@ -721,7 +750,7 @@ const CreateEditEnergyBillForm = () => {
                   type="text"
                   allowNegative={false}
                   isAllowed={({ floatValue }) =>
-                    !floatValue || floatValue <= 99999.99
+                    !floatValue || floatValue <= 9999999.99
                   }
                   decimalScale={2}
                   placeholder="0"
@@ -763,7 +792,7 @@ const CreateEditEnergyBillForm = () => {
                   type="text"
                   allowNegative={false}
                   isAllowed={({ floatValue }) =>
-                    !floatValue || floatValue <= 99999.99
+                    !floatValue || floatValue <= 9999999.99
                   }
                   placeholder="0"
                   decimalScale={2}
@@ -863,6 +892,7 @@ const CreateEditEnergyBillForm = () => {
         open={shouldShowCancelDialog}
         onClose={handleCloseDialog}
         onDiscard={handleDiscardForm}
+        type={isCreateEnergyBillFormOpen ? "create" : "update"}
       />
     </Fragment>
   );
