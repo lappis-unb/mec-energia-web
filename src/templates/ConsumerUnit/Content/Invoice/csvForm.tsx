@@ -207,7 +207,7 @@ const CsvForm: React.FC<CsvFormProps> = ({ csvData }) => {
       PaperProps={{ sx: { height: "100%" } }}
       onClose={handleCloseDrawer}
     >
-      <AppBar position="static">
+      <AppBar position="sticky">
         <Toolbar>
           <Container maxWidth="lg">
             <Box display="flex" alignItems="center">
@@ -424,8 +424,8 @@ const CsvForm: React.FC<CsvFormProps> = ({ csvData }) => {
                             >
                               {item.peakMeasuredDemandInKw.value
                                 ? formatNumber(
-                                  item.peakMeasuredDemandInKw.value
-                                )
+                                    item.peakMeasuredDemandInKw.value
+                                  )
                                 : ""}
                             </TableCell>
                             <TableCell
@@ -464,29 +464,27 @@ const CsvForm: React.FC<CsvFormProps> = ({ csvData }) => {
                                 : ""}
                             </TableCell>
                           </TableRow>
-                          {
-                            hasError && (
-                              <TableRow
+                          {hasError && (
+                            <TableRow
+                              style={{
+                                backgroundColor:
+                                  index % 2 === 0 ? "#FFFFFF" : "#EEF4F4",
+                              }}
+                            >
+                              <TableCell
+                                colSpan={7}
                                 style={{
-                                  backgroundColor:
-                                    index % 2 === 0 ? "#FFFFFF" : "#EEF4F4",
+                                  color: theme.palette.error.main,
+                                  textAlign: "left",
+                                  paddingLeft: "0px",
                                 }}
                               >
-                                <TableCell
-                                  colSpan={7}
-                                  style={{
-                                    color: theme.palette.error.main,
-                                    textAlign: "left",
-                                    paddingLeft: "0px"
-                                  }}
-                                >
-                                  {Array.from(errorMessages).map((msg, idx) => (
-                                    <div key={idx}>{msg}</div>
-                                  ))}
-                                </TableCell>
-                              </TableRow>
-                            )
-                          }
+                                {Array.from(errorMessages).map((msg, idx) => (
+                                  <div key={idx}>{msg}</div>
+                                ))}
+                              </TableCell>
+                            </TableRow>
+                          )}
                         </React.Fragment>
                       );
                     })}
@@ -546,7 +544,7 @@ const CsvForm: React.FC<CsvFormProps> = ({ csvData }) => {
           </Box>
         </Box>
       </Container>
-    </Drawer >
+    </Drawer>
   );
 };
 
