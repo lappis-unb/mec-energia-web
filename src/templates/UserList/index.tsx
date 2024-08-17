@@ -61,6 +61,8 @@ const UserListTemplate = () => {
 
             <TableCell>E-mail</TableCell>
 
+            <TableCell>Universidade</TableCell>
+
             <TableCell width="200px">
               <Box
                 display="flex"
@@ -96,6 +98,15 @@ const UserListTemplate = () => {
                     fontWeight={isUniversityAdmin(user) ? "bold" : "normal"}
                   >
                     <Link href={`mailto:${user.email}`}>{user.email}</Link>
+                  </Typography>
+                </TableCell>
+
+                <TableCell>
+                  <Typography
+                    variant="body2"
+                    fontWeight={isUniversityAdmin(user) ? "bold" : "normal"}
+                  >
+                    {user.university.name}
                   </Typography>
                 </TableCell>
 
