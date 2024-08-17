@@ -2,6 +2,7 @@ import React, { Fragment, useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   selectIsDistributorCreateFormOpen,
+  setActiveDistributorId,
   setIsDistributorCreateFormOpen,
   setIsErrorNotificationOpen,
   setIsSuccessNotificationOpen,
@@ -75,8 +76,10 @@ const DistributorCreateForm = () => {
       isActive: true,
       university: user?.universityId as number,
     };
-    await createDistributor(body);
+    const createdDistributor = await createDistributor(body);
     setCnpjValid(true);
+    if('data' in createdDistributor)
+      dispatch(setActiveDistributorId(createdDistributor.data.id ?? null));
   };
 
   //Notificações
@@ -245,6 +248,7 @@ const DistributorCreateForm = () => {
         entity={"distribuidora"}
         onClose={handleCloseDialog}
         onDiscard={handleDiscardForm}
+        type="create"
       />
     </Fragment>
   );

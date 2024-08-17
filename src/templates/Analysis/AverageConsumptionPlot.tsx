@@ -1,5 +1,4 @@
 import { Chart } from "react-chartjs-2";
-import { Subtitle } from "./DetailedAnalysisDrawer/Subtitle";
 import { Box } from "@mui/material";
 import { ChartDataset } from "chart.js";
 
@@ -47,11 +46,7 @@ export const AverageConsumptionPlot = ({
     ];
 
     return (
-        <Box mt={2}>
-            <Subtitle
-                id="Figura 2"
-                title="Consumo medido nos horários de ponta e fora de ponta"
-            />
+        <Box>
             <Chart
                 type="bar"
                 data={{

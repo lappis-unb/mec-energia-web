@@ -1,11 +1,12 @@
 import { MouseEventHandler, useCallback, useMemo } from "react";
 import { Distributor } from "@/types/distributor";
 import { useRouter } from "next/router";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Badge } from "@mui/material";
 import { CardProps } from "@/types/app";
 import AttachMoneyRoundedIcon from "@mui/icons-material/AttachMoneyRounded";
 import Card from "@/components/Card";
+import { selectActiveDistributorId } from "@/store/appSlice";
 
 interface DistributorCardProps extends CardProps {
   id: number;
@@ -66,6 +67,7 @@ const DistributorCard = ({
     return "default";
   };
 
+  const activeDistributorId = useSelector(selectActiveDistributorId);
 
   const handleActionIconClick = useCallback<
     MouseEventHandler<HTMLButtonElement>
@@ -73,9 +75,9 @@ const DistributorCard = ({
     async (event) => {
       event.stopPropagation();
 
-      router.push(`/distribuidoras/${id}`);
+      router.push(`/distribuidoras/${id ?? activeDistributorId}`);
     },
-    [dispatch, id, pendingTariffsCount, router]
+    [dispatch, id, pendingTariffsCount, router, activeDistributorId]
   );
 
   const variant = useMemo(

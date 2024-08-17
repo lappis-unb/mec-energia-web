@@ -6,15 +6,12 @@ import {
 } from "@mui/material";
 import Paper from "@mui/material/Paper";
 import { GridColDef } from "@mui/x-data-grid";
-import { Subtitle } from "./Subtitle";
 
 interface Props {
   rows: TariffsTableRow[];
-  tariffStartDate: string | null;
-  tariffEndDate: string | null;
 }
 
-export const TariffsTable = ({ rows, tariffStartDate, tariffEndDate }: Props) => {
+export const TariffsTable = ({ rows }: Props) => {
   const copy = [...rows].sort((a, b) => {
     if (a.billingTime > b.billingTime) return -1;
     if (a.billingTime < b.billingTime) return 1;
@@ -41,6 +38,7 @@ export const TariffsTable = ({ rows, tariffStartDate, tariffEndDate }: Props) =>
       align: "left",
       flex: 2,
       sortable: false,
+      minWidth: 500,
     },
     {
       field: "blue",
@@ -50,6 +48,16 @@ export const TariffsTable = ({ rows, tariffStartDate, tariffEndDate }: Props) =>
       align: "right",
       flex: 0.65,
       sortable: false,
+      renderHeader: (params) => {
+        return (<div style={{
+          whiteSpace: "normal",
+          lineHeight: "20px",
+          textAlign: "right",
+          fontWeight: 500,
+        }}>
+          {params.colDef.headerName}
+        </div>);
+      },
     },
     {
       field: "green",
@@ -59,6 +67,16 @@ export const TariffsTable = ({ rows, tariffStartDate, tariffEndDate }: Props) =>
       align: "right",
       flex: 0.65,
       sortable: false,
+      renderHeader: (params) => {
+        return (<div style={{
+          whiteSpace: "normal",
+          lineHeight: "20px",
+          textAlign: "right",
+          fontWeight: 500,
+        }}>
+          {params.colDef.headerName}
+        </div>);
+      },
     },
   ];
 
@@ -89,9 +107,6 @@ export const TariffsTable = ({ rows, tariffStartDate, tariffEndDate }: Props) =>
   return (
     <>
       <Box>
-        <Subtitle id="Tabela 2">
-          <span>Tarifas utilizadas para metodologia de cálculo comparativo, com vigência de <strong>{tariffStartDate}</strong> a <strong>{tariffEndDate}</strong></span>
-        </Subtitle>
         <TableContainer component={Paper} sx={{ boxShadow: 0 }}>
           <StripedDataGrid
             columns={columns}
