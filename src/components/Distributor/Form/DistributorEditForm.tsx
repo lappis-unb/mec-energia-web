@@ -242,6 +242,7 @@ const DistributorEditForm = () => {
               fieldState: { error },
             }) => (
               <PatternFormat
+                style={{ width: "12rem" }}
                 value={value}
                 customInput={TextField}
                 label="CNPJ *"
