@@ -41,6 +41,7 @@ import FormWarningDialog from "@/components/ConsumerUnit/Form/WarningDialog";
 import {
   useGetConsumerUnitQuery,
   useGetContractQuery,
+  useGetContractQuery,
   useGetDistributorsQuery,
   useGetSubgroupsQuery,
   useRenewContractMutation,
