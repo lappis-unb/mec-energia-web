@@ -14,11 +14,16 @@ services:
     environment:
       NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
       NEXTAUTH_URL: ${NEXTAUTH_URL}
-      API_URL: ${API_URL}
+    volumes:
+      - nextjs_static:/app/.next/static
     networks:
       - proxy-network
     restart: always
 
 networks:
   proxy-network:
+    external: true
+
+volumes:
+  nextjs_static:
     external: true
