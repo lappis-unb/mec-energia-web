@@ -1,4 +1,4 @@
-import React, { SyntheticEvent, useState } from "react";
+import React, { SyntheticEvent, useState, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import {
@@ -6,6 +6,7 @@ import {
   Button,
   Container,
   Divider,
+  IconButton,
   Stack,
   Tab,
   Tabs,
@@ -13,6 +14,8 @@ import {
   Alert,
 } from "@mui/material";
 import { FlashOffRounded } from "@mui/icons-material";
+import StarOutlineRoundedIcon from "@mui/icons-material/StarOutlineRounded";
+import StarRoundedIcon from "@mui/icons-material/StarRounded";
 import EditIcon from "@mui/icons-material/Edit";
 import UploadFileIcon from "@mui/icons-material/UploadFileRounded";
 import ReceiptLongRoundedIcon from "@mui/icons-material/ReceiptLongRounded";
@@ -108,6 +111,19 @@ const ConsumerUnitContentHeader = () => {
     }
   };
 
+  const handleFavoriteButtonClick = useCallback<
+    MouseEventHandler<HTMLButtonElement>
+  >(async (event) => {
+    event.stopPropagation();
+    const body: EditFavoritesRequestPayload = {
+      consumerUnitId: consumerUnit?.id,
+      personId: session?.user?.id,
+      action: consumerUnit?.isFavorite ? "remove" : "add",
+    };
+    await editPersonFavorites(body);
+  });
+
+
   const activeConsumerUnitData = consumerUnitsData?.find(
     (consumerUnit) => consumerUnit?.id === consumerUnitId
   );
@@ -125,6 +141,23 @@ const ConsumerUnitContentHeader = () => {
     >
       <Container>
         <Box display="flex">
+          <Box mt={-0.5}>
+            {
+              consumerUnit?.isActive && (
+                <IconButton
+                  color="primary"
+                  edge="start"
+                  onClick={handleFavoriteButtonClick}
+                >
+                  {consumerUnit?.isFavorite ? (
+                    <StarRoundedIcon fontSize="large" />
+                  ) : (
+                    <StarOutlineRoundedIcon fontSize="large" />
+                  )}
+                </IconButton>
+              )
+            }
+          </Box>
           <Box pl={1}>
             <Box display="flex" alignItems="center">
               <Typography variant="h4">{consumerUnit?.name}</Typography>
@@ -161,7 +194,7 @@ const ConsumerUnitContentHeader = () => {
           <Alert
             severity="warning"
             variant="filled"
-            icon={<FlashOffRounded style={{ color: "#000", opacity: 0.5 }} />}
+            icon={<FlashOffRounded style={{ color: "#000000", opacity: 0.54 }} />}
             sx={{ cursor: "pointer", whiteSpace: "pre-line", mt: 3 }}
           >
             Unidade desativada

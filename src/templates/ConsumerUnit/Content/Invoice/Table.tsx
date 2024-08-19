@@ -121,7 +121,6 @@ const getDataGridRows = (
       isActive,
     }))
     .filter((row) => {
-      console.log(row);
       if (
         row.isActive === false &&
         row.isEnergyBillPending === false &&
