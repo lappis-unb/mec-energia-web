@@ -1,5 +1,3 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
 # dependencies
 /node_modules
 /.pnp
@@ -30,7 +28,6 @@ yarn-error.log*
 # local env files
 .env*.local
 
-
 # vercel
 .vercel
 
@@ -40,3 +37,12 @@ next-env.d.ts
 
 .yarnrc.yml
 .yarn/
+
+# .lock yarn e pnpm
+yarn.lock
+.pnpm-lock.yaml
+package-lock.json
+
+# backup e drafts
+.backup/
+.draft/
