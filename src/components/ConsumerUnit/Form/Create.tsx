@@ -77,6 +77,9 @@ const ConsumerUnitCreateForm = () => {
   const { data: distributorList } = useGetDistributorsQuery(
     session?.user?.universityId || skipToken
   );
+
+  const sortedDistributorList = distributorList?.slice().sort((a, b) => a.name.localeCompare(b.name));
+
   const [
     createConsumerUnit,
     { status, isError, isSuccess, isLoading, reset: resetMutation },
@@ -364,7 +367,7 @@ const ConsumerUnitCreateForm = () => {
                   onChange={onChange}
                   onBlur={onBlur}
                 >
-                  {distributorList?.map(
+                  {sortedDistributorList?.map(
                     (distributor: DistributorPropsTariffs) => {
                       return (
                         <MenuItem key={distributor.id} value={distributor.id}>
