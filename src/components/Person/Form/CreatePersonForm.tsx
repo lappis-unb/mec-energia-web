@@ -144,7 +144,7 @@ const CreatePersonForm = () => {
 
     <>
       <Grid item xs={12}>
-        <Typography variant="h5">Informações pessoais</Typography>
+        <Typography variant="h5" style={{ marginBottom: '16px' }}>Informações pessoais</Typography>
       </Grid>
 
       <Grid item xs={12}>
