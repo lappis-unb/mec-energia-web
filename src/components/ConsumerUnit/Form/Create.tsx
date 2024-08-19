@@ -258,7 +258,7 @@ const ConsumerUnitCreateForm = () => {
     () => (
       <>
         <Grid item xs={12}>
-          <Typography variant="h5">Unidade Consumidora</Typography>
+          <Typography variant="h5" style={{ marginBottom: '16px' }} >Unidade Consumidora</Typography>
         </Grid>
         <Grid item xs={12}>
           <Controller
@@ -297,7 +297,7 @@ const ConsumerUnitCreateForm = () => {
     () => (
       <>
         <Grid item xs={12}>
-          <Typography variant="h5">Contrato</Typography>
+          <Typography variant="h5" style={{ marginBottom: '13px' }}>Contrato</Typography>
         </Grid>
 
         <Grid item xs={12}>
@@ -343,6 +343,7 @@ const ConsumerUnitCreateForm = () => {
               <FormControl
                 sx={{ minWidth: "200px", maxWidth: "100%" }}
                 error={!!error}
+                style={{ marginTop: '20px' }}
               >
                 <InputLabel>Distribuidora *</InputLabel>
 
