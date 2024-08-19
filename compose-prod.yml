@@ -16,10 +16,9 @@ services:
       NEXTAUTH_URL: ${NEXTAUTH_URL}
       API_URL: ${API_URL}
     networks:
-      - mec-energia-network
+      - proxy-network
     restart: always
 
 networks:
-  mec-energia-network:
-    name: mec-energia-network
+  proxy-network:
     external: true
