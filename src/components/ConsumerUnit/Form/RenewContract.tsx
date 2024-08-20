@@ -104,7 +104,8 @@ const ConsumerUnitRenewContractForm = () => {
   const [showShowConfirmDialog, setShouldShowConfirmDialog] = useState(false);
   const [shouldShowDistributorFormDialog, setShouldShowDistributorFormDialog] =
     useState(false);
-  const [shouldShowGreenDemand, setShouldShowGreenDemand] = useState(true);
+  const [shouldShowGreenDemand, setShouldShowGreenDemand] = useState(false);
+  const [isTooltipOpen, setIsTooltipOpen] = useState(false);
 
   const form = useForm({ mode: "all", defaultValues });
 
@@ -120,6 +121,18 @@ const ConsumerUnitRenewContractForm = () => {
 
   const tariffFlag = watch("tariffFlag");
   const supplyVoltage = watch("supplyVoltage");
+
+  const shouldHideTooltip = (value) => {
+    if (value === undefined) return false;
+    return (
+      value <= 2.3 ||
+      (value > 2.3 && value <= 25) ||
+      (value >= 30 && value <= 44) ||
+      value === 69 ||
+      (value >= 88 && value <= 138) ||
+      value >= 230
+    );
+  };
 
   useEffect(() => {
     if (isRenewContractFormOpen) {
@@ -824,10 +837,10 @@ const ConsumerUnitRenewContractForm = () => {
                 componentsProps={{
                   tooltip: {
                     sx: {
-                      bgcolor: "warning.main",
-                      color: "warning.contrastText",
+                      bgcolor: "#B21B0A",
+                      color: "#FFFFFF",
                       "& .MuiTooltip-arrow": {
-                        color: "warning.main",
+                        color: "#B21B0A",
                       },
                     },
                   },
@@ -835,23 +848,23 @@ const ConsumerUnitRenewContractForm = () => {
                 title={
                   <div style={{ whiteSpace: "pre-line" }}>
                     {subgroupsList
-                      ? getSubgroupsText(subgroupsList?.subgroups)
+                      ? getSubgroupsText(subgroupsList.subgroups)
                       : ""}
                   </div>
                 }
                 arrow
                 placement="right"
-                sx={{ color: "red" }}
+                open={isTooltipOpen}
               >
                 <Box>
                   <SupplyVoltageTooltip
-                    open={supplyVoltage ? true : false}
+                    open={!!supplyVoltage && !shouldHideTooltip(supplyVoltage)}
                     supplyVoltage={supplyVoltage}
                   >
                     <Grid item xs={8} sm={6}>
                       <Controller
                         control={control}
-                        name={"supplyVoltage"}
+                        name="supplyVoltage"
                         rules={{
                           required: "Preencha este campo",
                           validate: (v) =>
@@ -865,6 +878,7 @@ const ConsumerUnitRenewContractForm = () => {
                           fieldState: { error },
                         }) => (
                           <NumericFormat
+                            key="supplyVoltageInput"
                             value={value}
                             customInput={TextField}
                             label="Tensão contratada *"
@@ -888,23 +902,20 @@ const ConsumerUnitRenewContractForm = () => {
                             }
                             decimalScale={2}
                             decimalSeparator=","
-                            thousandSeparator={"."}
+                            thousandSeparator="."
                             onValueChange={(values) => {
-                              const newVoltage = values ? values.floatValue : 0;
-                              if (newVoltage === 69) {
-                                setShouldShowGreenDemand(false);
-                              } else if (
-                                newVoltage !== undefined &&
-                                newVoltage >= 88 &&
-                                newVoltage <= 138
-                              ) {
-                                setShouldShowGreenDemand(false);
-                              } else {
-                                setShouldShowGreenDemand(true);
-                              }
+                              const newVoltage = values?.floatValue || 0;
+                              setIsTooltipOpen(!shouldHideTooltip(newVoltage));
                               onChange(values.floatValue);
                             }}
-                            onBlur={onBlur}
+                            onBlur={(event) => {
+                              if (error?.message === "Preencha este campo") {
+                                setIsTooltipOpen(true);
+                              } else {
+                                setIsTooltipOpen(false);
+                              }
+                              onBlur(event);
+                            }}
                           />
                         )}
                       />

@@ -23,6 +23,7 @@ import {
   Switch,
   TextField,
   Typography,
+  Tooltip,
 } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers";
 
@@ -51,6 +52,7 @@ import DistributorCreateFormDialog from "@/components/Distributor/Form/CreateFor
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { sendFormattedDate } from "@/utils/date";
 import { isInSomeSubgroups } from "@/utils/validations/form-validations";
+import { getSubgroupsText } from "@/utils/get-subgroup-text";
 import FormDrawerV2 from "@/components/Form/DrawerV2";
 import SupplyVoltageTooltip from "@/components/SupplyVoltageTooltip";
 import FlashOnIcon from "@mui/icons-material/FlashOn";
@@ -76,7 +78,9 @@ const ConsumerUnitEditForm = () => {
   const [shouldShowDistributorFormDialog, setShouldShowDistributorFormDialog] =
     useState(false);
   const [shouldShowCancelDialog, setShouldShowCancelDialog] = useState(false);
-  const [shouldShowGreenDemand, setShouldShowGreenDemand] = useState(true);
+  // const [shouldShowGreenDemand, setShouldShowGreenDemand] = useState(true);
+  const shouldShowGreenDemand = true;
+  const [isTooltipOpen, setIsTooltipOpen] = useState(false);
   // const [shouldShowInstalledPower, setShouldShowInstalledPower] = useState(false);
 
   const { data: session } = useSession();
@@ -114,6 +118,18 @@ const ConsumerUnitEditForm = () => {
   const offPeakContractedDemandInKw = watch("offPeakContractedDemandInKw");
   const isActive = watch("isActive");
   const shouldShowInstalledPower = watch("shouldShowInstalledPower");
+
+  const shouldHideTooltip = (value) => {
+    if (value === undefined) return false;
+    return (
+      value <= 2.3 ||
+      (value > 2.3 && value <= 25) ||
+      (value >= 30 && value <= 44) ||
+      value === 69 ||
+      (value >= 88 && value <= 138) ||
+      value >= 230
+    );
+  };
 
   useEffect(() => {
     if (isEditFormOpen && consumerUnit && contract) {
@@ -1109,67 +1125,81 @@ const ConsumerUnitEditForm = () => {
                     )}
                   />
                 </Grid>
-
                 <SupplyVoltageTooltip
-                  open={supplyVoltage ? true : false}
+                  open={isTooltipOpen}
                   supplyVoltage={supplyVoltage}
                 >
-                  <Grid item xs={8} sm={6}>
-                    <Controller
-                      control={control}
-                      name={"supplyVoltage"}
-                      rules={{
-                        required: "Preencha este campo",
-                        validate: (v) =>
-                          isInSomeSubgroups(v, subgroupsList?.subgroups || []),
-                      }}
-                      render={({
-                        field: { onChange, value },
-                        fieldState: { error },
-                      }) => (
-                        <NumericFormat
-                          key={"supplyVoltageInput"}
-                          value={value}
-                          customInput={TextField}
-                          label="Tensão contratada *"
-                          helperText={
-                            error?.message ??
-                            "Se preciso, converta a tensão de V para kV dividindo o valor por 1.000."
-                          }
-                          error={!!error}
-                          fullWidth
-                          InputProps={{
-                            endAdornment: (
-                              <InputAdornment position="end">kV</InputAdornment>
-                            ),
-                          }}
-                          type="text"
-                          allowNegative={false}
-                          isAllowed={({ floatValue }) =>
-                            !floatValue || floatValue <= 9999.99
-                          }
-                          decimalScale={2}
-                          decimalSeparator=","
-                          thousandSeparator={"."}
-                          onValueChange={(values) => {
-                            const newVoltage = values ? values.floatValue : 0;
-                            if (newVoltage === 69) {
-                              setShouldShowGreenDemand(false);
-                            } else if (
-                              newVoltage !== undefined &&
-                              newVoltage >= 88 &&
-                              newVoltage <= 138
-                            ) {
-                              setShouldShowGreenDemand(false);
-                            } else {
-                              setShouldShowGreenDemand(true);
+                  <Tooltip
+                    componentsProps={{
+                      tooltip: {
+                        sx: {
+                          bgcolor: "#B21B0A",
+                          color: "#FFFFFF",
+                          "& .MuiTooltip-arrow": {
+                            color: "#B21B0A",
+                          },
+                        },
+                      },
+                    }}
+                    title={
+                      <div style={{ whiteSpace: "pre-line" }}>
+                        {subgroupsList ? getSubgroupsText(subgroupsList.subgroups) : ""}
+                      </div>
+                    }
+                    arrow
+                    placement="right"
+                    open={!supplyVoltage || !shouldHideTooltip(supplyVoltage)}
+                  >
+                    <Grid item xs={8} sm={6}>
+                      <Controller
+                        control={control}
+                        name="supplyVoltage"
+                        rules={{
+                          required: "Preencha este campo",
+                          validate: (v) =>
+                            isInSomeSubgroups(v, subgroupsList?.subgroups || []),
+                        }}
+                        render={({
+                          field: { onChange, onBlur, value },
+                          fieldState: { error },
+                        }) => (
+                          <NumericFormat
+                            key="supplyVoltageInput"
+                            value={value}
+                            customInput={TextField}
+                            label="Tensão contratada *"
+                            helperText={
+                              error?.message ??
+                              "Se preciso, converta a tensão de V para kV dividindo o valor por 1.000."
                             }
-                            onChange(values.floatValue);
-                          }}
-                        />
-                      )}
-                    />
-                  </Grid>
+                            error={!!error}
+                            fullWidth
+                            InputProps={{
+                              endAdornment: (
+                                <InputAdornment position="end">kV</InputAdornment>
+                              ),
+                            }}
+                            type="text"
+                            allowNegative={false}
+                            isAllowed={({ floatValue }) =>
+                              !floatValue || floatValue <= 9999.99
+                            }
+                            decimalScale={2}
+                            decimalSeparator=","
+                            thousandSeparator="."
+                            onValueChange={(values) => {
+                              const newVoltage = values?.floatValue || 0;
+                              setIsTooltipOpen(!shouldHideTooltip(newVoltage));
+                              onChange(values.floatValue);
+                            }}
+                            onBlur={(event) => {
+                              onBlur(event);
+                            }}
+                          />
+                        )}
+                      />
+                    </Grid>
+                  </Tooltip>
                 </SupplyVoltageTooltip>
               </Grid>
             </Box>
