@@ -468,7 +468,7 @@ const CreateEditEnergyBillForm = () => {
                       {...params}
                       inputProps={{
                         ...params.inputProps,
-                        placeholder: "mm/aaaa",
+                        placeholder: "mês/aaaa",
                       }}
                       error={!!error}
                       helperText={
