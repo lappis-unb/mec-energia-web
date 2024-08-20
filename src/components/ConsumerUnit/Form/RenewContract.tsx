@@ -39,6 +39,7 @@ import {
 import FormWarningDialog from "@/components/ConsumerUnit/Form/WarningDialog";
 import {
   useGetConsumerUnitQuery,
+  useGetContractQuery,
   useGetDistributorsQuery,
   useGetSubgroupsQuery,
   useRenewContractMutation,
@@ -80,10 +81,18 @@ const ConsumerUnitRenewContractForm = () => {
   const { data: distributorList } = useGetDistributorsQuery(
     session?.user?.universityId || skipToken
   );
+
+  const sortedDistributorList = distributorList?.slice().sort((a, b) => a.name.localeCompare(b.name));
+
   const [
     renewContract,
     { isError, isSuccess, isLoading, reset: resetMutation },
   ] = useRenewContractMutation();
+
+  const { data: contract } = useGetContractQuery(
+    activeConsumerUnit || skipToken
+  );
+
   const { data: consumerUnit } = useGetConsumerUnitQuery(
     activeConsumerUnit || skipToken
   );
@@ -111,23 +120,41 @@ const ConsumerUnitRenewContractForm = () => {
 
   useEffect(() => {
     if (isRenewContractFormOpen) {
-      const {
-        contracted,
-        peakContractedDemandInKw,
-        offPeakContractedDemandInKw,
-      } = defaultValues;
       setValue("code", consumerUnit?.code as string);
+      setValue("distributor", contract?.distributor ?? "");
+      setValue("supplyVoltage", contract?.supplyVoltage ?? "");
+
+      if (contract?.supplyVoltage === 69) {
+        setShouldShowGreenDemand(false);
+      } else if (
+        (contract?.supplyVoltage ?? 0) >= 88 &&
+        (contract?.supplyVoltage ?? 0) <= 138
+      ) {
+        setShouldShowGreenDemand(false);
+      } else {
+        setShouldShowGreenDemand(true);
+      }
 
       if (!shouldShowGreenDemand) {
         setValue("peakContractedDemandInKw", getValues("contracted"));
         setValue("offPeakContractedDemandInKw", getValues("contracted"));
+        setValue("contracted", getValues("contracted"));
       } else {
-        setValue("contracted", contracted);
-        setValue("peakContractedDemandInKw", peakContractedDemandInKw);
-        setValue("offPeakContractedDemandInKw", offPeakContractedDemandInKw);
+        setValue(
+          "peakContractedDemandInKw",
+          contract?.peakContractedDemandInKw ?? ""
+        );
+        setValue(
+          "offPeakContractedDemandInKw",
+          contract?.offPeakContractedDemandInKw ?? ""
+        );
+        setValue(
+          "contracted",
+          contract?.peakContractedDemandInKw ?? ""
+        );
       }
     }
-  }, [consumerUnit?.code, isRenewContractFormOpen, setValue, tariffFlag]);
+  }, [consumerUnit?.code, contract?.distributor, contract?.offPeakContractedDemandInKw, contract?.peakContractedDemandInKw, contract?.startDate, contract?.supplyVoltage, getValues, isRenewContractFormOpen, setValue, shouldShowGreenDemand, tariffFlag]);
 
   useEffect(() => {
     // Verifica se shouldShowGreenDemand é false
@@ -136,7 +163,11 @@ const ConsumerUnitRenewContractForm = () => {
       setValue("tariffFlag", "B");
     }
 
-  }, [shouldShowGreenDemand]);
+  }, [setValue, shouldShowGreenDemand]);
+
+  useEffect(() => {
+    setValue("tariffFlag", contract?.tariffFlag ?? "B");
+  }, [contract?.tariffFlag, isRenewContractFormOpen, setValue]);
 
   // Validações de Formulário
   const isValidDate = (date: RenewContractForm["startDate"]) => {
@@ -318,7 +349,7 @@ const ConsumerUnitRenewContractForm = () => {
                   onChange={onChange}
                   onBlur={onBlur}
                 >
-                  {distributorList?.map(
+                  {sortedDistributorList?.map(
                     (distributor: DistributorPropsTariffs) => {
                       return (
                         <MenuItem key={distributor.id} value={distributor.id}>

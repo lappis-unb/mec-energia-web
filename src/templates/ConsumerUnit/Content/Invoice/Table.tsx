@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import ConfirmWarning from "@/components/ConfirmWarning/ConfirmWarning";
 import { formatToPtBrCurrency } from "@/utils/number";
 
 import { Box, Button, Grid, IconButton, styled, Tooltip } from "@mui/material";
@@ -43,6 +42,8 @@ import {
   InvoicePayload,
   InvoicesPayload,
 } from "@/types/consumerUnit";
+import ConfirmDelete from "@/components/ConfirmDelete/ConfirmDelete";
+import { parseNumberToMonth } from "@/utils/parseNumberToMonth";
 import theme from "@/theme";
 
 const getMonthFromNumber = (
@@ -146,8 +147,10 @@ const ConsumerUnitInvoiceContentTable = () => {
   const dispatch = useDispatch();
   const consumerUnitId = useSelector(selectActiveConsumerUnitId);
   const [deleteEnergiBill] = useDeleteEnergiBillMutation();
-  const [isWarningOpen, setIsWarningOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedBillenergyId, setSelectedEnergyBillId] = useState<number>(0);
+  const [selectedMonth, setSelectedMonth] = useState<number>(0);
+  const [selectedYear, setSelectedYear] = useState<number>(0);
 
   const { data: consumerUnit } = useGetConsumerUnitQuery(
     consumerUnitId ?? skipToken
@@ -181,13 +184,13 @@ const ConsumerUnitInvoiceContentTable = () => {
     }
   };
 
-  const confirmWarning = () => {
-    setIsWarningOpen(false);
+  const confirmDelete = () => {
+    setIsDeleteDialogOpen(false);
     handleDeleteInvoice();
   };
 
-  const cancelWarning = () => {
-    setIsWarningOpen(false);
+  const cancelDelete = () => {
+    setIsDeleteDialogOpen(false);
   };
 
   // const handleDownloadPDF = (energyBillId: number) => {
@@ -314,7 +317,9 @@ const ConsumerUnitInvoiceContentTable = () => {
               <IconButton
                 onClick={() => {
                   setSelectedEnergyBillId(energyBillId);
-                  setIsWarningOpen(true);
+                  setSelectedMonth(month);
+                  setSelectedYear(year);
+                  setIsDeleteDialogOpen(true);
                 }}
               >
                 <Delete />
@@ -497,10 +502,13 @@ const ConsumerUnitInvoiceContentTable = () => {
           params.row.isEnergyBillPending ? "pending-row" : ""
         }
       />
-      <ConfirmWarning
-        open={isWarningOpen}
-        onConfirm={confirmWarning}
-        onCancel={cancelWarning}
+      <ConfirmDelete
+        title={`Apagar fatura de ${parseNumberToMonth(
+          selectedMonth
+        )} de ${selectedYear}?`}
+        open={isDeleteDialogOpen}
+        onConfirm={confirmDelete}
+        onCancel={cancelDelete}
       />
     </>
   );

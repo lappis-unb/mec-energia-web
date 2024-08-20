@@ -77,6 +77,9 @@ const ConsumerUnitCreateForm = () => {
   const { data: distributorList } = useGetDistributorsQuery(
     session?.user?.universityId || skipToken
   );
+
+  const sortedDistributorList = distributorList?.slice().sort((a, b) => a.name.localeCompare(b.name));
+
   const [
     createConsumerUnit,
     { status, isError, isSuccess, isLoading, reset: resetMutation },
@@ -258,7 +261,7 @@ const ConsumerUnitCreateForm = () => {
     () => (
       <>
         <Grid item xs={12}>
-          <Typography variant="h5">Unidade Consumidora</Typography>
+          <Typography variant="h5" style={{ marginBottom: '16px' }} >Unidade Consumidora</Typography>
         </Grid>
         <Grid item xs={12}>
           <Controller
@@ -297,7 +300,7 @@ const ConsumerUnitCreateForm = () => {
     () => (
       <>
         <Grid item xs={12}>
-          <Typography variant="h5">Contrato</Typography>
+          <Typography variant="h5" style={{ marginBottom: '13px' }}>Contrato</Typography>
         </Grid>
 
         <Grid item xs={12}>
@@ -343,6 +346,7 @@ const ConsumerUnitCreateForm = () => {
               <FormControl
                 sx={{ minWidth: "200px", maxWidth: "100%" }}
                 error={!!error}
+                style={{ marginTop: '20px' }}
               >
                 <InputLabel>Distribuidora *</InputLabel>
 
@@ -364,7 +368,7 @@ const ConsumerUnitCreateForm = () => {
                   onChange={onChange}
                   onBlur={onBlur}
                 >
-                  {distributorList?.map(
+                  {sortedDistributorList?.map(
                     (distributor: DistributorPropsTariffs) => {
                       return (
                         <MenuItem key={distributor.id} value={distributor.id}>

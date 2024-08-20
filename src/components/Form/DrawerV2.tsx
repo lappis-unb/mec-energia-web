@@ -43,7 +43,7 @@ const FormDrawerV2 = ({
       PaperProps={{ sx: { height: "100%" } }}
       onClose={handleCloseDrawer}
     >
-      <AppBar position="static">
+      <AppBar position="sticky">
         <Toolbar>
           <Container maxWidth="md">
             <Box display="flex" alignItems="center">
@@ -63,6 +63,7 @@ const FormDrawerV2 = ({
           </Container>
         </Toolbar>
       </AppBar>
+
 
       <Container maxWidth="sm">
         <Box mt={3} mb={6} component="form" onSubmit={handleSubmitDrawer}>
