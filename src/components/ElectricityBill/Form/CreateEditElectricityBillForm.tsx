@@ -155,8 +155,11 @@ const CreateEditEnergyBillForm = () => {
   }, [isEditEnergyBillFormOpen]);
 
   useEffect(() => {
-    if (month != null || month != undefined) {
-      const date = new Date(`${year}/${month + 1}`);
+    if (
+      (month != null || month != undefined) &&
+      (year != null || year != undefined)
+    ) {
+      const date = new Date(year, month, 1);
       setValue("date", date);
     }
   }, [
@@ -460,6 +463,7 @@ const CreateEditEnergyBillForm = () => {
                 <DatePicker
                   inputFormat="MMMM/yyyy"
                   value={value}
+                  views={["month", "year"]}
                   label="Mês de referência *"
                   minDate={new Date("2010")}
                   disableFuture

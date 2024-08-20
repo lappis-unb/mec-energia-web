@@ -82,7 +82,9 @@ const ConsumerUnitRenewContractForm = () => {
     session?.user?.universityId || skipToken
   );
 
-  const sortedDistributorList = distributorList?.slice().sort((a, b) => a.name.localeCompare(b.name));
+  const sortedDistributorList = distributorList
+    ?.slice()
+    .sort((a, b) => a.name.localeCompare(b.name));
 
   const [
     renewContract,
@@ -148,13 +150,22 @@ const ConsumerUnitRenewContractForm = () => {
           "offPeakContractedDemandInKw",
           contract?.offPeakContractedDemandInKw ?? ""
         );
-        setValue(
-          "contracted",
-          contract?.peakContractedDemandInKw ?? ""
-        );
+        setValue("contracted", contract?.peakContractedDemandInKw ?? "");
       }
     }
-  }, [consumerUnit?.code, contract?.distributor, contract?.offPeakContractedDemandInKw, contract?.peakContractedDemandInKw, contract?.startDate, contract?.supplyVoltage, getValues, isRenewContractFormOpen, setValue, shouldShowGreenDemand, tariffFlag]);
+  }, [
+    consumerUnit?.code,
+    contract?.distributor,
+    contract?.offPeakContractedDemandInKw,
+    contract?.peakContractedDemandInKw,
+    contract?.startDate,
+    contract?.supplyVoltage,
+    getValues,
+    isRenewContractFormOpen,
+    setValue,
+    shouldShowGreenDemand,
+    tariffFlag,
+  ]);
 
   useEffect(() => {
     // Verifica se shouldShowGreenDemand é false
@@ -162,7 +173,6 @@ const ConsumerUnitRenewContractForm = () => {
       // Atualiza o estado tariffFlag para "B" (azul)
       setValue("tariffFlag", "B");
     }
-
   }, [setValue, shouldShowGreenDemand]);
 
   useEffect(() => {
@@ -275,7 +285,7 @@ const ConsumerUnitRenewContractForm = () => {
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
     onChange: (value: string) => void
   ) => {
-    const numericValue = e.target.value.replace(/\D/g, '');
+    const numericValue = e.target.value.replace(/\D/g, "");
     onChange(numericValue);
   };
 
@@ -385,6 +395,7 @@ const ConsumerUnitRenewContractForm = () => {
               <DatePicker
                 value={value}
                 label="Início da vigência *"
+                views={["month", "year"]}
                 minDate={new Date("2010")}
                 disableFuture
                 renderInput={(params) => (
@@ -465,7 +476,11 @@ const ConsumerUnitRenewContractForm = () => {
                     const newVoltage = values ? values.floatValue : 0;
                     if (newVoltage === 69) {
                       setShouldShowGreenDemand(false);
-                    } else if (newVoltage !== undefined && newVoltage >= 88 && newVoltage <= 138) {
+                    } else if (
+                      newVoltage !== undefined &&
+                      newVoltage >= 88 &&
+                      newVoltage <= 138
+                    ) {
                       setShouldShowGreenDemand(false);
                     } else {
                       setShouldShowGreenDemand(true);
@@ -655,7 +670,8 @@ const ConsumerUnitRenewContractForm = () => {
             </Grid>
             {!shouldShowGreenDemand && (
               <Typography variant="body2" sx={{ px: 2 }}>
-                O valor de tensão contratada inserido é compatível apenas com a modalidade azul
+                O valor de tensão contratada inserido é compatível apenas com a
+                modalidade azul
               </Typography>
             )}
           </Box>

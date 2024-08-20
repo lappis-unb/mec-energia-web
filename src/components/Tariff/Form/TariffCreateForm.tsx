@@ -67,10 +67,11 @@ const TariffCreateEditForm = () => {
   const isEditTariffFormOpen = useSelector(selectIsTariffEditFormOpen);
   const activeDistributorId = useSelector(selectActiveDistributorId);
   const activeSubgroup = useSelector(selectActiveSubgroup);
-  const { data: currentTariff, refetch: refetchCurrentTariff } = useGetTariffQuery({
-    distributor: activeDistributorId ?? 0,
-    subgroup: activeSubgroup ?? "0",
-  });
+  const { data: currentTariff, refetch: refetchCurrentTariff } =
+    useGetTariffQuery({
+      distributor: activeDistributorId ?? 0,
+      subgroup: activeSubgroup ?? "0",
+    });
   const [
     createTariff,
     {
@@ -110,9 +111,9 @@ const TariffCreateEditForm = () => {
       const fetchData = async () => {
         try {
           const { data: currentTariff } = await refetchCurrentTariff();
-          
+
           if (!currentTariff) return;
-          
+
           setValue(
             "blue.offPeakTeInReaisPerMwh",
             currentTariff.blue.offPeakTeInReaisPerMwh
@@ -157,13 +158,13 @@ const TariffCreateEditForm = () => {
             "green.peakTusdInReaisPerMwh",
             currentTariff.green.peakTusdInReaisPerMwh
           );
-    
+
           setValue("endDate", getFormattedDateUTC(currentTariff.endDate));
           setValue("startDate", getFormattedDateUTC(currentTariff.startDate));
         } catch (err) {
-          console.error('Failed to refetch:', err);
+          console.error("Failed to refetch:", err);
         }
-      }
+      };
 
       // Garante que o refetch não seja executado antes do fetch
       if (isEditTariffFormOpen) {
@@ -364,6 +365,7 @@ const TariffCreateEditForm = () => {
                 <DatePicker
                   value={value}
                   label="Início *"
+                  views={["month", "year"]}
                   minDate={new Date("2010")}
                   disableFuture
                   renderInput={(params) => (
@@ -397,6 +399,7 @@ const TariffCreateEditForm = () => {
                 <DatePicker
                   value={value}
                   label="Fim *"
+                  views={["month", "year"]}
                   renderInput={(params) => (
                     <TextField
                       {...params}
@@ -995,10 +998,7 @@ const TariffCreateEditForm = () => {
     [activeSubgroup, distributor.data?.name]
   );
 
-  const sections = [
-    <ValiditySection key={0} />,
-    <BlueMode key={1} />
-  ];
+  const sections = [<ValiditySection key={0} />, <BlueMode key={1} />];
 
   if (activeSubgroup !== "A3" && activeSubgroup !== "A2") {
     sections.push(<GreenMode key={2} />);

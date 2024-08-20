@@ -533,6 +533,7 @@ const ConsumerUnitEditForm = () => {
                 <DatePicker
                   value={value}
                   label="Início da vigência *"
+                  views={["month", "year"]}
                   minDate={new Date("2010")}
                   disableFuture
                   renderInput={(params) => (
