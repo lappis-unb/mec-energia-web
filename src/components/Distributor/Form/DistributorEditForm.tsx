@@ -166,7 +166,7 @@ const DistributorEditForm = () => {
     () => (
       <Grid container spacing={1}>
         <Grid item xs={12}>
-          <Typography variant="h5">Distribuidora</Typography>
+          <Typography variant="h5" style={{ marginBottom: '10px' }}>Distribuidora</Typography>
         </Grid>
         <Grid item xs={12}>
           <Controller
