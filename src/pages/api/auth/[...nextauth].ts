@@ -2,7 +2,9 @@ import { SignInResponsePayload } from "@/types/auth";
 import NextAuth, { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 
-const signInUrl = `${process.env.API_URL}/token/`;
+
+const apiUrl = process.env.API_URL || process.env.NEXT_PUBLIC_API_URL;
+const signInUrl = `${apiUrl}/token/`;
 
 const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,

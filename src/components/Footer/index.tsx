@@ -25,8 +25,8 @@ const Footer = () => {
 
       <Box display="flex" alignItems="center" gap="4px" textAlign="center">
         <Typography display="flex" gap="16px" alignItems="center" fontFamily="Lexend" color="white" fontSize="14px" letterSpacing="0.15px">
-            Monitoramento de Energia em Plataforma Aberta 2024
-            {/* <Image
+          Monitoramento de Energia em Plataforma Aberta 2024
+          {/* <Image
               src="/icons/star-of-life.svg"
               alt="Star of life"
               width="16px"
@@ -41,8 +41,8 @@ const Footer = () => {
           <Image
             src="/icons/logo-unb.svg"
             alt="UnB"
-            width="138px"
-            height="38px"
+            width="115px"
+            height="22px"
           />
         </Box>
 

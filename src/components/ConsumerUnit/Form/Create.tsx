@@ -576,7 +576,7 @@ const ConsumerUnitCreateForm = () => {
                   type="text"
                   allowNegative={false}
                   isAllowed={({ floatValue }) =>
-                    !floatValue || floatValue <= 99999.99
+                    !floatValue || floatValue <= 9999999.99
                   }
                   decimalScale={2}
                   decimalSeparator=","
@@ -616,7 +616,7 @@ const ConsumerUnitCreateForm = () => {
                     type="text"
                     allowNegative={false}
                     isAllowed={({ floatValue }) =>
-                      !floatValue || floatValue <= 99999.99
+                      !floatValue || floatValue <= 9999999.99
                     }
                     decimalScale={2}
                     decimalSeparator=","
@@ -655,7 +655,7 @@ const ConsumerUnitCreateForm = () => {
                     type="text"
                     allowNegative={false}
                     isAllowed={({ floatValue }) =>
-                      !floatValue || floatValue <= 99999.99
+                      !floatValue || floatValue <= 9999999.99
                     }
                     decimalScale={2}
                     decimalSeparator=","
@@ -791,6 +791,7 @@ const ConsumerUnitCreateForm = () => {
         entity={"unidade consumidora"}
         onClose={handleCloseDialog}
         onDiscard={handleDiscardForm}
+        type="create"
       />
 
       <DistributorCreateFormDialog

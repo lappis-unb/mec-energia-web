@@ -79,8 +79,8 @@ const ConsumerUnitContentHeader = () => {
     dispatch(setConsumerUnitOpenedTab(tabIndex));
   };
 
-  const removeError = () => {
-    setIsCsvError(false);
+  const changeError = (csvState: boolean) => {
+    setIsCsvError(csvState);
   };
 
   const handleOpenCsvDialog = () => {
@@ -227,7 +227,7 @@ const ConsumerUnitContentHeader = () => {
           onFileSelect={handleFileSelect}
           isLoading={isCsvLoading}
           isError={isCsvError}
-          removeError={removeError}
+          changeError={changeError}
         />
       </Container>
       {isCsvFormOpen && <CsvForm csvData={csvData} />}

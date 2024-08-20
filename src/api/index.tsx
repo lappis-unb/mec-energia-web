@@ -17,29 +17,16 @@ import {
   EditDistributorResponsePayload,
 } from "@/types/distributor";
 
+import { ConsumerUnit, ConsumerUnitsPayload } from "@/types/consumerUnit";
 import {
   CurrentEnergyBillResponsePayload,
   EditEnergyBillRequestPayload,
   EditEnergyBillResponsePayload,
+  IEnergyBill,
   PostEnergyBillRequestPayload,
   PostEnergyBillResponsePayload,
-  IEnergyBill,
   PostMultipleEnergyBillResponsePayload,
 } from "@/types/energyBill";
-import { GetSubgroupsResponsePayload } from "@/types/subgroups";
-import { Recommendation, RecommendationSettings } from "@/types/recommendation";
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { getSession } from "next-auth/react";
-import { ConsumerUnit, ConsumerUnitsPayload } from "@/types/consumerUnit";
-import { DistributorSubgroup } from "@/types/tariffs";
-import {
-  CreateTariffRequestPayload,
-  CreateTariffResponsePayload,
-  EditTariffRequestPayload,
-  EditTariffResponsePayload,
-  GetTariffRequestPayload,
-  Tariff,
-} from "@/types/tariffs";
 import {
   CreateInstitutionRequestPayload,
   CreateInstitutionResponsePayload,
@@ -60,14 +47,23 @@ import {
   PatchUserRequestPayload,
   User,
 } from "@/types/person";
+import { Recommendation, RecommendationSettings } from "@/types/recommendation";
+import { GetSubgroupsResponsePayload } from "@/types/subgroups";
+import {
+  CreateTariffRequestPayload,
+  CreateTariffResponsePayload, DistributorSubgroup, EditTariffRequestPayload,
+  EditTariffResponsePayload,
+  GetTariffRequestPayload,
+  Tariff
+} from "@/types/tariffs";
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { getSession } from "next-auth/react";
 
-//import { signOut } from "next-auth/react";
-const baseUrl = process.env.NEXT_PUBLIC_API_URL;
 
 export const mecEnergiaApi = createApi({
   reducerPath: "mecEnergiaApi",
   baseQuery: fetchBaseQuery({
-    baseUrl,
+    baseUrl: process.env.NEXT_PUBLIC_API_URL,
     prepareHeaders: async (headers) => {
       const session = await getSession();
 

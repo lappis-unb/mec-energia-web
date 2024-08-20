@@ -33,50 +33,71 @@ export const TariffsTable = ({ rows }: Props) => {
   const columns: GridColDef<TariffsTableRow>[] = [
     {
       field: "label",
-      headerName: "Tipo de tarifa",
+      headerName: "Tarifa",
       headerAlign: "left",
       align: "left",
       flex: 2,
-      sortable: false
-    },
-    {
-      field: "billingTime",
-      headerClassName: "MuiDataGrid-columnHeaderMain",
-      headerName: "Posto tarifário",
-      headerAlign: "center",
-      align: "center",
-      flex: 1,
-      sortable: false
+      sortable: false,
+      minWidth: 500,
     },
     {
       field: "blue",
       headerClassName: "MuiDataGrid-columnHeaderMain",
-      headerName: "Valor tarifa azul",
+      headerName: "Valor tarifa Azul",
       headerAlign: "right",
       align: "right",
-      flex: 1,
-      sortable: false
+      flex: 0.65,
+      sortable: false,
+      renderHeader: (params) => {
+        return (<div style={{
+          whiteSpace: "normal",
+          lineHeight: "20px",
+          textAlign: "right",
+          fontWeight: 500,
+        }}>
+          {params.colDef.headerName}
+        </div>);
+      },
     },
     {
       field: "green",
       headerClassName: "MuiDataGrid-columnHeaderMain",
-      headerName: "Valor tarifa verde",
+      headerName: "Valor tarifa Verde",
       headerAlign: "right",
       align: "right",
-      flex: 1,
-      sortable: false
+      flex: 0.65,
+      sortable: false,
+      renderHeader: (params) => {
+        return (<div style={{
+          whiteSpace: "normal",
+          lineHeight: "20px",
+          textAlign: "right",
+          fontWeight: 500,
+        }}>
+          {params.colDef.headerName}
+        </div>);
+      },
     },
   ];
 
   const getDataGridRows = (
-    tariffsTableRow: TariffsTableRow[]
+    tariffsTableRow: TariffsTableRow[],
   ): TariffsTableRow[] => {
-    return tariffsTableRow.map(
+    const reorderedTariffsTableRow = [
+      tariffsTableRow[2],
+      tariffsTableRow[5],
+      tariffsTableRow[0],
+      tariffsTableRow[3],
+      tariffsTableRow[1],
+      tariffsTableRow[4],
+      tariffsTableRow[6],
+    ];
+
+    return reorderedTariffsTableRow.map(
       (row, index) => ({
         ...row,
         id: index,
         label: tariffLabelToPtBr[row.label],
-        billingTime: row.billingTime,
         blue: row.blue,
         green: row.green,
       })
@@ -87,7 +108,7 @@ export const TariffsTable = ({ rows }: Props) => {
     <>
       <Box>
         <TableContainer component={Paper} sx={{ boxShadow: 0 }}>
-          <StripedDataGrid 
+          <StripedDataGrid
             columns={columns}
             rows={getDataGridRows(tableRows)}
           />
