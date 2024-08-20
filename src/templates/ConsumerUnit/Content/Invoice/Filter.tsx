@@ -50,43 +50,45 @@ const ConsumerUnitInvoiceContentFilter = () => {
 
   return (
     <Paper>
-      <Box display="flex" flexWrap="wrap" rowGap={2} alignItems="center" px={2} py={1.5}>
-        <Typography variant="caption">Mostrar:</Typography>
+      <Box display="flex" alignItems="flex-start" px={2} py={1.5}>
+        <Typography variant="caption" mt={0.5}>Mostrar:</Typography>
 
-        <Box ml={2}>
-          <Button
-            disabled={!isPendingFilterActive}
-            sx={{ borderRadius: 10 }}
-            size="small"
-            disableElevation
-            variant={
-              invoiceActiveFilter === "pending" ? "contained" : "outlined"
-            }
-            onClick={handleFilterButtonClick("pending")}
-            {...(invoiceActiveFilter === "pending" && {
-              startIcon: <DoneRoundedIcon />,
-            })}
-          >
-            {pendingFilterLabel}
-          </Button>
-        </Box>
-
-        {invoicesFilters.map((year) => (
-          <Box ml={2} key={year}>
+        <Box display="flex" flexWrap="wrap" rowGap={2}>
+          <Box ml={2}>
             <Button
+              disabled={!isPendingFilterActive}
               sx={{ borderRadius: 10 }}
               size="small"
               disableElevation
-              variant={invoiceActiveFilter === year ? "contained" : "outlined"}
-              {...(invoiceActiveFilter === year && {
+              variant={
+                invoiceActiveFilter === "pending" ? "contained" : "outlined"
+              }
+              onClick={handleFilterButtonClick("pending")}
+              {...(invoiceActiveFilter === "pending" && {
                 startIcon: <DoneRoundedIcon />,
               })}
-              onClick={handleFilterButtonClick(year)}
             >
-              {year}
+              {pendingFilterLabel}
             </Button>
           </Box>
-        ))}
+
+          {invoicesFilters.map((year) => (
+            <Box ml={2} key={year}>
+              <Button
+                sx={{ borderRadius: 10 }}
+                size="small"
+                disableElevation
+                variant={invoiceActiveFilter === year ? "contained" : "outlined"}
+                {...(invoiceActiveFilter === year && {
+                  startIcon: <DoneRoundedIcon />,
+                })}
+                onClick={handleFilterButtonClick(year)}
+              >
+                {year}
+              </Button>
+            </Box>
+          ))}
+        </Box>
       </Box>
     </Paper>
   );
