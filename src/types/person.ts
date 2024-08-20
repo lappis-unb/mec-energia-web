@@ -11,7 +11,8 @@ export type User = {
   email: string;
   type: UserRole;
   createdOn: Date;
-  university: { name: string };
+  university: number;
+  universityDetail: { name: string };
 };
 
 export type PatchUserRequestPayload = {

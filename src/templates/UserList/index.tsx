@@ -106,7 +106,7 @@ const UserListTemplate = () => {
                     variant="body2"
                     fontWeight={isUniversityAdmin(user) ? "bold" : "normal"}
                   >
-                    {user.university.name}
+                    {user.universityDetail.name}
                   </Typography>
                 </TableCell>
 
