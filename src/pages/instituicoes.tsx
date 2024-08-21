@@ -7,9 +7,10 @@ import FailNotification from "@/components/Notification/FailNotification";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { CircularProgress, Box } from "@mui/material";
+import { UserRole } from "@/types/person";
 
 const InstitutionsPage: NextPage = () => {
-  const { status } = useSession();
+  const { data: session, status } = useSession();
   const router = useRouter();
 
   if (status === "loading") {
@@ -25,7 +26,7 @@ const InstitutionsPage: NextPage = () => {
     );
   }
 
-  if (status === "unauthenticated") {
+  if (status === "unauthenticated" || session?.user.type !== UserRole.SUPER_USER) {
     router.push("/");
     return null;
   }
