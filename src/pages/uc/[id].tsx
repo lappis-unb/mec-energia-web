@@ -64,6 +64,14 @@ const ConsumerUnitPage: NextPage = () => {
 
   const router = useRouter();
 
+  const { data: consumerUnitsData } = useFetchConsumerUnitsQuery(
+    session?.user.universityId ?? skipToken
+  );
+
+  const activeConsumerUnitData = consumerUnitsData?.find(
+    consumerUnit => consumerUnit?.id === activeConsumerUnit
+  );
+
   if (status === "loading") {
     return (
       <Box
@@ -81,14 +89,6 @@ const ConsumerUnitPage: NextPage = () => {
     router.push("/");
     return null;
   }
-
-  const { data: consumerUnitsData } = useFetchConsumerUnitsQuery(
-    session?.user.universityId ?? skipToken
-  );
-
-  const activeConsumerUnitData = consumerUnitsData?.find(
-    consumerUnit => consumerUnit?.id === activeConsumerUnit
-  );
 
   const contentContainerMaxWidth = activeConsumerUnitData === undefined
     ? false

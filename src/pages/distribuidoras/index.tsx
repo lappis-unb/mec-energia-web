@@ -12,6 +12,19 @@ const DistributorLoadingPage: NextPage = () => {
   const router = useRouter();
   const { data: session, status } = useSession();
 
+  if (session && session.user.universityId === undefined) {
+    router.push("/instituicoes");
+  }
+
+  const { data: distributors } = useFetchDistributorsQuery(
+    session?.user.universityId ?? skipToken
+  );
+
+  if (distributors) {
+    router.push(`/distribuidoras/${distributors!.length > 0 ?
+      distributors[0].id : -1
+      }`);
+  }
   if (status === "loading") {
     return (
       <Box
@@ -30,19 +43,6 @@ const DistributorLoadingPage: NextPage = () => {
     return null;
   }
 
-  if (session && session.user.universityId === undefined) {
-    router.push("/instituicoes");
-  }
-
-  const { data: distributors } = useFetchDistributorsQuery(
-    session?.user.universityId ?? skipToken
-  );
-
-  if (distributors) {
-    router.push(`/distribuidoras/${distributors!.length > 0 ?
-      distributors[0].id : -1
-      }`);
-  }
 
   return (
     <DefaultTemplateV2>

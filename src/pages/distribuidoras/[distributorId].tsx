@@ -62,6 +62,14 @@ const DistributorPage: NextPage = () => {
   const { data: session, status } = useSession();
   const router = useRouter();
 
+  const { data: distributors } = useFetchDistributorsQuery(
+    session?.user.universityId ?? skipToken
+  );
+
+  const activeDistributorData = distributors?.find(
+    distributor => distributor?.id === activeDistributorUnit
+  );
+
   if (status === "loading") {
     return (
       <Box
@@ -79,14 +87,6 @@ const DistributorPage: NextPage = () => {
     router.push("/");
     return null;
   }
-
-  const { data: distributors } = useFetchDistributorsQuery(
-    session?.user.universityId ?? skipToken
-  );
-
-  const activeDistributorData = distributors?.find(
-    distributor => distributor?.id === activeDistributorUnit
-  );
 
   const contentContainerMaxWidth = activeDistributorData === undefined
   ? false

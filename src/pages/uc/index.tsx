@@ -12,6 +12,14 @@ const ConsumerUnitLoadingPage: NextPage = () => {
   const router = useRouter();
   const { data: session, status } = useSession();
 
+  const { data: consumerUnits } = useFetchConsumerUnitsQuery(
+    session?.user.universityId ?? skipToken
+  );
+
+  if (consumerUnits) {
+    router.push(`/uc/${consumerUnits!.length > 0 ? consumerUnits[0].id : -1}`);
+  }
+
   if (status === "loading") {
     return (
       <Box
@@ -32,14 +40,6 @@ const ConsumerUnitLoadingPage: NextPage = () => {
 
   if (session && session.user.universityId === undefined) {
     router.push("/instituicoes");
-  }
-
-  const { data: consumerUnits } = useFetchConsumerUnitsQuery(
-    session?.user.universityId ?? skipToken
-  );
-
-  if (consumerUnits) {
-    router.push(`/uc/${consumerUnits!.length > 0 ? consumerUnits[0].id : -1}`);
   }
 
   return (
