@@ -10,7 +10,25 @@ import DefaultTemplateV2 from "@/templates/DefaultV2";
 
 const DistributorLoadingPage: NextPage = () => {
   const router = useRouter();
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
+
+  if (status === "loading") {
+    return (
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        height="100vh"
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (status === "unauthenticated") {
+    router.push("/");
+    return null;
+  }
 
   if (session && session.user.universityId === undefined) {
     router.push("/instituicoes");

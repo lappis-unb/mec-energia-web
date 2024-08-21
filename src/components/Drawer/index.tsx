@@ -147,10 +147,13 @@ const Drawer = () => {
     [router.pathname]
   );
 
-  const handleSignOutClick = () => {
+  const handleSignOutClick = async () => {
     localStorage.clear();
     sessionStorage.clear();
-    signOut({ callbackUrl: "/" });
+
+    await signOut({ redirect: false });
+
+    router.push("/");
   };
 
   const handleToggleDrawer = () => {

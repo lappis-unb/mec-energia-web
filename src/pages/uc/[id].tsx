@@ -19,6 +19,8 @@ import { useSelector } from "react-redux";
 import { useSession } from "next-auth/react";
 import { useFetchConsumerUnitsQuery } from "@/api";
 import { skipToken } from "@reduxjs/toolkit/query";
+import { useRouter } from "next/router";
+import { CircularProgress, Box } from "@mui/material";
 
 type ExpectedQuery = {
   id: string;
@@ -58,7 +60,27 @@ export const getServerSideProps = wrapper.getServerSideProps(
 const ConsumerUnitPage: NextPage = () => {
   const activeConsumerUnit = useSelector(selectActiveConsumerUnitId);
 
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
+
+  const router = useRouter();
+
+  if (status === "loading") {
+    return (
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        height="100vh"
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (status === "unauthenticated") {
+    router.push("/");
+    return null;
+  }
 
   const { data: consumerUnitsData } = useFetchConsumerUnitsQuery(
     session?.user.universityId ?? skipToken
