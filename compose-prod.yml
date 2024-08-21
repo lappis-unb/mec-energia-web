@@ -7,8 +7,8 @@ services:
       args:
         NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
         NODE_ENV: ${NODE_ENV:-production}
-    ports:
-      - ${PORT}:${PORT}
+    expose:
+      - ${PORT}
     env_file:
       - ./.envs/.env.prod
     environment:
@@ -16,6 +16,7 @@ services:
       NEXTAUTH_URL: ${NEXTAUTH_URL}
     volumes:
       - nextjs_static:/app/.next/static
+      - nextjs_public:/app/public
     networks:
       - proxy-network
     restart: always
@@ -26,4 +27,6 @@ networks:
 
 volumes:
   nextjs_static:
+    external: true
+  nextjs_public:
     external: true
