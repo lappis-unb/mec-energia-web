@@ -20,6 +20,28 @@ services:
     networks:
       - proxy-network
     restart: always
+  
+  ngnix-web:
+      container_name: nginx-web
+      image: nginx:1.27.0-alpine
+      restart: unless-stopped
+      build:
+        context: nginx
+        dockerfile: Dockerfile
+      expose:
+        - 80
+      volumes:
+        - nextjs_static:/app/nextjs_static:ro
+        - nextjs_public:/app/nextjs_public:ro
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.nginx-api.rule=Host(`${HOSTNAME}`)"
+        - "traefik.http.routers.nginx-api.entrypoints=web"
+        - "traefik.http.services.nginx-api.loadbalancer.server.port=80"
+      networks:
+        - proxy-network
+      depends_on:
+        - mepa-web
 
 networks:
   proxy-network:
@@ -30,3 +52,4 @@ volumes:
     name: nextjs_static
   nextjs_public:
     name: nextjs_public
+
