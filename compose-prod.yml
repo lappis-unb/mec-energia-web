@@ -34,10 +34,11 @@ services:
         - nextjs_static:/app/nextjs_static:ro
         - nextjs_public:/app/nextjs_public:ro
       labels:
-        - "traefik.enable=true"
-        - "traefik.http.routers.nginx-api.rule=Host(`${HOSTNAME}`)"
-        - "traefik.http.routers.nginx-api.entrypoints=web"
-        - "traefik.http.services.nginx-api.loadbalancer.server.port=80"
+        traefik.enable: "true"
+        traefik.http.routers.ngnix-web.rule: "Host(`${HOSTNAME}`)"
+        traefik.http.services.ngnix-web.loadbalancer.server.port: 80
+        traefik.http.routers.ngnix-web.entrypoints: "websecure"
+        traefik.http.routers.ngnix-web.tls.certresolver: "leprod"
       networks:
         - proxy-network
       depends_on:
