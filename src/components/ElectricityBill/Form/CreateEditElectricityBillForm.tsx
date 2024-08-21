@@ -32,8 +32,8 @@ import {
   EditEnergyBillRequestPayload,
   PostEnergyBillRequestPayload,
 } from "@/types/energyBill";
+import FormFieldError from "../../FormFieldError"
 import InsightsIcon from "@mui/icons-material/Insights";
-import ReportRoundedIcon from "@mui/icons-material/ReportRounded";
 
 import {
   useEditInvoiceMutation,
@@ -106,7 +106,7 @@ const CreateEditEnergyBillForm = () => {
   );
   const { data: currentInvoice, refetch: refetchCurrentInvoice } =
     useGetCurrentInvoiceQuery(currentInvoiceId || skipToken);
-  
+
   const { data: invoices } = useFetchInvoicesQuery(
     activeConsumerUnitId || skipToken
   );
@@ -372,15 +372,14 @@ const CreateEditEnergyBillForm = () => {
     handleNotification();
   }, [handleNotification, isPostInvoiceSuccess, isPostInvoiceError]);
 
-  const checkIfInvoiceExists = (year: number, month: number): boolean => {
-    if (isEditEnergyBillFormOpen) {
+  const checkIfInvoiceExists = (selectedYear: number, selectedMonth: number): boolean => {
+    if (selectedMonth == month && selectedYear == year)
       return false;
-    }
 
-    if (invoices && year in invoices) {
-      return invoices[year].some(
+    if (invoices && selectedYear in invoices) {
+      return invoices[selectedYear].some(
         (invoice) =>
-          invoice.month === month && !invoice.isEnergyBillPending
+          invoice.month === selectedMonth && invoice.energyBill !== null
       );
     }
     return false;
@@ -401,7 +400,7 @@ const CreateEditEnergyBillForm = () => {
     () => (
       <>
         <Grid item xs={8}>
-          <Typography variant="h5"  style={{ marginBottom: '13px' }} >Fatura</Typography>
+          <Typography variant="h5" style={{ marginBottom: '13px' }} >Fatura</Typography>
         </Grid>
         <Grid item xs={12} mt={1}>
           <Controller
@@ -418,10 +417,10 @@ const CreateEditEnergyBillForm = () => {
 
                 const selectedDate = new Date(value);
 
-                const month = selectedDate.getMonth();
-                const year = selectedDate.getFullYear();
+                const selectedMonth = selectedDate.getMonth();
+                const selectedYear = selectedDate.getFullYear();
 
-                const existingInvoice = checkIfInvoiceExists(year, month);
+                const existingInvoice = checkIfInvoiceExists(selectedYear, selectedMonth);
 
                 if (existingInvoice) {
                   return "Já existe uma fatura lançada neste mês";
@@ -445,10 +444,10 @@ const CreateEditEnergyBillForm = () => {
                   const contractStartDateYear = (contractStartDate.getFullYear())
 
                   const fixedDate = new Date(`${contractStartDateYear}/${contractStartDateMonth + 2}`);
-                  
+
                   const options = { year: 'numeric', month: 'long' };
                   const formattedDate = fixedDate.toLocaleDateString('pt-BR', options);
-                  
+
                   const message = `Selecione uma data a partir de ${formattedDate}. Não existem contratos registrados antes disso.`;
 
                   if (selectedDate <= contractStartDate) {
@@ -475,16 +474,7 @@ const CreateEditEnergyBillForm = () => {
                         placeholder: "mês/aaaa",
                       }}
                       error={!!error}
-                      helperText={
-                        error ? (
-                          <Box display="flex" alignItems="start">
-                            <ReportRoundedIcon color="error" fontSize="small" />
-                            <Box ml={1}>{error.message}</Box>
-                          </Box>
-                        ) : (
-                          " "
-                        )
-                      }
+                      helperText={FormFieldError(error?.message)}
                       sx={{ width: 250 }}
                     />
                   )}
@@ -515,7 +505,7 @@ const CreateEditEnergyBillForm = () => {
                 width="20%"
                 customInput={TextField}
                 label="Valor total *"
-                helperText={error?.message}
+                helperText={FormFieldError(error?.message)}
                 error={!!error}
                 fullWidth
                 InputProps={{
@@ -659,7 +649,7 @@ const CreateEditEnergyBillForm = () => {
                   decimalSeparator=","
                   thousandSeparator={"."}
                   error={Boolean(error)}
-                  helperText={error?.message ?? (contract?.tariffFlag !== 'G' ? "" : "Campo opcional")}
+                  helperText={FormFieldError(error?.message, (contract?.tariffFlag !== 'G' ? "" : "Campo opcional"))}
                   onValueChange={(values) => onChange(values.floatValue)}
                   onBlur={onBlur}
                 />
@@ -701,7 +691,7 @@ const CreateEditEnergyBillForm = () => {
                   decimalSeparator=","
                   thousandSeparator={"."}
                   error={!!error}
-                  helperText={error?.message ?? " "}
+                  helperText={FormFieldError(error?.message)}
                   onValueChange={(values) => onChange(values.floatValue)}
                   onBlur={onBlur}
                 />
@@ -761,7 +751,7 @@ const CreateEditEnergyBillForm = () => {
                   decimalSeparator=","
                   thousandSeparator={"."}
                   error={Boolean(error)}
-                  helperText={error?.message ?? " "}
+                  helperText={FormFieldError(error?.message)}
                   onValueChange={(values) => onChange(values.floatValue)}
                   onBlur={onBlur}
                 />
@@ -803,7 +793,7 @@ const CreateEditEnergyBillForm = () => {
                   decimalSeparator=","
                   thousandSeparator={"."}
                   error={Boolean(error)}
-                  helperText={error?.message ?? " "}
+                  helperText={FormFieldError(error?.message)}
                   onValueChange={(values) => onChange(values.floatValue)}
                   onBlur={onBlur}
                 />

@@ -49,6 +49,7 @@ import { sendFormattedDate } from "@/utils/date";
 import { getSubgroupsText } from "@/utils/get-subgroup-text";
 import { isInSomeSubgroups } from "@/utils/validations/form-validations";
 import FormDrawerV2 from "@/components/Form/DrawerV2";
+import FormFieldError from "@/components/FormFieldError";
 
 const defaultValues: CreateConsumerUnitForm = {
   name: "",
@@ -283,7 +284,7 @@ const ConsumerUnitCreateForm = () => {
                 label="Nome *"
                 placeholder="Ex.: Campus Gama, Biblioteca, Faculdade de Medicina"
                 error={Boolean(error)}
-                helperText={error?.message ?? " "}
+                helperText={FormFieldError(error?.message)}
                 fullWidth
                 onChange={onChange}
                 onBlur={onBlur}
@@ -321,10 +322,12 @@ const ConsumerUnitCreateForm = () => {
                 value={value}
                 label="Número da Unidade *"
                 placeholder="Número da Unidade Consumidora conforme a fatura"
-                error={Boolean(error)}
+                error={!!error}
                 helperText={
-                  error?.message ??
-                  "Nº ou código da Unidade Consumidora conforme a fatura"
+                  FormFieldError(
+                    error?.message,
+                    "Nº ou código da Unidade Consumidora conforme a fatura"
+                  )
                 }
                 fullWidth
                 onChange={(e) => handleNumericInputChange(e, onChange)}
@@ -387,7 +390,7 @@ const ConsumerUnitCreateForm = () => {
                   </MenuItem>
                 </Select>
 
-                <FormHelperText>{error?.message ?? " "}</FormHelperText>
+                <FormHelperText>{FormFieldError(error?.message)}</FormHelperText>
               </FormControl>
             )}
           />
@@ -415,7 +418,7 @@ const ConsumerUnitCreateForm = () => {
                       ...params.inputProps,
                       placeholder: "dd/mm/aaaa",
                     }}
-                    helperText={error?.message ?? " "}
+                    helperText={FormFieldError(error?.message)}
                     error={!!error}
                   />
                 )}
@@ -464,8 +467,10 @@ const ConsumerUnitCreateForm = () => {
                   customInput={TextField}
                   label="Tensão contratada *"
                   helperText={
-                    error?.message ??
-                    "Se preciso, converta a tensão de V para kV dividindo o valor por 1.000."
+                    FormFieldError(
+                      error?.message,
+                      "Se preciso, converta a tensão de V para kV dividindo o valor por 1.000."
+                    )
                   }
                   error={!!error}
                   fullWidth
@@ -554,7 +559,7 @@ const ConsumerUnitCreateForm = () => {
                   </Box>
                 </RadioGroup>
 
-                <FormHelperText>{error?.message ?? " "}</FormHelperText>
+                <FormHelperText>{FormFieldError(error?.message)}</FormHelperText>
               </FormControl>
             )}
           />
@@ -592,7 +597,7 @@ const ConsumerUnitCreateForm = () => {
                   decimalSeparator=","
                   thousandSeparator={"."}
                   error={Boolean(error)}
-                  helperText={error?.message ?? " "}
+                  helperText={FormFieldError(error?.message)}
                   onValueChange={(values) => onChange(values.floatValue)}
                   onBlur={onBlur}
                 />
@@ -632,7 +637,7 @@ const ConsumerUnitCreateForm = () => {
                     decimalSeparator=","
                     thousandSeparator={"."}
                     error={Boolean(error)}
-                    helperText={error?.message ?? " "}
+                    helperText={FormFieldError(error?.message)}
                     onValueChange={(values) => onChange(values.floatValue)}
                     onBlur={onBlur}
                   />
@@ -671,7 +676,7 @@ const ConsumerUnitCreateForm = () => {
                     decimalSeparator=","
                     thousandSeparator={"."}
                     error={Boolean(error)}
-                    helperText={error?.message ?? " "}
+                    helperText={FormFieldError(error?.message)}
                     onValueChange={(values) => onChange(values.floatValue)}
                     onBlur={onBlur}
                   />
@@ -741,7 +746,7 @@ const ConsumerUnitCreateForm = () => {
                     required: "Preencha este campo",
                     min: {
                       value: 0.01,
-                      message: "Insira um valor maior que R$ 0,00",
+                      message: "Insira um valor maior que 0,00",
                     },
                   }}
                   render={({
@@ -766,8 +771,8 @@ const ConsumerUnitCreateForm = () => {
                       decimalScale={2}
                       decimalSeparator=","
                       thousandSeparator={"."}
-                      error={Boolean(error)}
-                      helperText={error?.message ?? " "}
+                      error={!!error}
+                      helperText={FormFieldError(error?.message)}
                       onValueChange={(values) => onChange(values.floatValue)}
                       onBlur={onBlur}
                     />

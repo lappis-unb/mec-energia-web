@@ -36,6 +36,7 @@ import { useCreatePersonMutation, useGetAllInstitutionQuery } from "@/api";
 import { isValidEmail } from "@/utils/validations/form-validations";
 import { FormInfoAlert } from "@/components/Form/FormInfoAlert";
 import FormDrawerV2 from "@/components/Form/DrawerV2";
+import FormFieldError from "@/components/FormFieldError";
 
 const defaultValues: CreatePersonForm = {
   email: "",
@@ -164,7 +165,7 @@ const CreatePersonForm = () => {
               value={value}
               label="Nome *"
               error={Boolean(error)}
-              helperText={error?.message ?? " "}
+              helperText={FormFieldError(error?.message)}
               fullWidth
               onChange={onChange}
               onBlur={onBlur}
@@ -190,7 +191,7 @@ const CreatePersonForm = () => {
               value={value}
               label="Sobrenome *"
               error={Boolean(error)}
-              helperText={error?.message ?? " "}
+              helperText={FormFieldError(error?.message)}
               fullWidth
               onChange={onChange}
               onBlur={onBlur}
@@ -218,7 +219,7 @@ const CreatePersonForm = () => {
               label="E-mail institucional *"
               placeholder="Ex.: voce@universidade.br"
               error={Boolean(error)}
-              helperText={error?.message ?? " "}
+              helperText={FormFieldError(error?.message)}
               fullWidth
               onChange={onChange}
               onBlur={onBlur}

@@ -31,6 +31,7 @@ import { useSession } from "next-auth/react";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import FormDrawerV2 from "@/components/Form/DrawerV2";
 import isValidCnpj from "@/utils/validations/isValidCnpj";
+import FormFieldError from "@/components/FormFieldError";
 
 const defaultValues: EditDistributorForm = {
   isActive: true,
@@ -189,7 +190,7 @@ const DistributorEditForm = () => {
                 label="Nome *"
                 placeholder="Ex.: CEMIG, Enel, Neonergia"
                 error={Boolean(error)}
-                helperText={error?.message ?? " "}
+                helperText={FormFieldError(error?.message)}
                 fullWidth
                 onBlur={onBlur}
                 onChange={(e) => {
@@ -249,7 +250,7 @@ const DistributorEditForm = () => {
                 placeholder="Ex.: 12345678000167"
                 error={Boolean(error) || !cnpjValid}
                 helperText={
-                  error?.message ?? (cnpjValid ? " " : "CNPJ inválido")
+                  FormFieldError(error?.message ?? (cnpjValid ? undefined : "CNPJ inválido"))
                 }
                 fullWidth
                 onChange={(e) => {

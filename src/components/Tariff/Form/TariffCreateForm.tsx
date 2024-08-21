@@ -39,6 +39,7 @@ import { getFormattedDateUTC, sendFormattedDate } from "@/utils/date";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import FormDrawerV2 from "@/components/Form/DrawerV2";
 import { getSession } from "next-auth/react";
+import FormFieldError from "@/components/FormFieldError";
 
 const defaultValues: CreateAndEditTariffForm = {
   startDate: new Date(),
@@ -375,7 +376,7 @@ const TariffCreateEditForm = () => {
                         ...params.inputProps,
                         placeholder: "dd/mm/aaaa",
                       }}
-                      helperText={error?.message ?? " "}
+                      helperText={FormFieldError(error?.message)}
                       error={!!error}
                     />
                   )}
@@ -407,7 +408,7 @@ const TariffCreateEditForm = () => {
                         ...params.inputProps,
                         placeholder: "dd/mm/aaaa",
                       }}
-                      helperText={error?.message ?? " "}
+                      helperText={FormFieldError(error?.message)}
                       error={!!error}
                     />
                   )}
@@ -454,7 +455,7 @@ const TariffCreateEditForm = () => {
                   value={value}
                   customInput={TextField}
                   label="TUSD R$/kW  *"
-                  helperText={error?.message ?? " "}
+                  helperText={FormFieldError(error?.message)}
                   error={!!error}
                   fullWidth
                   InputProps={{
@@ -499,7 +500,7 @@ const TariffCreateEditForm = () => {
                   value={value !== 0 ? value : null}
                   customInput={TextField}
                   label="TUSD R$/MWh *"
-                  helperText={error?.message ?? " "}
+                  helperText={FormFieldError(error?.message)}
                   error={!!error}
                   fullWidth
                   InputProps={{
@@ -544,7 +545,7 @@ const TariffCreateEditForm = () => {
                   value={value !== 0 ? value : null}
                   customInput={TextField}
                   label="TE R$/MWh  *"
-                  helperText={error?.message ?? " "}
+                  helperText={FormFieldError(error?.message)}
                   error={!!error}
                   fullWidth
                   InputProps={{
@@ -596,7 +597,7 @@ const TariffCreateEditForm = () => {
                   value={value !== 0 ? value : null}
                   customInput={TextField}
                   label="TUSD R$/kW  *"
-                  helperText={error?.message ?? " "}
+                  helperText={FormFieldError(error?.message)}
                   error={!!error}
                   fullWidth
                   InputProps={{
@@ -641,7 +642,7 @@ const TariffCreateEditForm = () => {
                   value={value !== 0 ? value : null}
                   customInput={TextField}
                   label="TUSD R$/MWh *"
-                  helperText={error?.message ?? " "}
+                  helperText={FormFieldError(error?.message)}
                   error={!!error}
                   fullWidth
                   InputProps={{
@@ -686,7 +687,7 @@ const TariffCreateEditForm = () => {
                   value={value !== 0 ? value : undefined}
                   customInput={TextField}
                   label="TE R$/MWh  *"
-                  helperText={error?.message ?? " "}
+                  helperText={FormFieldError(error?.message)}
                   error={!!error}
                   fullWidth
                   InputProps={{
@@ -749,7 +750,7 @@ const TariffCreateEditForm = () => {
                 value={value !== 0 ? value : null}
                 customInput={TextField}
                 label="TUSD R$/kW  *"
-                helperText={error?.message ?? " "}
+                helperText={FormFieldError(error?.message)}
                 error={!!error}
                 fullWidth
                 InputProps={{
@@ -799,7 +800,7 @@ const TariffCreateEditForm = () => {
                   value={value !== 0 ? value : null}
                   customInput={TextField}
                   label="TUSD R$/MWh *"
-                  helperText={error?.message ?? " "}
+                  helperText={FormFieldError(error?.message)}
                   error={!!error}
                   fullWidth
                   InputProps={{
@@ -844,7 +845,7 @@ const TariffCreateEditForm = () => {
                   value={value !== 0 ? value : null}
                   customInput={TextField}
                   label="TE R$/MWh  *"
-                  helperText={error?.message ?? " "}
+                  helperText={FormFieldError(error?.message)}
                   error={!!error}
                   fullWidth
                   InputProps={{
@@ -895,7 +896,7 @@ const TariffCreateEditForm = () => {
                   value={value !== 0 ? value : null}
                   customInput={TextField}
                   label="TUSD R$/MWh *"
-                  helperText={error?.message ?? " "}
+                  helperText={FormFieldError(error?.message)}
                   error={!!error}
                   fullWidth
                   InputProps={{
@@ -940,7 +941,7 @@ const TariffCreateEditForm = () => {
                   value={value !== 0 ? value : null}
                   customInput={TextField}
                   label="TE R$/MWh  *"
-                  helperText={error?.message ?? " "}
+                  helperText={FormFieldError(error?.message)}
                   error={!!error}
                   fullWidth
                   InputProps={{

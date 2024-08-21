@@ -53,6 +53,7 @@ import { getSubgroupsText } from "@/utils/get-subgroup-text";
 import { isInSomeSubgroups } from "@/utils/validations/form-validations";
 import FormDrawerV2 from "@/components/Form/DrawerV2";
 import FormConfirmDialog from "./WarningDialogConfirm";
+import FormFieldError from "@/components/FormFieldError";
 
 const defaultValues: RenewContractForm = {
   code: "",
@@ -315,8 +316,7 @@ const ConsumerUnitRenewContractForm = () => {
                 placeholder="Número da Unidade Consumidora conforme a fatura"
                 error={Boolean(error)}
                 helperText={
-                  error?.message ??
-                  "Nº ou código da Unidade Consumidora conforme a fatura"
+                  FormFieldError(error?.message, "Nº ou código da Unidade Consumidora conforme a fatura")
                 }
                 fullWidth
                 onChange={(e) => handleNumericInputChange(e, onChange)}
@@ -326,7 +326,7 @@ const ConsumerUnitRenewContractForm = () => {
           />
         </Grid>
 
-        <Grid item xs={12}>
+        <Grid item xs={12} mt={0.5}>
           <Controller
             control={control}
             name="distributor"
@@ -377,7 +377,7 @@ const ConsumerUnitRenewContractForm = () => {
                   </MenuItem>
                 </Select>
 
-                <FormHelperText>{error?.message ?? " "}</FormHelperText>
+                <FormHelperText>{FormFieldError(error?.message)}</FormHelperText>
               </FormControl>
             )}
           />
@@ -405,7 +405,7 @@ const ConsumerUnitRenewContractForm = () => {
                       ...params.inputProps,
                       placeholder: "dd/mm/aaaa",
                     }}
-                    helperText={error?.message ?? " "}
+                    helperText={FormFieldError(error?.message)}
                     error={!!error}
                   />
                 )}
@@ -454,8 +454,7 @@ const ConsumerUnitRenewContractForm = () => {
                   customInput={TextField}
                   label="Tensão contratada *"
                   helperText={
-                    error?.message ??
-                    "Se preciso, converta a tensão de V para kV dividindo o valor por 1.000."
+                    FormFieldError(error?.message, "Se preciso, converta a tensão de V para kV dividindo o valor por 1.000.")
                   }
                   error={!!error}
                   fullWidth
@@ -544,7 +543,7 @@ const ConsumerUnitRenewContractForm = () => {
                   </Box>
                 </RadioGroup>
 
-                <FormHelperText>{error?.message ?? " "}</FormHelperText>
+                <FormHelperText>{error?.message}</FormHelperText>
               </FormControl>
             )}
           />
@@ -582,7 +581,7 @@ const ConsumerUnitRenewContractForm = () => {
                   decimalSeparator=","
                   thousandSeparator={"."}
                   error={Boolean(error)}
-                  helperText={error?.message ?? " "}
+                  helperText={FormFieldError(error?.message)}
                   onValueChange={(values) => onChange(values.floatValue)}
                   onBlur={onBlur}
                 />
@@ -622,7 +621,7 @@ const ConsumerUnitRenewContractForm = () => {
                     decimalSeparator=","
                     thousandSeparator={"."}
                     error={Boolean(error)}
-                    helperText={error?.message ?? " "}
+                    helperText={FormFieldError(error?.message)}
                     onValueChange={(values) => onChange(values.floatValue)}
                     onBlur={onBlur}
                   />
@@ -630,7 +629,7 @@ const ConsumerUnitRenewContractForm = () => {
               />
             </Grid>
 
-            <Grid item xs={8}>
+            <Grid item xs={8} mt={0.3}>
               <Controller
                 control={control}
                 name="offPeakContractedDemandInKw"
@@ -661,7 +660,7 @@ const ConsumerUnitRenewContractForm = () => {
                     decimalSeparator=","
                     thousandSeparator={"."}
                     error={!!error}
-                    helperText={error?.message ?? " "}
+                    helperText={FormFieldError(error?.message)}
                     onValueChange={(values) => onChange(values.floatValue)}
                     onBlur={onBlur}
                   />

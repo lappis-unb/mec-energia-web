@@ -24,6 +24,7 @@ import {
 } from "@/types/institution";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import FormDrawerV2 from "@/components/Form/DrawerV2";
+import FormFieldError from "@/components/FormFieldError";
 
 const defaultValues: EditInstitutionForm = {
   acronym: "",
@@ -161,7 +162,7 @@ const EditInstitutionForm = () => {
               label="Sigla *"
               placeholder="Ex.: UFX"
               error={Boolean(error)}
-              helperText={error?.message ?? " "}
+              helperText={FormFieldError(error?.message)}
               fullWidth
               onChange={onChange}
               onBlur={onBlur}
@@ -170,7 +171,7 @@ const EditInstitutionForm = () => {
         />
       </Grid>
 
-      <Grid item xs={12}>
+      <Grid item xs={12} mt={0.3}>
         <Controller
           control={control}
           name="name"
@@ -188,7 +189,7 @@ const EditInstitutionForm = () => {
               label="Nome *"
               placeholder="Ex.: Universidade Federal de ..."
               error={Boolean(error)}
-              helperText={error?.message ?? " "}
+              helperText={FormFieldError(error?.message)}
               fullWidth
               onChange={onChange}
               onBlur={onBlur}
@@ -197,7 +198,7 @@ const EditInstitutionForm = () => {
         />
       </Grid>
 
-      <Grid item xs={12}>
+      <Grid item xs={12} mt={0.3}>
         <Controller
           control={control}
           name="cnpj"
@@ -220,7 +221,7 @@ const EditInstitutionForm = () => {
               format="##.###.###/####-##"
               placeholder="Ex.: 12345678000167"
               error={Boolean(error)}
-              helperText={error?.message ?? " "}
+              helperText={FormFieldError(error?.message)}
               fullWidth
               onChange={onChange}
               onBlur={onBlur}

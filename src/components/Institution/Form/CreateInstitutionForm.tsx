@@ -21,6 +21,7 @@ import {
   CreateInstitutionRequestPayload,
 } from "@/types/institution";
 import FormDrawerV2 from "@/components/Form/DrawerV2";
+import FormFieldError from "@/components/FormFieldError";
 
 const defaultValues: CreateInstitutionForm = {
   acronym: "",
@@ -132,7 +133,7 @@ const CreateInstitutionForm = () => {
               label="Sigla *"
               placeholder="Ex.: UFX"
               error={Boolean(error)}
-              helperText={error?.message ?? " "}
+              helperText={FormFieldError(error?.message)}
               fullWidth
               onChange={onChange}
               onBlur={onBlur}
@@ -141,7 +142,7 @@ const CreateInstitutionForm = () => {
         />
       </Grid>
 
-      <Grid item xs={12}>
+      <Grid item xs={12} mt={0.3}>
         <Controller
           control={control}
           name="name"
@@ -159,7 +160,7 @@ const CreateInstitutionForm = () => {
               label="Nome *"
               placeholder="Ex.: Universidade Federal de ..."
               error={Boolean(error)}
-              helperText={error?.message ?? " "}
+              helperText={FormFieldError(error?.message)}
               fullWidth
               onChange={onChange}
               onBlur={onBlur}
@@ -168,7 +169,7 @@ const CreateInstitutionForm = () => {
         />
       </Grid>
 
-      <Grid item xs={12}>
+      <Grid item xs={12} mt={0.3}>
         <Controller
           control={control}
           name="cnpj"
@@ -191,7 +192,7 @@ const CreateInstitutionForm = () => {
               format="##.###.###/####-##"
               placeholder="Ex.: 12345678000167"
               error={Boolean(error)}
-              helperText={error?.message ?? " "}
+              helperText={FormFieldError(error?.message)}
               fullWidth
               onChange={onChange}
               onBlur={onBlur}

@@ -52,6 +52,7 @@ import { sendFormattedDate } from "@/utils/date";
 import { isInSomeSubgroups } from "@/utils/validations/form-validations";
 import FormDrawerV2 from "@/components/Form/DrawerV2";
 import FlashOnIcon from "@mui/icons-material/FlashOn";
+import FormFieldError from "@/components/FormFieldError";
 
 const defaultValues: EditConsumerUnitForm = {
   isActive: true,
@@ -357,7 +358,7 @@ const ConsumerUnitEditForm = () => {
                   label="Nome *"
                   placeholder="Ex.: Campus Gama, Biblioteca, Faculdade de Medicina"
                   error={Boolean(error)}
-                  helperText={error?.message ?? " "}
+                  helperText={FormFieldError(error?.message)}
                   fullWidth
                   onChange={onChange}
                   onBlur={onBlur}
@@ -367,7 +368,7 @@ const ConsumerUnitEditForm = () => {
             />
           </Grid>
         </Grid>
-        
+
         <Grid item xs={12}>
           <Controller
             name="isActive"
@@ -386,7 +387,7 @@ const ConsumerUnitEditForm = () => {
                     <FormControlLabel
                       label="Unidade ativa"
                       labelPlacement="start"
-                      sx={{ margin: 0.5}}
+                      sx={{ margin: 0.5 }}
                       control={
                         <Box>
                           <Switch
@@ -402,8 +403,8 @@ const ConsumerUnitEditForm = () => {
 
                 <FormHelperText>
                   <p>
-                  Só unidades ativas geram recomendações e recebem faturas. Não é
-                  possível excluir unidades, apenas desativá-las.
+                    Só unidades ativas geram recomendações e recebem faturas. Não é
+                    possível excluir unidades, apenas desativá-las.
                   </p>
                 </FormHelperText>
               </FormGroup>
@@ -450,8 +451,10 @@ const ConsumerUnitEditForm = () => {
                   placeholder="Número da Unidade Consumidora conforme a fatura"
                   error={Boolean(error)}
                   helperText={
-                    error?.message ??
-                    "Nº ou código da Unidade Consumidora conforme a fatura"
+                    FormFieldError(
+                      error?.message,
+                      "Nº ou código da Unidade Consumidora conforme a fatura"
+                    )
                   }
                   fullWidth
                   onChange={(e) => handleNumericInputChange(e, onChange)}
@@ -469,7 +472,7 @@ const ConsumerUnitEditForm = () => {
               rules={{ required: "Preencha este campo" }}
               render={({
                 field: { onChange, onBlur, value, ref },
-                fieldState: { error },
+                fieldState: { error }
               }) => (
                 <FormControl
                   sx={{ minWidth: "200px", maxWidth: "100%" }}
@@ -512,7 +515,7 @@ const ConsumerUnitEditForm = () => {
                     </MenuItem>
                   </Select>
 
-                  <FormHelperText>{error?.message ?? " "}</FormHelperText>
+                  <FormHelperText>{FormFieldError(error?.message)}</FormHelperText>
                 </FormControl>
               )}
             />
@@ -543,7 +546,7 @@ const ConsumerUnitEditForm = () => {
                         ...params.inputProps,
                         placeholder: "dd/mm/aaaa",
                       }}
-                      helperText={error?.message ?? " "}
+                      helperText={FormFieldError(error?.message)}
                       error={!!error}
                     />
                   )}
@@ -571,8 +574,10 @@ const ConsumerUnitEditForm = () => {
                   customInput={TextField}
                   label="Tensão contratada *"
                   helperText={
-                    error?.message ??
-                    "Se preciso, converta a tensão de V para kV dividindo o valor por 1.000."
+                    FormFieldError(
+                      error?.message,
+                      "Se preciso, converta a tensão de V para kV dividindo o valor por 1.000."
+                    )
                   }
                   error={!!error}
                   fullWidth
@@ -696,7 +701,7 @@ const ConsumerUnitEditForm = () => {
                   decimalSeparator=","
                   thousandSeparator={"."}
                   error={Boolean(error)}
-                  helperText={error?.message ?? " "}
+                  helperText={FormFieldError(error?.message)}
                   onValueChange={(values) => onChange(values.floatValue)}
                   onBlur={onBlur}
                 />
@@ -736,7 +741,7 @@ const ConsumerUnitEditForm = () => {
                     decimalSeparator=","
                     thousandSeparator={"."}
                     error={Boolean(error)}
-                    helperText={error?.message ?? " "}
+                    helperText={FormFieldError(error?.message)}
                     onValueChange={(values) => onChange(values.floatValue)}
                     onBlur={onBlur}
                   />
@@ -744,7 +749,7 @@ const ConsumerUnitEditForm = () => {
               />
             </Grid>
 
-            <Grid item xs={7}>
+            <Grid item xs={7} mt={0.3}>
               <Controller
                 control={control}
                 name="offPeakContractedDemandInKw"
@@ -775,7 +780,7 @@ const ConsumerUnitEditForm = () => {
                     decimalSeparator=","
                     thousandSeparator={"."}
                     error={Boolean(error)}
-                    helperText={error?.message ?? " "}
+                    helperText={FormFieldError(error?.message)}
                     onValueChange={(values) => onChange(values.floatValue)}
                     onBlur={onBlur}
                   />
@@ -871,7 +876,7 @@ const ConsumerUnitEditForm = () => {
                       decimalSeparator=","
                       thousandSeparator={"."}
                       error={Boolean(error)}
-                      helperText={error?.message ?? " "}
+                      helperText={FormFieldError(error?.message)}
                       onValueChange={(values) => onChange(values.floatValue)}
                       onBlur={onBlur}
                     />
