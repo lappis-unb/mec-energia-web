@@ -18,6 +18,8 @@ import { TokenStatus } from "@/types/app";
 import { signIn } from "next-auth/react";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import Tooltip from '@mui/material/Tooltip';
+
 
 const defaultValues: ConfirmResetPasswordPayload = {
   newPassword: "",
@@ -237,8 +239,10 @@ const DefinePasswordPage: NextPage = () => {
               </Box>
               <Box mt={4}>
                 <Typography variant="h5">Olá, {nome}</Typography>
-                <Typography variant="subtitle1">Cadastre uma senha para acessar o sistema.</Typography>
-                <Typography variant="subtitle1">Todos os campos são obrigatórios.</Typography>
+                <Typography variant="subtitle1">
+                  Cadastre uma senha para acessar o sistema.<br/>
+                  Todos os campos são obrigatórios.
+                </Typography>
               </Box>
 
               <Box mt={3}>
@@ -267,35 +271,43 @@ const DefinePasswordPage: NextPage = () => {
                       label="Senha"
                       type={showNewPassword ? "text" : "password"}
                       error={Boolean(error)}
-                      helperText={error?.message ?? " "}
+                      helperText={error ? (
+                        <Box display="flex" alignItems="center">
+                            <ReportIcon color="error" sx={{ mr: 1 }} />
+                            {error.message}
+                        </Box>
+                    ) : " "}
                       fullWidth
                       onChange={onChange}
                       onBlur={onBlur}
                       InputProps={{
                         endAdornment: (
                           <InputAdornment position="end">
-                            <IconButton
-                              onClick={() => setShowNewPassword(!showNewPassword)}
-                              onMouseDown={(e) => e.preventDefault()}
-                            >
-                              {showNewPassword ? <VisibilityOff /> : <Visibility />}
-                            </IconButton>
+                            <Tooltip title={showNewPassword ? "Ocultar senha" : "Exibir senha"}>
+                                  <IconButton
+                                    onClick={() => setShowNewPassword(!showNewPassword)}
+                                    onMouseDown={(e) => e.preventDefault()}
+                                    sx={{ color: showNewPassword ? 'primary.main' : 'action.active' }}
+                                  >
+                                 {showNewPassword ? <VisibilityOff /> : <Visibility />}
+                                  </IconButton>
+                            </Tooltip>
                           </InputAdornment>
                         ),
                       }}
                     />
                   )}
                 />
-                <Typography variant="subtitle1" color={getColor(isValidPassword.hasLetter)}>
+                <Typography variant="subtitle1" color={getColor(isValidPassword.hasLetter)} style={{ color: 'gray' }}>
                   {renderValidationIcon(isValidPassword.hasLetter)} Ao menos 1 letra
                 </Typography>
-                <Typography variant="subtitle1" color={getColor(isValidPassword.hasNumber)}>
+                <Typography variant="subtitle1" color={getColor(isValidPassword.hasNumber)} style={{ color: 'gray' }}>
                   {renderValidationIcon(isValidPassword.hasNumber)} Ao menos 1 número
                 </Typography>
-                <Typography lineHeight={"1rem"} variant="subtitle1" color={getColor(isValidPassword.hasSpecialChar)}>
+                <Typography variant="subtitle1" color={getColor(isValidPassword.hasSpecialChar)} style={{ color: 'gray' }}>
                   {renderValidationIcon(isValidPassword.hasSpecialChar)} Ao menos 1 caractere especial (exs.: !?*-_.#$)
                 </Typography>
-                <Typography alignContent={"center"} variant="subtitle1" color={getColor(isValidPassword.minLength)}>
+                <Typography alignContent={"center"} variant="subtitle1" color={getColor(isValidPassword.minLength)} style={{ color: 'gray' }}>
                   {renderValidationIcon(isValidPassword.minLength)} Mínimo de 8 caracteres
                 </Typography>
               </Box>
@@ -305,7 +317,7 @@ const DefinePasswordPage: NextPage = () => {
                   name="confirmPassword"
                   rules={{
                     required: "Preencha este campo",
-                    validate: value => value === password || "Insira uma senha idêntica à \"Nova senha\""
+                    validate: value => value === password || "Insira uma senha idêntica à \"Senha\""
                   }}
                   render={({
                     field: { onChange, onBlur, value, ref },
@@ -314,22 +326,30 @@ const DefinePasswordPage: NextPage = () => {
                     <TextField
                       ref={ref}
                       value={value}
-                      label="Repetir Senha"
+                      label="Repetir senha"
                       type={showConfirmPassword ? "text" : "password"}
                       error={Boolean(error)}
-                      helperText={error?.message ?? " "}
+                      helperText={error ? (
+                        <Box display="flex" alignItems="center">
+                            <ReportIcon color="error" sx={{ mr: 1 }} />
+                            {error.message}
+                        </Box>
+                    ) : " "}
                       fullWidth
                       onChange={onChange}
                       onBlur={onBlur}
                       InputProps={{
                         endAdornment: (
                           <InputAdornment position="end">
-                            <IconButton
-                              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                              onMouseDown={(e) => e.preventDefault()}
-                            >
-                              {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
-                            </IconButton>
+                            <Tooltip title={showConfirmPassword ? "Ocultar senha" : "Exibir senha"}>
+                                <IconButton
+                                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                  onMouseDown={(e) => e.preventDefault()}
+                                  sx={{ color: showConfirmPassword ? 'primary.main' : 'action.active' }}
+                                >
+                                {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                                </IconButton>
+                              </Tooltip>
                           </InputAdornment>
                         ),
                       }}
@@ -356,13 +376,13 @@ const DefinePasswordPage: NextPage = () => {
                 </Box>
               )}
 
-              <Box mt={2}>
-                <Button type="submit" variant="contained" fullWidth disabled={isLoading}>
+              <Box>
+                <Button size="large" type="submit" variant="contained" fullWidth disabled={isLoading}>
                   {isLoading ? 'Gravando...' : 'Gravar'}
                 </Button>
               </Box>
 
-              <Box mt={5}>
+              <Box mt={3}>
                 <Box display="flex" justifyContent="center">
                   <Button sx={{ textDecoration: 'underline' }} href="#" onClick={handleCancelEdition}>Cancelar</Button>
                 </Box>

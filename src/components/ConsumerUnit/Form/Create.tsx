@@ -456,7 +456,7 @@ const ConsumerUnitCreateForm = () => {
               rules={{
                 required: "Preencha este campo",
                 validate: (v) =>
-                  isInSomeSubgroups(v, subgroupsList?.subgroups || []),
+                  isInSomeSubgroups(v, subgroupsList?.subgroups || []) && isValueGreaterThenZero(v),
               }}
               render={({
                 field: { onChange, onBlur, value },
@@ -482,7 +482,7 @@ const ConsumerUnitCreateForm = () => {
                   type="text"
                   allowNegative={false}
                   isAllowed={({ floatValue }) =>
-                    !floatValue || floatValue <= 9999.99
+                    !floatValue || floatValue <= 9999.99 
                   }
                   decimalScale={2}
                   decimalSeparator=","
