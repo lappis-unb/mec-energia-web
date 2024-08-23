@@ -275,6 +275,7 @@ const RedefinePasswordPage: NextPage = () => {
                                                 endAdornment: (
                                                     <InputAdornment position="end">
                                                         <IconButton
+                                                            style={{ color: '#000000DE' }}
                                                             onClick={() => setShowNewPassword(!showNewPassword)}
                                                             onMouseDown={(e) => e.preventDefault()}
                                                         >
@@ -325,6 +326,7 @@ const RedefinePasswordPage: NextPage = () => {
                                                 endAdornment: (
                                                     <InputAdornment position="end">
                                                         <IconButton
+                                                            style={{ color: '#000000DE' }}
                                                             onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                                                             onMouseDown={(e) => e.preventDefault()}
                                                         >

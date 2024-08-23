@@ -166,6 +166,7 @@ const SignInTemplate = () => {
                         endAdornment: (
                           <InputAdornment position="end">
                             <IconButton
+                              style={{ color: '#000000DE' }}
                               onClick={() => setShowPassword(!showPassword)}
                               onMouseDown={(e) => e.preventDefault()}
                               >
