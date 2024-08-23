@@ -109,6 +109,12 @@ const CreateInstitutionForm = () => {
     return true;
   };
 
+  const noSpecialCharacters = (value: CreateInstitutionForm["name"]) => {
+    const regex = /^[a-zA-Z\s\u00C0-\u017F]*$/;
+    if (!regex.test(value)) return "Insira somente letras, sem números ou caracteres especiais";
+    return true;
+  };
+
   const InstitutionSection = useCallback(() => (
     <>
       <Grid item xs={12}>
@@ -148,7 +154,10 @@ const CreateInstitutionForm = () => {
           name="name"
           rules={{
             required: "Preencha este campo",
-            validate: hasEnoughCaracteresLength,
+            validate: {
+              length: hasEnoughCaracteresLength,
+              noSpecialChars: noSpecialCharacters,
+            },
           }}
           render={({
             field: { onChange, onBlur, value, ref },
@@ -201,8 +210,7 @@ const CreateInstitutionForm = () => {
         />
       </Grid>
     </>
-
-  ), [control])
+  ), [control]);
 
   return (
     <Fragment>
@@ -215,7 +223,6 @@ const CreateInstitutionForm = () => {
         title="Adicionar Instituição"
         header={<></>}
         sections={[<InstitutionSection key={0} />]}
-
       />
       <FormWarningDialog
         open={shouldShowCancelDialog}
@@ -225,7 +232,7 @@ const CreateInstitutionForm = () => {
         type="create"
       />
     </Fragment>
-  )
+  );
 };
 
 export default CreateInstitutionForm;

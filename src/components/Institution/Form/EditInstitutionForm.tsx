@@ -120,7 +120,7 @@ const EditInstitutionForm = () => {
       dispatch(
         setIsErrorNotificationOpen({
           isOpen: true,
-          text: "Erro ao editada instituição.",
+          text: "Erro ao editar instituição.",
         })
       );
       resetMutation();
@@ -135,6 +135,12 @@ const EditInstitutionForm = () => {
 
   const hasEnoughCaracteresLength = (value: EditInstitutionForm["name"]) => {
     if (value.length < 3) return "Insira ao menos 3 caracteres";
+    return true;
+  };
+
+  const noSpecialCharacters = (value: EditInstitutionForm["name"]) => {
+    const regex = /^[a-zA-Z\s\u00C0-\u017F]*$/;
+    if (!regex.test(value)) return "Insira somente letras, sem números ou caracteres especiais";
     return true;
   };
 
@@ -177,7 +183,10 @@ const EditInstitutionForm = () => {
           name="name"
           rules={{
             required: "Preencha este campo",
-            validate: hasEnoughCaracteresLength,
+            validate: {
+              length: hasEnoughCaracteresLength,
+              noSpecialChars: noSpecialCharacters,
+            },
           }}
           render={({
             field: { onChange, onBlur, value, ref },
@@ -230,8 +239,7 @@ const EditInstitutionForm = () => {
         />
       </Grid>
     </>
-  ), [control])
-
+  ), [control]);
 
   return (
     <Fragment>
@@ -244,7 +252,6 @@ const EditInstitutionForm = () => {
         title="Editar Instituição"
         header={<></>}
         sections={[<InstitutionSection key={0} />]}
-
       />
       <FormWarningDialog
         open={shouldShowCancelDialog}
@@ -253,10 +260,8 @@ const EditInstitutionForm = () => {
         onDiscard={handleDiscardForm}
         type="update"
       />
-
-
     </Fragment>
-  )
+  );
 };
 
 export default EditInstitutionForm;
