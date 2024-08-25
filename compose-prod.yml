@@ -27,6 +27,6 @@ networks:
 
 volumes:
   nextjs_static:
-    external: true
+    name: nextjs_static
   nextjs_public:
-    external: true
+    name: nextjs_public
