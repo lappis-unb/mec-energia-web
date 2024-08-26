@@ -14,9 +14,12 @@ services:
     environment:
       NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
       NEXTAUTH_URL: ${NEXTAUTH_URL}
-    volumes:
-      - nextjs_static:/app/.next/static
-      - nextjs_public:/app/public
+    labels:
+        traefik.enable: "true"
+        traefik.http.routers.ngnix-web.rule: "Host(`${HOSTNAME}`)"
+        traefik.http.services.ngnix-web.loadbalancer.server.port: ${PORT}
+        traefik.http.routers.ngnix-web.entrypoints: "websecure"
+        traefik.http.routers.ngnix-web.tls.certresolver: "leprod"
     networks:
       - proxy-network
     restart: always
@@ -24,9 +27,3 @@ services:
 networks:
   proxy-network:
     external: true
-
-volumes:
-  nextjs_static:
-    name: nextjs_static
-  nextjs_public:
-    name: nextjs_public
