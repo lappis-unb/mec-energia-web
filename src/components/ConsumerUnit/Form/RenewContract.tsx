@@ -40,8 +40,6 @@ import {
 import FormWarningDialog from "@/components/ConsumerUnit/Form/WarningDialog";
 import {
   useGetConsumerUnitQuery,
-  useGetContractQuery,
-  useGetContractQuery,
   useGetDistributorsQuery,
   useGetSubgroupsQuery,
   useRenewContractMutation,
@@ -55,7 +53,6 @@ import { getSubgroupsText } from "@/utils/get-subgroup-text";
 import { isInSomeSubgroups } from "@/utils/validations/form-validations";
 import FormDrawerV2 from "@/components/Form/DrawerV2";
 import FormConfirmDialog from "./WarningDialogConfirm";
-import FormFieldError from "@/components/FormFieldError";
 import SupplyVoltageTooltip from "@/components/SupplyVoltageTooltip";
 
 const defaultValues: RenewContractForm = {
@@ -124,6 +121,7 @@ const ConsumerUnitRenewContractForm = () => {
   } = form;
 
   const tariffFlag = watch("tariffFlag");
+  const supplyVoltage = watch("supplyVoltage");
 
   const shouldHideTooltip = (value) => {
     if (value === undefined) return false;
@@ -451,93 +449,6 @@ const ConsumerUnitRenewContractForm = () => {
                 />
               </Grid>
 
-<<<<<<< HEAD
-        <Tooltip
-          componentsProps={{
-            tooltip: {
-              sx: {
-                bgcolor: "warning.main",
-                color: "warning.contrastText",
-                "& .MuiTooltip-arrow": {
-                  color: "warning.main",
-                },
-              },
-            },
-          }}
-          title={
-            <div style={{ whiteSpace: "pre-line" }}>
-              {subgroupsList ? getSubgroupsText(subgroupsList?.subgroups) : ""}
-            </div>
-          }
-          arrow
-          placement="right"
-          sx={{ color: "red" }}
-        >
-          <Grid item xs={8} sm={6}>
-            <Controller
-              control={control}
-              name={"supplyVoltage"}
-              rules={{
-                required: "Preencha este campo",
-                validate: (v) =>
-                  isInSomeSubgroups(v, subgroupsList?.subgroups || []),
-              }}
-              render={({
-                field: { onChange, onBlur, value },
-                fieldState: { error },
-              }) => (
-                <NumericFormat
-                  value={value}
-                  customInput={TextField}
-                  label="Tensão contratada *"
-                  helperText={
-                    error?.message ??
-                    "Se preciso, converta a tensão de V para kV dividindo o valor por 1.000."
-                  }
-                  error={!!error}
-                  fullWidth
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">kV</InputAdornment>
-                    ),
-                  }}
-                  type="text"
-                  allowNegative={false}
-                  isAllowed={({ floatValue }) =>
-                    !floatValue || floatValue <= 9999.99
-                  }
-                  decimalScale={2}
-                  decimalSeparator=","
-                  thousandSeparator={"."}
-                  onValueChange={(values) => {
-                    const newVoltage = values ? values.floatValue : 0;
-                    if (newVoltage === 69) {
-                      setShouldShowGreenDemand(false);
-                    } else if (newVoltage !== undefined && newVoltage >= 88 && newVoltage <= 138) {
-                      setShouldShowGreenDemand(false);
-                    } else {
-                      setShouldShowGreenDemand(true);
-                    }
-                    onChange(values.floatValue);
-                  }}
-                  onBlur={onBlur}
-                />
-              )}
-            />
-          </Grid>
-        </Tooltip>
-      </>
-    ),
-    [control, distributorList, subgroupsList]
-  );
-
-  const ContractedDemand = useCallback(
-    () => (
-      <>
-        <Grid item xs={12}>
-          <Typography variant="h5">Demanda Contratada</Typography>
-        </Grid>
-=======
               <Tooltip
                 componentsProps={{
                   tooltip: {
@@ -635,7 +546,6 @@ const ConsumerUnitRenewContractForm = () => {
               <Grid item xs={12}>
                 <Typography variant="h5">Demanda Contratada</Typography>
               </Grid>
->>>>>>> 0d5ef0d (fix: 223 adicionar a fixacao de tooltips aos arquivos de editar e renovar contrato)
 
               <Grid item xs={12}>
                 <Controller
