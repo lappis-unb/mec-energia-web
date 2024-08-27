@@ -125,6 +125,18 @@ const ConsumerUnitRenewContractForm = () => {
 
   const tariffFlag = watch("tariffFlag");
 
+  const shouldHideTooltip = (value) => {
+    if (value === undefined) return false;
+    return (
+      value <= 2.3 ||
+      (value > 2.3 && value <= 25) ||
+      (value >= 30 && value <= 44) ||
+      value === 69 ||
+      (value >= 88 && value <= 138) ||
+      value >= 230
+    );
+  };
+
   useEffect(() => {
     if (isRenewContractFormOpen) {
       setValue("code", consumerUnit?.code as string);
@@ -828,6 +840,7 @@ const ConsumerUnitRenewContractForm = () => {
                 />
               </Grid>
 
+<<<<<<< HEAD
         <Tooltip
           componentsProps={{
             tooltip: {
@@ -913,6 +926,105 @@ const ConsumerUnitRenewContractForm = () => {
         <Grid item xs={12}>
           <Typography variant="h5">Demanda Contratada</Typography>
         </Grid>
+=======
+              <Tooltip
+                componentsProps={{
+                  tooltip: {
+                    sx: {
+                      bgcolor: "#B21B0A",
+                      color: "#FFFFFF",
+                      "& .MuiTooltip-arrow": {
+                        color: "#B21B0A",
+                      },
+                    },
+                  },
+                }}
+                title={
+                  <div style={{ whiteSpace: "pre-line" }}>
+                    {subgroupsList
+                      ? getSubgroupsText(subgroupsList.subgroups)
+                      : ""}
+                  </div>
+                }
+                arrow
+                placement="right"
+                open={isTooltipOpen}
+              >
+                <Box>
+                  <SupplyVoltageTooltip
+                    open={!!supplyVoltage && !shouldHideTooltip(supplyVoltage)}
+                    supplyVoltage={supplyVoltage}
+                  >
+                    <Grid item xs={8} sm={6}>
+                      <Controller
+                        control={control}
+                        name="supplyVoltage"
+                        rules={{
+                          required: "Preencha este campo",
+                          validate: (v) =>
+                            isInSomeSubgroups(
+                              v,
+                              subgroupsList?.subgroups || []
+                            ),
+                        }}
+                        render={({
+                          field: { onChange, onBlur, value },
+                          fieldState: { error },
+                        }) => (
+                          <NumericFormat
+                            key="supplyVoltageInput"
+                            value={value}
+                            customInput={TextField}
+                            label="Tensão contratada *"
+                            helperText={
+                              error?.message ??
+                              "Se preciso, converta a tensão de V para kV dividindo o valor por 1.000."
+                            }
+                            error={!!error}
+                            fullWidth
+                            InputProps={{
+                              endAdornment: (
+                                <InputAdornment position="end">
+                                  kV
+                                </InputAdornment>
+                              ),
+                            }}
+                            type="text"
+                            allowNegative={false}
+                            isAllowed={({ floatValue }) =>
+                              !floatValue || floatValue <= 9999.99
+                            }
+                            decimalScale={2}
+                            decimalSeparator=","
+                            thousandSeparator="."
+                            onValueChange={(values) => {
+                              const newVoltage = values?.floatValue || 0;
+                              setIsTooltipOpen(!shouldHideTooltip(newVoltage));
+                              onChange(values.floatValue);
+                            }}
+                            onBlur={(event) => {
+                              if (error?.message === "Preencha este campo") {
+                                setIsTooltipOpen(true);
+                              } else {
+                                setIsTooltipOpen(false);
+                              }
+                              onBlur(event);
+                            }}
+                          />
+                        )}
+                      />
+                    </Grid>
+                  </SupplyVoltageTooltip>
+                </Box>
+              </Tooltip>
+            </Box>
+          </Paper>
+          <Paper>
+            <Box mb={4} p={2}>
+              <Grid item xs={12}>
+                <Typography variant="h5">Demanda Contratada</Typography>
+              </Grid>
+>>>>>>> 0d5ef0d (fix: 223 adicionar a fixacao de tooltips aos arquivos de editar e renovar contrato)
 
               <Grid item xs={12}>
                 <Controller
