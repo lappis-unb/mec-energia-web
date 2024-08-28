@@ -11,6 +11,7 @@ import {
   FormControlLabel,
   FormHelperText,
   FormLabel,
+  FormGroup,
   Grid,
   InputAdornment,
   InputLabel,
@@ -51,6 +52,8 @@ import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { sendFormattedDate } from "@/utils/date";
 import { isInSomeSubgroups } from "@/utils/validations/form-validations";
 import FormDrawerV2 from "@/components/Form/DrawerV2";
+import FlashOnIcon from "@mui/icons-material/FlashOn";
+import FormFieldError from "@/components/FormFieldError";
 
 const defaultValues: EditConsumerUnitForm = {
   isActive: true,
@@ -81,9 +84,16 @@ const ConsumerUnitEditForm = () => {
   const { data: distributorList } = useGetDistributorsQuery(
     session?.user?.universityId || skipToken
   );
+
+  const sortedDistributorList = distributorList
+    ?.slice()
+    .sort((a, b) => a.name.localeCompare(b.name));
+
   const { data: contract } = useGetContractQuery(
     activeConsumerUnit || skipToken
   );
+  const { data: consumerUnit, refetch: refetchConsumerUnit } =
+    useGetConsumerUnitQuery(activeConsumerUnit || skipToken);
   const { data: consumerUnit, refetch: refetchConsumerUnit } =
     useGetConsumerUnitQuery(activeConsumerUnit || skipToken);
   const [
@@ -193,6 +203,10 @@ const ConsumerUnitEditForm = () => {
       setValue("tariffFlag", "B");
     }
   }, [shouldShowGreenDemand]);
+
+  useEffect(() => {
+    setValue("tariffFlag", contract?.tariffFlag ?? "B");
+  }, [isEditFormOpen]);
 
   // Validações
 
@@ -349,7 +363,7 @@ const ConsumerUnitEditForm = () => {
                   label="Nome *"
                   placeholder="Ex.: Campus Gama, Biblioteca, Faculdade de Medicina"
                   error={Boolean(error)}
-                  helperText={error?.message ?? " "}
+                  helperText={FormFieldError(error?.message)}
                   fullWidth
                   onChange={onChange}
                   onBlur={onBlur}
@@ -359,34 +373,48 @@ const ConsumerUnitEditForm = () => {
             />
           </Grid>
         </Grid>
-        <Grid item xs={12}>
-          <Box>
-            <Controller
-              name="isActive"
-              control={control}
-              render={({ field: { onChange, value } }) => (
-                <FormControl>
-                  <FormControlLabel
-                    sx={{ marginLeft: 0 }}
-                    control={
-                      <Switch
-                        value={value}
-                        defaultChecked={consumerUnit?.isActive}
-                        onChange={onChange}
-                      />
-                    }
-                    label="Unidade ativa"
-                    labelPlacement="start"
-                  />
-                </FormControl>
-              )}
-            />
-          </Box>
 
-          <Typography variant="caption">
-            Só unidades ativas geram recomendações e recebem faturas. Não é
-            possível excluir unidades, apenas desativá-las.
-          </Typography>
+        <Grid item xs={12}>
+          <Controller
+            name="isActive"
+            control={control}
+            render={({ field: { onChange, value } }) => (
+              <FormGroup>
+                <Box
+                  display="flex"
+                  justifyContent="flex-start"
+                  alignItems="center"
+                  marginTop={0}
+                  style={{ marginTop: 0, paddingTop: 0 }}
+                >
+                  <FlashOnIcon color="primary" />
+                  {consumerUnit && (
+                    <FormControlLabel
+                      label="Unidade ativa"
+                      labelPlacement="start"
+                      sx={{ margin: 0.5 }}
+                      control={
+                        <Box>
+                          <Switch
+                            value={value}
+                            defaultChecked={consumerUnit?.isActive}
+                            onChange={onChange}
+                          />
+                        </Box>
+                      }
+                    />
+                  )}
+                </Box>
+
+                <FormHelperText>
+                  <p>
+                    Só unidades ativas geram recomendações e recebem faturas.
+                    Não é possível excluir unidades, apenas desativá-las.
+                  </p>
+                </FormHelperText>
+              </FormGroup>
+            )}
+          />
         </Grid>
       </>
     ),
@@ -402,7 +430,7 @@ const ConsumerUnitEditForm = () => {
           </Grid>
 
           <Grid item xs={12}>
-            <Alert severity="warning">
+            <Alert severity="warning" variant="standard">
               Modifique o contrato apenas em caso de erro de digitação. Para
               alterações legais ou novo contrato, use a opção{" "}
               <strong>Renovar</strong> na tela anterior.
@@ -427,10 +455,10 @@ const ConsumerUnitEditForm = () => {
                   label="Número da Unidade *"
                   placeholder="Número da Unidade Consumidora conforme a fatura"
                   error={Boolean(error)}
-                  helperText={
-                    error?.message ??
+                  helperText={FormFieldError(
+                    error?.message,
                     "Nº ou código da Unidade Consumidora conforme a fatura"
-                  }
+                  )}
                   fullWidth
                   onChange={(e) => handleNumericInputChange(e, onChange)}
                   onBlur={onBlur}
@@ -472,7 +500,7 @@ const ConsumerUnitEditForm = () => {
                     onChange={onChange}
                     onBlur={onBlur}
                   >
-                    {distributorList?.map(
+                    {sortedDistributorList?.map(
                       (distributor: DistributorPropsTariffs) => {
                         return (
                           <MenuItem key={distributor.id} value={distributor.id}>
@@ -490,7 +518,9 @@ const ConsumerUnitEditForm = () => {
                     </MenuItem>
                   </Select>
 
-                  <FormHelperText>{error?.message ?? " "}</FormHelperText>
+                  <FormHelperText>
+                    {FormFieldError(error?.message)}
+                  </FormHelperText>
                 </FormControl>
               )}
             />
@@ -511,6 +541,7 @@ const ConsumerUnitEditForm = () => {
                 <DatePicker
                   value={value}
                   label="Início da vigência *"
+                  views={["month", "year"]}
                   minDate={new Date("2010")}
                   disableFuture
                   renderInput={(params) => (
@@ -520,7 +551,7 @@ const ConsumerUnitEditForm = () => {
                         ...params.inputProps,
                         placeholder: "dd/mm/aaaa",
                       }}
-                      helperText={error?.message ?? " "}
+                      helperText={FormFieldError(error?.message)}
                       error={!!error}
                     />
                   )}
@@ -547,10 +578,10 @@ const ConsumerUnitEditForm = () => {
                   value={value}
                   customInput={TextField}
                   label="Tensão contratada *"
-                  helperText={
-                    error?.message ??
+                  helperText={FormFieldError(
+                    error?.message,
                     "Se preciso, converta a tensão de V para kV dividindo o valor por 1.000."
-                  }
+                  )}
                   error={!!error}
                   fullWidth
                   InputProps={{
@@ -667,13 +698,13 @@ const ConsumerUnitEditForm = () => {
                   type="text"
                   allowNegative={false}
                   isAllowed={({ floatValue }) =>
-                    !floatValue || floatValue <= 99999.99
+                    !floatValue || floatValue <= 9999999.99
                   }
                   decimalScale={2}
                   decimalSeparator=","
                   thousandSeparator={"."}
                   error={Boolean(error)}
-                  helperText={error?.message ?? " "}
+                  helperText={FormFieldError(error?.message)}
                   onValueChange={(values) => onChange(values.floatValue)}
                   onBlur={onBlur}
                 />
@@ -707,7 +738,7 @@ const ConsumerUnitEditForm = () => {
                     type="text"
                     allowNegative={false}
                     isAllowed={({ floatValue }) =>
-                      !floatValue || floatValue <= 99999.99
+                      !floatValue || floatValue <= 9999999.99
                     }
                     decimalScale={2}
                     decimalSeparator=","
@@ -739,7 +770,7 @@ const ConsumerUnitEditForm = () => {
               />
             </Grid>
 
-            <Grid item xs={7}>
+            <Grid item xs={7} mt={0.3}>
               <Controller
                 control={control}
                 name="offPeakContractedDemandInKw"
@@ -764,7 +795,7 @@ const ConsumerUnitEditForm = () => {
                     type="text"
                     allowNegative={false}
                     isAllowed={({ floatValue }) =>
-                      !floatValue || floatValue <= 99999.99
+                      !floatValue || floatValue <= 9999999.99
                     }
                     decimalScale={2}
                     decimalSeparator=","
@@ -883,7 +914,7 @@ const ConsumerUnitEditForm = () => {
                       decimalSeparator=","
                       thousandSeparator={"."}
                       error={Boolean(error)}
-                      helperText={error?.message ?? " "}
+                      helperText={FormFieldError(error?.message)}
                       onValueChange={(values) => onChange(values.floatValue)}
                       onBlur={onBlur}
                     />
@@ -921,6 +952,7 @@ const ConsumerUnitEditForm = () => {
         onClose={handleCloseDialog}
         onDiscard={handleDiscardForm}
         entity={"unidade consumidora"}
+        type="update"
       />
 
       <DistributorCreateFormDialog

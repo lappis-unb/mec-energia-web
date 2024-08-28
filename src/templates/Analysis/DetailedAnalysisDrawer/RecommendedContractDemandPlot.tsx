@@ -1,57 +1,55 @@
 import { Chart } from "react-chartjs-2";
 import type { ChartOptions, ChartDataset } from "chart.js";
 import { Recommendation } from "@/types/recommendation";
-import { findMaxValue } from "../findMaxValue";
+import { Box } from "@mui/material";
 
 const options: ChartOptions = {
   responsive: true,
   interaction: {
     intersect: false,
-    mode: "nearest",
-    axis: "x",
+    mode: 'nearest',
+    axis: 'x',
   },
   plugins: {
-    title: {
-      display: true,
-      text: "Demanda - Contrato Proposto",
-      font: {
-        size: 16,
-      },
-    },
     legend: {
-      position: "top",
+      position: 'bottom',
       labels: {
         usePointStyle: true,
       },
     },
     tooltip: {
       usePointStyle: true,
+      xAlign: 'center',
+      yAlign: 'bottom',
       callbacks: {
         title: function (context) {
-          const title = context[0].label || "";
-          return title.replace(",", "/");
+          let title = context[0].label || '';
+          title = title.replace(',', ' ');
+          if (context[0].parsed.y == null) {
+            title += ' - Indisponível';
+          }
+          return title;
         },
         label: function (context) {
-          let label = context.dataset.label || "";
-
-          if (label == "Indisponível") {
-            if (context.parsed.y == null) {
-              return;
-            }
-            return "Informações indisponíveis";
+          const label = context.dataset.label || '';
+          let suffix = '';
+          if (context.parsed.y != null) {
+            suffix = new Intl.NumberFormat('pt-BR').format(context.parsed.y) + " kW";
+          } else {
+            suffix = 'Indisponível';
           }
-          if (label) {
-            label = "Demanda " + label + ": ";
-          }
-          if (context.parsed.y !== null) {
-            label +=
-              new Intl.NumberFormat("pt-BR").format(context.parsed.y) + " kW";
-          }
-
-          return label;
-        },
-      },
+          return label + ': ' + suffix;
+        }
+      }
     },
+    datalabels: {
+      anchor: 'end',
+      align: 'end',
+      rotation: 270,
+      formatter: function (value) {
+        return value == null ? 'Indisponível' : null
+      }
+    }
   },
   scales: {
     x: {
@@ -63,39 +61,44 @@ const options: ChartOptions = {
       },
     },
     y: {
+      ticks: {
+        beginAtZero: true,
+      },
       title: {
         display: true,
-        text: "kW",
+        text: 'kW',
       },
       grid: {
         color: "#C3C3C3",
       },
     },
+
   },
   datasets: {
     bar: {
-      barPercentage: 1.2,
+      barPercentage: 1,
+      skipNull: true,
     },
   },
 };
 
 interface Props {
   dates: string[][];
-  isGreen?: boolean;
   recommendation: Recommendation;
+  isGreen?: boolean;
 }
 
 export const RecommendedContractDemandPlot = ({
   dates,
-  isGreen,
   recommendation,
+  isGreen,
 }: Props) => {
-  const maxValue = findMaxValue([
-    recommendation.consumptionHistoryPlot.offPeakMeasuredDemandInKw,
-    recommendation.consumptionHistoryPlot.peakMeasuredDemandInKw,
-    [recommendation.recommendedContract.peakDemandInKw],
-    [recommendation.recommendedContract.offPeakDemandInKw],
-  ]);
+  // const maxValue = findMaxValue([
+  //   recommendation.consumptionHistoryPlot.offPeakMeasuredDemandInKw,
+  //   recommendation.consumptionHistoryPlot.peakMeasuredDemandInKw,
+  //   [recommendation.recommendedContract.peakDemandInKw],
+  //   [recommendation.recommendedContract.offPeakDemandInKw],
+  // ]);
 
   const contractPeakDemands = Array(12).fill(
     recommendation.recommendedContract.peakDemandInKw
@@ -105,111 +108,79 @@ export const RecommendedContractDemandPlot = ({
     recommendation.recommendedContract.offPeakDemandInKw
   );
 
-  const missingData =
-    recommendation.consumptionHistoryPlot.offPeakMeasuredDemandInKw.map((n) =>
-      n === null ? maxValue * 1.2 : null
-    ) as number[];
+  // const missingData =
+  //   recommendation.consumptionHistoryPlot.offPeakMeasuredDemandInKw.map((n) =>
+  //     n === null ? maxValue * 1.2 : null
+  //   ) as number[];
 
   const greenDatasets: ChartDataset[] = [
     {
-      label: "Proposta",
+      type: 'line',
+      label: 'Demanda Proposta',
       data: contractPeakDemands,
-      backgroundColor: "#F2B63D",
-      borderColor: "#F2B63D",
-      borderWidth: 4,
-      pointStyle: "rect",
+      backgroundColor: '#EE8F84',
+      borderColor: '#EE8F84',
+      pointStyle: 'rect',
       pointRadius: 4,
-      pointHoverRadius: 7,
     },
     {
-      label: "Med. Fora Ponta",
-      data: recommendation.consumptionHistoryPlot.offPeakMeasuredDemandInKw,
-      backgroundColor: "#0A5C67",
-      borderColor: "#0A5C67",
-      pointStyle: "circle",
-      pointRadius: 3,
-      pointHoverRadius: 9,
-    },
-    {
-      label: "Med. Ponta",
+      type: 'bar',
+      label: 'Demanda Medida',
       data: recommendation.consumptionHistoryPlot.peakMeasuredDemandInKw,
-      backgroundColor: "#0F8999",
-      borderColor: "#0F8999",
-      pointStyle: "triangle",
-      pointRadius: 4,
-      pointHoverRadius: 11,
-    },
-    {
-      label: "Indisponível",
-      data: missingData,
-      type: "bar",
-      backgroundColor: "#F5F5F5",
-      borderColor: "#C3C3C3",
-      borderWidth: 1,
-      pointStyle: "star",
+      backgroundColor: '#7C0AC1',
+      borderColor: '#7C0AC1',
     },
   ];
 
   const blueDatasets: ChartDataset[] = [
     {
-      label: "Proposta Fora Ponta",
-      data: contractOffPeakDemands,
-      backgroundColor: "#D98A0B",
-      borderColor: "#D98A0B",
-      borderWidth: 4,
-      pointStyle: "rect",
-      pointRadius: 4,
-      pointHoverRadius: 7,
-    },
-    {
-      label: "Proposta Ponta",
+      type: 'line',
+      label: 'Demanda Proposta Ponta',
       data: contractPeakDemands,
-      backgroundColor: "#F2B63D",
-      borderColor: "#F2B63D",
-      borderWidth: 4,
-      pointStyle: "rectRot",
+      backgroundColor: '#B31B0A',
+      borderColor: '#B31B0A',
+      pointStyle: 'rectRot',
       pointRadius: 4,
-      pointHoverRadius: 7,
     },
     {
-      label: "Med. Fora Ponta",
-      data: recommendation.consumptionHistoryPlot.offPeakMeasuredDemandInKw,
-      backgroundColor: "#0E438C",
-      borderColor: "#0E438C",
-      pointStyle: "circle",
-      pointRadius: 3,
-      pointHoverRadius: 9,
+      type: 'line',
+      label: 'Demanda Proposta Fora Ponta',
+      data: contractOffPeakDemands,
+      backgroundColor: '#EE8F84',
+      borderColor: '#EE8F84',
+      pointStyle: 'rect',
+      pointRadius: 4,
     },
     {
-      label: "Med. Ponta",
+      type: 'bar',
+      label: 'Demanda Medida Ponta',
       data: recommendation.consumptionHistoryPlot.peakMeasuredDemandInKw,
-      backgroundColor: "#296DCC",
-      borderColor: "#296DCC",
-      pointStyle: "triangle",
-      pointRadius: 4,
-      pointHoverRadius: 11,
+      backgroundColor: '#7C0AC1',
+      borderColor: '#7C0AC1',
+      pointStyle: 'triangle',
     },
     {
-      label: "Indisponível",
-      data: missingData,
-      type: "bar",
-      backgroundColor: "#F5F5F5",
-      borderColor: "#C3C3C3",
-      borderWidth: 1,
-      pointStyle: "star",
+      type: 'bar',
+      label: 'Demanda Medida Fora Ponta',
+      data: recommendation.consumptionHistoryPlot.offPeakMeasuredDemandInKw,
+      backgroundColor: '#CB95EC',
+      borderColor: '#CB95EC',
+      pointStyle: 'circle',
     },
   ];
 
   const datasets = isGreen ? greenDatasets : blueDatasets;
 
   return (
-    <Chart
-      type="line"
-      options={options}
-      data={{
-        labels: dates,
-        datasets,
-      }}
-    />
+    <Box>
+      <Chart
+        type="line"
+        options={options}
+        data={{
+          labels: dates,
+          datasets,
+        }}
+      />
+    </Box>
   );
 };

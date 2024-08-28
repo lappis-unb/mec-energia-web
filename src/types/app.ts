@@ -102,6 +102,7 @@ export interface CardProps extends CardWrapperProps {
   onActionIconClick?: IconButtonProps["onClick"];
   onFavoriteButtonClick?: IconButtonProps["onClick"];
   addFavorites?: () => void; 
+  isDashboard?: boolean;
 }
 
 export interface NotificationProps {

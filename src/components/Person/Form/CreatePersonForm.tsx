@@ -36,6 +36,7 @@ import { useCreatePersonMutation, useGetAllInstitutionQuery } from "@/api";
 import { isValidEmail } from "@/utils/validations/form-validations";
 import { FormInfoAlert } from "@/components/Form/FormInfoAlert";
 import FormDrawerV2 from "@/components/Form/DrawerV2";
+import FormFieldError from "@/components/FormFieldError";
 
 const defaultValues: CreatePersonForm = {
   email: "",
@@ -89,10 +90,10 @@ const CreatePersonForm = () => {
 
   const onSubmitHandler: SubmitHandler<CreatePersonForm> = async (data) => {
     const { email, firstName, lastName, type, university } = data;
-    
+
     // Verifica se o usuário não é um super usuário e define o ID da universidade com base na sessão do usuário
     const universityId = session?.user?.type !== UserRole.SUPER_USER ? (session?.user?.universityId ?? 0) : (university?.id ?? 0);
-  
+
     const body: CreatePersonRequestPayload = {
       email,
       firstName,
@@ -144,7 +145,7 @@ const CreatePersonForm = () => {
 
     <>
       <Grid item xs={12}>
-        <Typography variant="h5">Informações pessoais</Typography>
+        <Typography variant="h5" style={{ marginBottom: '16px' }}>Informações pessoais</Typography>
       </Grid>
 
       <Grid item xs={12}>
@@ -164,7 +165,7 @@ const CreatePersonForm = () => {
               value={value}
               label="Nome *"
               error={Boolean(error)}
-              helperText={error?.message ?? " "}
+              helperText={FormFieldError(error?.message)}
               fullWidth
               onChange={onChange}
               onBlur={onBlur}
@@ -190,7 +191,7 @@ const CreatePersonForm = () => {
               value={value}
               label="Sobrenome *"
               error={Boolean(error)}
-              helperText={error?.message ?? " "}
+              helperText={FormFieldError(error?.message)}
               fullWidth
               onChange={onChange}
               onBlur={onBlur}
@@ -218,7 +219,7 @@ const CreatePersonForm = () => {
               label="E-mail institucional *"
               placeholder="Ex.: voce@universidade.br"
               error={Boolean(error)}
-              helperText={error?.message ?? " "}
+              helperText={FormFieldError(error?.message)}
               fullWidth
               onChange={onChange}
               onBlur={onBlur}
@@ -354,9 +355,10 @@ const CreatePersonForm = () => {
 
       <FormWarningDialog
         open={shouldShowCancelDialog}
-        entity={"pessoa"}
+        entity={"registro"}
         onClose={handleCloseDialog}
         onDiscard={handleDiscardForm}
+        type="create"
       />
     </Fragment>
 

@@ -230,6 +230,7 @@ const DistributorCreateFormDialog = (
               entity={"distribuidora"}
               onClose={handleCloseDialog}
               onDiscard={handleDiscardForm}
+              type="create"
             />
           </Box>
         </FormProvider>

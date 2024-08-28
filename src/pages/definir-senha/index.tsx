@@ -229,10 +229,10 @@ const DefinePasswordPage: NextPage = () => {
                 justifyContent="center"
               >
                 <Image
-                  src="/icons/mec-energia.svg"
-                  alt="Logo do MEC Energia"
-                  height="144px"
-                  width="144px"
+                  src="/icons/logo_mepa_nome.svg"
+                  alt="Logo do MEPA"
+                  height="250px"
+                  width="250px"
                 />
               </Box>
               <Box mt={4}>
@@ -275,6 +275,7 @@ const DefinePasswordPage: NextPage = () => {
                         endAdornment: (
                           <InputAdornment position="end">
                             <IconButton
+                              style={{ color: '#000000DE' }}
                               onClick={() => setShowNewPassword(!showNewPassword)}
                               onMouseDown={(e) => e.preventDefault()}
                             >
@@ -325,6 +326,7 @@ const DefinePasswordPage: NextPage = () => {
                         endAdornment: (
                           <InputAdornment position="end">
                             <IconButton
+                              style={{ color: '#000000DE' }}
                               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                               onMouseDown={(e) => e.preventDefault()}
                             >
@@ -349,7 +351,9 @@ const DefinePasswordPage: NextPage = () => {
               {mutationError && (
                 <Box mt={2}>
                   <Alert severity="error" variant="filled">
-                    {mutationError.message}
+                    O limite de tempo para cadastrar a senha foi atingido.
+                    <br />
+                    Por segurança, você reberá um novo link por e-mail em 1 hora.
                   </Alert>
                 </Box>
               )}

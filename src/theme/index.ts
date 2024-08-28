@@ -6,10 +6,32 @@ import { ptBR } from "@mui/x-date-pickers";
 declare module "@mui/material/styles" {
   interface Palette {
     highlighted: Palette["primary"];
+    secondaryFocus: string;
+    graph: {
+      baseCostMain: string;
+      baseCostSecondary: string;
+      measuredConsumptionMain: string;
+      measuredConsumptionSecondary: string;
+      measuredDemandMain: string;
+      measuredDemandSecondary: string;
+      measuredDemandPeakLine: string;
+      measuredDemandOffPeakLine: string;
+    };
   }
 
   interface PaletteOptions {
     highlighted: PaletteOptions["primary"];
+    secondaryFocus?: string;
+    graph?: {
+      baseCostMain?: string;
+      baseCostSecondary?: string;
+      measuredConsumptionMain?: string;
+      measuredConsumptionSecondary?: string;
+      measuredDemandMain?: string;
+      measuredDemandSecondary?: string;
+      measuredDemandPeakLine?: string;
+      measuredDemandOffPeakLine?: string;
+    };
   }
 }
 
@@ -26,7 +48,7 @@ const theme = createTheme(
         main: "#FAAD10",
       },
       background: {
-        default: "#EEF4F4",
+        default: "#F7F7F7",
         paper: "#fff",
       },
       error: {
@@ -38,6 +60,17 @@ const theme = createTheme(
       },
       highlighted: {
         main: "rgba(10, 92, 103, 0.12)",
+      },
+      secondaryFocus: "#FAAD101F",
+      graph: {
+        baseCostMain: "#54BF86",
+        baseCostSecondary: "#EE9083",
+        measuredConsumptionMain: "#0E438C",
+        measuredConsumptionSecondary: "#6F9AC7",
+        measuredDemandMain: "#7C07C0",
+        measuredDemandSecondary: "#CB95EC",
+        measuredDemandPeakLine: "#008940",
+        measuredDemandOffPeakLine: "#55BF87",
       },
     },
     typography: {
@@ -108,7 +141,7 @@ const theme = createTheme(
           },
           filledWarning: {
             backgroundColor: "#D98A0B",
-            color: "#FFF",
+            color: "#000",
           },
           filledInfo: {
             backgroundColor: "#003A7A",
@@ -172,6 +205,9 @@ const theme = createTheme(
             "& .MuiDataGrid-columnHeader--emptyGroup": {
               backgroundColor: "unset",
             },
+            "& .MuiDataGrid-columnSeparator": {
+              color: primaryMain,
+            },
             border: "unset",
           },
           row: {
@@ -198,21 +234,21 @@ const theme = createTheme(
         },
       },
       MuiDrawer: {
-        styleOverrides: { paper: { backgroundColor: "#EEF4F4" } },
+        styleOverrides: { paper: { backgroundColor: "#F7F7F7" } },
       },
-      MuiFormHelperText:{
-        styleOverrides:{
-          root:{
-              marginLeft: "0px",
-          }
-        }
+      MuiFormHelperText: {
+        styleOverrides: {
+          root: {
+            marginLeft: "0px",
+          },
+        },
       },
       MuiFormControlLabel: {
-        styleOverrides:{
-          root:{
-              marginRight: "8px",
-          }
-        }
+        styleOverrides: {
+          root: {
+            marginRight: "8px",
+          },
+        },
       },
     },
   },

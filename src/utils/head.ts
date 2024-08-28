@@ -1,7 +1,9 @@
 export const getHeadTitle = (title?: string) => {
   if (!title) {
-    return "MEC Energia";
+    return "MEPA - Monitoramento de Energia em Plataforma Aberta";
   }
 
-  return title.trim() + " — MEC Energia";
+  return (
+    title.trim() + " | MEPA - Monitoramento de Energia em Plataforma Aberta"
+  );
 };

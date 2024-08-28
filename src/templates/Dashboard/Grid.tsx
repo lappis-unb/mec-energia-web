@@ -1,15 +1,18 @@
-import { useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Grid } from "@mui/material";
+import { Box, Button, Grid, Typography } from "@mui/material";
 import {
   selectDashboardActiveFilter,
   setActiveConsumerUnitId,
+  setIsConsumerUnitCreateFormOpen,
 } from "@/store/appSlice";
 import DistributorCard from "@/components//Distributor/DistributorCard";
-import ConsumerUnitCard from "@/components/ConsumerUnit/CardV2";
+import ConsumerUnitCard from "@/components/ConsumerUnit/Card";
 import { useFetchConsumerUnitsQuery, useFetchPendingDistributorsQuery } from "@/api";
 import { useSession } from "next-auth/react";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
+import AddRoundedIcon from "@mui/icons-material/AddRounded";
+import FlagRoundedIcon from '@mui/icons-material/FlagRounded';
 
 const DashboardCardGrid = () => {
   const dispatch = useDispatch();
@@ -19,7 +22,7 @@ const DashboardCardGrid = () => {
     session?.user.universityId ?? skipToken
   );
 
-  const { data: consumerUnitsData } = useFetchConsumerUnitsQuery(
+  const { data: consumerUnitsData, isFetching } = useFetchConsumerUnitsQuery(
     session?.user.universityId ?? skipToken
   );
 
@@ -61,8 +64,34 @@ const DashboardCardGrid = () => {
     dispatch(setActiveConsumerUnitId(activeConsumerUnitId));
   }, [consumerUnits, dispatch]);
 
-  return (
-    <Grid container spacing={5} py={3}>
+  const handleInsertConsumeUnit = useCallback(() => {
+    dispatch(setIsConsumerUnitCreateFormOpen(true));
+  }, [dispatch]);
+
+  return (!isFetching && (consumerUnitsData && consumerUnitsData.length <= 0)) ? (
+    <Box display={consumerUnitsData.length <= 0 ? 'flex' : 'none'} justifyContent="center" alignItems="center" height="100%">
+      <Box display="flex" flexDirection="column" justifyContent="center" alignItems="center">
+        <FlagRoundedIcon color="primary" sx={{ width: "75px", height: "85px" }} />
+
+        <Typography variant="h1" fontSize="48px" color="primary" lineHeight="60px" marginBottom="32px" fontWeight="regular">
+          Olá, boas-vindas ao MEPA
+        </Typography>
+
+        <Typography variant="h2" fontSize="20px" color="rgba(0, 0, 0, 0.87)" lineHeight="32px" fontWeight="600" marginBottom="16px">
+          Para começar, crie a 1ª unidade consumidora
+        </Typography>
+
+        <Button
+          variant="contained"
+          startIcon={<AddRoundedIcon />}
+          onClick={handleInsertConsumeUnit}
+        >
+          Unidade Consumidora
+        </Button>
+      </Box>
+    </Box>
+  ) : (
+    <Grid display={consumerUnitsData && consumerUnitsData.length <= 0 ? 'none' : 'flex'} container spacing={5} py={3}>
       {distributors?.map((card) => (
         <Grid
           key={card.id}

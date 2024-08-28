@@ -38,18 +38,24 @@ import { skipToken } from "@reduxjs/toolkit/dist/query";
 
 import { useGetContractQuery, usePostMultipleInvoicesMutation } from "@/api";
 
-import { format, parseISO } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+import { format, parseISO } from "date-fns";
+import { ptBR } from "date-fns/locale";
 
 const formatDate = (dateString: string) => {
-  const date = parseISO(dateString);
-  const formattedDate = format(date, "MMMM yyyy", { locale: ptBR });
-  return formattedDate.charAt(0).toUpperCase() + formattedDate.slice(1);
+  try {
+    const formattedDate = format(parseISO(dateString), "MMMM yyyy", {
+      locale: ptBR,
+    });
+    return formattedDate.charAt(0).toUpperCase() + formattedDate.slice(1);
+  } catch {
+    return dateString;
+  }
 };
 
 const formatNumber = (numberString: string) => {
   const number = parseFloat(numberString);
-  return number.toLocaleString('pt-BR', {
+  if (isNaN(number)) return numberString;
+  return number.toLocaleString("pt-BR", {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   });
@@ -59,13 +65,16 @@ interface CsvData {
   consumerUnit: { value: string; error: boolean };
   date: {
     value: string;
-    errors: [[number, string]] | null
+    errors: [[number, string]] | null;
   };
   invoiceInReais: { value: string; errors: [[number, string]] | null };
   peakConsumptionInKwh: { value: string; errors: [[number, string]] | null };
   offPeakConsumptionInKwh: { value: string; errors: [[number, string]] | null };
   peakMeasuredDemandInKw: { value: string; errors: [[number, string]] | null };
-  offPeakMeasuredDemandInKw: { value: string; errors: [[number, string]] | null };
+  offPeakMeasuredDemandInKw: {
+    value: string;
+    errors: [[number, string]] | null;
+  };
 }
 
 interface CsvFormProps {
@@ -172,9 +181,9 @@ const CsvForm: React.FC<CsvFormProps> = ({ csvData }) => {
 
   useEffect(() => {
     const initialSelected = csvData.filter(
-      (item) => !(hasRowWithErrorInCsv(item))
+      (item) => !hasRowWithErrorInCsv(item)
     );
-    const hasErrorInCsv = csvData.some(hasRowWithErrorInCsv);
+    const hasErrorInCsv = csvData.every(hasRowWithErrorInCsv);
 
     setSelectedRows(initialSelected);
     setHasErrorInCsv(hasErrorInCsv);
@@ -189,7 +198,7 @@ const CsvForm: React.FC<CsvFormProps> = ({ csvData }) => {
       item.offPeakMeasuredDemandInKw.errors ||
       item.invoiceInReais.errors
     );
-  }
+  };
 
   return (
     <Drawer
@@ -198,13 +207,13 @@ const CsvForm: React.FC<CsvFormProps> = ({ csvData }) => {
       PaperProps={{ sx: { height: "100%" } }}
       onClose={handleCloseDrawer}
     >
-      <AppBar position="static">
+      <AppBar position="sticky">
         <Toolbar>
           <Container maxWidth="lg">
             <Box display="flex" alignItems="center">
               <IconButton
                 edge="start"
-                color="inherit"
+                style={{ color: '#000000DE' }}
                 aria-label="Fechar formulário"
                 onClick={handleCloseDrawer}
               >
@@ -212,7 +221,7 @@ const CsvForm: React.FC<CsvFormProps> = ({ csvData }) => {
               </IconButton>
 
               <Box ml={3}>
-                <Typography variant="h6">Importar CSV</Typography>
+                <Typography variant="h6">Importar planilha</Typography>
               </Box>
             </Box>
           </Container>
@@ -221,12 +230,6 @@ const CsvForm: React.FC<CsvFormProps> = ({ csvData }) => {
 
       <Container maxWidth="lg">
         <Box mt={3} mb={6} component="form" onSubmit={handleSubmitDrawer}>
-          <Box my={4}>
-            <Typography variant="body2" color="primary.main">
-              * campos obrigatórios
-            </Typography>
-          </Box>
-
           <Box mt={4}>
             <Box p={2}>
               <TableContainer component={Paper} sx={{ boxShadow: "none" }}>
@@ -234,7 +237,7 @@ const CsvForm: React.FC<CsvFormProps> = ({ csvData }) => {
                   <TableHead>
                     <TableRow
                       style={{
-                        backgroundColor: "#EEF4F4",
+                        backgroundColor: theme.palette.background.default,
                         color: "#000",
                         border: "none",
                       }}
@@ -243,7 +246,6 @@ const CsvForm: React.FC<CsvFormProps> = ({ csvData }) => {
                         colSpan={1}
                         style={{
                           backgroundColor: "transparent",
-                          border: "none",
                           borderBottom: "none",
                           padding: "8px",
                         }}
@@ -317,21 +319,23 @@ const CsvForm: React.FC<CsvFormProps> = ({ csvData }) => {
                   <TableBody>
                     {sortedData.map((item, index) => {
                       const hasError = hasRowWithErrorInCsv(item);
-                      const errorMessages = [];
+                      const errorMessages = new Set();
                       Object.keys(item).forEach((key) => {
                         if (item[key].errors) {
                           item[key].errors.forEach(([, msg]) => {
-                            errorMessages.push("- " + msg)
-                          })
+                            errorMessages.add("- " + msg);
+                          });
                         }
-                      })
+                      });
 
                       return (
                         <React.Fragment key={index}>
                           <TableRow
                             style={{
                               backgroundColor:
-                                index % 2 === 0 ? "#FFFFFF" : "#EEF4F4",
+                                index % 2 === 0
+                                  ? "#FFFFFF"
+                                  : theme.palette.background.default,
                             }}
                           >
                             <TableCell
@@ -341,7 +345,11 @@ const CsvForm: React.FC<CsvFormProps> = ({ csvData }) => {
                                 verticalAlign: "middle",
                               }}
                             >
-                              <Box display="flex" justifyContent="center" alignItems="center">
+                              <Box
+                                display="flex"
+                                justifyContent="center"
+                                alignItems="center"
+                              >
                                 {hasError ? (
                                   <ReportRounded
                                     style={{ color: theme.palette.error.main }}
@@ -356,29 +364,30 @@ const CsvForm: React.FC<CsvFormProps> = ({ csvData }) => {
                             </TableCell>
                             <TableCell
                               style={{
-                                backgroundColor:
-                                  item.date.errors
-                                    ? theme.palette.error.main
-                                    : "inherit",
-                                color:
-                                  item.date.errors
-                                    ? "#FFFFFF"
-                                    : "inherit",
+                                backgroundColor: item.date.errors
+                                  ? theme.palette.error.main
+                                  : "inherit",
+                                color: item.date.errors ? "#FFFFFF" : "inherit",
                                 whiteSpace: "nowrap",
-                                borderBottom: hasError ? "none" : "1px solid #e0e0e0"
+                                borderBottom: hasError
+                                  ? "none"
+                                  : "1px solid #e0e0e0",
                               }}
                             >
                               {formatDate(item.date.value)}
                             </TableCell>
                             <TableCell
                               style={{
-                                backgroundColor: item.peakConsumptionInKwh.errors
+                                backgroundColor: item.peakConsumptionInKwh
+                                  .errors
                                   ? theme.palette.error.main
                                   : "inherit",
                                 color: item.peakConsumptionInKwh.errors
                                   ? "#FFFFFF"
                                   : "inherit",
-                                borderBottom: hasError ? "none" : "1px solid #e0e0e0"
+                                borderBottom: hasError
+                                  ? "none"
+                                  : "1px solid #e0e0e0",
                               }}
                             >
                               {formatNumber(item.peakConsumptionInKwh.value)}
@@ -386,13 +395,15 @@ const CsvForm: React.FC<CsvFormProps> = ({ csvData }) => {
                             <TableCell
                               style={{
                                 backgroundColor: item.offPeakConsumptionInKwh
-                                  .error
+                                  .errors
                                   ? theme.palette.error.main
                                   : "inherit",
                                 color: item.offPeakConsumptionInKwh.errors
                                   ? "#FFFFFF"
                                   : "inherit",
-                                borderBottom: hasError ? "none" : "1px solid #e0e0e0"
+                                borderBottom: hasError
+                                  ? "none"
+                                  : "1px solid #e0e0e0",
                               }}
                             >
                               {formatNumber(item.offPeakConsumptionInKwh.value)}
@@ -400,30 +411,40 @@ const CsvForm: React.FC<CsvFormProps> = ({ csvData }) => {
                             <TableCell
                               style={{
                                 backgroundColor: item.peakMeasuredDemandInKw
-                                  .error
+                                  .errors
                                   ? theme.palette.error.main
                                   : "inherit",
                                 color: item.peakMeasuredDemandInKw.errors
                                   ? "#FFFFFF"
                                   : "inherit",
-                                borderBottom: hasError ? "none" : "1px solid #e0e0e0"
+                                borderBottom: hasError
+                                  ? "none"
+                                  : "1px solid #e0e0e0",
                               }}
                             >
-                              {formatNumber(item.peakMeasuredDemandInKw.value)}
+                              {item.peakMeasuredDemandInKw.value
+                                ? formatNumber(
+                                    item.peakMeasuredDemandInKw.value
+                                  )
+                                : ""}
                             </TableCell>
                             <TableCell
                               style={{
                                 backgroundColor: item.offPeakMeasuredDemandInKw
-                                  .error
+                                  .errors
                                   ? theme.palette.error.main
                                   : "inherit",
                                 color: item.offPeakMeasuredDemandInKw.errors
                                   ? "#FFFFFF"
                                   : "inherit",
-                                borderBottom: hasError ? "none" : "1px solid #e0e0e0"
+                                borderBottom: hasError
+                                  ? "none"
+                                  : "1px solid #e0e0e0",
                               }}
                             >
-                              {formatNumber(item.offPeakMeasuredDemandInKw.value)}
+                              {formatNumber(
+                                item.offPeakMeasuredDemandInKw.value
+                              )}
                             </TableCell>
                             <TableCell
                               style={{
@@ -433,10 +454,14 @@ const CsvForm: React.FC<CsvFormProps> = ({ csvData }) => {
                                 color: item.invoiceInReais.errors
                                   ? "#FFFFFF"
                                   : "inherit",
-                                borderBottom: hasError ? "none" : "1px solid #e0e0e0"
+                                borderBottom: hasError
+                                  ? "none"
+                                  : "1px solid #e0e0e0",
                               }}
                             >
-                              {item.invoiceInReais.value ? formatNumber(item.invoiceInReais.value) : ""}
+                              {item.invoiceInReais.value
+                                ? formatNumber(item.invoiceInReais.value)
+                                : ""}
                             </TableCell>
                           </TableRow>
                           {hasError && (
@@ -451,10 +476,10 @@ const CsvForm: React.FC<CsvFormProps> = ({ csvData }) => {
                                 style={{
                                   color: theme.palette.error.main,
                                   textAlign: "left",
-                                  paddingLeft: "0px"
+                                  paddingLeft: "0px",
                                 }}
                               >
-                                {errorMessages.map((msg, idx) => (
+                                {Array.from(errorMessages).map((msg, idx) => (
                                   <div key={idx}>{msg}</div>
                                 ))}
                               </TableCell>
@@ -470,7 +495,12 @@ const CsvForm: React.FC<CsvFormProps> = ({ csvData }) => {
           </Box>
 
           <Box display="flex" alignItems="center" justifyContent="center">
-            <Box mt={4} display="flex" flexDirection="column" alignItems="self-start">
+            <Box
+              mt={4}
+              display="flex"
+              flexDirection="column"
+              alignItems="self-start"
+            >
               {hasErrorInCsv ? (
                 <Alert
                   variant="filled"
@@ -488,18 +518,14 @@ const CsvForm: React.FC<CsvFormProps> = ({ csvData }) => {
                   Apenas meses selecionados como “Incluir” serão gravados
                 </Alert>
               )}
-              <Grid
-                item
-                xs={12}
-                style={{ display: "flex" }}
-              >
+              <Grid item xs={12} style={{ display: "flex" }}>
                 <Button
                   onClick={handleSubmitDrawer}
                   variant="contained"
                   color="primary"
                   size="large"
                   style={{ marginRight: "16px", width: "100px" }}
-                  disabled={isLoading || (selectedRows.length <= 0)}
+                  disabled={isLoading || selectedRows.length <= 0}
                 >
                   Gravar
                 </Button>

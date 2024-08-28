@@ -6,7 +6,7 @@ import { Box } from "@mui/material";
 import { useFetchConsumerUnitsQuery } from "@/api";
 import { selectConsumerUnitActiveFilter } from "@/store/appSlice";
 import ConsumerUnitsFilterButtons from "@/templates/ConsumerUnit/FilterButtons";
-import ConsumerUnitCard from "@/components/ConsumerUnit/CardV2";
+import ConsumerUnitCard from "@/components/ConsumerUnit/Card";
 import { useMemo } from "react";
 
 const ConsumerUnitsCardGrid = () => {
