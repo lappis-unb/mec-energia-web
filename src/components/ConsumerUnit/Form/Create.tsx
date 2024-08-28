@@ -49,6 +49,7 @@ import { sendFormattedDate } from "@/utils/date";
 import { getSubgroupsText } from "@/utils/get-subgroup-text";
 import { isInSomeSubgroups } from "@/utils/validations/form-validations";
 import FormDrawerV2 from "@/components/Form/DrawerV2";
+import FormFieldError from "@/components/FormFieldError";
 
 const defaultValues: CreateConsumerUnitForm = {
   name: "",
@@ -129,7 +130,6 @@ const ConsumerUnitCreateForm = () => {
       // Atualiza o estado tariffFlag para "B" (azul)
       setValue("tariffFlag", "B");
     }
-
   }, [shouldShowGreenDemand]);
 
   // Validações de Formulário
@@ -191,7 +191,9 @@ const ConsumerUnitCreateForm = () => {
           code: data.code,
           isActive: true,
           university: session?.user.universityId || 0,
-          totalInstalledPower: (!data.shouldShowInstalledPower ? null : data.totalInstalledPower)
+          totalInstalledPower: !data.shouldShowInstalledPower
+            ? null
+            : data.totalInstalledPower,
         },
         contract: {
           startDate: data.startDate ? sendFormattedDate(data.startDate) : "",
@@ -282,7 +284,7 @@ const ConsumerUnitCreateForm = () => {
                 label="Nome *"
                 placeholder="Ex.: Campus Gama, Biblioteca, Faculdade de Medicina"
                 error={Boolean(error)}
-                helperText={error?.message ?? " "}
+                helperText={FormFieldError(error?.message)}
                 fullWidth
                 onChange={onChange}
                 onBlur={onBlur}
@@ -320,10 +322,12 @@ const ConsumerUnitCreateForm = () => {
                 value={value}
                 label="Número da Unidade *"
                 placeholder="Número da Unidade Consumidora conforme a fatura"
-                error={Boolean(error)}
+                error={!!error}
                 helperText={
-                  error?.message ??
-                  "Nº ou código da Unidade Consumidora conforme a fatura"
+                  FormFieldError(
+                    error?.message,
+                    "Nº ou código da Unidade Consumidora conforme a fatura"
+                  )
                 }
                 fullWidth
                 onChange={(e) => handleNumericInputChange(e, onChange)}
@@ -386,7 +390,7 @@ const ConsumerUnitCreateForm = () => {
                   </MenuItem>
                 </Select>
 
-                <FormHelperText>{error?.message ?? " "}</FormHelperText>
+                <FormHelperText>{FormFieldError(error?.message)}</FormHelperText>
               </FormControl>
             )}
           />
@@ -404,6 +408,7 @@ const ConsumerUnitCreateForm = () => {
               <DatePicker
                 value={value}
                 label="Início da vigência *"
+                views={["month", "year"]}
                 minDate={new Date("2010")}
                 disableFuture
                 renderInput={(params) => (
@@ -413,7 +418,7 @@ const ConsumerUnitCreateForm = () => {
                       ...params.inputProps,
                       placeholder: "dd/mm/aaaa",
                     }}
-                    helperText={error?.message ?? " "}
+                    helperText={FormFieldError(error?.message)}
                     error={!!error}
                   />
                 )}
@@ -462,8 +467,10 @@ const ConsumerUnitCreateForm = () => {
                   customInput={TextField}
                   label="Tensão contratada *"
                   helperText={
-                    error?.message ??
-                    "Se preciso, converta a tensão de V para kV dividindo o valor por 1.000."
+                    FormFieldError(
+                      error?.message,
+                      "Se preciso, converta a tensão de V para kV dividindo o valor por 1.000."
+                    )
                   }
                   error={!!error}
                   fullWidth
@@ -484,7 +491,11 @@ const ConsumerUnitCreateForm = () => {
                     const newVoltage = values ? values.floatValue : 0;
                     if (newVoltage === 69) {
                       setShouldShowGreenDemand(false);
-                    } else if (newVoltage !== undefined && newVoltage >= 88 && newVoltage <= 138) {
+                    } else if (
+                      newVoltage !== undefined &&
+                      newVoltage >= 88 &&
+                      newVoltage <= 138
+                    ) {
                       setShouldShowGreenDemand(false);
                     } else {
                       setShouldShowGreenDemand(true);
@@ -548,7 +559,7 @@ const ConsumerUnitCreateForm = () => {
                   </Box>
                 </RadioGroup>
 
-                <FormHelperText>{error?.message ?? " "}</FormHelperText>
+                <FormHelperText>{FormFieldError(error?.message)}</FormHelperText>
               </FormControl>
             )}
           />
@@ -586,7 +597,7 @@ const ConsumerUnitCreateForm = () => {
                   decimalSeparator=","
                   thousandSeparator={"."}
                   error={Boolean(error)}
-                  helperText={error?.message ?? " "}
+                  helperText={FormFieldError(error?.message)}
                   onValueChange={(values) => onChange(values.floatValue)}
                   onBlur={onBlur}
                 />
@@ -626,7 +637,7 @@ const ConsumerUnitCreateForm = () => {
                     decimalSeparator=","
                     thousandSeparator={"."}
                     error={Boolean(error)}
-                    helperText={error?.message ?? " "}
+                    helperText={FormFieldError(error?.message)}
                     onValueChange={(values) => onChange(values.floatValue)}
                     onBlur={onBlur}
                   />
@@ -665,7 +676,7 @@ const ConsumerUnitCreateForm = () => {
                     decimalSeparator=","
                     thousandSeparator={"."}
                     error={Boolean(error)}
-                    helperText={error?.message ?? " "}
+                    helperText={FormFieldError(error?.message)}
                     onValueChange={(values) => onChange(values.floatValue)}
                     onBlur={onBlur}
                   />
@@ -674,10 +685,10 @@ const ConsumerUnitCreateForm = () => {
             </Grid>
             {!shouldShowGreenDemand && (
               <Typography variant="body2" sx={{ px: 2 }}>
-                O valor de tensão contratada inserido é compatível apenas com a modalidade azul
+                O valor de tensão contratada inserido é compatível apenas com a
+                modalidade azul
               </Typography>
             )}
-
           </Box>
         )}
       </>
@@ -689,7 +700,14 @@ const ConsumerUnitCreateForm = () => {
     () => (
       <>
         <Grid container spacing={2}>
-          <Grid item xs={12} display="flex" flexDirection={"row"} justifyContent={"begin"} alignItems={"center"}>
+          <Grid
+            item
+            xs={12}
+            display="flex"
+            flexDirection={"row"}
+            justifyContent={"begin"}
+            alignItems={"center"}
+          >
             <Typography variant="h5">Geração de energia</Typography>
             <Controller
               name="shouldShowInstalledPower"
@@ -710,15 +728,13 @@ const ConsumerUnitCreateForm = () => {
               )}
             />
           </Grid>
-          {(shouldShowInstalledPower) ? (
+          {shouldShowInstalledPower ? (
             <>
               <Grid item xs={12}>
-                <Alert
-                  severity="info"
-                  variant="standard"
-                >
-                  Insira o valor total da potência de geração instalada na Unidade Consumidora.
-                  Some a potência de todas as plantas fotovoltaicas instaladas, se houver mais de uma.
+                <Alert severity="info" variant="standard">
+                  Insira o valor total da potência de geração instalada na
+                  Unidade Consumidora. Some a potência de todas as plantas
+                  fotovoltaicas instaladas, se houver mais de uma.
                 </Alert>
               </Grid>
 
@@ -730,9 +746,8 @@ const ConsumerUnitCreateForm = () => {
                     required: "Preencha este campo",
                     min: {
                       value: 0.01,
-                      message: "Insira um valor maior que R$ 0,00",
+                      message: "Insira um valor maior que 0,00",
                     },
-
                   }}
                   render={({
                     field: { onChange, onBlur, value },
@@ -756,8 +771,8 @@ const ConsumerUnitCreateForm = () => {
                       decimalScale={2}
                       decimalSeparator=","
                       thousandSeparator={"."}
-                      error={Boolean(error)}
-                      helperText={error?.message ?? " "}
+                      error={!!error}
+                      helperText={FormFieldError(error?.message)}
                       onValueChange={(values) => onChange(values.floatValue)}
                       onBlur={onBlur}
                     />
@@ -766,7 +781,7 @@ const ConsumerUnitCreateForm = () => {
               </Grid>
             </>
           ) : null}
-        </Grid >
+        </Grid>
       </>
     ),
     [control, shouldShowInstalledPower]
@@ -786,7 +801,7 @@ const ConsumerUnitCreateForm = () => {
           <ConsumerUnitSection key={0} />,
           <ContractSection key={1} />,
           <ContractedDemandSection key={2} />,
-          <InstalledPower key={3} />
+          <InstalledPower key={3} />,
         ]}
       />
 

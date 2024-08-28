@@ -54,43 +54,41 @@ const InstitutionsTemplate = () => {
             </TableRow>
           </TableHead>
 
-          <TableBody>
-            {institutions?.map((institution) => (
-              <TableRow
-                key={institution.id}
-                style={{
-                  textDecoration: institution.isActive
-                    ? "none"
-                    : "line-through",
-                  color: "inherit",
-                }}
-              >
-                <TableCell>
-                  <IconButton
-                    onClick={() =>
-                      handleToggleActivation(
-                        institution.id,
-                        institution.isActive,
-                        institution.name,
-                        institution.cnpj
-                      )
-                    }
-                  >
-                    {institution.isActive ? <FlashOn /> : <FlashOff />}
-                  </IconButton>
-                </TableCell>
-                <TableCell>{institution.acronym}</TableCell>
-                <TableCell>{institution.name}</TableCell>
-                <TableCell>{institution.cnpj}</TableCell>
-                <TableCell>
-                  <InstitutionEditButton institutionId={institution.id} />
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </>
+        <TableBody>
+          {institutions?.map((institution) => (
+            <TableRow
+              key={institution.id}
+              style={{
+                textDecoration: institution.isActive ? "none" : "line-through",
+                color: "inherit",
+              }}
+            >
+              <TableCell>
+                <IconButton
+                  style={{ color: '#000000DE' }}
+                  onClick={() =>
+                    handleToggleActivation(
+                      institution.id,
+                      institution.isActive,
+                      institution.name,
+                      institution.cnpj
+                    )
+                  }
+                >
+                  {institution.isActive ? <FlashOn /> : <FlashOff />}
+                </IconButton>
+              </TableCell>
+              <TableCell>{institution.acronym}</TableCell>
+              <TableCell>{institution.name}</TableCell>
+              <TableCell>{institution.cnpj}</TableCell>
+              <TableCell>
+                <InstitutionEditButton institutionId={institution.id} />
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
   );
 };
 

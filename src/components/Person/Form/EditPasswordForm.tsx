@@ -1,21 +1,32 @@
 import React, { Fragment, useCallback, useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { selectIsPasswordEditFormOpen, setIsEditPasswordFormOpen, setIsSuccessNotificationOpen } from "../../../store/appSlice";
+import {
+    selectIsPasswordEditFormOpen,
+    setIsEditPasswordFormOpen,
+    setIsSuccessNotificationOpen,
+} from "../../../store/appSlice";
 import { Controller, useForm, SubmitHandler } from "react-hook-form";
-import { Grid, TextField, Typography, IconButton, InputAdornment } from "@mui/material";
+import {
+    Grid,
+    TextField,
+    Typography,
+    IconButton,
+    InputAdornment,
+} from "@mui/material";
 import { EditPasswordRequestPayload } from "@/types/person";
 import { useChangeUserPasswordMutation } from "@/api";
 import FormDrawerV2 from "@/components/Form/DrawerV2";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import ReportIcon from '@mui/icons-material/Report';
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import ReportIcon from "@mui/icons-material/Report";
 import FormWarningDialog from "@/components/ConsumerUnit/Form/WarningDialog";
+import FormFieldError from "@/components/FormFieldError";
 
 const defaultValues: EditPasswordRequestPayload = {
     currentPassword: "",
     newPassword: "",
-    confirmPassword: ""
+    confirmPassword: "",
 };
 
 const EditPasswordForm = () => {
@@ -28,21 +39,22 @@ const EditPasswordForm = () => {
     const [showNewPassword, setShowNewPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [isValidPassword, setIsValidPassword] = useState<{
-        hasLetter: boolean | null,
-        hasNumber: boolean | null,
-        hasSpecialChar: boolean | null,
-        minLength: boolean | null
+        hasLetter: boolean | null;
+        hasNumber: boolean | null;
+        hasSpecialChar: boolean | null;
+        minLength: boolean | null;
     }>({
         hasLetter: null,
         hasNumber: null,
         hasSpecialChar: null,
-        minLength: null
+        minLength: null,
     });
-
 
     const form = useForm({ defaultValues: defaultValues });
     const { control, handleSubmit, watch, setError, reset } = form;
     const password = watch("newPassword");
+    const currentPassword = watch("currentPassword");
+    const confirmPassword = watch("confirmPassword");
 
     useEffect(() => {
         if (password) {
@@ -50,14 +62,14 @@ const EditPasswordForm = () => {
                 hasLetter: /[a-zA-Z]/.test(password),
                 hasNumber: /[0-9]/.test(password),
                 hasSpecialChar: /[!@#$%^&*(),.?":{}|<>]/.test(password),
-                minLength: password.length >= 8
+                minLength: password.length >= 8,
             });
         } else {
             setIsValidPassword({
                 hasLetter: null,
                 hasNumber: null,
                 hasSpecialChar: null,
-                minLength: null
+                minLength: null,
             });
         }
     }, [password]);
@@ -77,7 +89,11 @@ const EditPasswordForm = () => {
     };
 
     const handleCancelEdition = () => {
-        setShouldShowCancelDialog(true);
+        if (currentPassword || password || confirmPassword) {
+            setShouldShowCancelDialog(true);
+            return;
+        }
+        dispatch(setIsEditPasswordFormOpen(false));
     };
 
     const handleDiscardForm = useCallback(() => {
@@ -93,7 +109,7 @@ const EditPasswordForm = () => {
     const onSubmitHandler: SubmitHandler<EditPasswordRequestPayload> = async ({
         currentPassword,
         newPassword,
-        confirmPassword
+        confirmPassword,
     }) => {
         // Verifica se a nova senha e a confirmação da nova senha são iguais
         if (newPassword !== confirmPassword || !currentPassword) {
@@ -106,7 +122,12 @@ const EditPasswordForm = () => {
                 new_password: newPassword,
             }).unwrap();
 
-            dispatch(setIsSuccessNotificationOpen( { isOpen: true, text: "Senha alterada com sucesso!"}));
+            dispatch(
+                setIsSuccessNotificationOpen({
+                    isOpen: true,
+                    text: "Senha alterada com sucesso!",
+                })
+            );
             reset();
             dispatch(setIsEditPasswordFormOpen(false));
         } catch (error) {
@@ -118,12 +139,12 @@ const EditPasswordForm = () => {
         }
     };
 
-
-    const CurrentPasswordSection = useCallback(() => (
-        <>
-            <Grid item xs={12} sx={{ marginBottom: "10px" }}>
-                <Typography variant="h5">Senha atual</Typography>
-            </Grid>
+    const CurrentPasswordSection = useCallback(
+        () => (
+            <>
+                <Grid item xs={12} sx={{ marginBottom: "10px" }}>
+                    <Typography variant="h5">Senha atual</Typography>
+                </Grid>
 
             <Grid item xs={12}>
                 <Controller
@@ -142,7 +163,7 @@ const EditPasswordForm = () => {
                             label="Senha Atual *"
                             type={showCurrentPassword ? "text" : "password"}
                             error={Boolean(error)}
-                            helperText={error?.message ?? " "}
+                            helperText={FormFieldError(error?.message ?? " ")}
                             fullWidth
                             onChange={onChange}
                             onBlur={onBlur}
@@ -150,6 +171,7 @@ const EditPasswordForm = () => {
                                 endAdornment: (
                                     <InputAdornment position="end">
                                         <IconButton
+                                            style={{ color: '#000000DE' }}
                                             onClick={() => setShowCurrentPassword(!showCurrentPassword)}
                                             onMouseDown={(e) => e.preventDefault()}
                                         >
@@ -165,11 +187,12 @@ const EditPasswordForm = () => {
         </>
     ), [control, showCurrentPassword]);
 
-    const NewPasswordSection = useCallback(() => (
-        <>
-            <Grid item xs={12} sx={{ marginBottom: "10px" }}>
-                <Typography variant="h5">Nova senha</Typography>
-            </Grid>
+    const NewPasswordSection = useCallback(
+        () => (
+            <>
+                <Grid item xs={12} sx={{ marginBottom: "10px" }}>
+                    <Typography variant="h5">Nova senha</Typography>
+                </Grid>
 
             <Grid item xs={12}>
                 <Controller
@@ -198,7 +221,7 @@ const EditPasswordForm = () => {
                             label="Nova Senha *"
                             type={showNewPassword ? "text" : "password"}
                             error={Boolean(error)}
-                            helperText={error?.message ?? " "}
+                            helperText={FormFieldError(error?.message ?? " ")}
                             fullWidth
                             onChange={onChange}
                             onBlur={onBlur}
@@ -206,6 +229,7 @@ const EditPasswordForm = () => {
                                 endAdornment: (
                                     <InputAdornment position="end">
                                         <IconButton
+                                            style={{ color: '#000000DE' }}
                                             onClick={() => setShowNewPassword(!showNewPassword)}
                                             onMouseDown={(e) => e.preventDefault()}
                                         >
@@ -250,7 +274,7 @@ const EditPasswordForm = () => {
                             label="Repetir nova Senha *"
                             type={showConfirmPassword ? "text" : "password"}
                             error={Boolean(error)}
-                            helperText={error?.message ?? " "}
+                            helperText={FormFieldError(error?.message ?? " ")}
                             fullWidth
                             onChange={onChange}
                             onBlur={onBlur}
@@ -258,6 +282,7 @@ const EditPasswordForm = () => {
                                 endAdornment: (
                                     <InputAdornment position="end">
                                         <IconButton
+                                            style={{ color: '#000000DE' }}
                                             onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                                             onMouseDown={(e) => e.preventDefault()}
                                         >
@@ -285,7 +310,7 @@ const EditPasswordForm = () => {
                 header={<></>}
                 sections={[
                     <CurrentPasswordSection key={"CurrentPasswordSection"} />,
-                    <NewPasswordSection key={"NewPasswordSection"} />
+                    <NewPasswordSection key={"NewPasswordSection"} />,
                 ]}
             />
 

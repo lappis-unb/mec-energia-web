@@ -284,6 +284,7 @@ const ConsumerUnitInvoiceContentTable = () => {
           <>
             <Tooltip title="Editar" arrow placement="top">
               <IconButton
+                style={{ color: '#000000DE' }}
                 onClick={() => {
                   handleEditInvoiceFormOpen({ month, year, id: energyBillId });
                 }}
@@ -293,6 +294,7 @@ const ConsumerUnitInvoiceContentTable = () => {
             </Tooltip>
             <Tooltip title="Excluir" arrow placement="top">
               <IconButton
+                style={{ color: '#000000DE' }}
                 onClick={() => {
                   setSelectedEnergyBillId(energyBillId);
                   setSelectedMonth(month)

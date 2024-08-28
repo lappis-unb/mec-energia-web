@@ -39,7 +39,8 @@ const SignInTemplate = () => {
     username,
     password,
   }) => {
-    signIn("credentials", { username, password, callbackUrl: "/" });
+    const normalizedEmail = username.toLowerCase();
+    signIn("credentials", { username: normalizedEmail, password, callbackUrl: "/" });
   };
 
   return (
@@ -165,6 +166,7 @@ const SignInTemplate = () => {
                         endAdornment: (
                           <InputAdornment position="end">
                             <IconButton
+                              style={{ color: '#000000DE' }}
                               onClick={() => setShowPassword(!showPassword)}
                               onMouseDown={(e) => e.preventDefault()}
                               >

@@ -24,6 +24,7 @@ import {
 } from "@/types/institution";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import FormDrawerV2 from "@/components/Form/DrawerV2";
+import FormFieldError from "@/components/FormFieldError";
 
 const defaultValues: EditInstitutionForm = {
   acronym: "",
@@ -119,7 +120,7 @@ const EditInstitutionForm = () => {
       dispatch(
         setIsErrorNotificationOpen({
           isOpen: true,
-          text: "Erro ao editada instituição.",
+          text: "Erro ao editar instituição.",
         })
       );
       resetMutation();
@@ -134,6 +135,12 @@ const EditInstitutionForm = () => {
 
   const hasEnoughCaracteresLength = (value: EditInstitutionForm["name"]) => {
     if (value.length < 3) return "Insira ao menos 3 caracteres";
+    return true;
+  };
+
+  const noSpecialCharacters = (value: EditInstitutionForm["name"]) => {
+    const regex = /^[a-zA-Z\s\u00C0-\u017F]*$/;
+    if (!regex.test(value)) return "Insira somente letras, sem números ou caracteres especiais";
     return true;
   };
 
@@ -161,7 +168,7 @@ const EditInstitutionForm = () => {
               label="Sigla *"
               placeholder="Ex.: UFX"
               error={Boolean(error)}
-              helperText={error?.message ?? " "}
+              helperText={FormFieldError(error?.message)}
               fullWidth
               onChange={onChange}
               onBlur={onBlur}
@@ -170,13 +177,16 @@ const EditInstitutionForm = () => {
         />
       </Grid>
 
-      <Grid item xs={12}>
+      <Grid item xs={12} mt={0.3}>
         <Controller
           control={control}
           name="name"
           rules={{
             required: "Preencha este campo",
-            validate: hasEnoughCaracteresLength,
+            validate: {
+              length: hasEnoughCaracteresLength,
+              noSpecialChars: noSpecialCharacters,
+            },
           }}
           render={({
             field: { onChange, onBlur, value, ref },
@@ -188,7 +198,7 @@ const EditInstitutionForm = () => {
               label="Nome *"
               placeholder="Ex.: Universidade Federal de ..."
               error={Boolean(error)}
-              helperText={error?.message ?? " "}
+              helperText={FormFieldError(error?.message)}
               fullWidth
               onChange={onChange}
               onBlur={onBlur}
@@ -197,7 +207,7 @@ const EditInstitutionForm = () => {
         />
       </Grid>
 
-      <Grid item xs={12}>
+      <Grid item xs={12} mt={0.3}>
         <Controller
           control={control}
           name="cnpj"
@@ -220,7 +230,7 @@ const EditInstitutionForm = () => {
               format="##.###.###/####-##"
               placeholder="Ex.: 12345678000167"
               error={Boolean(error)}
-              helperText={error?.message ?? " "}
+              helperText={FormFieldError(error?.message)}
               fullWidth
               onChange={onChange}
               onBlur={onBlur}
@@ -229,8 +239,7 @@ const EditInstitutionForm = () => {
         />
       </Grid>
     </>
-  ), [control])
-
+  ), [control]);
 
   return (
     <Fragment>
@@ -243,7 +252,6 @@ const EditInstitutionForm = () => {
         title="Editar Instituição"
         header={<></>}
         sections={[<InstitutionSection key={0} />]}
-
       />
       <FormWarningDialog
         open={shouldShowCancelDialog}
@@ -252,10 +260,8 @@ const EditInstitutionForm = () => {
         onDiscard={handleDiscardForm}
         type="update"
       />
-
-
     </Fragment>
-  )
+  );
 };
 
 export default EditInstitutionForm;

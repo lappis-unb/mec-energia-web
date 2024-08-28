@@ -50,6 +50,7 @@ import { useSession } from "next-auth/react";
 import { DistributorPropsTariffs } from "@/types/distributor";
 import { sendFormattedDate } from "@/utils/date";
 import FormDrawerV2 from "@/components/Form/DrawerV2";
+import { minimumDemand } from "@/utils/tariff";
 
 const defaultValues: CreateAndEditEnergyBillForm = {
   date: new Date(),
@@ -106,7 +107,7 @@ const CreateEditEnergyBillForm = () => {
   );
   const { data: currentInvoice, refetch: refetchCurrentInvoice } =
     useGetCurrentInvoiceQuery(currentInvoiceId || skipToken);
-  
+
   const { data: invoices } = useFetchInvoicesQuery(
     activeConsumerUnitId || skipToken
   );
@@ -398,7 +399,7 @@ const CreateEditEnergyBillForm = () => {
     () => (
       <>
         <Grid item xs={8}>
-          <Typography variant="h5"  style={{ marginBottom: '13px' }} >Fatura</Typography>
+          <Typography variant="h5">Fatura</Typography>
         </Grid>
         <Grid item xs={12} mt={1}>
           <Controller
@@ -442,10 +443,10 @@ const CreateEditEnergyBillForm = () => {
                   const contractStartDateYear = (contractStartDate.getFullYear())
 
                   const fixedDate = new Date(`${contractStartDateYear}/${contractStartDateMonth + 2}`);
-                  
+
                   const options = { year: 'numeric', month: 'long' };
                   const formattedDate = fixedDate.toLocaleDateString('pt-BR', options);
-                  
+
                   const message = `Selecione uma data a partir de ${formattedDate}. Não existem contratos registrados antes disso.`;
 
                   if (selectedDate <= contractStartDate) {
@@ -626,10 +627,7 @@ const CreateEditEnergyBillForm = () => {
                     return "Preencha este campo";
                   }
                 },
-                min: {
-                  value: 0.1,
-                  message: "Insira um valor maior que 0",
-                },
+                min: minimumDemand,
               }}
               render={({
                 field: { onChange, onBlur, value },
@@ -668,10 +666,7 @@ const CreateEditEnergyBillForm = () => {
               name="offPeakMeasuredDemandInKw"
               rules={{
                 required: "Preencha este campo",
-                min: {
-                  value: 0.1,
-                  message: "Insira um valor maior que 0",
-                },
+                min: minimumDemand,
               }}
               render={({
                 field: { onChange, onBlur, value },
@@ -718,7 +713,7 @@ const CreateEditEnergyBillForm = () => {
     () => (
       <>
         <Grid item xs={10}>
-          <Typography variant="h5" style={{ marginBottom: '16px' }}>Consumo medido</Typography>
+          <Typography variant="h5">Consumo medido</Typography>
         </Grid>
 
         <Grid container spacing={2}>
@@ -728,10 +723,7 @@ const CreateEditEnergyBillForm = () => {
               name="peakConsumptionInKwh"
               rules={{
                 required: "Preencha este campo",
-                min: {
-                  value: 0.1,
-                  message: "Insira um valor maior que 0",
-                },
+                min: minimumDemand,
               }}
               render={({
                 field: { onChange, onBlur, value },
@@ -770,10 +762,7 @@ const CreateEditEnergyBillForm = () => {
               name="offPeakConsumptionInKwh"
               rules={{
                 required: "Preencha este campo",
-                min: {
-                  value: 0.1,
-                  message: "Insira um valor maior que 0",
-                },
+                min: minimumDemand,
               }}
               render={({
                 field: { onChange, onBlur, value },
