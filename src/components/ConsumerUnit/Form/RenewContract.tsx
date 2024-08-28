@@ -54,6 +54,7 @@ import { isInSomeSubgroups } from "@/utils/validations/form-validations";
 import FormDrawerV2 from "@/components/Form/DrawerV2";
 import FormConfirmDialog from "./WarningDialogConfirm";
 import FormFieldError from "@/components/FormFieldError";
+import { minimumDemand } from "@/utils/tariff";
 
 const defaultValues: RenewContractForm = {
   code: "",
@@ -200,16 +201,6 @@ const ConsumerUnitRenewContractForm = () => {
   const hasEnoughCaracteresLength = (value: RenewContractForm["code"]) => {
     if (value.length < 3) return "Insira ao menos 3 caracteres";
     return true;
-  };
-
-  const isValueGreaterThenZero = (
-    value:
-      | RenewContractForm["peakContractedDemandInKw"]
-      | RenewContractForm["offPeakContractedDemandInKw"]
-  ) => {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    if (value <= 0) return "Insira um valor maior que 0";
   };
 
   const handleCloseDialog = () => {
@@ -508,7 +499,10 @@ const ConsumerUnitRenewContractForm = () => {
           <Controller
             control={control}
             name="tariffFlag"
-            rules={{ required: "Preencha este campo" }}
+            rules={{
+              required: "Preencha este campo",
+              min: minimumDemand,
+            }}
             render={({ field: { onChange, value }, fieldState: { error } }) => (
               <FormControl error={!!error}>
                 <FormLabel>Modalidade tarifária *</FormLabel>
@@ -556,7 +550,7 @@ const ConsumerUnitRenewContractForm = () => {
               name="contracted"
               rules={{
                 required: "Preencha este campo",
-                validate: isValueGreaterThenZero,
+                min: minimumDemand,
               }}
               render={({
                 field: { onChange, onBlur, value },
@@ -596,7 +590,7 @@ const ConsumerUnitRenewContractForm = () => {
                 name="peakContractedDemandInKw"
                 rules={{
                   required: "Preencha este campo",
-                  validate: isValueGreaterThenZero,
+                  min: minimumDemand,
                 }}
                 render={({
                   field: { onChange, onBlur, value },
@@ -635,7 +629,7 @@ const ConsumerUnitRenewContractForm = () => {
                 name="offPeakContractedDemandInKw"
                 rules={{
                   required: "Preencha este campo",
-                  validate: isValueGreaterThenZero,
+                  min: minimumDemand,
                 }}
                 render={({
                   field: { onChange, onBlur, value },
