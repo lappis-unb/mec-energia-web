@@ -1,7 +1,7 @@
 services:
   mepa-web:
     container_name: mepa-web
-    image: mepa-web:${TAG:-latest-dev}
+    image: mepa-web:latest-dev
     build:
       context: ./
       target: dev
