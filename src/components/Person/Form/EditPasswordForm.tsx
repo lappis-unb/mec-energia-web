@@ -75,7 +75,7 @@ const EditPasswordForm = () => {
     }, [password]);
 
     const getColor = (criteria: boolean | null) => {
-        if (criteria === null) return "text.primary";
+        if (criteria === null) return "gray";
         return criteria ? "primary.main" : "error";
     };
 
@@ -146,46 +146,53 @@ const EditPasswordForm = () => {
                     <Typography variant="h5">Senha atual</Typography>
                 </Grid>
 
-            <Grid item xs={12}>
-                <Controller
-                    control={control}
-                    name="currentPassword"
-                    rules={{
-                        required: "Preencha este campo",
-                    }}
-                    render={({
-                        field: { onChange, onBlur, value, ref },
-                        fieldState: { error },
-                    }) => (
-                        <TextField
-                            ref={ref}
-                            value={value}
-                            label="Senha Atual *"
-                            type={showCurrentPassword ? "text" : "password"}
-                            error={Boolean(error)}
-                            helperText={FormFieldError(error?.message ?? " ")}
-                            fullWidth
-                            onChange={onChange}
-                            onBlur={onBlur}
-                            InputProps={{
-                                endAdornment: (
-                                    <InputAdornment position="end">
-                                        <IconButton
-                                            style={{ color: '#000000DE' }}
-                                            onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                                            onMouseDown={(e) => e.preventDefault()}
-                                        >
-                                            {showCurrentPassword ? <VisibilityOff /> : <Visibility />}
-                                        </IconButton>
-                                    </InputAdornment>
-                                ),
-                            }}
-                        />
-                    )}
-                />
-            </Grid>
-        </>
-    ), [control, showCurrentPassword]);
+                <Grid item xs={12}>
+                    <Controller
+                        control={control}
+                        name="currentPassword"
+                        rules={{
+                            required: "Preencha este campo",
+                        }}
+                        render={({
+                            field: { onChange, onBlur, value, ref },
+                            fieldState: { error },
+                        }) => (
+                            <TextField
+                                ref={ref}
+                                value={value}
+                                label="Senha atual *"
+                                type={showCurrentPassword ? "text" : "password"}
+                                error={Boolean(error)}
+                                helperText={FormFieldError(error?.message)}
+                                fullWidth
+                                onChange={onChange}
+                                onBlur={onBlur}
+                                InputProps={{
+                                    endAdornment: (
+                                        <InputAdornment position="end">
+                                            <IconButton
+                                                onClick={() =>
+                                                    setShowCurrentPassword(!showCurrentPassword)
+                                                }
+                                                onMouseDown={(e) => e.preventDefault()}
+                                            >
+                                                {showCurrentPassword ? (
+                                                    <VisibilityOff />
+                                                ) : (
+                                                    <Visibility />
+                                                )}
+                                            </IconButton>
+                                        </InputAdornment>
+                                    ),
+                                }}
+                            />
+                        )}
+                    />
+                </Grid>
+            </>
+        ),
+        [control, showCurrentPassword]
+    );
 
     const NewPasswordSection = useCallback(
         () => (
@@ -194,109 +201,140 @@ const EditPasswordForm = () => {
                     <Typography variant="h5">Nova senha</Typography>
                 </Grid>
 
-            <Grid item xs={12}>
-                <Controller
-                    control={control}
-                    name="newPassword"
-                    rules={{
-                        required: "Preencha este campo",
-                        minLength: {
-                            value: 8,
-                            message: "A senha deve ter no mínimo 8 caracteres"
-                        },
-                        validate: {
-                            hasLetter: value => /[a-zA-Z]/.test(value),
-                            hasNumber: value => /[0-9]/.test(value),
-                            hasSpecialChar: value => /[!@#$%^&*(),.?":{}|<>]/.test(value)
-                        }
-                    }}
-                    render={({
-                        field: { onChange, onBlur, value, ref },
-                        fieldState: { error },
-                    }) => (
-                        <TextField
-                            autoFocus
-                            ref={ref}
-                            value={value}
-                            label="Nova Senha *"
-                            type={showNewPassword ? "text" : "password"}
-                            error={Boolean(error)}
-                            helperText={FormFieldError(error?.message ?? " ")}
-                            fullWidth
-                            onChange={onChange}
-                            onBlur={onBlur}
-                            InputProps={{
-                                endAdornment: (
-                                    <InputAdornment position="end">
-                                        <IconButton
-                                            style={{ color: '#000000DE' }}
-                                            onClick={() => setShowNewPassword(!showNewPassword)}
-                                            onMouseDown={(e) => e.preventDefault()}
-                                        >
-                                            {showNewPassword ? <VisibilityOff /> : <Visibility />}
-                                        </IconButton>
-                                    </InputAdornment>
-                                ),
-                            }}
-                        />
-                    )}
-                />
-                <Typography variant="subtitle1" color={getColor(isValidPassword.hasLetter)}>
-                    {renderValidationIcon(isValidPassword.hasLetter)} Ao menos 1 letra
-                </Typography>
-                <Typography variant="subtitle1" color={getColor(isValidPassword.hasNumber)}>
-                    {renderValidationIcon(isValidPassword.hasNumber)} Ao menos 1 número
-                </Typography>
-                <Typography lineHeight={"1rem"} variant="subtitle1" color={getColor(isValidPassword.hasSpecialChar)}>
-                    {renderValidationIcon(isValidPassword.hasSpecialChar)} Ao menos 1 caractere especial (exs.: !?*-_.#$)
-                </Typography>
-                <Typography alignContent={"center"} variant="subtitle1" color={getColor(isValidPassword.minLength)}>
-                    {renderValidationIcon(isValidPassword.minLength)} Mínimo de 8 caracteres
-                </Typography>
-            </Grid>
+                <Grid item xs={12}>
+                    <Controller
+                        control={control}
+                        name="newPassword"
+                        rules={{
+                            required: "Preencha este campo",
+                            minLength: {
+                                value: 8,
+                                message: "A senha deve ter no mínimo 8 caracteres",
+                            },
+                            validate: {
+                                hasLetter: (value) => /[a-zA-Z]/.test(value),
+                                hasNumber: (value) => /[0-9]/.test(value),
+                                hasSpecialChar: (value) => /[!@#$%^&*(),.?":{}|<>]/.test(value),
+                            },
+                        }}
+                        render={({
+                            field: { onChange, onBlur, value, ref },
+                            fieldState: { error },
+                        }) => (
+                            <TextField
+                                autoFocus
+                                ref={ref}
+                                value={value}
+                                label="Nova senha *"
+                                type={showNewPassword ? "text" : "password"}
+                                error={Boolean(error)}
+                                helperText={FormFieldError(error?.message)}
+                                fullWidth
+                                onChange={onChange}
+                                onBlur={onBlur}
+                                InputProps={{
+                                    endAdornment: (
+                                        <InputAdornment position="end">
+                                            <IconButton
+                                                onClick={() => setShowNewPassword(!showNewPassword)}
+                                                onMouseDown={(e) => e.preventDefault()}
+                                            >
+                                                {showNewPassword ? <VisibilityOff /> : <Visibility />}
+                                            </IconButton>
+                                        </InputAdornment>
+                                    ),
+                                }}
+                            />
+                        )}
+                    />
+                    <Typography
+                        variant="subtitle1"
+                        color={getColor(isValidPassword.hasLetter)}
+                    >
+                        {renderValidationIcon(isValidPassword.hasLetter)} Ao menos 1 letra
+                    </Typography>
+                    <Typography
+                        variant="subtitle1"
+                        color={getColor(isValidPassword.hasNumber)}
+                    >
+                        {renderValidationIcon(isValidPassword.hasNumber)} Ao menos 1 número
+                    </Typography>
+                    <Typography
+                        lineHeight={"1rem"}
+                        variant="subtitle1"
+                        color={getColor(isValidPassword.hasSpecialChar)}
+                    >
+                        {renderValidationIcon(isValidPassword.hasSpecialChar)} Ao menos 1
+                        caractere especial (exs.: !?*-_.#$)
+                    </Typography>
+                    <Typography
+                        alignContent={"center"}
+                        variant="subtitle1"
+                        color={getColor(isValidPassword.minLength)}
+                    >
+                        {renderValidationIcon(isValidPassword.minLength)} Mínimo de 8
+                        caracteres
+                    </Typography>
+                </Grid>
 
-            <Grid item xs={12}>
-                <Controller
-                    control={control}
-                    name="confirmPassword"
-                    rules={{
-                        required: "Preencha este campo",
-                        validate: value => value === password || "Insira uma senha idêntica à \"Nova senha\""
-                    }}
-                    render={({
-                        field: { onChange, onBlur, value, ref },
-                        fieldState: { error },
-                    }) => (
-                        <TextField
-                            sx={{ marginTop: "20px" }}
-                            ref={ref}
-                            value={value}
-                            label="Repetir nova Senha *"
-                            type={showConfirmPassword ? "text" : "password"}
-                            error={Boolean(error)}
-                            helperText={FormFieldError(error?.message ?? " ")}
-                            fullWidth
-                            onChange={onChange}
-                            onBlur={onBlur}
-                            InputProps={{
-                                endAdornment: (
-                                    <InputAdornment position="end">
-                                        <IconButton
-                                            style={{ color: '#000000DE' }}
-                                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                            onMouseDown={(e) => e.preventDefault()}
-                                        >
-                                            {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
-                                        </IconButton>
-                                    </InputAdornment>
-                                ),
-                            }}
-                        />
-                    )}
-                />
-            </Grid>
-        </>
-    ), [control, showCurrentPassword, showNewPassword, showConfirmPassword, isValidPassword]);
+                <Grid item xs={12}>
+                    <Controller
+                        control={control}
+                        name="confirmPassword"
+                        rules={{
+                            required: "Preencha este campo",
+                            validate: (value) =>
+                                value === password ||
+                                'Insira uma senha idêntica à "Nova senha"',
+                        }}
+                        render={({
+                            field: { onChange, onBlur, value, ref },
+                            fieldState: { error },
+                        }) => (
+                            <TextField
+                                style={{ height: '60px' }}
+                                sx={{ marginTop: "20px" }}
+                                ref={ref}
+                                value={value}
+                                label="Repetir nova senha *"
+                                type={showConfirmPassword ? "text" : "password"}
+                                error={Boolean(error)}
+                                helperText={FormFieldError(error?.message)}
+                                fullWidth
+                                onChange={onChange}
+                                onBlur={onBlur}
+                                InputProps={{
+                                    endAdornment: (
+                                        <InputAdornment position="end">
+                                            <IconButton
+                                                onClick={() =>
+                                                    setShowConfirmPassword(!showConfirmPassword)
+                                                }
+                                                onMouseDown={(e) => e.preventDefault()}
+                                            >
+                                                {showConfirmPassword ? (
+                                                    <VisibilityOff />
+                                                ) : (
+                                                    <Visibility />
+                                                )}
+                                            </IconButton>
+                                        </InputAdornment>
+                                    ),
+                                }}
+                            />
+                        )}
+                    />
+                </Grid>
+            </>
+        ),
+        [
+            control,
+            showCurrentPassword,
+            showNewPassword,
+            showConfirmPassword,
+            isValidPassword,
+        ]
+    );
 
     return (
         <Fragment>
@@ -306,7 +344,7 @@ const EditPasswordForm = () => {
                 handleCloseDrawer={handleCancelEdition}
                 handleSubmitDrawer={handleSubmit(onSubmitHandler)}
                 isLoading={false} // replace with actual loading state
-                title="Editar Pessoa"
+                title="Alterar senha"
                 header={<></>}
                 sections={[
                     <CurrentPasswordSection key={"CurrentPasswordSection"} />,
