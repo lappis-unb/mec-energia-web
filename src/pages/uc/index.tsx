@@ -7,6 +7,7 @@ import { Box, CircularProgress } from "@mui/material";
 
 import { useFetchConsumerUnitsQuery } from "@/api";
 import DefaultTemplateV2 from "@/templates/DefaultV2";
+import { CONSUMER_UNITS_ROUTE } from "@/routes";
 
 const ConsumerUnitLoadingPage: NextPage = () => {
   const router = useRouter();
@@ -25,7 +26,7 @@ const ConsumerUnitLoadingPage: NextPage = () => {
   }
 
   return (
-    <DefaultTemplateV2>
+    <DefaultTemplateV2 route={CONSUMER_UNITS_ROUTE}>
       <Box
         height="100%"
         display="flex"

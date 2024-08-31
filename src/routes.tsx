@@ -54,20 +54,3 @@ export const PROFILE_ROUTE: Route = {
   href: "/perfil",
   pathnames: ["/perfil"],
 };
-
-const routes: Route[] = [
-  INSTITUTIONS_ROUTE,
-  DASHBOARD_ROUTE,
-  CONSUMER_UNITS_ROUTE,
-  DISTRIBUTORS_ROUTE,
-  USER_LIST_ROUTE,
-  PROFILE_ROUTE,
-];
-
-export default routes;
-
-export const getRouteByPathname = (pathname: string) => {
-  const route = routes.find((route) => route.pathnames.includes(pathname));
-
-  return route;
-};

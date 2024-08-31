@@ -7,6 +7,7 @@ import { Box, CircularProgress } from "@mui/material";
 
 import { useFetchDistributorsQuery } from "@/api";
 import DefaultTemplateV2 from "@/templates/DefaultV2";
+import { DISTRIBUTORS_ROUTE } from "@/routes";
 
 const DistributorLoadingPage: NextPage = () => {
   const router = useRouter();
@@ -27,7 +28,7 @@ const DistributorLoadingPage: NextPage = () => {
   }
 
   return (
-    <DefaultTemplateV2>
+    <DefaultTemplateV2 route={DISTRIBUTORS_ROUTE}>
       <Box
         height="100%"
         display="flex"

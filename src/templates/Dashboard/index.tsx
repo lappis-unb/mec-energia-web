@@ -11,6 +11,7 @@ import { useSession } from "next-auth/react";
 import { useFetchConsumerUnitsQuery } from "@/api";
 import { skipToken } from "@reduxjs/toolkit/query";
 import ConsumerUnitCreateForm from "@/components/ConsumerUnit/Form/Create";
+import { CONSUMER_UNITS_ROUTE } from "@/routes";
 
 const DashboardTemplate = () => {
   const headTitle = useMemo(() => getHeadTitle("Painel"), []);
@@ -24,6 +25,7 @@ const DashboardTemplate = () => {
     <DefaultTemplateV2
       headerAction={(consumerUnitsData && (consumerUnitsData?.length > 0)) && <DashboardFilterButtons />}
       contentContainerMaxWidth="xl"
+      route={CONSUMER_UNITS_ROUTE}
     >
       <Head>
         <title>{headTitle}</title>

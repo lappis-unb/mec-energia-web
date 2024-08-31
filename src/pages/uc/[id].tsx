@@ -19,6 +19,7 @@ import { useSelector } from "react-redux";
 import { useSession } from "next-auth/react";
 import { useFetchConsumerUnitsQuery } from "@/api";
 import { skipToken } from "@reduxjs/toolkit/query";
+import { CONSUMER_UNITS_ROUTE } from "@/routes";
 
 type ExpectedQuery = {
   id: string;
@@ -78,6 +79,7 @@ const ConsumerUnitPage: NextPage = () => {
       secondaryDrawer={<ConsumerUnitsCardGrid />}
       contentHeader={<ConsumerUnitContentHeader />}
       contentContainerMaxWidth={contentContainerMaxWidth}
+      route={CONSUMER_UNITS_ROUTE}
     >
       {<ConsumerUnitContent />}
 

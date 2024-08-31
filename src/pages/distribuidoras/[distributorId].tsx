@@ -17,6 +17,7 @@ import { useSelector } from "react-redux";
 import { useSession } from "next-auth/react";
 import { useFetchDistributorsQuery } from "@/api";
 import { skipToken } from "@reduxjs/toolkit/query";
+import { DISTRIBUTORS_ROUTE } from "@/routes";
 
 type ExpectedQuery = {
   distributorId: string;
@@ -76,6 +77,7 @@ const DistributorPage: NextPage = () => {
       secondaryDrawer={<DistributorsCardGrid />}
       contentHeader={<DistributorContentHeader />}
       contentContainerMaxWidth={contentContainerMaxWidth}
+      route={DISTRIBUTORS_ROUTE}
     >
       {<DistributorContent />}
 
