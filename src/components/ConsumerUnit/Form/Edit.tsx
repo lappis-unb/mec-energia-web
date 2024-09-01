@@ -2,7 +2,6 @@ import { Fragment, useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { NumericFormat } from "react-number-format";
-import { isAfter, isFuture, isValid } from "date-fns";
 import {
   Alert,
   Box,
@@ -53,6 +52,7 @@ import { isInSomeSubgroups } from "@/utils/validations/form-validations";
 import FormDrawerV2 from "@/components/Form/DrawerV2";
 import FlashOnIcon from "@mui/icons-material/FlashOn";
 import FormFieldError from "@/components/FormFieldError";
+import { isValidDate } from "@/utils/validations/form-validations";
 
 const defaultValues: EditConsumerUnitForm = {
   isActive: true,
@@ -84,7 +84,9 @@ const ConsumerUnitEditForm = () => {
     session?.user?.universityId || skipToken
   );
 
-  const sortedDistributorList = distributorList?.slice().sort((a, b) => a.name.localeCompare(b.name));
+  const sortedDistributorList = distributorList
+    ?.slice()
+    .sort((a, b) => a.name.localeCompare(b.name));
 
   const { data: contract } = useGetContractQuery(
     activeConsumerUnit || skipToken
@@ -204,22 +206,6 @@ const ConsumerUnitEditForm = () => {
   }, [isEditFormOpen]);
 
   // Validações
-
-  const isValidDate = (date: EditConsumerUnitForm["startDate"]) => {
-    if (!date || !isValid(date)) {
-      return "Data inválida";
-    }
-
-    if (isFuture(date)) {
-      return "Datas futuras não são permitidas";
-    }
-
-    if (!isAfter(date, new Date("2010"))) {
-      return "Datas antes de 2010 não são permitidas";
-    }
-
-    return true;
-  };
 
   const hasEnoughCaracteresLength = (
     value: EditConsumerUnitForm["code"] | EditConsumerUnitForm["name"]
@@ -403,8 +389,8 @@ const ConsumerUnitEditForm = () => {
 
                 <FormHelperText>
                   <p>
-                    Só unidades ativas geram recomendações e recebem faturas. Não é
-                    possível excluir unidades, apenas desativá-las.
+                    Só unidades ativas geram recomendações e recebem faturas.
+                    Não é possível excluir unidades, apenas desativá-las.
                   </p>
                 </FormHelperText>
               </FormGroup>
@@ -450,12 +436,10 @@ const ConsumerUnitEditForm = () => {
                   label="Número da Unidade *"
                   placeholder="Número da Unidade Consumidora conforme a fatura"
                   error={Boolean(error)}
-                  helperText={
-                    FormFieldError(
-                      error?.message,
-                      "Nº ou código da Unidade Consumidora conforme a fatura"
-                    )
-                  }
+                  helperText={FormFieldError(
+                    error?.message,
+                    "Nº ou código da Unidade Consumidora conforme a fatura"
+                  )}
                   fullWidth
                   onChange={(e) => handleNumericInputChange(e, onChange)}
                   onBlur={onBlur}
@@ -472,7 +456,7 @@ const ConsumerUnitEditForm = () => {
               rules={{ required: "Preencha este campo" }}
               render={({
                 field: { onChange, onBlur, value, ref },
-                fieldState: { error }
+                fieldState: { error },
               }) => (
                 <FormControl
                   sx={{ minWidth: "200px", maxWidth: "100%" }}
@@ -515,7 +499,9 @@ const ConsumerUnitEditForm = () => {
                     </MenuItem>
                   </Select>
 
-                  <FormHelperText>{FormFieldError(error?.message)}</FormHelperText>
+                  <FormHelperText>
+                    {FormFieldError(error?.message)}
+                  </FormHelperText>
                 </FormControl>
               )}
             />
@@ -527,7 +513,7 @@ const ConsumerUnitEditForm = () => {
               name="startDate"
               rules={{
                 required: "Preencha este campo",
-                validate: isValidDate,
+                validate: (value) => isValidDate(value),
               }}
               render={({
                 field: { value, onChange },
@@ -573,12 +559,10 @@ const ConsumerUnitEditForm = () => {
                   value={value}
                   customInput={TextField}
                   label="Tensão contratada *"
-                  helperText={
-                    FormFieldError(
-                      error?.message,
-                      "Se preciso, converta a tensão de V para kV dividindo o valor por 1.000."
-                    )
-                  }
+                  helperText={FormFieldError(
+                    error?.message,
+                    "Se preciso, converta a tensão de V para kV dividindo o valor por 1.000."
+                  )}
                   error={!!error}
                   fullWidth
                   InputProps={{
