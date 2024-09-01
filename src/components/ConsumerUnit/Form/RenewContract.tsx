@@ -1,6 +1,5 @@
 import { Fragment, useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { isAfter, isFuture, isValid } from "date-fns";
 
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { NumericFormat } from "react-number-format";
@@ -55,6 +54,7 @@ import FormDrawerV2 from "@/components/Form/DrawerV2";
 import FormConfirmDialog from "./WarningDialogConfirm";
 import FormFieldError from "@/components/FormFieldError";
 import { minimumDemand } from "@/utils/tariff";
+import { isValidDate } from "@/utils/validations/form-validations";
 
 const defaultValues: RenewContractForm = {
   code: "",
@@ -182,22 +182,6 @@ const ConsumerUnitRenewContractForm = () => {
   }, [contract?.tariffFlag, isRenewContractFormOpen, setValue]);
 
   // Validações de Formulário
-  const isValidDate = (date: RenewContractForm["startDate"]) => {
-    if (!date || !isValid(date)) {
-      return "Data inválida";
-    }
-
-    if (isFuture(date)) {
-      return "Datas futuras não são permitidas";
-    }
-
-    if (!isAfter(date, new Date("2010"))) {
-      return "Datas antes de 2010 não são permitidas";
-    }
-
-    return true;
-  };
-
   const hasEnoughCaracteresLength = (value: RenewContractForm["code"]) => {
     if (value.length < 3) return "Insira ao menos 3 caracteres";
     return true;
@@ -306,9 +290,10 @@ const ConsumerUnitRenewContractForm = () => {
                 label="Número da Unidade *"
                 placeholder="Número da Unidade Consumidora conforme a fatura"
                 error={Boolean(error)}
-                helperText={
-                  FormFieldError(error?.message, "Nº ou código da Unidade Consumidora conforme a fatura")
-                }
+                helperText={FormFieldError(
+                  error?.message,
+                  "Nº ou código da Unidade Consumidora conforme a fatura"
+                )}
                 fullWidth
                 onChange={(e) => handleNumericInputChange(e, onChange)}
                 onBlur={onBlur}
@@ -368,7 +353,9 @@ const ConsumerUnitRenewContractForm = () => {
                   </MenuItem>
                 </Select>
 
-                <FormHelperText>{FormFieldError(error?.message)}</FormHelperText>
+                <FormHelperText>
+                  {FormFieldError(error?.message)}
+                </FormHelperText>
               </FormControl>
             )}
           />
@@ -380,7 +367,7 @@ const ConsumerUnitRenewContractForm = () => {
             name="startDate"
             rules={{
               required: "Insira uma data válida no formato dd/mm/aaaa",
-              validate: isValidDate,
+              validate: (value) => isValidDate(value),
             }}
             render={({ field: { value, onChange }, fieldState: { error } }) => (
               <DatePicker
@@ -444,9 +431,10 @@ const ConsumerUnitRenewContractForm = () => {
                   value={value}
                   customInput={TextField}
                   label="Tensão contratada *"
-                  helperText={
-                    FormFieldError(error?.message, "Se preciso, converta a tensão de V para kV dividindo o valor por 1.000.")
-                  }
+                  helperText={FormFieldError(
+                    error?.message,
+                    "Se preciso, converta a tensão de V para kV dividindo o valor por 1.000."
+                  )}
                   error={!!error}
                   fullWidth
                   InputProps={{

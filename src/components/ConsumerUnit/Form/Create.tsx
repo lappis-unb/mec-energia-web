@@ -35,7 +35,6 @@ import {
   CreateConsumerUnitRequestPayload,
 } from "../../../types/consumerUnit";
 import FormWarningDialog from "./WarningDialog";
-import { isAfter, isFuture, isValid } from "date-fns";
 import {
   useCreateConsumerUnitMutation,
   useGetDistributorsQuery,
@@ -50,6 +49,7 @@ import { getSubgroupsText } from "@/utils/get-subgroup-text";
 import { isInSomeSubgroups } from "@/utils/validations/form-validations";
 import FormDrawerV2 from "@/components/Form/DrawerV2";
 import FormFieldError from "@/components/FormFieldError";
+import { isValidDate } from "@/utils/validations/form-validations";
 
 const defaultValues: CreateConsumerUnitForm = {
   name: "",
@@ -79,7 +79,9 @@ const ConsumerUnitCreateForm = () => {
     session?.user?.universityId || skipToken
   );
 
-  const sortedDistributorList = distributorList?.slice().sort((a, b) => a.name.localeCompare(b.name));
+  const sortedDistributorList = distributorList
+    ?.slice()
+    .sort((a, b) => a.name.localeCompare(b.name));
 
   const [
     createConsumerUnit,
@@ -131,23 +133,6 @@ const ConsumerUnitCreateForm = () => {
       setValue("tariffFlag", "B");
     }
   }, [shouldShowGreenDemand]);
-
-  // Validações de Formulário
-  const isValidDate = (date: CreateConsumerUnitForm["startDate"]) => {
-    if (!date || !isValid(date)) {
-      return "Insira uma data válida no formato dd/mm/aaaa";
-    }
-
-    if (isFuture(date)) {
-      return "Datas futuras não são permitidas";
-    }
-
-    if (!isAfter(date, new Date("2010"))) {
-      return "Datas antes de 2010 não são permitidas";
-    }
-
-    return true;
-  };
 
   const isValueGreaterThenZero = (
     value:
@@ -263,7 +248,9 @@ const ConsumerUnitCreateForm = () => {
     () => (
       <>
         <Grid item xs={12}>
-          <Typography variant="h5" style={{ marginBottom: '16px' }} >Unidade Consumidora</Typography>
+          <Typography variant="h5" style={{ marginBottom: "16px" }}>
+            Unidade Consumidora
+          </Typography>
         </Grid>
         <Grid item xs={12}>
           <Controller
@@ -302,7 +289,9 @@ const ConsumerUnitCreateForm = () => {
     () => (
       <>
         <Grid item xs={12}>
-          <Typography variant="h5" style={{ marginBottom: '13px' }}>Contrato</Typography>
+          <Typography variant="h5" style={{ marginBottom: "13px" }}>
+            Contrato
+          </Typography>
         </Grid>
 
         <Grid item xs={12}>
@@ -323,12 +312,10 @@ const ConsumerUnitCreateForm = () => {
                 label="Número da Unidade *"
                 placeholder="Número da Unidade Consumidora conforme a fatura"
                 error={!!error}
-                helperText={
-                  FormFieldError(
-                    error?.message,
-                    "Nº ou código da Unidade Consumidora conforme a fatura"
-                  )
-                }
+                helperText={FormFieldError(
+                  error?.message,
+                  "Nº ou código da Unidade Consumidora conforme a fatura"
+                )}
                 fullWidth
                 onChange={(e) => handleNumericInputChange(e, onChange)}
                 onBlur={onBlur}
@@ -350,7 +337,7 @@ const ConsumerUnitCreateForm = () => {
               <FormControl
                 sx={{ minWidth: "200px", maxWidth: "100%" }}
                 error={!!error}
-                style={{ marginTop: '20px' }}
+                style={{ marginTop: "20px" }}
               >
                 <InputLabel>Distribuidora *</InputLabel>
 
@@ -390,7 +377,9 @@ const ConsumerUnitCreateForm = () => {
                   </MenuItem>
                 </Select>
 
-                <FormHelperText>{FormFieldError(error?.message)}</FormHelperText>
+                <FormHelperText>
+                  {FormFieldError(error?.message)}
+                </FormHelperText>
               </FormControl>
             )}
           />
@@ -402,7 +391,7 @@ const ConsumerUnitCreateForm = () => {
             name="startDate"
             rules={{
               required: "Insira uma data válida no formato dd/mm/aaaa",
-              validate: isValidDate,
+              validate: (value) => isValidDate(value),
             }}
             render={({ field: { value, onChange }, fieldState: { error } }) => (
               <DatePicker
@@ -466,12 +455,10 @@ const ConsumerUnitCreateForm = () => {
                   value={value}
                   customInput={TextField}
                   label="Tensão contratada *"
-                  helperText={
-                    FormFieldError(
-                      error?.message,
-                      "Se preciso, converta a tensão de V para kV dividindo o valor por 1.000."
-                    )
-                  }
+                  helperText={FormFieldError(
+                    error?.message,
+                    "Se preciso, converta a tensão de V para kV dividindo o valor por 1.000."
+                  )}
                   error={!!error}
                   fullWidth
                   InputProps={{
@@ -559,7 +546,9 @@ const ConsumerUnitCreateForm = () => {
                   </Box>
                 </RadioGroup>
 
-                <FormHelperText>{FormFieldError(error?.message)}</FormHelperText>
+                <FormHelperText>
+                  {FormFieldError(error?.message)}
+                </FormHelperText>
               </FormControl>
             )}
           />
