@@ -24,10 +24,9 @@ import UniversityUserRoleDialog from "./RoleDialog";
 import UserRoleSelect from "./RoleSelect";
 import UserListPasswordResetButton from "./PasswordResetButton";
 import { Session } from "next-auth";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import Head from "next/head";
 import { getHeadTitle } from "@/utils/head";
-import { useState, useEffect } from "react";
 
 const isUniversityAdmin = (user: User) =>
   user.type === UserRole.UNIVERSITY_ADMIN;
