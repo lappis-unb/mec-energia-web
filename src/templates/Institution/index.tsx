@@ -53,7 +53,6 @@ const InstitutionsTemplate = () => {
               <TableCell width="48px"></TableCell>
             </TableRow>
           </TableHead>
-
           <TableBody>
             {institutions?.map((institution) => (
               <TableRow
