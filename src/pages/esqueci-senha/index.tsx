@@ -27,7 +27,7 @@ const ForgotPasswordPage: NextPage = () => {
   const handleOnSubmit: SubmitHandler<ResetPasswordRequestPayload> = async ({ email }) => {
     const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     if (!emailPattern.test(email)) {
-      setError("email", { type: "manual", message: "Formato de e-mail inválido" });
+      setError("email", { type: "manual", message: "Insira um e-mail válido" });
       return;
     }
 
@@ -98,7 +98,7 @@ const ForgotPasswordPage: NextPage = () => {
               )}
 
               <Box mt={4}>
-                <Typography variant="h5">Esqueci minha senha</Typography>
+                <Typography variant="h5" mb={1}>Esqueci minha senha</Typography>
                 <Typography variant="subtitle1">Insira seu e-mail institucional para receber instruções de como redefinir sua senha.</Typography>
               </Box>
 
@@ -110,7 +110,7 @@ const ForgotPasswordPage: NextPage = () => {
                     required: "Preencha este campo",
                     pattern: {
                       value: /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
-                      message: "Formato de e-mail inválido"
+                      message: "Insira um e-mail válido"
                     }
                   }}
                   render={({
@@ -131,9 +131,8 @@ const ForgotPasswordPage: NextPage = () => {
                   )}
                 />
               </Box>
-
-              <Box mt={2}>
-                <Button disabled={isLoading || isSubmitted} type="submit" variant="contained" fullWidth>
+              <Box>
+                <Button disabled={isLoading || isSubmitted} type="submit" variant="contained" fullWidth size="large">
                   {isLoading ? 'Enviando...' : 'Enviar'}
                 </Button>
               </Box>
