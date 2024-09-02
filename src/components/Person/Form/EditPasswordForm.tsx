@@ -370,77 +370,58 @@ const ConsumerUnitEditForm = () => {
                 </Grid>
 
                 <Grid item xs={12}>
-                  <Controller
-                    control={control}
-                    name="name"
-                    rules={{
-                      required: "Preencha este campo",
-                      validate: hasEnoughCaracteresLength,
-                    }}
-                    render={({
-                      field: { onChange, onBlur, value, ref },
-                      fieldState: { error },
-                    }) => (
-                      <TextField
-                        ref={ref}
-                        value={value}
-                        label="Nome *"
-                        placeholder="Ex.: Campus Gama, Biblioteca, Faculdade de Medicina"
-                        error={Boolean(error)}
-                        helperText={error?.message ?? " "}
-                        fullWidth
-                        onChange={onChange}
-                        onBlur={onBlur}
-                        inputProps={{ maxLength: 50 }}
-                      />
-                    )}
-                  />
-                </Grid>
-              </Grid>
-              <Grid item xs={12}>
-                <Box>
-                  <Controller
-                    name="isActive"
-                    control={control}
-                    render={({ field: { onChange, value } }) => (
-                      <FormControl>
-                        <FormControlLabel
-                          sx={{ marginLeft: 0 }}
-                          control={
-                            <Switch
-                              value={value}
-                              defaultChecked={consumerUnit?.isActive}
-                              onChange={onChange}
+                    <Controller
+                        control={control}
+                        name="currentPassword"
+                        rules={{
+                            required: "Preencha este campo",
+                        }}
+                        render={({
+                            field: { onChange, onBlur, value, ref },
+                            fieldState: { error },
+                        }) => (
+                            <TextField
+                                ref={ref}
+                                value={value}
+                                label="Senha atual *"
+                                type={showCurrentPassword ? "text" : "password"}
+                                error={Boolean(error)}
+                                helperText={FormFieldError(error?.message)}
+                                fullWidth
+                                onChange={onChange}
+                                onBlur={onBlur}
+                                InputProps={{
+                                    endAdornment: (
+                                        <InputAdornment position="end">
+                                            <IconButton
+                                                onClick={() =>
+                                                    setShowCurrentPassword(!showCurrentPassword)
+                                                }
+                                                onMouseDown={(e) => e.preventDefault()}
+                                            >
+                                                {showCurrentPassword ? (
+                                                    <VisibilityOff />
+                                                ) : (
+                                                    <Visibility />
+                                                )}
+                                            </IconButton>
+                                        </InputAdornment>
+                                    ),
+                                }}
                             />
-                          }
-                          label="Unidade ativa"
-                          labelPlacement="start"
-                        />
-                      </FormControl>
-                    )}
-                  />
-                </Box>
-
-                <Typography variant="caption">
-                  Só unidades ativas geram recomendações e recebem faturas. Não
-                  é possível excluir unidades, apenas desativá-las.
-                </Typography>
-              </Grid>
-            </Box>
-          </Paper>
-          <Paper>
-            <Box mb={4} p={2}>
-              <Grid container spacing={2}>
-                <Grid item xs={12}>
-                  <Typography variant="h5">Contrato</Typography>
+                        )}
+                    />
                 </Grid>
+            </>
+        ),
+        [control, showCurrentPassword]
+    );
 
-                <Grid item xs={12}>
-                  <Alert severity="warning">
-                    Modifique o contrato apenas em caso de erro de digitação.
-                    Para alterações legais ou novo contrato, use a opção{" "}
-                    <strong>Renovar</strong> na tela anterior.
-                  </Alert>
+    const NewPasswordSection = useCallback(
+        () => (
+            <>
+                <Grid item xs={12} sx={{ marginBottom: "10px" }}>
+                    <Typography variant="h5">Nova senha</Typography>
                 </Grid>
 
                 <Grid item xs={12}>
