@@ -6,7 +6,7 @@ import {
   setActiveConsumerUnitId,
 } from "@/store/appSlice";
 import DistributorCard from "@/components//Distributor/DistributorCard";
-import ConsumerUnitCard from "@/components/ConsumerUnit/CardV2";
+import ConsumerUnitCard from "@/components/ConsumerUnit/Card";
 import { useFetchConsumerUnitsQuery, useFetchPendingDistributorsQuery } from "@/api";
 import { useSession } from "next-auth/react";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
@@ -62,18 +62,13 @@ const DashboardCardGrid = () => {
   }, [consumerUnits, dispatch]);
 
   return (
-    <Grid container spacing={3} py={3} style={{ display: 'flex', flexWrap: 'wrap' }}>
+    <Grid container spacing={3} py={3} style={{
+      display: 'grid',
+      gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+      gap: '24px'
+    }}>
       {distributors?.map((card) => (
-        <Grid
-          key={card.id}
-          item
-          xs={12}
-          sm={6}
-          md={4}
-          lg={2.4}
-          xl={2.4}
-          style={{ display: 'flex', justifyContent: 'center', flex: '1 1 calc(20% - 24px)', maxWidth: 'calc(20% - 24px)' }}
-        >
+        <Grid item key={card.id} style={{ display: 'flex', justifyContent: 'center' }}>
           <DistributorCard
             id={card.id}
             name={card.name}
@@ -85,16 +80,7 @@ const DashboardCardGrid = () => {
       ))}
 
       {consumerUnits?.map((card) => (
-        <Grid
-          key={card.id}
-          item
-          xs={12}
-          sm={6}
-          md={4}
-          lg={2.4}
-          xl={2.4}
-          style={{ display: 'flex', justifyContent: 'center', flex: '1 1 calc(20% - 24px)', maxWidth: 'calc(20% - 24px)' }}
-        >
+        <Grid item key={card.id} style={{ display: 'flex', justifyContent: 'center' }}>
           <ConsumerUnitCard
             isActive={card.isActive}
             isFavorite={card.isFavorite}
@@ -106,6 +92,15 @@ const DashboardCardGrid = () => {
         </Grid>
       ))}
     </Grid>
+
+
+
+
+
+
+
+
+
   );
 };
 
