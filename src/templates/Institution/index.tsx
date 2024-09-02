@@ -11,6 +11,9 @@ import {
 import { FlashOn, FlashOff } from "@mui/icons-material";
 import InstitutionEditButton from "./EditButton";
 import { EditInstitutionRequestPayload } from "@/types/institution";
+import Head from "next/head";
+import { useMemo } from "react";
+import { getHeadTitle } from "@/utils/head";
 
 const InstitutionsTemplate = () => {
   const { data: institutions } = useFetchInstitutionsQuery();
@@ -32,54 +35,62 @@ const InstitutionsTemplate = () => {
     await editInstitution(institutionToUpdate);
   };
 
-  return (
-    <TableContainer>
-      <Table size="small">
-        <TableHead>
-          <TableRow>
-            <TableCell width="70px">Ativa</TableCell>
-            <TableCell width="122px">Sigla</TableCell>
-            <TableCell>Nome</TableCell>
-            <TableCell width="166px">CNPJ</TableCell>
-            <TableCell width="48px"></TableCell>
-          </TableRow>
-        </TableHead>
+  const headTitle = useMemo(() => getHeadTitle("Instituições"), []);
 
-        <TableBody>
-          {institutions?.map((institution) => (
-            <TableRow
-              key={institution.id}
-              style={{
-                textDecoration: institution.isActive ? "none" : "line-through",
-                color: "inherit",
-              }}
-            >
-              <TableCell>
-                <IconButton
-                  style={{ color: '#000000DE' }}
-                  onClick={() =>
-                    handleToggleActivation(
-                      institution.id,
-                      institution.isActive,
-                      institution.name,
-                      institution.cnpj
-                    )
-                  }
-                >
-                  {institution.isActive ? <FlashOn /> : <FlashOff />}
-                </IconButton>
-              </TableCell>
-              <TableCell>{institution.acronym}</TableCell>
-              <TableCell>{institution.name}</TableCell>
-              <TableCell>{institution.cnpj}</TableCell>
-              <TableCell>
-                <InstitutionEditButton institutionId={institution.id} />
-              </TableCell>
+  return (
+    <>
+      <Head>
+        <title>{headTitle}</title>
+      </Head>
+      <TableContainer>
+        <Table size="small">
+          <TableHead>
+            <TableRow>
+              <TableCell width="70px">Ativa</TableCell>
+              <TableCell width="122px">Sigla</TableCell>
+              <TableCell>Nome</TableCell>
+              <TableCell width="166px">CNPJ</TableCell>
+              <TableCell width="48px"></TableCell>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+          </TableHead>
+          <TableBody>
+            {institutions?.map((institution) => (
+              <TableRow
+                key={institution.id}
+                style={{
+                  textDecoration: institution.isActive
+                    ? "none"
+                    : "line-through",
+                  color: "inherit",
+                }}
+              >
+                <TableCell>
+                  <IconButton
+                    style={{ color: "#000000DE" }}
+                    onClick={() =>
+                      handleToggleActivation(
+                        institution.id,
+                        institution.isActive,
+                        institution.name,
+                        institution.cnpj
+                      )
+                    }
+                  >
+                    {institution.isActive ? <FlashOn /> : <FlashOff />}
+                  </IconButton>
+                </TableCell>
+                <TableCell>{institution.acronym}</TableCell>
+                <TableCell>{institution.name}</TableCell>
+                <TableCell>{institution.cnpj}</TableCell>
+                <TableCell>
+                  <InstitutionEditButton institutionId={institution.id} />
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </>
   );
 };
 

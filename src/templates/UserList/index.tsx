@@ -25,6 +25,8 @@ import UserRoleSelect from "./RoleSelect";
 import UserListPasswordResetButton from "./PasswordResetButton";
 import { Session } from "next-auth";
 import { useMemo, useState } from "react";
+import Head from "next/head";
+import { getHeadTitle } from "@/utils/head";
 
 const isUniversityAdmin = (user: User) =>
   user.type === UserRole.UNIVERSITY_ADMIN;
@@ -97,6 +99,8 @@ const UserListTemplate = () => {
 
   const { data: users } = useGetUsersQuery(usersQueryPayload);
 
+  const headTitle = useMemo(() => getHeadTitle("Pessoas"), []);
+
   const filteredUsers = useMemo(() => {
     if (!users) return [];
 
@@ -159,175 +163,185 @@ const UserListTemplate = () => {
   }
 
   return (
-    <TableContainer>
-      <Box>
-        <Box
-          display="flex"
-          justifyContent="flex-end"
-          alignItems="center"
-          mb={2}
-          sx={{
-            backgroundColor: "#0A5C67",
-            paddingTop: "10px",
-            marginBottom: "0px",
-          }}
-        >
-          <TextField
-            placeholder="Buscar"
-            variant="standard"
-            size="small"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon sx={{ color: "white" }} />
-                </InputAdornment>
-              ),
-              sx: {
-                color: "white",
-                "&:before": {
-                  borderBottomColor: "white",
+    <>
+      <Head>
+        <title>{headTitle}</title>
+      </Head>
+      <TableContainer>
+        <Box>
+          <Box
+            display="flex"
+            justifyContent="flex-end"
+            alignItems="center"
+            mb={2}
+            sx={{
+              backgroundColor: "#0A5C67",
+              paddingTop: "10px",
+              marginBottom: "0px",
+            }}
+          >
+            <TextField
+              placeholder="Buscar"
+              variant="standard"
+              size="small"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon sx={{ color: "white" }} />
+                  </InputAdornment>
+                ),
+                sx: {
+                  color: "white",
+                  "&:before": {
+                    borderBottomColor: "white",
+                  },
                 },
-              },
-            }}
-            InputLabelProps={{
-              style: { color: "white" },
-            }}
-            sx={{ width: "200px", marginRight: "16px" }}
-          />
-        </Box>
-        <Table size="small">
-          <TableHead>
-            <TableRow>
-              <TableCell sortDirection={orderBy === "fullName" ? order : false}>
-                <TableSortLabel
-                  active={orderBy === "fullName"}
-                  direction={orderBy === "fullName" ? order : "asc"}
-                  onClick={(event) => handleRequestSort(event, "fullName")}
-                  sx={{
-                    color: "white !important",
-                    "& .MuiTableSortLabel-icon": {
-                      color: "white !important",
-                    },
-                  }}
+              }}
+              InputLabelProps={{
+                style: { color: "white" },
+              }}
+              sx={{ width: "200px", marginRight: "16px" }}
+            />
+          </Box>
+          <Table size="small">
+            <TableHead>
+              <TableRow>
+                <TableCell
+                  sortDirection={orderBy === "fullName" ? order : false}
                 >
-                  Nome completo
-                </TableSortLabel>
-              </TableCell>
-              <TableCell>E-mail</TableCell>
-              <TableCell sortDirection={orderBy === "type" ? order : false}>
-                <TableSortLabel
-                  active={orderBy === "type"}
-                  direction={orderBy === "type" ? order : "asc"}
-                  onClick={(event) => handleRequestSort(event, "type")}
-                  sx={{
-                    color: "white !important",
-                    "& .MuiTableSortLabel-icon": {
+                  <TableSortLabel
+                    active={orderBy === "fullName"}
+                    direction={orderBy === "fullName" ? order : "asc"}
+                    onClick={(event) => handleRequestSort(event, "fullName")}
+                    sx={{
                       color: "white !important",
-                    },
-                  }}
-                >
-                  <Box
-                    display="flex"
-                    alignItems="center"
-                    justifyContent="space-between"
-                    width="100%"
+                      "& .MuiTableSortLabel-icon": {
+                        color: "white !important",
+                      },
+                    }}
                   >
-                    <Typography variant="inherit">Perfil</Typography>
-                    <UniversityUserRoleDialog />
-                  </Box>
-                </TableSortLabel>
-              </TableCell>
-              {isSysAdmin && <TableCell>Universidade</TableCell>}
-              <TableCell width="56px" />
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {paginatedUsers.map((user) => (
-              <TableRow key={user.id}>
-                <TableCell>
-                  <Typography
-                    variant="body2"
-                    fontWeight={isUniversityAdmin(user) ? "bold" : "normal"}
+                    Nome completo
+                  </TableSortLabel>
+                </TableCell>
+                <TableCell>E-mail</TableCell>
+                <TableCell sortDirection={orderBy === "type" ? order : false}>
+                  <TableSortLabel
+                    active={orderBy === "type"}
+                    direction={orderBy === "type" ? order : "asc"}
+                    onClick={(event) => handleRequestSort(event, "type")}
+                    sx={{
+                      color: "white !important",
+                      "& .MuiTableSortLabel-icon": {
+                        color: "white !important",
+                      },
+                    }}
                   >
-                    {user.firstName} {user.lastName}
-                  </Typography>
+                    <Box
+                      display="flex"
+                      alignItems="center"
+                      justifyContent="space-between"
+                      width="100%"
+                    >
+                      <Typography variant="inherit">Perfil</Typography>
+                      <UniversityUserRoleDialog />
+                    </Box>
+                  </TableSortLabel>
                 </TableCell>
-                <TableCell>
-                  <Typography
-                    variant="body2"
-                    fontWeight={isUniversityAdmin(user) ? "bold" : "normal"}
-                  >
-                    <Link href={`mailto:${user.email}`}>{user.email}</Link>
-                  </Typography>
-                </TableCell>
-                <TableCell>
-                  {user.id === session?.user.id ? (
-                    <Chip color="primary" label={UserRoleLabelMap[user.type]} />
-                  ) : (
-                    <UserRoleSelect id={user.id} type={user.type} />
-                  )}
-                </TableCell>
-                {isSysAdmin && (
+                {isSysAdmin && <TableCell>Universidade</TableCell>}
+                <TableCell width="56px" />
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {paginatedUsers.map((user) => (
+                <TableRow key={user.id}>
                   <TableCell>
                     <Typography
                       variant="body2"
                       fontWeight={isUniversityAdmin(user) ? "bold" : "normal"}
                     >
-                      {user.email ? getUniversityAcronym(user.email) : "-"}
+                      {user.firstName} {user.lastName}
                     </Typography>
                   </TableCell>
-                )}
-                <TableCell>
-                  <UserListPasswordResetButton
-                    id={user.id}
-                    userName={user.firstName}
-                  />
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-        <Box
-          display="flex"
-          justifyContent="flex-end"
-          alignItems="center"
-          sx={{
-            backgroundColor: "#0A5C67",
-            color: "white",
-            padding: "8px",
-          }}
-        >
-          <TablePagination
-            rowsPerPageOptions={[5, 10, 25]}
-            component="div"
-            count={filteredUsers.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={handleChangePage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
+                  <TableCell>
+                    <Typography
+                      variant="body2"
+                      fontWeight={isUniversityAdmin(user) ? "bold" : "normal"}
+                    >
+                      <Link href={`mailto:${user.email}`}>{user.email}</Link>
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    {user.id === session?.user.id ? (
+                      <Chip
+                        color="primary"
+                        label={UserRoleLabelMap[user.type]}
+                      />
+                    ) : (
+                      <UserRoleSelect id={user.id} type={user.type} />
+                    )}
+                  </TableCell>
+                  {isSysAdmin && (
+                    <TableCell>
+                      <Typography
+                        variant="body2"
+                        fontWeight={isUniversityAdmin(user) ? "bold" : "normal"}
+                      >
+                        {user.email ? getUniversityAcronym(user.email) : "-"}
+                      </Typography>
+                    </TableCell>
+                  )}
+                  <TableCell>
+                    <UserListPasswordResetButton
+                      id={user.id}
+                      userName={user.firstName}
+                    />
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+          <Box
+            display="flex"
+            justifyContent="flex-end"
+            alignItems="center"
             sx={{
-              "& .MuiTablePagination-toolbar": {
-                color: "white",
-              },
-              "& .MuiTablePagination-actions": {
-                color: "white",
-              },
-              "& .MuiSelect-icon": {
-                color: "white",
-              },
-              "& .MuiIconButton-root": {
-                color: "white",
-              },
+              backgroundColor: "#0A5C67",
+              color: "white",
+              padding: "8px",
             }}
-            labelDisplayedRows={({ from, to, count }) =>
-              `${from}-${to} de ${count}`
-            }
-          />
+          >
+            <TablePagination
+              rowsPerPageOptions={[5, 10, 25]}
+              component="div"
+              count={filteredUsers.length}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              onPageChange={handleChangePage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+              sx={{
+                "& .MuiTablePagination-toolbar": {
+                  color: "white",
+                },
+                "& .MuiTablePagination-actions": {
+                  color: "white",
+                },
+                "& .MuiSelect-icon": {
+                  color: "white",
+                },
+                "& .MuiIconButton-root": {
+                  color: "white",
+                },
+              }}
+              labelDisplayedRows={({ from, to, count }) =>
+                `${from}-${to} de ${count}`
+              }
+            />
+          </Box>
         </Box>
-      </Box>
-    </TableContainer>
+      </TableContainer>
+    </>
   );
 };
 
