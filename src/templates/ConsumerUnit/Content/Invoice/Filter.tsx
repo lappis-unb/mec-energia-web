@@ -62,8 +62,8 @@ const ConsumerUnitInvoiceContentFilter = () => {
           Mostrar:
         </Typography>
 
-        <Box display="flex" flexWrap="wrap" rowGap={2}>
-          <Box ml={2}>
+        <Box display="flex" flexWrap="wrap" rowGap={2} ml={2}>
+          {consumerUnit?.isActive && (
             <Button
               disabled={!isPendingFilterActive}
               sx={{ borderRadius: 10 }}
@@ -79,76 +79,7 @@ const ConsumerUnitInvoiceContentFilter = () => {
             >
               {pendingFilterLabel}
             </Button>
-          </Box>
-          {consumerUnit.isActive ? (
-            <Box ml={2}>
-              <Button
-                disabled={!isPendingFilterActive}
-                sx={{ borderRadius: 10 }}
-                size="small"
-                disableElevation
-                variant={
-                  invoiceActiveFilter === "pending" ? "contained" : "outlined"
-                }
-                onClick={handleFilterButtonClick("pending")}
-                {...(invoiceActiveFilter === "pending" && {
-                  startIcon: <DoneRoundedIcon />,
-                })}
-              >
-                {pendingFilterLabel}
-              </Button>
-            </Box>
-          ) : (
-            ""
           )}
-          {consumerUnit?.isActive ? (
-            <Box ml={2}>
-              <Button
-                disabled={!isPendingFilterActive}
-                sx={{ borderRadius: 10 }}
-                size="small"
-                disableElevation
-                variant={
-                  invoiceActiveFilter === "pending" ? "contained" : "outlined"
-                }
-                onClick={handleFilterButtonClick("pending")}
-                {...(invoiceActiveFilter === "pending" && {
-                  startIcon: <DoneRoundedIcon />,
-                })}
-              >
-                {pendingFilterLabel}
-              </Button>
-            </Box>
-          ) : (
-            ""
-          )}
-      <Box
-        display="flex"
-        flexWrap="wrap"
-        rowGap={2}
-        alignItems="center"
-        px={2}
-        py={1.5}
-      >
-        <Typography variant="caption">Mostrar:</Typography>
-
-        <Box ml={2}>
-          <Button
-            disabled={!isPendingFilterActive}
-            sx={{ borderRadius: 10 }}
-            size="small"
-            disableElevation
-            variant={
-              invoiceActiveFilter === "pending" ? "contained" : "outlined"
-            }
-            onClick={handleFilterButtonClick("pending")}
-            {...(invoiceActiveFilter === "pending" && {
-              startIcon: <DoneRoundedIcon />,
-            })}
-          >
-            {pendingFilterLabel}
-          </Button>
-        </Box>
 
           {invoicesFilters.map((year) => (
             <Box ml={2} key={year}>
