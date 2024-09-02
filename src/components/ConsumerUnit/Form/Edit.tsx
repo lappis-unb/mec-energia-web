@@ -94,8 +94,6 @@ const ConsumerUnitEditForm = () => {
   );
   const { data: consumerUnit, refetch: refetchConsumerUnit } =
     useGetConsumerUnitQuery(activeConsumerUnit || skipToken);
-  const { data: consumerUnit, refetch: refetchConsumerUnit } =
-    useGetConsumerUnitQuery(activeConsumerUnit || skipToken);
   const [
     editConsumerUnit,
     { isError, isSuccess, isLoading, reset: resetMutation },

@@ -637,7 +637,6 @@ const ConsumerUnitRenewContractForm = () => {
                         " "
                       )
                     }
-                    helperText={error?.message ?? " "}
                     onValueChange={(values) => onChange(values.floatValue)}
                     onBlur={onBlur}
                   />
