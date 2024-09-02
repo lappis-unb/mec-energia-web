@@ -16,6 +16,7 @@ import {
   InputAdornment,
   InputLabel,
   MenuItem,
+  Paper,
   Radio,
   RadioGroup,
   Select,
@@ -38,8 +39,8 @@ import {
 } from "@/types/contract";
 import FormWarningDialog from "@/components/ConsumerUnit/Form/WarningDialog";
 import {
-  useGetConsumerUnitQuery,
   useGetContractQuery,
+  useGetConsumerUnitQuery,
   useGetDistributorsQuery,
   useGetSubgroupsQuery,
   useRenewContractMutation,
@@ -53,6 +54,7 @@ import { getSubgroupsText } from "@/utils/get-subgroup-text";
 import { isInSomeSubgroups } from "@/utils/validations/form-validations";
 import FormDrawerV2 from "@/components/Form/DrawerV2";
 import FormConfirmDialog from "./WarningDialogConfirm";
+import SupplyVoltageTooltip from "@/components/SupplyVoltageTooltip";
 import FormFieldError from "@/components/FormFieldError";
 import { minimumDemand } from "@/utils/tariff";
 
@@ -106,7 +108,8 @@ const ConsumerUnitRenewContractForm = () => {
   const [showShowConfirmDialog, setShouldShowConfirmDialog] = useState(false);
   const [shouldShowDistributorFormDialog, setShouldShowDistributorFormDialog] =
     useState(false);
-  const [shouldShowGreenDemand, setShouldShowGreenDemand] = useState(true);
+  const [shouldShowGreenDemand, setShouldShowGreenDemand] = useState(false);
+  const [isTooltipOpen, setIsTooltipOpen] = useState(false);
 
   const form = useForm({ mode: "all", defaultValues });
 
@@ -121,6 +124,19 @@ const ConsumerUnitRenewContractForm = () => {
   } = form;
 
   const tariffFlag = watch("tariffFlag");
+  const supplyVoltage = watch("supplyVoltage");
+
+  const shouldHideTooltip = (value) => {
+    if (value === undefined) return false;
+    return (
+      value <= 2.3 ||
+      (value > 2.3 && value <= 25) ||
+      (value >= 30 && value <= 44) ||
+      value === 69 ||
+      (value >= 88 && value <= 138) ||
+      value >= 230
+    );
+  };
 
   useEffect(() => {
     if (isRenewContractFormOpen) {
@@ -306,9 +322,10 @@ const ConsumerUnitRenewContractForm = () => {
                 label="Número da Unidade *"
                 placeholder="Número da Unidade Consumidora conforme a fatura"
                 error={Boolean(error)}
-                helperText={
-                  FormFieldError(error?.message, "Nº ou código da Unidade Consumidora conforme a fatura")
-                }
+                helperText={FormFieldError(
+                  error?.message,
+                  "Nº ou código da Unidade Consumidora conforme a fatura"
+                )}
                 fullWidth
                 onChange={(e) => handleNumericInputChange(e, onChange)}
                 onBlur={onBlur}
@@ -338,26 +355,18 @@ const ConsumerUnitRenewContractForm = () => {
                   label="Distribuidora *"
                   autoWidth
                   MenuProps={{
-                    anchorOrigin: {
-                      vertical: "bottom",
-                      horizontal: "left",
-                    },
-                    transformOrigin: {
-                      vertical: "top",
-                      horizontal: "left",
-                    },
+                    anchorOrigin: { vertical: "bottom", horizontal: "left" },
+                    transformOrigin: { vertical: "top", horizontal: "left" },
                   }}
                   onChange={onChange}
                   onBlur={onBlur}
                 >
                   {sortedDistributorList?.map(
-                    (distributor: DistributorPropsTariffs) => {
-                      return (
-                        <MenuItem key={distributor.id} value={distributor.id}>
-                          {distributor.name}
-                        </MenuItem>
-                      );
-                    }
+                    (distributor: DistributorPropsTariffs) => (
+                      <MenuItem key={distributor.id} value={distributor.id}>
+                        {distributor.name}
+                      </MenuItem>
+                    )
                   )}
                   <MenuItem>
                     <Button
@@ -368,7 +377,9 @@ const ConsumerUnitRenewContractForm = () => {
                   </MenuItem>
                 </Select>
 
-                <FormHelperText>{FormFieldError(error?.message)}</FormHelperText>
+                <FormHelperText>
+                  {FormFieldError(error?.message)}
+                </FormHelperText>
               </FormControl>
             )}
           />
@@ -412,9 +423,7 @@ const ConsumerUnitRenewContractForm = () => {
               sx: {
                 bgcolor: "warning.main",
                 color: "warning.contrastText",
-                "& .MuiTooltip-arrow": {
-                  color: "warning.main",
-                },
+                "& .MuiTooltip-arrow": { color: "warning.main" },
               },
             },
           }}
@@ -444,9 +453,10 @@ const ConsumerUnitRenewContractForm = () => {
                   value={value}
                   customInput={TextField}
                   label="Tensão contratada *"
-                  helperText={
-                    FormFieldError(error?.message, "Se preciso, converta a tensão de V para kV dividindo o valor por 1.000.")
-                  }
+                  helperText={FormFieldError(
+                    error?.message,
+                    "Se preciso, converta a tensão de V para kV dividindo o valor por 1.000."
+                  )}
                   error={!!error}
                   fullWidth
                   InputProps={{
@@ -575,7 +585,7 @@ const ConsumerUnitRenewContractForm = () => {
                   decimalSeparator=","
                   thousandSeparator={"."}
                   error={Boolean(error)}
-                  helperText={FormFieldError(error?.message)}
+                  helperText={error?.message ?? " "}
                   onValueChange={(values) => onChange(values.floatValue)}
                   onBlur={onBlur}
                 />
@@ -615,7 +625,7 @@ const ConsumerUnitRenewContractForm = () => {
                     decimalSeparator=","
                     thousandSeparator={"."}
                     error={Boolean(error)}
-                    helperText={FormFieldError(error?.message)}
+                    helperText={error?.message ?? " "}
                     onValueChange={(values) => onChange(values.floatValue)}
                     onBlur={onBlur}
                   />
@@ -629,7 +639,7 @@ const ConsumerUnitRenewContractForm = () => {
                 name="offPeakContractedDemandInKw"
                 rules={{
                   required: "Preencha este campo",
-                  min: minimumDemand,
+                  validate: isValueGreaterThenZero,
                 }}
                 render={({
                   field: { onChange, onBlur, value },

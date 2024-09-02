@@ -399,7 +399,7 @@ const CreateEditEnergyBillForm = () => {
     () => (
       <>
         <Grid item xs={8}>
-          <Typography variant="h5">Fatura</Typography>
+          <Typography variant="h5"  style={{ marginBottom: '13px' }} >Fatura</Typography>
         </Grid>
         <Grid item xs={12} mt={1}>
           <Controller
@@ -469,7 +469,7 @@ const CreateEditEnergyBillForm = () => {
                       {...params}
                       inputProps={{
                         ...params.inputProps,
-                        placeholder: "mm/aaaa",
+                        placeholder: "mês/aaaa",
                       }}
                       error={!!error}
                       helperText={
@@ -713,7 +713,7 @@ const CreateEditEnergyBillForm = () => {
     () => (
       <>
         <Grid item xs={10}>
-          <Typography variant="h5">Consumo medido</Typography>
+          <Typography variant="h5" style={{ marginBottom: '16px' }}>Consumo medido</Typography>
         </Grid>
 
         <Grid container spacing={2}>
