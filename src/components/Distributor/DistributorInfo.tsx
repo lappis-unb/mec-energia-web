@@ -41,18 +41,29 @@ export const DistributorInfo = () => {
   });
 
   const createTitleTariffs = useCallback(() => {
-    if (currentDist?.tariffs.length === 0) setTitleTariffs("");
-    else if (currentDist?.tariffs.length === 1) {
+    if (currentDist?.tariffs.length === 0) {
+      setTitleTariffs("");
+      console.error("Nenhuma tarifa encontrada.");
+    } else if (currentDist?.tariffs.length === 1) {
       if (currentTariff) {
-        if (isOverdue)
+        if (isOverdue) {
           setTitleTariffs(
             `Tarifas do subgrupo ${currentTariff.subgroup} pendentes`
           );
-        else setTitleTariffs(`Tarifas do subgrupo ${currentTariff.subgroup}`);
+          console.error("Tarifas pendentes encontradas.");
+        } else {
+          setTitleTariffs(`Tarifas do subgrupo ${currentTariff.subgroup}`);
+        }
+      } else {
+        console.error("Tarifa atual não encontrada.");
       }
     } else if (currentDist?.tariffs.length > 1) {
-      if (!isOverdue) setTitleTariffs("Tarifas");
-      else setTitleTariffs("Tarifas com atualização pendente");
+      if (!isOverdue) {
+        setTitleTariffs("Tarifas");
+      } else {
+        setTitleTariffs("Tarifas com atualização pendente");
+        console.error("Atualizações de tarifas pendentes encontradas.");
+      }
     }
   }, [currentDist?.tariffs.length, currentTariff, isOverdue]);
 
@@ -69,8 +80,12 @@ export const DistributorInfo = () => {
       (tariff) =>
         tariff.startDate === "" && tariff.endDate === "" && hasConsumerUnit
     );
-    if (needAddTariff === undefined) setIsPendingTariffAddition(false);
-    else setIsPendingTariffAddition(true);
+    if (needAddTariff === undefined) {
+      setIsPendingTariffAddition(false);
+    } else {
+      setIsPendingTariffAddition(true);
+      console.error("Tarifa pendente de adição encontrada.");
+    }
 
     createTitleTariffs();
   }, [createTitleTariffs, currentTariff?.overdue, router.query]);
