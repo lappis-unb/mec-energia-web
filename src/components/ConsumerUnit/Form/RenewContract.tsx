@@ -39,6 +39,7 @@ import {
 } from "@/types/contract";
 import FormWarningDialog from "@/components/ConsumerUnit/Form/WarningDialog";
 import {
+  useGetContractQuery,
   useGetConsumerUnitQuery,
   useGetDistributorsQuery,
   useGetSubgroupsQuery,

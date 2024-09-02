@@ -84,10 +84,6 @@ const ConsumerUnitCreateForm = () => {
     ?.slice()
     .sort((a, b) => a.name.localeCompare(b.name));
 
-  const sortedDistributorList = distributorList
-    ?.slice()
-    .sort((a, b) => a.name.localeCompare(b.name));
-
   const [
     createConsumerUnit,
     { status, isError, isSuccess, isLoading, reset: resetMutation },
