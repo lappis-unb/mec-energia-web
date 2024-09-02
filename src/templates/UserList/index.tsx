@@ -27,7 +27,7 @@ import { Session } from "next-auth";
 import { useMemo } from "react";
 import Head from "next/head";
 import { getHeadTitle } from "@/utils/head";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 
 const isUniversityAdmin = (user: User) =>
   user.type === UserRole.UNIVERSITY_ADMIN;
