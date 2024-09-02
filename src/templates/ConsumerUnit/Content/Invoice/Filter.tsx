@@ -122,6 +122,37 @@ const ConsumerUnitInvoiceContentFilter = () => {
           ) : (
             ""
           )}
+      <Box
+        display="flex"
+        flexWrap="wrap"
+        rowGap={2}
+        alignItems="center"
+        px={2}
+        py={1.5}
+      >
+        <Typography variant="caption">Mostrar:</Typography>
+
+        {consumerUnit?.isActive ? (
+          <Box ml={2}>
+            <Button
+              disabled={!isPendingFilterActive}
+              sx={{ borderRadius: 10 }}
+              size="small"
+              disableElevation
+              variant={
+                invoiceActiveFilter === "pending" ? "contained" : "outlined"
+              }
+              onClick={handleFilterButtonClick("pending")}
+              {...(invoiceActiveFilter === "pending" && {
+                startIcon: <DoneRoundedIcon />,
+              })}
+            >
+              {pendingFilterLabel}
+            </Button>
+          </Box>
+        ) : (
+          ""
+        )}
 
           {invoicesFilters.map((year) => (
             <Box ml={2} key={year}>
