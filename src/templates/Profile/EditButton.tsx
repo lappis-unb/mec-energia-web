@@ -1,4 +1,3 @@
-import { useCallback } from "react";
 import { useDispatch } from "react-redux";
 import { Button } from "@mui/material";
 import EditRoundedIcon from "@mui/icons-material/EditRounded";
@@ -9,13 +8,13 @@ interface ProfileEditButtonProps {
   personId: number;
 }
 
-const ProfileEditButton = (props: ProfileEditButtonProps) => {
+const ProfileEditButton = ({ personId }: ProfileEditButtonProps) => {
   const dispatch = useDispatch();
 
-  const handleClick = useCallback(() => {
-    dispatch(setActivePersonId(props.personId))
+  const handleClick = () => {
+    dispatch(setActivePersonId(personId));
     dispatch(setIsPersonEditFormOpen(true));
-  }, [dispatch, props.personId]);
+  };
 
   return (
     <>
@@ -35,3 +34,4 @@ const ProfileEditButton = (props: ProfileEditButtonProps) => {
 };
 
 export default ProfileEditButton;
+
