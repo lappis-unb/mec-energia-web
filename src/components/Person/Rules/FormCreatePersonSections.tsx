@@ -1,4 +1,3 @@
-import React, { useCallback } from "react";
 import { Controller } from "react-hook-form";
 import {
   Autocomplete,

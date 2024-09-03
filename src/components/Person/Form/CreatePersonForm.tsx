@@ -13,14 +13,13 @@ import {
   setIsPersonCreateFormOpen,
   setIsSuccessNotificationOpen,
 } from "../../../store/appSlice";
-import { Controller, SubmitHandler, useForm } from "react-hook-form";
+import { SubmitHandler, useForm } from "react-hook-form";
 import {
   CreatePersonForm as CreatePersonFormType,
   CreatePersonRequestPayload,
   UserRole,
 } from "@/types/person";
 import { useCreatePersonMutation, useGetAllInstitutionQuery } from "@/api";
-import { isValidEmail } from "@/utils/validations/form-validations";
 import FormDrawerV2 from "@/components/Form/DrawerV2";
 import FormWarningDialog from "../../ConsumerUnit/Form/WarningDialog";
 import {

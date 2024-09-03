@@ -7,8 +7,7 @@ import {
   setIsPersonEditFormOpen,
   setIsSuccessNotificationOpen,
 } from "../../../store/appSlice";
-import { Controller, SubmitHandler, useForm } from "react-hook-form";
-import { Grid } from "@mui/material";
+import { SubmitHandler, useForm } from "react-hook-form";
 import FormWarningDialog from "../../ConsumerUnit/Form/WarningDialog";
 import {
   EditPersonForm,
@@ -20,7 +19,6 @@ import {
   useGetPersonQuery,
   useGetUniversityPersonQuery,
 } from "@/api";
-import { isValidEmail } from "@/utils/validations/form-validations";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import FormDrawerV2 from "@/components/Form/DrawerV2";
 import PersonalInformationSection from "../Rules/FormEditPersonSections";
