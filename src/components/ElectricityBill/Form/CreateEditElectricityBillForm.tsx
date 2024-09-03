@@ -43,7 +43,7 @@ import {
   useGetCurrentInvoiceQuery,
   useGetDistributorsQuery,
   usePostInvoiceMutation,
-  useFetchInvoicesQuery
+  useFetchInvoicesQuery,
 } from "@/api";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { useSession } from "next-auth/react";
@@ -106,7 +106,7 @@ const CreateEditEnergyBillForm = () => {
   );
   const { data: currentInvoice, refetch: refetchCurrentInvoice } =
     useGetCurrentInvoiceQuery(currentInvoiceId || skipToken);
-  
+
   const { data: invoices } = useFetchInvoicesQuery(
     activeConsumerUnitId || skipToken
   );
@@ -131,6 +131,10 @@ const CreateEditEnergyBillForm = () => {
   const offPeakConsumptionInKwh = watch("offPeakConsumptionInKwh");
   const peakMeasuredDemandInKw = watch("peakMeasuredDemandInKw");
   const offPeakMeasuredDemandInKw = watch("offPeakMeasuredDemandInKw");
+
+  const cardTitleStyles: CardTitleStyle = {
+    marginBottom: "15px",
+  };
 
   useEffect(() => {
     reset();
@@ -376,8 +380,7 @@ const CreateEditEnergyBillForm = () => {
 
     if (invoices && year in invoices) {
       return invoices[year].some(
-        (invoice) =>
-          invoice.month === month && !invoice.isEnergyBillPending
+        (invoice) => invoice.month === month && !invoice.isEnergyBillPending
       );
     }
     return false;
@@ -398,7 +401,9 @@ const CreateEditEnergyBillForm = () => {
     () => (
       <>
         <Grid item xs={8}>
-          <Typography variant="h5"  style={{ marginBottom: '13px' }} >Fatura</Typography>
+          <Typography variant="h5" style={cardTitleStyles}>
+            Fatura
+          </Typography>
         </Grid>
         <Grid item xs={12} mt={1}>
           <Controller
@@ -438,14 +443,19 @@ const CreateEditEnergyBillForm = () => {
                     earliestContract.startDate
                   );
 
-                  const contractStartDateMonth = (contractStartDate.getMonth())
-                  const contractStartDateYear = (contractStartDate.getFullYear())
+                  const contractStartDateMonth = contractStartDate.getMonth();
+                  const contractStartDateYear = contractStartDate.getFullYear();
 
-                  const fixedDate = new Date(`${contractStartDateYear}/${contractStartDateMonth + 2}`);
-                  
-                  const options = { year: 'numeric', month: 'long' };
-                  const formattedDate = fixedDate.toLocaleDateString('pt-BR', options);
-                  
+                  const fixedDate = new Date(
+                    `${contractStartDateYear}/${contractStartDateMonth + 2}`
+                  );
+
+                  const options = { year: "numeric", month: "long" };
+                  const formattedDate = fixedDate.toLocaleDateString(
+                    "pt-BR",
+                    options
+                  );
+
                   const message = `Selecione uma data a partir de ${formattedDate}. Não existem contratos registrados antes disso.`;
 
                   if (selectedDate <= contractStartDate) {
@@ -622,7 +632,7 @@ const CreateEditEnergyBillForm = () => {
               name="peakMeasuredDemandInKw"
               rules={{
                 validate: (value) => {
-                  if (contract?.tariffFlag !== 'G' && !value) {
+                  if (contract?.tariffFlag !== "G" && !value) {
                     return "Preencha este campo";
                   }
                 },
@@ -638,7 +648,7 @@ const CreateEditEnergyBillForm = () => {
                 <NumericFormat
                   value={value}
                   customInput={TextField}
-                  label={contract?.tariffFlag === 'G' ? 'Ponta' : 'Ponta *'}
+                  label={contract?.tariffFlag === "G" ? "Ponta" : "Ponta *"}
                   fullWidth
                   InputProps={{
                     endAdornment: (
@@ -655,7 +665,10 @@ const CreateEditEnergyBillForm = () => {
                   decimalSeparator=","
                   thousandSeparator={"."}
                   error={Boolean(error)}
-                  helperText={error?.message ?? (contract?.tariffFlag !== 'G' ? "" : "Campo opcional")}
+                  helperText={
+                    error?.message ??
+                    (contract?.tariffFlag !== "G" ? "" : "Campo opcional")
+                  }
                   onValueChange={(values) => onChange(values.floatValue)}
                   onBlur={onBlur}
                 />
@@ -707,18 +720,16 @@ const CreateEditEnergyBillForm = () => {
         </Grid>
       </>
     ),
-    [
-      control,
-      activeConsumerUnitId,
-      contract?.tariffFlag,
-    ]
+    [control, activeConsumerUnitId, contract?.tariffFlag]
   );
 
   const MeasuredConsumption = useCallback(
     () => (
       <>
         <Grid item xs={10}>
-          <Typography variant="h5" style={{ marginBottom: '16px' }}>Consumo medido</Typography>
+          <Typography variant="h5" style={cardTitleStyles}>
+            Consumo medido
+          </Typography>
         </Grid>
 
         <Grid container spacing={2}>
