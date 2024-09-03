@@ -31,7 +31,7 @@ const defaultValues: EditPersonForm = {
   type: UserRole.UNIVERSITY_USER,
 };
 
-const EditPersonForm = () => {
+const EditPersonComponent = () => {
   const dispatch = useDispatch();
   const isEditFormOpen = useSelector(selectIsPersonEditFormOpen);
   const [shouldShowCancelDialog, setShouldShowCancelDialog] = useState(false);
@@ -154,4 +154,4 @@ const EditPersonForm = () => {
   );
 };
 
-export default EditPersonForm;
+export default EditPersonComponent;

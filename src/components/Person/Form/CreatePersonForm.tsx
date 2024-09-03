@@ -35,7 +35,7 @@ const defaultValues: CreatePersonFormType = {
   type: UserRole.UNIVERSITY_USER,
 };
 
-const CreatePersonForm = () => {
+const CreatePersonComponent = () => {
   const dispatch = useDispatch();
   const isCreateFormOpen = useSelector(selectIsPersonCreateFormOpen);
   const [shouldShowCancelDialog, setShouldShowCancelDialog] = useState(false);
@@ -154,4 +154,4 @@ const CreatePersonForm = () => {
   );
 };
 
-export default CreatePersonForm;
+export default CreatePersonComponent;
