@@ -1,12 +1,12 @@
 import React from "react";
 import { Grid, TextField, Typography } from "@mui/material";
-import { Controller } from "react-hook-form";
+import { Controller, Control } from "react-hook-form";
 import { EditPersonForm } from "@/types/person";
 import FormFieldError from "@/components/FormFieldError";
 import { isValidEmail } from "@/utils/validations/form-validations";
 
 interface FormEditPersonSectionsProps {
-  control: any;
+  control: Control<EditPersonForm>; // Use o tipo Control com o tipo do formulário
 }
 
 const FormEditPersonSections: React.FC<FormEditPersonSectionsProps> = ({

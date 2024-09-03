@@ -1,4 +1,4 @@
-import { Controller } from "react-hook-form";
+import { Controller, Control, FieldErrors } from "react-hook-form";
 import {
   Autocomplete,
   Box,
@@ -20,10 +20,14 @@ import FormFieldError from "@/components/FormFieldError";
 import { FormInfoAlert } from "@/components/Form/FormInfoAlert";
 
 interface PersonalInformationSectionProps {
-  control: any;
-  errors: any;
+  control: Control<CreatePersonFormType>; // Use o tipo apropriado de Control
+  errors: FieldErrors<CreatePersonFormType>; // Use o tipo apropriado de FieldErrors
   institutionsOptions: { label: string; id: number }[];
-  session: any;
+  session: {
+    user?: {
+      type: UserRole;
+    };
+  };
 }
 
 export const PersonalInformationSection = ({
@@ -163,8 +167,8 @@ export const PersonalInformationSection = ({
 };
 
 interface PerfilSectionProps {
-  control: any;
-  error: any;
+  control: Control<CreatePersonFormType>; // Use o tipo apropriado de Control
+  error: FieldErrors<CreatePersonFormType>["type"]; // Use o tipo apropriado de FieldErrors
 }
 
 export const PerfilSection = ({ control, error }: PerfilSectionProps) => (
