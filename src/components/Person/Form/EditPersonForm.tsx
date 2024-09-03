@@ -24,7 +24,6 @@ import {
 import { isValidEmail } from "@/utils/validations/form-validations";
 import { skipToken } from "@reduxjs/toolkit/query";
 import FormDrawerV2 from "@/components/Form/DrawerV2";
-import FormFieldError from "@/components/FormFieldError";
 
 const defaultValues: EditPersonForm = {
   email: "",
