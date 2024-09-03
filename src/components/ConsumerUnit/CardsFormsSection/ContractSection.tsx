@@ -50,9 +50,7 @@ export default function ContractSection({
   return (
     <>
       <Grid item xs={12}>
-        <Typography variant="h5" style={{ marginBottom: "13px" }}>
-          Contrato
-        </Typography>
+        <Typography variant="h5">Contrato</Typography>
       </Grid>
 
       <Grid item xs={12}>
@@ -61,18 +59,18 @@ export default function ContractSection({
           name="code"
           rules={{
             required: "Preencha este campo",
-            validate: (value) => hasEnoughCaracteresLength(value),
+            validate: hasEnoughCaracteresLength,
           }}
           render={({
             field: { onChange, onBlur, value, ref },
             fieldState: { error },
           }) => (
             <TextField
-              inputRef={ref}
+              ref={ref}
               value={value}
               label="Número da Unidade *"
               placeholder="Número da Unidade Consumidora conforme a fatura"
-              error={!!error}
+              error={Boolean(error)}
               helperText={FormFieldError(
                 error?.message,
                 "Nº ou código da Unidade Consumidora conforme a fatura"
@@ -80,13 +78,12 @@ export default function ContractSection({
               fullWidth
               onChange={(e) => handleNumericInputChange(e, onChange)}
               onBlur={onBlur}
-              inputProps={{ maxLength: 30 }}
             />
           )}
         />
       </Grid>
 
-      <Grid item xs={12}>
+      <Grid item xs={12} mt={0.5}>
         <Controller
           control={control}
           name="distributor"
@@ -98,7 +95,6 @@ export default function ContractSection({
             <FormControl
               sx={{ minWidth: "200px", maxWidth: "100%" }}
               error={!!error}
-              style={{ marginTop: "20px" }}
             >
               <InputLabel>Distribuidora *</InputLabel>
               <Select
@@ -146,7 +142,7 @@ export default function ContractSection({
           name="startDate"
           rules={{
             required: "Insira uma data válida no formato dd/mm/aaaa",
-            validate: (value) => isValidDate(value),
+            validate: isValidDate,
           }}
           render={({ field: { value, onChange }, fieldState: { error } }) => (
             <DatePicker
@@ -194,62 +190,60 @@ export default function ContractSection({
         sx={{ color: "red" }}
       >
         <Grid item xs={8} sm={6}>
-          {control && (
-            <Controller
-              control={control}
-              name={"supplyVoltage"}
-              rules={{
-                required: "Preencha este campo",
-                validate: (v) =>
-                  isInSomeSubgroups(v, subgroupsList?.subgroups || []),
-              }}
-              render={({
-                field: { onChange, onBlur, value },
-                fieldState: { error },
-              }) => (
-                <NumericFormat
-                  value={value}
-                  customInput={TextField}
-                  label="Tensão contratada *"
-                  helperText={FormFieldError(
-                    error?.message,
-                    "Se preciso, converta a tensão de V para kV dividindo o valor por 1.000."
-                  )}
-                  error={!!error}
-                  fullWidth
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">kV</InputAdornment>
-                    ),
-                  }}
-                  type="text"
-                  allowNegative={false}
-                  isAllowed={({ floatValue }) =>
-                    !floatValue || floatValue <= 9999.99
+          <Controller
+            control={control}
+            name={"supplyVoltage"}
+            rules={{
+              required: "Preencha este campo",
+              validate: (v) =>
+                isInSomeSubgroups(v, subgroupsList?.subgroups || []),
+            }}
+            render={({
+              field: { onChange, onBlur, value },
+              fieldState: { error },
+            }) => (
+              <NumericFormat
+                value={value}
+                customInput={TextField}
+                label="Tensão contratada *"
+                helperText={FormFieldError(
+                  error?.message,
+                  "Se preciso, converta a tensão de V para kV dividindo o valor por 1.000."
+                )}
+                error={!!error}
+                fullWidth
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">kV</InputAdornment>
+                  ),
+                }}
+                type="text"
+                allowNegative={false}
+                isAllowed={({ floatValue }) =>
+                  !floatValue || floatValue <= 9999.99
+                }
+                decimalScale={2}
+                decimalSeparator=","
+                thousandSeparator={"."}
+                onValueChange={(values) => {
+                  const newVoltage = values ? values.floatValue : 0;
+                  if (newVoltage === 69) {
+                    setShouldShowGreenDemand(false);
+                  } else if (
+                    newVoltage !== undefined &&
+                    newVoltage >= 88 &&
+                    newVoltage <= 138
+                  ) {
+                    setShouldShowGreenDemand(false);
+                  } else {
+                    setShouldShowGreenDemand(true);
                   }
-                  decimalScale={2}
-                  decimalSeparator=","
-                  thousandSeparator={"."}
-                  onValueChange={(values) => {
-                    const newVoltage = values ? values.floatValue : 0;
-                    if (newVoltage === 69) {
-                      setShouldShowGreenDemand(false);
-                    } else if (
-                      newVoltage !== undefined &&
-                      newVoltage >= 88 &&
-                      newVoltage <= 138
-                    ) {
-                      setShouldShowGreenDemand(false);
-                    } else {
-                      setShouldShowGreenDemand(true);
-                    }
-                    onChange(values.floatValue);
-                  }}
-                  onBlur={onBlur}
-                />
-              )}
-            />
-          )}
+                  onChange(values.floatValue);
+                }}
+                onBlur={onBlur}
+              />
+            )}
+          />
         </Grid>
       </Tooltip>
     </>

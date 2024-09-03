@@ -88,16 +88,21 @@ const ConsumerUnitEditForm = () => {
             return;
           }
 
-          setValue("name", consumerUnit?.name ?? "");
-          setValue("isActive", true);
-          setValue("code", consumerUnit?.code ?? "");
-          setValue("distributor", contract?.distributor);
-          setValue("supplyVoltage", contract?.supplyVoltage);
-          setValue(
-            "shouldShowInstalledPower",
-            consumerUnit?.totalInstalledPower != null
-          );
-          setValue("totalInstalledPower", consumerUnit?.totalInstalledPower);
+          reset({
+            name: consumerUnit?.name ?? "",
+            isActive: true,
+            code: consumerUnit?.code ?? "",
+            distributor: contract?.distributor,
+            supplyVoltage: contract?.supplyVoltage,
+            shouldShowInstalledPower: consumerUnit?.totalInstalledPower != null,
+            totalInstalledPower: consumerUnit?.totalInstalledPower,
+            peakContractedDemandInKw: contract?.peakContractedDemandInKw,
+            offPeakContractedDemandInKw: contract?.offPeakContractedDemandInKw,
+            startDate: new Date(contract?.startDate).setDate(
+              new Date(contract?.startDate).getDate() + 1
+            ),
+            tariffFlag: contract?.tariffFlag ?? "B",
+          });
 
           setShouldShowGreenDemand(
             !(
@@ -105,18 +110,6 @@ const ConsumerUnitEditForm = () => {
               (contract?.supplyVoltage >= 88 && contract?.supplyVoltage <= 138)
             )
           );
-          setValue(
-            "peakContractedDemandInKw",
-            contract?.peakContractedDemandInKw
-          );
-          setValue(
-            "offPeakContractedDemandInKw",
-            contract?.offPeakContractedDemandInKw
-          );
-
-          const currentDate = new Date(contract?.startDate);
-          currentDate.setDate(currentDate.getDate() + 1);
-          setValue("startDate", currentDate);
         } catch (err) {
           console.error("Failed to refetch:", err);
         }
@@ -126,7 +119,7 @@ const ConsumerUnitEditForm = () => {
         fetchData();
       }
     }
-  }, [isEditFormOpen, consumerUnit, contract, setValue]);
+  }, [isEditFormOpen, consumerUnit, contract, refetchConsumerUnit, reset]);
 
   useEffect(() => {
     setValue("isActive", isActive);
@@ -155,9 +148,10 @@ const ConsumerUnitEditForm = () => {
     () => setShouldShowCancelDialog(false),
     []
   );
+
   const handleDiscardForm = useCallback(() => {
     handleCloseDialog();
-    reset();
+    reset(defaultValues);
     dispatch(setIsConsumerUnitEditFormOpen(false));
   }, [dispatch, handleCloseDialog, reset]);
 
@@ -264,14 +258,14 @@ const ConsumerUnitEditForm = () => {
       {shouldShowCancelDialog && (
         <FormWarningDialog
           open={shouldShowCancelDialog}
-          handleClose={handleCloseDialog}
-          handleDiscard={handleDiscardForm}
+          onClose={handleCloseDialog}
+          onDiscard={handleDiscardForm}
         />
       )}
       {shouldShowDistributorFormDialog && (
         <DistributorCreateFormDialog
           open={shouldShowDistributorFormDialog}
-          handleClose={handleCloseDistributorFormDialog}
+          onClose={handleCloseDistributorFormDialog}
           handleSave={() => setShouldShowDistributorFormDialog(false)}
         />
       )}
