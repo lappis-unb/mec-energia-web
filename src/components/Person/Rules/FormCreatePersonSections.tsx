@@ -168,10 +168,9 @@ export const PersonalInformationSection = ({
 
 interface PerfilSectionProps {
   control: Control<CreatePersonFormType>; // Use o tipo apropriado de Control
-  error: FieldErrors<CreatePersonFormType>["type"]; // Use o tipo apropriado de FieldErrors
 }
 
-export const PerfilSection = ({ control, error }: PerfilSectionProps) => (
+export const PerfilSection = ({ control }: PerfilSectionProps) => (
   <>
     <Grid item xs={12}>
       <Typography variant="h5">Perfil</Typography>
@@ -191,7 +190,7 @@ export const PerfilSection = ({ control, error }: PerfilSectionProps) => (
                 alignItems="self-start"
               >
                 <FormControlLabel
-                  value="university_user"
+                  value={UserRole.UNIVERSITY_USER}
                   control={<Radio />}
                   label="Operacional"
                 />
@@ -208,7 +207,7 @@ export const PerfilSection = ({ control, error }: PerfilSectionProps) => (
                 alignItems="self-start"
               >
                 <FormControlLabel
-                  value="university_admin"
+                  value={UserRole.UNIVERSITY_ADMIN}
                   control={<Radio />}
                   label="Gestão"
                 />
