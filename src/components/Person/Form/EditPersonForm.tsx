@@ -19,7 +19,7 @@ import {
   useGetPersonQuery,
   useGetUniversityPersonQuery,
 } from "@/api";
-import { skipToken } from "@reduxjs/toolkit/dist/query";
+import { skipToken } from "@reduxjs/toolkit/query";
 import FormDrawerV2 from "@/components/Form/DrawerV2";
 import PersonalInformationSection from "../Rules/FormEditPersonSections";
 
@@ -65,10 +65,11 @@ const EditPersonForm = () => {
     const fetchData = async () => {
       try {
         const { data: currentPerson } = await refetchPerson();
-        if (!currentPerson) return;
-        setValue("firstName", currentPerson.firstName);
-        setValue("lastName", currentPerson.lastName);
-        setValue("email", currentPerson.email);
+        if (currentPerson) {
+          setValue("firstName", currentPerson.firstName);
+          setValue("lastName", currentPerson.lastName);
+          setValue("email", currentPerson.email);
+        }
       } catch (err) {
         console.error("Failed to refetch:", err);
       }
@@ -77,7 +78,7 @@ const EditPersonForm = () => {
     if (isEditFormOpen) {
       fetchData();
     }
-  }, [currentPerson, isEditFormOpen, setValue]);
+  }, [currentPerson, isEditFormOpen, setValue, refetchPerson]);
 
   const handleDiscardForm = useCallback(() => {
     handleCloseDialog();
@@ -90,10 +91,9 @@ const EditPersonForm = () => {
   };
 
   const onSubmitHandler: SubmitHandler<EditPersonForm> = async (data) => {
-    const { email, firstName, lastName } = data;
-
     if (!currentPerson || !universityPerson) return;
 
+    const { email, firstName, lastName } = data;
     const body: EditPersonRequestPayload = {
       email,
       firstName,
@@ -103,11 +103,8 @@ const EditPersonForm = () => {
       id: currentPerson.id,
     };
 
-    await editPerson(body);
-  };
-
-  const handleNotification = useCallback(() => {
-    if (isSuccess) {
+    try {
+      await editPerson(body).unwrap();
       dispatch(
         setIsSuccessNotificationOpen({
           isOpen: true,
@@ -115,22 +112,24 @@ const EditPersonForm = () => {
         })
       );
       reset();
-      resetMutation();
       dispatch(setIsPersonEditFormOpen(false));
-    } else if (isError) {
+    } catch {
       dispatch(
         setIsErrorNotificationOpen({
           isOpen: true,
           text: "Erro ao editar pessoa.",
         })
       );
+    } finally {
       resetMutation();
     }
-  }, [dispatch, isError, isSuccess, reset, resetMutation]);
+  };
 
   useEffect(() => {
-    handleNotification();
-  }, [handleNotification, isSuccess, isError]);
+    if (isSuccess || isError) {
+      resetMutation(); // Reset mutation state after handling notifications
+    }
+  }, [isSuccess, isError, resetMutation]);
 
   return (
     <Fragment>
@@ -141,16 +140,21 @@ const EditPersonForm = () => {
         handleSubmitDrawer={handleSubmit(onSubmitHandler)}
         isLoading={isLoading}
         title="Editar Pessoa"
-        header={<></>}
-        sections={[<PersonalInformationSection key={0} control={control} />]}
+        sections={[
+          <PersonalInformationSection
+            key={0}
+            control={control}
+            errors={errors}
+            session={{ user: { type: UserRole.UNIVERSITY_USER } }} // Example session object
+          />,
+        ]}
       />
-
       <FormWarningDialog
         open={shouldShowCancelDialog}
         entity={"registro"}
         onClose={handleCloseDialog}
         onDiscard={handleDiscardForm}
-        type="update"
+        type="edit"
       />
     </Fragment>
   );

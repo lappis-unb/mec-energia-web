@@ -93,11 +93,9 @@ const CreatePersonForm = () => {
       type,
       university: universityId,
     };
-    await createPerson(body);
-  };
 
-  const handleNotification = useCallback(() => {
-    if (isSuccess) {
+    try {
+      await createPerson(body).unwrap();
       dispatch(
         setIsSuccessNotificationOpen({
           isOpen: true,
@@ -105,22 +103,24 @@ const CreatePersonForm = () => {
         })
       );
       reset();
-      resetMutation();
       dispatch(setIsPersonCreateFormOpen(false));
-    } else if (isError) {
+    } catch {
       dispatch(
         setIsErrorNotificationOpen({
           isOpen: true,
           text: "Erro ao adicionar pessoa.",
         })
       );
+    } finally {
       resetMutation();
     }
-  }, [dispatch, isError, isSuccess, reset, resetMutation]);
+  };
 
   useEffect(() => {
-    handleNotification();
-  }, [handleNotification, isSuccess, isError]);
+    if (isSuccess || isError) {
+      resetMutation(); // Reset mutation state after handling notifications
+    }
+  }, [isSuccess, isError, resetMutation]);
 
   return (
     <Fragment>
