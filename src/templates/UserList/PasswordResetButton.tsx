@@ -38,7 +38,7 @@ const UserListPasswordResetButton = ({ id, userName }: UserListPasswordResetButt
 
   return (
     <>
-      <IconButton onClick={handleOnPasswordResetButtonClick} disabled={isLoading}>
+      <IconButton style={{ color: '#000000DE' }} onClick={handleOnPasswordResetButtonClick} disabled={isLoading}>
         <LockResetRounded />
       </IconButton>
       <PasswordResetConfirmationDialog

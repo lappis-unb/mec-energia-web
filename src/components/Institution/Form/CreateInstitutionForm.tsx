@@ -21,6 +21,7 @@ import {
   CreateInstitutionRequestPayload,
 } from "@/types/institution";
 import FormDrawerV2 from "@/components/Form/DrawerV2";
+import FormFieldError from "@/components/FormFieldError";
 
 const defaultValues: CreateInstitutionForm = {
   acronym: "",
@@ -108,6 +109,12 @@ const CreateInstitutionForm = () => {
     return true;
   };
 
+  const noSpecialCharacters = (value: CreateInstitutionForm["name"]) => {
+    const regex = /^[a-zA-Z\s\u00C0-\u017F]*$/;
+    if (!regex.test(value)) return "Insira somente letras, sem números ou caracteres especiais";
+    return true;
+  };
+
   const InstitutionSection = useCallback(() => (
     <>
       <Grid item xs={12}>
@@ -132,7 +139,7 @@ const CreateInstitutionForm = () => {
               label="Sigla *"
               placeholder="Ex.: UFX"
               error={Boolean(error)}
-              helperText={error?.message ?? " "}
+              helperText={FormFieldError(error?.message)}
               fullWidth
               onChange={onChange}
               onBlur={onBlur}
@@ -141,13 +148,16 @@ const CreateInstitutionForm = () => {
         />
       </Grid>
 
-      <Grid item xs={12}>
+      <Grid item xs={12} mt={0.3}>
         <Controller
           control={control}
           name="name"
           rules={{
             required: "Preencha este campo",
-            validate: hasEnoughCaracteresLength,
+            validate: {
+              length: hasEnoughCaracteresLength,
+              noSpecialChars: noSpecialCharacters,
+            },
           }}
           render={({
             field: { onChange, onBlur, value, ref },
@@ -159,7 +169,7 @@ const CreateInstitutionForm = () => {
               label="Nome *"
               placeholder="Ex.: Universidade Federal de ..."
               error={Boolean(error)}
-              helperText={error?.message ?? " "}
+              helperText={FormFieldError(error?.message)}
               fullWidth
               onChange={onChange}
               onBlur={onBlur}
@@ -168,7 +178,7 @@ const CreateInstitutionForm = () => {
         />
       </Grid>
 
-      <Grid item xs={12}>
+      <Grid item xs={12} mt={0.3}>
         <Controller
           control={control}
           name="cnpj"
@@ -191,7 +201,7 @@ const CreateInstitutionForm = () => {
               format="##.###.###/####-##"
               placeholder="Ex.: 12345678000167"
               error={Boolean(error)}
-              helperText={error?.message ?? " "}
+              helperText={FormFieldError(error?.message)}
               fullWidth
               onChange={onChange}
               onBlur={onBlur}
@@ -200,8 +210,7 @@ const CreateInstitutionForm = () => {
         />
       </Grid>
     </>
-
-  ), [control])
+  ), [control]);
 
   return (
     <Fragment>
@@ -214,7 +223,6 @@ const CreateInstitutionForm = () => {
         title="Adicionar Instituição"
         header={<></>}
         sections={[<InstitutionSection key={0} />]}
-
       />
       <FormWarningDialog
         open={shouldShowCancelDialog}
@@ -224,7 +232,7 @@ const CreateInstitutionForm = () => {
         type="create"
       />
     </Fragment>
-  )
+  );
 };
 
 export default CreateInstitutionForm;

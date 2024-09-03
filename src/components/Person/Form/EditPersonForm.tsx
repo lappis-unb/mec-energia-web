@@ -22,8 +22,9 @@ import {
   useGetUniversityPersonQuery,
 } from "@/api";
 import { isValidEmail } from "@/utils/validations/form-validations";
-import { skipToken } from "@reduxjs/toolkit/dist/query";
+import { skipToken } from "@reduxjs/toolkit/query";
 import FormDrawerV2 from "@/components/Form/DrawerV2";
+import FormFieldError from "@/components/FormFieldError";
 
 const defaultValues: EditPersonForm = {
   email: "",
@@ -33,7 +34,7 @@ const defaultValues: EditPersonForm = {
   type: UserRole.UNIVERSITY_USER,
 };
 
-const EditPersonForm = () => {
+const EditPersonComponent = () => {
   const dispatch = useDispatch();
   const isEditFormOpen = useSelector(selectIsPersonEditFormOpen);
   const [shouldShowCancelDialog, setShouldShowCancelDialog] = useState(false);
@@ -265,4 +266,4 @@ const EditPersonForm = () => {
   );
 };
 
-export default EditPersonForm;
+export default EditPersonComponent;

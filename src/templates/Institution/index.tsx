@@ -56,6 +56,7 @@ const InstitutionsTemplate = () => {
             >
               <TableCell>
                 <IconButton
+                  style={{ color: '#000000DE' }}
                   onClick={() =>
                     handleToggleActivation(
                       institution.id,

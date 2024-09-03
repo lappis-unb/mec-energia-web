@@ -38,8 +38,9 @@ import { useCreatePersonMutation, useGetAllInstitutionQuery } from "@/api";
 import { isValidEmail } from "@/utils/validations/form-validations";
 import { FormInfoAlert } from "@/components/Form/FormInfoAlert";
 import FormDrawerV2 from "@/components/Form/DrawerV2";
+import FormFieldError from "@/components/FormFieldError";
 
-const defaultValues: CreatePersonForm = {
+const defaultFormValues: CreatePersonForm = {
   email: "",
   firstName: "",
   lastName: "",
@@ -47,7 +48,7 @@ const defaultValues: CreatePersonForm = {
   type: UserRole.UNIVERSITY_USER,
 };
 
-const CreatePersonForm = () => {
+const CreatePersonComponent = () => {
   const dispatch = useDispatch();
   const isCreateFormOpen = useSelector(selectIsPersonCreateFormOpen);
   const [shouldShowCancelDialog, setShouldShowCancelDialog] = useState(false);
@@ -57,7 +58,7 @@ const CreatePersonForm = () => {
     { isError, isSuccess, isLoading, reset: resetMutation },
   ] = useCreatePersonMutation();
   const { data: session } = useSession();
-  const form = useForm({ defaultValues });
+  const form = useForm({ defaultValues: defaultFormValues });
   const {
     control,
     reset,
@@ -375,4 +376,4 @@ const CreatePersonForm = () => {
   );
 };
 
-export default CreatePersonForm;
+export default CreatePersonComponent;

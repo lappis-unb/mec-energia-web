@@ -50,6 +50,7 @@ import { useSession } from "next-auth/react";
 import { DistributorPropsTariffs } from "@/types/distributor";
 import { sendFormattedDate } from "@/utils/date";
 import FormDrawerV2 from "@/components/Form/DrawerV2";
+import { minimumDemand } from "@/utils/tariff";
 
 const defaultValues: CreateAndEditEnergyBillForm = {
   date: new Date(),
@@ -636,10 +637,7 @@ const CreateEditEnergyBillForm = () => {
                     return "Preencha este campo";
                   }
                 },
-                min: {
-                  value: 0.1,
-                  message: "Insira um valor maior que 0",
-                },
+                min: minimumDemand,
               }}
               render={({
                 field: { onChange, onBlur, value },
@@ -681,10 +679,7 @@ const CreateEditEnergyBillForm = () => {
               name="offPeakMeasuredDemandInKw"
               rules={{
                 required: "Preencha este campo",
-                min: {
-                  value: 0.1,
-                  message: "Insira um valor maior que 0",
-                },
+                min: minimumDemand,
               }}
               render={({
                 field: { onChange, onBlur, value },
@@ -739,10 +734,7 @@ const CreateEditEnergyBillForm = () => {
               name="peakConsumptionInKwh"
               rules={{
                 required: "Preencha este campo",
-                min: {
-                  value: 0.1,
-                  message: "Insira um valor maior que 0",
-                },
+                min: minimumDemand,
               }}
               render={({
                 field: { onChange, onBlur, value },
@@ -781,10 +773,7 @@ const CreateEditEnergyBillForm = () => {
               name="offPeakConsumptionInKwh"
               rules={{
                 required: "Preencha este campo",
-                min: {
-                  value: 0.1,
-                  message: "Insira um valor maior que 0",
-                },
+                min: minimumDemand,
               }}
               render={({
                 field: { onChange, onBlur, value },
