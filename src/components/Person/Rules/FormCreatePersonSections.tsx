@@ -28,7 +28,6 @@ interface PersonalInformationSectionProps {
 
 export const PersonalInformationSection = ({
   control,
-  errors,
   institutionsOptions,
   session,
 }: PersonalInformationSectionProps) => {

@@ -127,34 +127,28 @@ const EditPersonForm = () => {
 
   useEffect(() => {
     if (isSuccess || isError) {
-      resetMutation(); // Reset mutation state after handling notifications
+      resetMutation();
     }
   }, [isSuccess, isError, resetMutation]);
 
   return (
     <Fragment>
       <FormDrawerV2
+        header={null}
         errorsLength={Object.keys(errors).length}
         open={isEditFormOpen}
         handleCloseDrawer={handleCancelEdition}
         handleSubmitDrawer={handleSubmit(onSubmitHandler)}
         isLoading={isLoading}
         title="Editar Pessoa"
-        sections={[
-          <PersonalInformationSection
-            key={0}
-            control={control}
-            errors={errors}
-            session={{ user: { type: UserRole.UNIVERSITY_USER } }} // Example session object
-          />,
-        ]}
+        sections={[<PersonalInformationSection key={0} control={control} />]}
       />
       <FormWarningDialog
         open={shouldShowCancelDialog}
         entity={"registro"}
         onClose={handleCloseDialog}
         onDiscard={handleDiscardForm}
-        type="edit"
+        type="update"
       />
     </Fragment>
   );

@@ -57,7 +57,7 @@ const CreatePersonForm = () => {
       institutions?.map((institution) => ({
         label: institution.name,
         id: institution.id,
-      })),
+      })) || [],
     [institutions]
   );
 
@@ -118,13 +118,14 @@ const CreatePersonForm = () => {
 
   useEffect(() => {
     if (isSuccess || isError) {
-      resetMutation(); // Reset mutation state after handling notifications
+      resetMutation();
     }
   }, [isSuccess, isError, resetMutation]);
 
   return (
     <Fragment>
       <FormDrawerV2
+        header={null}
         errorsLength={Object.keys(errors).length}
         open={isCreateFormOpen}
         handleCloseDrawer={handleCancelEdition}
