@@ -18,6 +18,8 @@ import { TokenStatus } from "@/types/app";
 import { signIn } from "next-auth/react";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import { validatePassword } from "@/utils/validations/form-validations";
+
 
 const defaultValues: ConfirmResetPasswordPayload = {
   newPassword: "",
@@ -109,21 +111,16 @@ const DefinePasswordPage: NextPage = () => {
 
   useEffect(() => {
     if (password) {
-      setIsValidPassword({
-        hasLetter: /[a-zA-Z]/.test(password),
-        hasNumber: /[0-9]/.test(password),
-        hasSpecialChar: /[!@#$%^&*(),.?":{}|<>]/.test(password),
-        minLength: password.length >= 8
-      });
+    setIsValidPassword(validatePassword(password));
     } else {
-      setIsValidPassword({
+    setIsValidPassword({
         hasLetter: null,
         hasNumber: null,
         hasSpecialChar: null,
-        minLength: null
-      });
+        minLength: null,
+    });
     }
-  }, [password]);
+}, [password]);
 
   const handleOnSubmitNewPassword: SubmitHandler<ConfirmResetPasswordPayload> = async ({
     newPassword,
@@ -251,11 +248,15 @@ const DefinePasswordPage: NextPage = () => {
                       value: 8,
                       message: "A senha deve ter no mínimo 8 caracteres"
                     },
-                    validate: {
-                      hasLetter: value => /[a-zA-Z]/.test(value),
-                      hasNumber: value => /[0-9]/.test(value),
-                      hasSpecialChar: value => /[!@#$%^&*(),.?":{}|<>]/.test(value)
-                    }
+                    validate: (password) => {
+                      const validation = validatePassword(password);
+                      return (
+                          validation.hasLetter &&
+                          validation.hasNumber &&
+                          validation.hasSpecialChar &&
+                          validation.minLength
+                      );
+                  },
                   }}
                   render={({
                     field: { onChange, onBlur, value, ref },

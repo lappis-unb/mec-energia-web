@@ -21,3 +21,12 @@ export const isValidEmail = (email: string) => {
   if (!emailRegex.test(email)) return "Insira um e-mail válido";
   return true;
 };
+
+export const validatePassword = (password: string) => {
+  return {
+    hasLetter: /[a-zA-Z]/.test(password),
+    hasNumber: /[0-9]/.test(password),
+    hasSpecialChar: /[!@#$%^&*(),.?":{}|<>]/.test(password),
+    minLength: password.length >= 8,
+  };
+};
