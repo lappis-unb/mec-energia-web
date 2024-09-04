@@ -237,7 +237,12 @@ const ConsumerUnitEditForm = () => {
         handleCloseDrawer={handleCancelEdition}
         handleSubmitDrawer={handleSubmit(onSubmitHandler)}
         sections={[
-          <ConsumerUnitSection key="consumer-unit" control={control} />,
+          <ConsumerUnitSection
+            key="consumer-unit"
+            control={control}
+            showActiveSwitch={true}
+            consumerUnit={consumerUnit}
+          />,
           <ContractSection
             key="contract"
             control={control}
