@@ -24,6 +24,7 @@ import {
   Typography,
 } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers";
+import Alerta from "@mui/icons-material/Report";
 
 import {
   selectActiveConsumerUnitId,
@@ -306,9 +307,10 @@ const ConsumerUnitRenewContractForm = () => {
                 label="Número da Unidade *"
                 placeholder="Número da Unidade Consumidora conforme a fatura"
                 error={Boolean(error)}
-                helperText={
-                  FormFieldError(error?.message, "Nº ou código da Unidade Consumidora conforme a fatura")
-                }
+                helperText={FormFieldError(
+                  error?.message,
+                  "Nº ou código da Unidade Consumidora conforme a fatura"
+                )}
                 fullWidth
                 onChange={(e) => handleNumericInputChange(e, onChange)}
                 onBlur={onBlur}
@@ -368,7 +370,9 @@ const ConsumerUnitRenewContractForm = () => {
                   </MenuItem>
                 </Select>
 
-                <FormHelperText>{FormFieldError(error?.message)}</FormHelperText>
+                <FormHelperText>
+                  {FormFieldError(error?.message)}
+                </FormHelperText>
               </FormControl>
             )}
           />
@@ -444,9 +448,10 @@ const ConsumerUnitRenewContractForm = () => {
                   value={value}
                   customInput={TextField}
                   label="Tensão contratada *"
-                  helperText={
-                    FormFieldError(error?.message, "Se preciso, converta a tensão de V para kV dividindo o valor por 1.000.")
-                  }
+                  helperText={FormFieldError(
+                    error?.message,
+                    "Se preciso, converta a tensão de V para kV dividindo o valor por 1.000."
+                  )}
                   error={!!error}
                   fullWidth
                   InputProps={{
@@ -614,8 +619,24 @@ const ConsumerUnitRenewContractForm = () => {
                     decimalScale={2}
                     decimalSeparator=","
                     thousandSeparator={"."}
-                    error={Boolean(error)}
-                    helperText={FormFieldError(error?.message)}
+                    helperText={
+                      error ? (
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                          }}
+                        >
+                          <Alerta
+                            style={{ marginRight: "5px" }}
+                            fontSize="small"
+                          />
+                          {error.message}
+                        </div>
+                      ) : (
+                        " "
+                      )
+                    }
                     onValueChange={(values) => onChange(values.floatValue)}
                     onBlur={onBlur}
                   />
@@ -654,7 +675,24 @@ const ConsumerUnitRenewContractForm = () => {
                     decimalSeparator=","
                     thousandSeparator={"."}
                     error={!!error}
-                    helperText={FormFieldError(error?.message)}
+                    helperText={
+                      error ? (
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                          }}
+                        >
+                          <Alerta
+                            style={{ marginRight: "5px" }}
+                            fontSize="small"
+                          />
+                          {error.message}
+                        </div>
+                      ) : (
+                        " "
+                      )
+                    }
                     onValueChange={(values) => onChange(values.floatValue)}
                     onBlur={onBlur}
                   />

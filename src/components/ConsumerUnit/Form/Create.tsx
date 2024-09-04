@@ -23,6 +23,7 @@ import {
 } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers";
 import { NumericFormat } from "react-number-format";
+import Alerta from "@mui/icons-material/Report";
 
 import {
   selectIsConsumerUnitCreateFormOpen,
@@ -79,7 +80,9 @@ const ConsumerUnitCreateForm = () => {
     session?.user?.universityId || skipToken
   );
 
-  const sortedDistributorList = distributorList?.slice().sort((a, b) => a.name.localeCompare(b.name));
+  const sortedDistributorList = distributorList
+    ?.slice()
+    .sort((a, b) => a.name.localeCompare(b.name));
 
   const [
     createConsumerUnit,
@@ -263,7 +266,9 @@ const ConsumerUnitCreateForm = () => {
     () => (
       <>
         <Grid item xs={12}>
-          <Typography variant="h5" style={{ marginBottom: '16px' }} >Unidade Consumidora</Typography>
+          <Typography variant="h5" style={{ marginBottom: "16px" }}>
+            Unidade Consumidora
+          </Typography>
         </Grid>
         <Grid item xs={12}>
           <Controller
@@ -302,7 +307,9 @@ const ConsumerUnitCreateForm = () => {
     () => (
       <>
         <Grid item xs={12}>
-          <Typography variant="h5" style={{ marginBottom: '13px' }}>Contrato</Typography>
+          <Typography variant="h5" style={{ marginBottom: "13px" }}>
+            Contrato
+          </Typography>
         </Grid>
 
         <Grid item xs={12}>
@@ -323,12 +330,10 @@ const ConsumerUnitCreateForm = () => {
                 label="Número da Unidade *"
                 placeholder="Número da Unidade Consumidora conforme a fatura"
                 error={!!error}
-                helperText={
-                  FormFieldError(
-                    error?.message,
-                    "Nº ou código da Unidade Consumidora conforme a fatura"
-                  )
-                }
+                helperText={FormFieldError(
+                  error?.message,
+                  "Nº ou código da Unidade Consumidora conforme a fatura"
+                )}
                 fullWidth
                 onChange={(e) => handleNumericInputChange(e, onChange)}
                 onBlur={onBlur}
@@ -350,7 +355,7 @@ const ConsumerUnitCreateForm = () => {
               <FormControl
                 sx={{ minWidth: "200px", maxWidth: "100%" }}
                 error={!!error}
-                style={{ marginTop: '20px' }}
+                style={{ marginTop: "13px" }}
               >
                 <InputLabel>Distribuidora *</InputLabel>
 
@@ -390,7 +395,9 @@ const ConsumerUnitCreateForm = () => {
                   </MenuItem>
                 </Select>
 
-                <FormHelperText>{FormFieldError(error?.message)}</FormHelperText>
+                <FormHelperText>
+                  {FormFieldError(error?.message)}
+                </FormHelperText>
               </FormControl>
             )}
           />
@@ -420,6 +427,7 @@ const ConsumerUnitCreateForm = () => {
                     }}
                     helperText={FormFieldError(error?.message)}
                     error={!!error}
+                    style={{ marginTop: "13px" }}
                   />
                 )}
                 onChange={onChange}
@@ -466,13 +474,12 @@ const ConsumerUnitCreateForm = () => {
                   value={value}
                   customInput={TextField}
                   label="Tensão contratada *"
-                  helperText={
-                    FormFieldError(
-                      error?.message,
-                      "Se preciso, converta a tensão de V para kV dividindo o valor por 1.000."
-                    )
-                  }
+                  helperText={FormFieldError(
+                    error?.message,
+                    "Se preciso, converta a tensão de V para kV dividindo o valor por 1.000."
+                  )}
                   error={!!error}
+                  style={{ marginTop: "13px" }}
                   fullWidth
                   InputProps={{
                     endAdornment: (
@@ -559,7 +566,9 @@ const ConsumerUnitCreateForm = () => {
                   </Box>
                 </RadioGroup>
 
-                <FormHelperText>{FormFieldError(error?.message)}</FormHelperText>
+                <FormHelperText>
+                  {FormFieldError(error?.message)}
+                </FormHelperText>
               </FormControl>
             )}
           />
@@ -612,7 +621,8 @@ const ConsumerUnitCreateForm = () => {
                 name="peakContractedDemandInKw"
                 rules={{
                   required: "Preencha este campo",
-                  validate: isValueGreaterThenZero,
+                  validate: (value) =>
+                    value > 0 || "O valor deve ser maior que zero",
                 }}
                 render={({
                   field: { onChange, onBlur, value },
@@ -621,7 +631,7 @@ const ConsumerUnitCreateForm = () => {
                   <NumericFormat
                     value={value}
                     customInput={TextField}
-                    label="Dema. Ponta *"
+                    label="Dem. Ponta *"
                     fullWidth
                     InputProps={{
                       endAdornment: (
@@ -637,7 +647,25 @@ const ConsumerUnitCreateForm = () => {
                     decimalSeparator=","
                     thousandSeparator={"."}
                     error={Boolean(error)}
-                    helperText={FormFieldError(error?.message)}
+                    helperText={
+                      error ? (
+                        <div
+                          style={{
+                            marginBottom: "10px",
+                            display: "flex",
+                            alignItems: "center",
+                          }}
+                        >
+                          <Alerta
+                            style={{ marginRight: "5px" }}
+                            fontSize="small"
+                          />
+                          {error.message}
+                        </div>
+                      ) : (
+                        " "
+                      )
+                    }
                     onValueChange={(values) => onChange(values.floatValue)}
                     onBlur={onBlur}
                   />
@@ -676,7 +704,24 @@ const ConsumerUnitCreateForm = () => {
                     decimalSeparator=","
                     thousandSeparator={"."}
                     error={Boolean(error)}
-                    helperText={FormFieldError(error?.message)}
+                    helperText={
+                      error ? (
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                          }}
+                        >
+                          <Alerta
+                            style={{ marginRight: "5px" }}
+                            fontSize="small"
+                          />
+                          {error.message}
+                        </div>
+                      ) : (
+                        " "
+                      )
+                    }
                     onValueChange={(values) => onChange(values.floatValue)}
                     onBlur={onBlur}
                   />
@@ -686,7 +731,8 @@ const ConsumerUnitCreateForm = () => {
             {!shouldShowGreenDemand && (
               <Typography variant="body2" sx={{ px: 2 }}>
                 O valor de tensão contratada inserido é compatível apenas com a
-                modalidade azul
+                modalidade azul O valor de tensão contratada inserido é
+                compatível apenas com a modalidade azul
               </Typography>
             )}
           </Box>
@@ -705,7 +751,7 @@ const ConsumerUnitCreateForm = () => {
             xs={12}
             display="flex"
             flexDirection={"row"}
-            justifyContent={"begin"}
+            justifyContent={"flex-start"}
             alignItems={"center"}
           >
             <Typography variant="h5">Geração de energia</Typography>
@@ -728,6 +774,7 @@ const ConsumerUnitCreateForm = () => {
               )}
             />
           </Grid>
+
           {shouldShowInstalledPower ? (
             <>
               <Grid item xs={12}>
