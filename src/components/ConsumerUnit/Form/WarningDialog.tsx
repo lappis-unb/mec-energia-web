@@ -10,7 +10,7 @@ import {
 interface FormWarningDialogProps {
   open: boolean;
   entity?: string | null;
-  type: "update" | "create"
+  type: "update" | "create";
   onClose: () => void;
   onDiscard: () => void;
 }
@@ -23,7 +23,9 @@ const FormWarningDialog = ({
   onDiscard,
 }: FormWarningDialogProps) => (
   <Dialog open={open} onClick={onClose}>
-    <DialogTitle>{`Descartar ${type == "create" ? entity : "modificações"}?`}</DialogTitle>
+    <DialogTitle>{`Descartar ${
+      type == "create" ? entity : "modificações"
+    }?`}</DialogTitle>
 
     {type == "create" && (
       <DialogContent>
@@ -37,7 +39,6 @@ const FormWarningDialog = ({
       <Button autoFocus onClick={onClose}>
         Continuar editando
       </Button>
-
       <Button onClick={onDiscard}>Descartar</Button>
     </DialogActions>
   </Dialog>

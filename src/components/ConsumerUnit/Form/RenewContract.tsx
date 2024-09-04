@@ -1,60 +1,31 @@
 import { Fragment, useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { isAfter, isFuture, isValid } from "date-fns";
-
-import { Controller, SubmitHandler, useForm } from "react-hook-form";
-import { NumericFormat } from "react-number-format";
-
+import { useForm, SubmitHandler } from "react-hook-form";
+import { useSession } from "next-auth/react";
 import {
-  Box,
-  Button,
-  FormControl,
-  FormControlLabel,
-  FormHelperText,
-  FormLabel,
-  Grid,
-  InputAdornment,
-  InputLabel,
-  MenuItem,
-  Radio,
-  RadioGroup,
-  Select,
-  TextField,
-  Tooltip,
-  Typography,
-} from "@mui/material";
-import { DatePicker } from "@mui/x-date-pickers";
-
+  useGetConsumerUnitQuery,
+  useGetContractQuery,
+  useRenewContractMutation,
+} from "@/api";
 import {
-  selectActiveConsumerUnitId,
-  selectIsConsumerUnitRenewContractFormOpen,
   setIsConsumerUnitRenewContractFormOpen as setIsRenewContractFormOpen,
   setIsErrorNotificationOpen,
   setIsSuccessNotificationOpen,
+  selectIsConsumerUnitRenewContractFormOpen,
+  selectActiveConsumerUnitId,
 } from "@/store/appSlice";
 import {
   RenewContractForm,
   RenewContractRequestPayload,
 } from "@/types/contract";
-import FormWarningDialog from "@/components/ConsumerUnit/Form/WarningDialog";
-import {
-  useGetConsumerUnitQuery,
-  useGetContractQuery,
-  useGetDistributorsQuery,
-  useGetSubgroupsQuery,
-  useRenewContractMutation,
-} from "@/api";
-import { useSession } from "next-auth/react";
-import { DistributorPropsTariffs } from "@/types/distributor";
-import DistributorCreateFormDialog from "@/components/Distributor/Form/CreateForm";
-import { skipToken } from "@reduxjs/toolkit/dist/query";
-import { sendFormattedDate } from "@/utils/date";
-import { getSubgroupsText } from "@/utils/get-subgroup-text";
-import { isInSomeSubgroups } from "@/utils/validations/form-validations";
+import ContractSection from "../CardsFormsSection/ContractSection";
+import ContractedDemandRenew from "../CardsFormsSection/ContractedDemandRenew";
 import FormDrawerV2 from "@/components/Form/DrawerV2";
+import FormWarningDialog from "./WarningDialog";
 import FormConfirmDialog from "./WarningDialogConfirm";
-import FormFieldError from "@/components/FormFieldError";
-import { minimumDemand } from "@/utils/tariff";
+import DistributorCreateFormDialog from "@/components/Distributor/Form/CreateForm";
+import { sendFormattedDate } from "@/utils/date";
+import { skipToken } from "@reduxjs/toolkit/query";
 
 const defaultValues: RenewContractForm = {
   code: "",
@@ -68,48 +39,31 @@ const defaultValues: RenewContractForm = {
 };
 
 const ConsumerUnitRenewContractForm = () => {
-  //Sessão
-  const { data: session } = useSession();
-
-  // Redux
   const dispatch = useDispatch();
   const isRenewContractFormOpen = useSelector(
     selectIsConsumerUnitRenewContractFormOpen
   );
   const activeConsumerUnit = useSelector(selectActiveConsumerUnitId);
-
-  //Requisições Redux Query
-  const { data: subgroupsList } = useGetSubgroupsQuery();
-  const { data: distributorList } = useGetDistributorsQuery(
-    session?.user?.universityId || skipToken
-  );
-
-  const sortedDistributorList = distributorList
-    ?.slice()
-    .sort((a, b) => a.name.localeCompare(b.name));
+  const { data: session } = useSession();
 
   const [
     renewContract,
     { isError, isSuccess, isLoading, reset: resetMutation },
   ] = useRenewContractMutation();
-
   const { data: contract } = useGetContractQuery(
     activeConsumerUnit || skipToken
   );
-
   const { data: consumerUnit } = useGetConsumerUnitQuery(
     activeConsumerUnit || skipToken
   );
 
-  //Estados
   const [shouldShowCancelDialog, setShouldShowCancelDialog] = useState(false);
-  const [showShowConfirmDialog, setShouldShowConfirmDialog] = useState(false);
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [shouldShowDistributorFormDialog, setShouldShowDistributorFormDialog] =
     useState(false);
   const [shouldShowGreenDemand, setShouldShowGreenDemand] = useState(true);
 
   const form = useForm({ mode: "all", defaultValues });
-
   const {
     control,
     reset,
@@ -128,16 +82,10 @@ const ConsumerUnitRenewContractForm = () => {
       setValue("distributor", contract?.distributor ?? "");
       setValue("supplyVoltage", contract?.supplyVoltage ?? "");
 
-      if (contract?.supplyVoltage === 69) {
-        setShouldShowGreenDemand(false);
-      } else if (
-        (contract?.supplyVoltage ?? 0) >= 88 &&
-        (contract?.supplyVoltage ?? 0) <= 138
-      ) {
-        setShouldShowGreenDemand(false);
-      } else {
-        setShouldShowGreenDemand(true);
-      }
+      const supplyVoltage = contract?.supplyVoltage ?? 0;
+      setShouldShowGreenDemand(
+        supplyVoltage !== 69 && (supplyVoltage < 88 || supplyVoltage > 138)
+      );
 
       if (!shouldShowGreenDemand) {
         setValue("peakContractedDemandInKw", getValues("contracted"));
@@ -166,13 +114,10 @@ const ConsumerUnitRenewContractForm = () => {
     isRenewContractFormOpen,
     setValue,
     shouldShowGreenDemand,
-    tariffFlag,
   ]);
 
   useEffect(() => {
-    // Verifica se shouldShowGreenDemand é false
     if (!shouldShowGreenDemand) {
-      // Atualiza o estado tariffFlag para "B" (azul)
       setValue("tariffFlag", "B");
     }
   }, [setValue, shouldShowGreenDemand]);
@@ -181,31 +126,9 @@ const ConsumerUnitRenewContractForm = () => {
     setValue("tariffFlag", contract?.tariffFlag ?? "B");
   }, [contract?.tariffFlag, isRenewContractFormOpen, setValue]);
 
-  // Validações de Formulário
-  const isValidDate = (date: RenewContractForm["startDate"]) => {
-    if (!date || !isValid(date)) {
-      return "Data inválida";
-    }
-
-    if (isFuture(date)) {
-      return "Datas futuras não são permitidas";
-    }
-
-    if (!isAfter(date, new Date("2010"))) {
-      return "Datas antes de 2010 não são permitidas";
-    }
-
-    return true;
-  };
-
-  const hasEnoughCaracteresLength = (value: RenewContractForm["code"]) => {
-    if (value.length < 3) return "Insira ao menos 3 caracteres";
-    return true;
-  };
-
   const handleCloseDialog = () => {
     setShouldShowCancelDialog(false);
-    setShouldShowConfirmDialog(false);
+    setShowConfirmDialog(false);
   };
 
   const handleCancelEdition = () => {
@@ -213,9 +136,9 @@ const ConsumerUnitRenewContractForm = () => {
       setShouldShowCancelDialog(true);
       return;
     }
-
     handleDiscardForm();
   };
+
   const handleDiscardForm = () => {
     handleCloseDialog();
     reset();
@@ -223,7 +146,7 @@ const ConsumerUnitRenewContractForm = () => {
   };
 
   const onSubmitHandler: SubmitHandler<RenewContractForm> = async (data) => {
-    setShouldShowConfirmDialog(false);
+    setShowConfirmDialog(false);
     if (data.tariffFlag === "G") {
       data.offPeakContractedDemandInKw = data.contracted;
       data.peakContractedDemandInKw = data.contracted;
@@ -242,7 +165,6 @@ const ConsumerUnitRenewContractForm = () => {
     await renewContract(body);
   };
 
-  // Notificações
   const handleNotification = useCallback(() => {
     if (isSuccess) {
       dispatch(
@@ -269,410 +191,8 @@ const ConsumerUnitRenewContractForm = () => {
     handleNotification();
   }, [handleNotification, isSuccess, isError]);
 
-  const handleCloseDistributorFormDialog = () => {
+  const handleCloseDistributorFormDialog = () =>
     setShouldShowDistributorFormDialog(false);
-  };
-
-  const handleNumericInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-    onChange: (value: string) => void
-  ) => {
-    const numericValue = e.target.value.replace(/\D/g, "");
-    onChange(numericValue);
-  };
-
-  const Contract = useCallback(
-    () => (
-      <>
-        <Grid item xs={12}>
-          <Typography variant="h5">Contrato</Typography>
-        </Grid>
-
-        <Grid item xs={12}>
-          <Controller
-            control={control}
-            name="code"
-            rules={{
-              required: "Preencha este campo",
-              validate: hasEnoughCaracteresLength,
-            }}
-            render={({
-              field: { onChange, onBlur, value, ref },
-              fieldState: { error },
-            }) => (
-              <TextField
-                ref={ref}
-                value={value}
-                label="Número da Unidade *"
-                placeholder="Número da Unidade Consumidora conforme a fatura"
-                error={Boolean(error)}
-                helperText={
-                  FormFieldError(error?.message, "Nº ou código da Unidade Consumidora conforme a fatura")
-                }
-                fullWidth
-                onChange={(e) => handleNumericInputChange(e, onChange)}
-                onBlur={onBlur}
-              />
-            )}
-          />
-        </Grid>
-
-        <Grid item xs={12} mt={0.5}>
-          <Controller
-            control={control}
-            name="distributor"
-            rules={{ required: "Preencha este campo" }}
-            render={({
-              field: { onChange, onBlur, value, ref },
-              fieldState: { error },
-            }) => (
-              <FormControl
-                sx={{ minWidth: "200px", maxWidth: "100%" }}
-                error={!!error}
-              >
-                <InputLabel>Distribuidora *</InputLabel>
-
-                <Select
-                  ref={ref}
-                  value={value}
-                  label="Distribuidora *"
-                  autoWidth
-                  MenuProps={{
-                    anchorOrigin: {
-                      vertical: "bottom",
-                      horizontal: "left",
-                    },
-                    transformOrigin: {
-                      vertical: "top",
-                      horizontal: "left",
-                    },
-                  }}
-                  onChange={onChange}
-                  onBlur={onBlur}
-                >
-                  {sortedDistributorList?.map(
-                    (distributor: DistributorPropsTariffs) => {
-                      return (
-                        <MenuItem key={distributor.id} value={distributor.id}>
-                          {distributor.name}
-                        </MenuItem>
-                      );
-                    }
-                  )}
-                  <MenuItem>
-                    <Button
-                      onClick={() => setShouldShowDistributorFormDialog(true)}
-                    >
-                      Adicionar
-                    </Button>
-                  </MenuItem>
-                </Select>
-
-                <FormHelperText>{FormFieldError(error?.message)}</FormHelperText>
-              </FormControl>
-            )}
-          />
-        </Grid>
-
-        <Grid item xs={12}>
-          <Controller
-            control={control}
-            name="startDate"
-            rules={{
-              required: "Insira uma data válida no formato dd/mm/aaaa",
-              validate: isValidDate,
-            }}
-            render={({ field: { value, onChange }, fieldState: { error } }) => (
-              <DatePicker
-                value={value}
-                label="Início da vigência *"
-                views={["month", "year"]}
-                minDate={new Date("2010")}
-                disableFuture
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    inputProps={{
-                      ...params.inputProps,
-                      placeholder: "dd/mm/aaaa",
-                    }}
-                    helperText={FormFieldError(error?.message)}
-                    error={!!error}
-                  />
-                )}
-                onChange={onChange}
-              />
-            )}
-          />
-        </Grid>
-
-        <Tooltip
-          componentsProps={{
-            tooltip: {
-              sx: {
-                bgcolor: "warning.main",
-                color: "warning.contrastText",
-                "& .MuiTooltip-arrow": {
-                  color: "warning.main",
-                },
-              },
-            },
-          }}
-          title={
-            <div style={{ whiteSpace: "pre-line" }}>
-              {subgroupsList ? getSubgroupsText(subgroupsList?.subgroups) : ""}
-            </div>
-          }
-          arrow
-          placement="right"
-          sx={{ color: "red" }}
-        >
-          <Grid item xs={8} sm={6}>
-            <Controller
-              control={control}
-              name={"supplyVoltage"}
-              rules={{
-                required: "Preencha este campo",
-                validate: (v) =>
-                  isInSomeSubgroups(v, subgroupsList?.subgroups || []),
-              }}
-              render={({
-                field: { onChange, onBlur, value },
-                fieldState: { error },
-              }) => (
-                <NumericFormat
-                  value={value}
-                  customInput={TextField}
-                  label="Tensão contratada *"
-                  helperText={
-                    FormFieldError(error?.message, "Se preciso, converta a tensão de V para kV dividindo o valor por 1.000.")
-                  }
-                  error={!!error}
-                  fullWidth
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">kV</InputAdornment>
-                    ),
-                  }}
-                  type="text"
-                  allowNegative={false}
-                  isAllowed={({ floatValue }) =>
-                    !floatValue || floatValue <= 9999.99
-                  }
-                  decimalScale={2}
-                  decimalSeparator=","
-                  thousandSeparator={"."}
-                  onValueChange={(values) => {
-                    const newVoltage = values ? values.floatValue : 0;
-                    if (newVoltage === 69) {
-                      setShouldShowGreenDemand(false);
-                    } else if (
-                      newVoltage !== undefined &&
-                      newVoltage >= 88 &&
-                      newVoltage <= 138
-                    ) {
-                      setShouldShowGreenDemand(false);
-                    } else {
-                      setShouldShowGreenDemand(true);
-                    }
-                    onChange(values.floatValue);
-                  }}
-                  onBlur={onBlur}
-                />
-              )}
-            />
-          </Grid>
-        </Tooltip>
-      </>
-    ),
-    [control, distributorList, subgroupsList]
-  );
-
-  const ContractedDemand = useCallback(
-    () => (
-      <>
-        <Grid item xs={12}>
-          <Typography variant="h5">Demanda Contratada</Typography>
-        </Grid>
-
-        <Grid item xs={12}>
-          <Controller
-            control={control}
-            name="tariffFlag"
-            rules={{
-              required: "Preencha este campo",
-              min: minimumDemand,
-            }}
-            render={({ field: { onChange, value }, fieldState: { error } }) => (
-              <FormControl error={!!error}>
-                <FormLabel>Modalidade tarifária *</FormLabel>
-
-                <RadioGroup value={value} onChange={onChange}>
-                  <Box
-                    display={"flex"}
-                    justifyContent="flex-start"
-                    alignItems="center"
-                  >
-                    <FormControlLabel
-                      value="G"
-                      control={<Radio />}
-                      label="Verde"
-                      disabled={!shouldShowGreenDemand}
-                    />
-                    <FormHelperText>(Demanda única)</FormHelperText>
-                  </Box>
-                  <Box
-                    display={"flex"}
-                    justifyContent="flex-start"
-                    alignItems="center"
-                  >
-                    <FormControlLabel
-                      value="B"
-                      control={<Radio />}
-                      label="Azul"
-                    />
-                    <FormHelperText>
-                      (Demanda de ponta e fora ponta)
-                    </FormHelperText>
-                  </Box>
-                </RadioGroup>
-
-                <FormHelperText>{error?.message}</FormHelperText>
-              </FormControl>
-            )}
-          />
-        </Grid>
-
-        {tariffFlag === "G" ? (
-          <Grid item xs={7}>
-            <Controller
-              control={control}
-              name="contracted"
-              rules={{
-                required: "Preencha este campo",
-                min: minimumDemand,
-              }}
-              render={({
-                field: { onChange, onBlur, value },
-                fieldState: { error },
-              }) => (
-                <NumericFormat
-                  value={value}
-                  customInput={TextField}
-                  label="Demanda *"
-                  fullWidth
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">kW</InputAdornment>
-                    ),
-                  }}
-                  type="text"
-                  allowNegative={false}
-                  isAllowed={({ floatValue }) =>
-                    !floatValue || floatValue <= 9999999.99
-                  }
-                  decimalScale={2}
-                  decimalSeparator=","
-                  thousandSeparator={"."}
-                  error={Boolean(error)}
-                  helperText={FormFieldError(error?.message)}
-                  onValueChange={(values) => onChange(values.floatValue)}
-                  onBlur={onBlur}
-                />
-              )}
-            />
-          </Grid>
-        ) : (
-          <Box>
-            <Grid item xs={8}>
-              <Controller
-                control={control}
-                name="peakContractedDemandInKw"
-                rules={{
-                  required: "Preencha este campo",
-                  min: minimumDemand,
-                }}
-                render={({
-                  field: { onChange, onBlur, value },
-                  fieldState: { error },
-                }) => (
-                  <NumericFormat
-                    value={value}
-                    customInput={TextField}
-                    label="Dem. Ponta *"
-                    fullWidth
-                    InputProps={{
-                      endAdornment: (
-                        <InputAdornment position="end">kW</InputAdornment>
-                      ),
-                    }}
-                    type="text"
-                    allowNegative={false}
-                    isAllowed={({ floatValue }) =>
-                      !floatValue || floatValue <= 9999999.99
-                    }
-                    decimalScale={2}
-                    decimalSeparator=","
-                    thousandSeparator={"."}
-                    error={Boolean(error)}
-                    helperText={FormFieldError(error?.message)}
-                    onValueChange={(values) => onChange(values.floatValue)}
-                    onBlur={onBlur}
-                  />
-                )}
-              />
-            </Grid>
-
-            <Grid item xs={8} mt={0.3}>
-              <Controller
-                control={control}
-                name="offPeakContractedDemandInKw"
-                rules={{
-                  required: "Preencha este campo",
-                  min: minimumDemand,
-                }}
-                render={({
-                  field: { onChange, onBlur, value },
-                  fieldState: { error },
-                }) => (
-                  <NumericFormat
-                    value={value}
-                    customInput={TextField}
-                    label="Dem. Fora Ponta *"
-                    fullWidth
-                    InputProps={{
-                      endAdornment: (
-                        <InputAdornment position="end">kW</InputAdornment>
-                      ),
-                    }}
-                    type="text"
-                    allowNegative={false}
-                    isAllowed={({ floatValue }) =>
-                      !floatValue || floatValue <= 9999999.99
-                    }
-                    decimalScale={2}
-                    decimalSeparator=","
-                    thousandSeparator={"."}
-                    error={!!error}
-                    helperText={FormFieldError(error?.message)}
-                    onValueChange={(values) => onChange(values.floatValue)}
-                    onBlur={onBlur}
-                  />
-                )}
-              />
-            </Grid>
-            {!shouldShowGreenDemand && (
-              <Typography variant="body2" sx={{ px: 2 }}>
-                O valor de tensão contratada inserido é compatível apenas com a
-                modalidade azul
-              </Typography>
-            )}
-          </Box>
-        )}
-      </>
-    ),
-    [control, tariffFlag, shouldShowGreenDemand]
-  );
 
   return (
     <Fragment>
@@ -683,8 +203,24 @@ const ConsumerUnitRenewContractForm = () => {
         isLoading={isLoading}
         handleCloseDrawer={handleCancelEdition}
         handleSubmitDrawer={handleSubmit(onSubmitHandler)}
-        header={<></>}
-        sections={[<Contract key={0} />, <ContractedDemand key={1} />]}
+        sections={[
+          <ContractSection
+            key="contract-section"
+            control={control}
+            setShouldShowDistributorFormDialog={
+              setShouldShowDistributorFormDialog
+            }
+            setShouldShowGreenDemand={setShouldShowGreenDemand}
+            session={session}
+          />,
+          <ContractedDemandRenew
+            key="contracted-demand-renew"
+            control={control}
+            tariffFlag={tariffFlag}
+            shouldShowGreenDemand={shouldShowGreenDemand}
+            minimumDemand={0}
+          />,
+        ]}
       />
 
       <FormWarningDialog
@@ -696,7 +232,7 @@ const ConsumerUnitRenewContractForm = () => {
       />
 
       <FormConfirmDialog
-        open={showShowConfirmDialog}
+        open={showConfirmDialog}
         onClose={handleCloseDialog}
         onSave={handleSubmit(onSubmitHandler)}
       />
