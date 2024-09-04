@@ -251,6 +251,7 @@ const ConsumerUnitEditForm = () => {
             }
             setShouldShowGreenDemand={setShouldShowGreenDemand}
             session={session}
+            isEditContract={true}
           />,
           <ContractedDemandSection
             key="contracted-demand"

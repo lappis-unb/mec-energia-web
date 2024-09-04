@@ -11,6 +11,7 @@ import {
   Button,
   Tooltip,
   InputAdornment,
+  Alert,
 } from "@mui/material";
 import { Controller } from "react-hook-form";
 import { NumericFormat } from "react-number-format";
@@ -29,6 +30,7 @@ export default function ContractSection({
   setShouldShowDistributorFormDialog,
   setShouldShowGreenDemand,
   session,
+  isEditContract,
 }) {
   const { data: subgroupsList } = useGetSubgroupsQuery();
   const { data: distributorList } = useGetDistributorsQuery(
@@ -52,6 +54,15 @@ export default function ContractSection({
       <Grid item xs={12}>
         <Typography variant="h5">Contrato</Typography>
       </Grid>
+      {isEditContract && (
+        <Grid item xs={12} marginTop={"10px"} marginBottom={"15px"}>
+          <Alert severity="warning" variant="standard">
+            Modifique o contrato apenas em caso de erro de digitação. Para
+            alterações legais ou novo contrato, use a opção{" "}
+            <strong>Renovar</strong> na tela anterior.
+          </Alert>
+        </Grid>
+      )}
 
       <Grid item xs={12}>
         <Controller
@@ -83,7 +94,7 @@ export default function ContractSection({
         />
       </Grid>
 
-      <Grid item xs={12} mt={0.5}>
+      <Grid item xs={12} mt={2.5}>
         <Controller
           control={control}
           name="distributor"
