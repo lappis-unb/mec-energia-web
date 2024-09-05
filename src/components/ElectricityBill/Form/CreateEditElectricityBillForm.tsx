@@ -50,7 +50,6 @@ import { useSession } from "next-auth/react";
 import { DistributorPropsTariffs } from "@/types/distributor";
 import { sendFormattedDate } from "@/utils/date";
 import FormDrawerV2 from "@/components/Form/DrawerV2";
-import { minimumDemand } from "@/utils/tariff";
 
 const defaultValues: CreateAndEditEnergyBillForm = {
   date: new Date(),
@@ -133,13 +132,41 @@ const CreateEditEnergyBillForm = () => {
   const peakMeasuredDemandInKw = watch("peakMeasuredDemandInKw");
   const offPeakMeasuredDemandInKw = watch("offPeakMeasuredDemandInKw");
 
+  const updateCurrentInvoiceData = useCallback(
+    (
+      currentInvoice: CurrentEnergyBillResponsePayload | undefined = undefined
+    ) => {
+      setValue(
+        "invoiceInReais",
+        currentInvoice?.invoiceInReais?.toString() ?? ""
+      );
+      setValue(
+        "peakConsumptionInKwh",
+        currentInvoice?.peakConsumptionInKwh ?? ""
+      );
+      setValue(
+        "offPeakConsumptionInKwh",
+        currentInvoice?.offPeakConsumptionInKwh ?? ""
+      );
+      setValue(
+        "peakMeasuredDemandInKw",
+        currentInvoice?.peakMeasuredDemandInKw ?? ""
+      );
+      setValue(
+        "offPeakMeasuredDemandInKw",
+        currentInvoice?.offPeakMeasuredDemandInKw ?? ""
+      );
+    },
+    [setValue]
+  );
+
   const cardTitleStyles: CardTitleStyle = {
     marginBottom: "15px",
   };
 
   useEffect(() => {
     reset();
-  }, [isCreateEnergyBillFormOpen]);
+  }, [isCreateEnergyBillFormOpen, reset]);
 
   useEffect(() => {
     if (isEditEnergyBillFormOpen) {
@@ -157,7 +184,11 @@ const CreateEditEnergyBillForm = () => {
         fetchData();
       }
     }
-  }, [isEditEnergyBillFormOpen]);
+  }, [
+    isEditEnergyBillFormOpen,
+    refetchCurrentInvoice,
+    updateCurrentInvoiceData,
+  ]);
 
   useEffect(() => {
     if (month != null || month != undefined) {
@@ -186,6 +217,7 @@ const CreateEditEnergyBillForm = () => {
     isCreateEnergyBillFormOpen,
     isEditEnergyBillFormOpen,
     setValue,
+    updateCurrentInvoiceData,
   ]);
 
   useEffect(() => {
@@ -227,31 +259,6 @@ const CreateEditEnergyBillForm = () => {
     );
     if (distributor) setCurrentDistributor(distributor);
   }, [contract?.distributor, distributors]);
-
-  const updateCurrentInvoiceData = (
-    currentInvoice: CurrentEnergyBillResponsePayload | undefined = undefined
-  ) => {
-    setValue(
-      "invoiceInReais",
-      currentInvoice?.invoiceInReais?.toString() ?? ""
-    );
-    setValue(
-      "peakConsumptionInKwh",
-      currentInvoice?.peakConsumptionInKwh ?? ""
-    );
-    setValue(
-      "offPeakConsumptionInKwh",
-      currentInvoice?.offPeakConsumptionInKwh ?? ""
-    );
-    setValue(
-      "peakMeasuredDemandInKw",
-      currentInvoice?.peakMeasuredDemandInKw ?? ""
-    );
-    setValue(
-      "offPeakMeasuredDemandInKw",
-      currentInvoice?.offPeakMeasuredDemandInKw ?? ""
-    );
-  };
 
   const handleCancelEdition = () => {
     if (isDirty) {
@@ -374,18 +381,21 @@ const CreateEditEnergyBillForm = () => {
     handleNotification();
   }, [handleNotification, isPostInvoiceSuccess, isPostInvoiceError]);
 
-  const checkIfInvoiceExists = (year: number, month: number): boolean => {
-    if (isEditEnergyBillFormOpen) {
-      return false;
-    }
+  const checkIfInvoiceExists = useCallback(
+    (year: number, month: number): boolean => {
+      if (isEditEnergyBillFormOpen) {
+        return false;
+      }
 
-    if (invoices && year in invoices) {
-      return invoices[year].some(
-        (invoice) => invoice.month === month && !invoice.isEnergyBillPending
-      );
-    }
-    return false;
-  };
+      if (invoices && year in invoices) {
+        return invoices[year].some(
+          (invoice) => invoice.month === month && !invoice.isEnergyBillPending
+        );
+      }
+      return false;
+    },
+    [invoices, isEditEnergyBillFormOpen]
+  );
 
   const Header = useCallback(
     () => (
@@ -616,6 +626,8 @@ const CreateEditEnergyBillForm = () => {
       currentInvoice,
       isCreateEnergyBillFormOpen,
       isEditEnergyBillFormOpen,
+      checkIfInvoiceExists,
+      contracts,
     ]
   );
 
@@ -637,7 +649,10 @@ const CreateEditEnergyBillForm = () => {
                     return "Preencha este campo";
                   }
                 },
-                min: minimumDemand,
+                min: {
+                  value: 0.1,
+                  message: "Insira um valor maior que 0",
+                },
               }}
               render={({
                 field: { onChange, onBlur, value },
@@ -679,7 +694,10 @@ const CreateEditEnergyBillForm = () => {
               name="offPeakMeasuredDemandInKw"
               rules={{
                 required: "Preencha este campo",
-                min: minimumDemand,
+                min: {
+                  value: 0.1,
+                  message: "Insira um valor maior que 0",
+                },
               }}
               render={({
                 field: { onChange, onBlur, value },
@@ -715,7 +733,7 @@ const CreateEditEnergyBillForm = () => {
         </Grid>
       </>
     ),
-    [control, activeConsumerUnitId, contract?.tariffFlag]
+    [control, contract?.tariffFlag]
   );
 
   const MeasuredConsumption = useCallback(
@@ -734,7 +752,10 @@ const CreateEditEnergyBillForm = () => {
               name="peakConsumptionInKwh"
               rules={{
                 required: "Preencha este campo",
-                min: minimumDemand,
+                min: {
+                  value: 0.1,
+                  message: "Insira um valor maior que 0",
+                },
               }}
               render={({
                 field: { onChange, onBlur, value },
@@ -773,7 +794,10 @@ const CreateEditEnergyBillForm = () => {
               name="offPeakConsumptionInKwh"
               rules={{
                 required: "Preencha este campo",
-                min: minimumDemand,
+                min: {
+                  value: 0.1,
+                  message: "Insira um valor maior que 0",
+                },
               }}
               render={({
                 field: { onChange, onBlur, value },
