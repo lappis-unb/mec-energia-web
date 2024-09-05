@@ -152,7 +152,7 @@ const ConsumerUnitCreateForm = () => {
   };
 
   const cardTitleStyles: CardTitleStyle = {
-    marginBottom: "16px",
+    marginBottom: "15px",
   };
 
   const isValueGreaterThenZero = (
@@ -197,9 +197,6 @@ const ConsumerUnitCreateForm = () => {
           code: data.code,
           isActive: true,
           university: session?.user.universityId || 0,
-          totalInstalledPower: !data.shouldShowInstalledPower
-            ? null
-            : data.totalInstalledPower,
           totalInstalledPower: !data.shouldShowInstalledPower
             ? null
             : data.totalInstalledPower,

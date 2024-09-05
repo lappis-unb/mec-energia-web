@@ -24,6 +24,7 @@ import {
 import { isValidEmail } from "@/utils/validations/form-validations";
 import { skipToken } from "@reduxjs/toolkit/query";
 import FormDrawerV2 from "@/components/Form/DrawerV2";
+import FormFieldError from "@/components/FormFieldError";
 
 const defaultValues: EditPersonForm = {
   email: "",
@@ -174,7 +175,7 @@ const EditPersonComponent = () => {
                 value={value}
                 label="Nome *"
                 error={Boolean(error)}
-                helperText={error?.message ?? " "}
+                helperText={FormFieldError(error?.message)}
                 fullWidth
                 onChange={onChange}
                 onBlur={onBlur}
@@ -200,7 +201,7 @@ const EditPersonComponent = () => {
                 value={value}
                 label="Sobrenome *"
                 error={Boolean(error)}
-                helperText={error?.message ?? " "}
+                helperText={FormFieldError(error?.message)}
                 fullWidth
                 onChange={onChange}
                 onBlur={onBlur}
@@ -228,7 +229,7 @@ const EditPersonComponent = () => {
                 label="E-mail institucional *"
                 placeholder="Ex.: voce@universidade.br"
                 error={Boolean(error)}
-                helperText={error?.message ?? " "}
+                helperText={FormFieldError(error?.message)}
                 fullWidth
                 onChange={onChange}
                 onBlur={onBlur}
