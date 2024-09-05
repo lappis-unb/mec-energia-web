@@ -156,14 +156,6 @@ const ConsumerUnitCreateForm = () => {
     marginBottom: "15px",
   };
 
-  const isValueGreaterThenZero = (
-    value:
-      | CreateConsumerUnitForm["peakContractedDemandInKw"]
-      | CreateConsumerUnitForm["offPeakContractedDemandInKw"]
-  ) => {
-    if (value <= 0) return "Insira um valor maior que 0";
-  };
-
   // Modal
   const handleCloseDialog = () => {
     setShouldShowCancelDialog(false);
