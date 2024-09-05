@@ -184,7 +184,7 @@ const EditPersonComponent = () => {
           />
         </Grid>
 
-        <Grid item xs={12}>
+        <Grid item xs={12} mt={0.3}>
           <Controller
             control={control}
             name="lastName"
@@ -210,7 +210,7 @@ const EditPersonComponent = () => {
           />
         </Grid>
 
-        <Grid item xs={12}>
+        <Grid item xs={12} mt={0.3}>
           <Controller
             control={control}
             name="email"
