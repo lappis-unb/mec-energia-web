@@ -446,6 +446,10 @@ const ConsumerUnitInvoiceContentTable = () => {
       // remove the space left for the header
       marginTop: "0!important",
     },
+    "& .MuiDataGrid-virtualScroller::-webkit-scrollbar": {
+      // remove display the scrollbar
+      display: "none",
+    },
     "& .MuiDataGrid-row.pending-row": {
       backgroundColor: theme.palette.secondaryFocus,
     },

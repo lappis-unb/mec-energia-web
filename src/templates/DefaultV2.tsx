@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode, useLayoutEffect, useState } from "react";
 import { Box, Container, ContainerProps } from "@mui/material";
 import Drawer from "@/components/Drawer";
 import Header from "@/components/Header";
@@ -24,7 +24,7 @@ const DefaultTemplateV2 = ({
   const isDrawerOpen = useSelector(selectIsDrawerOpen);
   const [width, setWidth] = useState("calc(100vw - 64px)");
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     setWidth("80vw");
   }, [isDrawerOpen]);
 
@@ -32,7 +32,7 @@ const DefaultTemplateV2 = ({
     <Box display="flex" height="100vh">
       <Drawer />
 
-      <Box width={width} flexGrow={1}>
+      <Box width={width} sx={{transition: 'width 0.3s ease'}} flexGrow={1}>
         <Header>{headerAction}</Header>
 
         <Box display="flex">
@@ -48,10 +48,10 @@ const DefaultTemplateV2 = ({
             display="flex"
             flexDirection="column"
           >
-            <Box sx={{ flexGrow: 1, position: "relative", pb: 5 }}>
+            <Box sx={{flexGrow: 1, position: "relative", pb: 5 }}>
               {contentHeader}
 
-              <Container maxWidth={contentContainerMaxWidth} sx={{ height: '100%' }}>
+              <Container maxWidth={contentContainerMaxWidth} sx={{ height: '100%'}}>
                 {children}
               </Container>
             </Box>
