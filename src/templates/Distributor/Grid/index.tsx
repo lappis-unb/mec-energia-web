@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { useSelector } from "react-redux";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { useSession } from "next-auth/react";
@@ -19,6 +19,15 @@ const DistributorsCardGrid = () => {
     [distributorId]
   );
 
+  const distributorsInAlphabeticOrder = useMemo(() => {
+    if (!distributors) {
+      return [];
+    }
+
+    return [...distributors]?.sort((a, b) =>
+      (a.name || '').localeCompare(b.name || ''));
+  }, [distributors]);
+
   return (
     <Box
       height="100%"
@@ -29,7 +38,7 @@ const DistributorsCardGrid = () => {
       flexDirection="column"
       overflow="scroll"
     >
-      {distributors?.map((card) => (
+      {distributorsInAlphabeticOrder.map((card) => (
         <Box px={2} pb={2} key={card.id}>
           <DistributorCard
             id={card.id}
