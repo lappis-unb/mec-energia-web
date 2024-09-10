@@ -34,7 +34,10 @@ const ConsumerUnitsCardGrid = () => {
 
       case "pending":
         const pendingConsumerUnits = consumerUnitsData.filter(
-          ({ pendingEnergyBillsNumber, isCurrentEnergyBillFilled, isActive }) => (pendingEnergyBillsNumber > 0 || isCurrentEnergyBillFilled === false) && isActive === true
+          ({ pendingEnergyBillsNumber, isCurrentEnergyBillFilled, isActive }) =>
+            (pendingEnergyBillsNumber > 0 ||
+              isCurrentEnergyBillFilled === false) &&
+            isActive === true
         );
         filteredConsumerUnits.push(...pendingConsumerUnits);
         break;
@@ -42,7 +45,6 @@ const ConsumerUnitsCardGrid = () => {
 
     return filteredConsumerUnits;
   }, [activeFilter, consumerUnitsData]);
-
 
   return (
     <Box
@@ -75,7 +77,7 @@ const ConsumerUnitsCardGrid = () => {
             id={card.id}
             selected={parseInt(id as string, 10) === card.id}
             isActive={card.isActive}
-            isFavorite={card.isFavorite}
+            isFavorite={card.isActive && card.isFavorite}
             pendingEnergyBillsNumber={card.pendingEnergyBillsNumber}
             isCurrentEnergyBillFilled={card.isCurrentEnergyBillFilled}
             name={card.name}

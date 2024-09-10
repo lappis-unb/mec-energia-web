@@ -22,6 +22,7 @@ import ReceiptLongRoundedIcon from "@mui/icons-material/ReceiptLongRounded";
 import InsightsRoundedIcon from "@mui/icons-material/InsightsRounded";
 import StickyNote2RoundedIcon from "@mui/icons-material/StickyNote2Rounded";
 import {
+  useEditPersonFavoritesMutation,
   useFetchConsumerUnitsQuery,
   usePostInvoiceCsvMutation,
   useGetConsumerUnitQuery,
@@ -56,6 +57,8 @@ const ConsumerUnitContentHeader = () => {
   const { data: consumerUnit } = useGetConsumerUnitQuery(
     consumerUnitId ?? skipToken
   );
+
+  const [editPersonFavorites] = useEditPersonFavoritesMutation();
 
   const { data: session } = useSession();
   const { data: consumerUnitsData } = useFetchConsumerUnitsQuery(
@@ -123,7 +126,6 @@ const ConsumerUnitContentHeader = () => {
     await editPersonFavorites(body);
   });
 
-
   const activeConsumerUnitData = consumerUnitsData?.find(
     (consumerUnit) => consumerUnit?.id === consumerUnitId
   );
@@ -142,21 +144,19 @@ const ConsumerUnitContentHeader = () => {
       <Container>
         <Box display="flex">
           <Box mt={-0.5}>
-            {
-              consumerUnit?.isActive && (
-                <IconButton
-                  color="primary"
-                  edge="start"
-                  onClick={handleFavoriteButtonClick}
-                >
-                  {consumerUnit?.isFavorite ? (
-                    <StarRoundedIcon fontSize="large" />
-                  ) : (
-                    <StarOutlineRoundedIcon fontSize="large" />
-                  )}
-                </IconButton>
-              )
-            }
+            {consumerUnit?.isActive && (
+              <IconButton
+                color="primary"
+                edge="start"
+                onClick={handleFavoriteButtonClick}
+              >
+                {consumerUnit?.isFavorite ? (
+                  <StarRoundedIcon fontSize="large" />
+                ) : (
+                  <StarOutlineRoundedIcon fontSize="large" />
+                )}
+              </IconButton>
+            )}
           </Box>
           <Box pl={1}>
             <Box display="flex" alignItems="center">
@@ -194,7 +194,9 @@ const ConsumerUnitContentHeader = () => {
           <Alert
             severity="warning"
             variant="filled"
-            icon={<FlashOffRounded style={{ color: "#000000", opacity: 0.54 }} />}
+            icon={
+              <FlashOffRounded style={{ color: "#000000", opacity: 0.54 }} />
+            }
             sx={{ cursor: "pointer", whiteSpace: "pre-line", mt: 3 }}
           >
             Unidade desativada
