@@ -20,7 +20,6 @@ import SearchIcon from "@mui/icons-material/Search";
 import { useGetUsersQuery } from "@/api";
 import { User, UserRole } from "@/types/person";
 import { UserRoleLabelMap } from "@/components/Person/Role/constants";
-import UniversityUserRoleDialog from "./RoleDialog";
 import UserRoleSelect from "./RoleSelect";
 import UserListPasswordResetButton from "./PasswordResetButton";
 import { Session } from "next-auth";
@@ -42,9 +41,18 @@ const getUsersQueryParams = (session: Session | null) => {
 };
 
 const userRoleImportance: Record<UserRole, number> = {
-  [UserRole.SUPER_ADMIN]: 1,
-  [UserRole.MANAGEMENT]: 2,
-  [UserRole.OPERACIONAL]: 3,
+  [UserRole.SUPER_USER]: 1,
+  [UserRole.UNIVERSITY_ADMIN]: 2,
+  [UserRole.UNIVERSITY_USER]: 3,
+};
+
+const getUniversityAcronym = (email: string) => {
+  const match = email.match(/@([^\.]+)/);
+  if (match) {
+    const acronym = match[1].toUpperCase();
+    return acronym === "ADMIN" ? "-" : acronym;
+  }
+  return "";
 };
 
 const sortUsers = (array: User[], comparator: (a: User, b: User) => number) => {
@@ -56,15 +64,19 @@ const getComparator = (order: "asc" | "desc", orderBy: string) => {
     if (orderBy === "fullName") {
       const fullNameA = `${a.firstName} ${a.lastName}`.toLowerCase();
       const fullNameB = `${b.firstName} ${b.lastName}`.toLowerCase();
-
       if (fullNameA === fullNameB) {
         return (
           (userRoleImportance[a.type] - userRoleImportance[b.type]) *
           (order === "asc" ? 1 : -1)
         );
       }
-
       return (fullNameA < fullNameB ? -1 : 1) * (order === "asc" ? 1 : -1);
+    }
+
+    if (orderBy === "email") {
+      const emailA = a.email.toLowerCase();
+      const emailB = b.email.toLowerCase();
+      return (emailA < emailB ? -1 : 1) * (order === "asc" ? 1 : -1);
     }
 
     if (orderBy === "type") {
@@ -73,22 +85,24 @@ const getComparator = (order: "asc" | "desc", orderBy: string) => {
       return (roleImportanceA - roleImportanceB) * (order === "asc" ? -1 : 1);
     }
 
-    return (
-      (a[orderBy as keyof User] < b[orderBy as keyof User] ? -1 : 1) *
-      (order === "asc" ? 1 : -1)
-    );
+    if (orderBy === "university") {
+      const universityA = getUniversityAcronym(a.email);
+      const universityB = getUniversityAcronym(b.email);
+      return (universityA < universityB ? -1 : 1) * (order === "asc" ? 1 : -1);
+    }
+
+    return 0;
   };
 };
 
 const UserListTemplate = () => {
   const { data: session } = useSession();
+  const isSysAdmin = session?.user.email === "admin@admin.com";
   const [searchQuery, setSearchQuery] = useState("");
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [order, setOrder] = useState<"asc" | "desc">("asc");
   const [orderBy, setOrderBy] = useState<string>("fullName");
-
-  const isSysAdmin = session?.user.email === "admin@admin.com";
 
   const usersQueryPayload = useMemo(
     () => getUsersQueryParams(session),
@@ -99,7 +113,6 @@ const UserListTemplate = () => {
 
   const filteredUsers = useMemo(() => {
     if (!users) return [];
-
     return users.filter((user) => {
       const fullName = `${user.firstName} ${user.lastName}`.toLowerCase();
       const email = user.email.toLowerCase();
@@ -144,15 +157,6 @@ const UserListTemplate = () => {
       page * rowsPerPage + rowsPerPage
     );
   }, [sortedUsers, page, rowsPerPage]);
-
-  const getUniversityAcronym = (email: string) => {
-    const match = email.match(/@([^\.]+)/);
-    if (match) {
-      const acronym = match[1].toUpperCase();
-      return acronym === "ADMIN" ? "-" : acronym;
-    }
-    return "";
-  };
 
   if (!session) {
     return <Typography>Carregando...</Typography>;
@@ -199,12 +203,62 @@ const UserListTemplate = () => {
         </Box>
         <Table size="small">
           <TableHead>
-            <TableRow>
-              <TableCell sortDirection={orderBy === "fullName" ? order : false}>
+            <TableCell sortDirection={orderBy === "fullName" ? order : false}>
+              <TableSortLabel
+                active={orderBy === "fullName"}
+                direction={orderBy === "fullName" ? order : "asc"}
+                onClick={(event) => handleRequestSort(event, "fullName")}
+                sx={{
+                  color: "white !important",
+                  "& .MuiTableSortLabel-icon": {
+                    color: "white !important",
+                  },
+                }}
+              >
+                Nome completo
+              </TableSortLabel>
+            </TableCell>
+
+            <TableCell sortDirection={orderBy === "email" ? order : false}>
+              <TableSortLabel
+                active={orderBy === "email"}
+                direction={orderBy === "email" ? order : "asc"}
+                onClick={(event) => handleRequestSort(event, "email")}
+                sx={{
+                  color: "white !important",
+                  "& .MuiTableSortLabel-icon": {
+                    color: "white !important",
+                  },
+                }}
+              >
+                E-mail
+              </TableSortLabel>
+            </TableCell>
+
+            <TableCell sortDirection={orderBy === "type" ? order : false}>
+              <TableSortLabel
+                active={orderBy === "type"}
+                direction={orderBy === "type" ? order : "asc"}
+                onClick={(event) => handleRequestSort(event, "type")}
+                sx={{
+                  color: "white !important",
+                  "& .MuiTableSortLabel-icon": {
+                    color: "white !important",
+                  },
+                }}
+              >
+                Perfil
+              </TableSortLabel>
+            </TableCell>
+
+            {isSysAdmin && (
+              <TableCell
+                sortDirection={orderBy === "university" ? order : false}
+              >
                 <TableSortLabel
-                  active={orderBy === "fullName"}
-                  direction={orderBy === "fullName" ? order : "asc"}
-                  onClick={(event) => handleRequestSort(event, "fullName")}
+                  active={orderBy === "university"}
+                  direction={orderBy === "university" ? order : "asc"}
+                  onClick={(event) => handleRequestSort(event, "university")}
                   sx={{
                     color: "white !important",
                     "& .MuiTableSortLabel-icon": {
@@ -212,36 +266,11 @@ const UserListTemplate = () => {
                     },
                   }}
                 >
-                  Nome completo
+                  Universidade
                 </TableSortLabel>
               </TableCell>
-              <TableCell>E-mail</TableCell>
-              <TableCell sortDirection={orderBy === "type" ? order : false}>
-                <TableSortLabel
-                  active={orderBy === "type"}
-                  direction={orderBy === "type" ? order : "asc"}
-                  onClick={(event) => handleRequestSort(event, "type")}
-                  sx={{
-                    color: "white !important",
-                    "& .MuiTableSortLabel-icon": {
-                      color: "white !important",
-                    },
-                  }}
-                >
-                  <Box
-                    display="flex"
-                    alignItems="center"
-                    justifyContent="space-between"
-                    width="100%"
-                  >
-                    <Typography variant="inherit">Perfil</Typography>
-                    <UniversityUserRoleDialog />
-                  </Box>
-                </TableSortLabel>
-              </TableCell>
-              {isSysAdmin && <TableCell>Universidade</TableCell>}
-              <TableCell width="56px" />
-            </TableRow>
+            )}
+            <TableCell width="56px" />
           </TableHead>
           <TableBody>
             {paginatedUsers.map((user) => (
@@ -318,6 +347,9 @@ const UserListTemplate = () => {
                 color: "white",
               },
               "& .MuiIconButton-root": {
+                color: "white",
+              },
+              "& .MuiIconButton-root .MuiSvgIcon-root": {
                 color: "white",
               },
             }}

@@ -53,6 +53,7 @@ import { isInSomeSubgroups } from "@/utils/validations/form-validations";
 import FormDrawerV2 from "@/components/Form/DrawerV2";
 import FlashOnIcon from "@mui/icons-material/FlashOn";
 import FormFieldError from "@/components/FormFieldError";
+import { minimumDemand } from "@/utils/tariff";
 
 const defaultValues: EditConsumerUnitForm = {
   isActive: true,
@@ -167,7 +168,7 @@ const ConsumerUnitEditForm = () => {
         fetchData();
       }
     }
-  }, [isEditFormOpen, consumerUnit, contract, setValue]);
+  }, [isEditFormOpen, consumerUnit, contract, setValue], refetchConsumerUnit);
 
   useEffect(() => {
     setValue("isActive", isActive);
@@ -197,11 +198,11 @@ const ConsumerUnitEditForm = () => {
       // Atualiza o estado tariffFlag para "B" (azul)
       setValue("tariffFlag", "B");
     }
-  }, [shouldShowGreenDemand]);
+  }, [shouldShowGreenDemand, setValue]);
 
   useEffect(() => {
     setValue("tariffFlag", contract?.tariffFlag ?? "B");
-  }, [isEditFormOpen]);
+  }, [isEditFormOpen, contract?.tariffFlag, setValue]);
 
   // Validações
 
@@ -226,14 +227,6 @@ const ConsumerUnitEditForm = () => {
   ) => {
     if (value.length < 3) return "Insira ao menos 3 caracteres";
     return true;
-  };
-
-  const isValueGreaterThenZero = (
-    value:
-      | EditConsumerUnitForm["peakContractedDemandInKw"]
-      | EditConsumerUnitForm["offPeakContractedDemandInKw"]
-  ) => {
-    if (value <= 0) return "Insira um valor maior que 0";
   };
 
   const handleCloseDialog = useCallback(() => {
@@ -616,7 +609,7 @@ const ConsumerUnitEditForm = () => {
         </Grid>
       </>
     ),
-    [control, distributorList, subgroupsList]
+    [control, distributorList, subgroupsList, consumerUnit]
   );
 
   const ContractedDemand = useCallback(
@@ -676,7 +669,7 @@ const ConsumerUnitEditForm = () => {
               name="peakContractedDemandInKw"
               rules={{
                 required: "Preencha este campo",
-                validate: isValueGreaterThenZero,
+                min: minimumDemand,
               }}
               render={({
                 field: { onChange, onBlur, value },
@@ -716,7 +709,7 @@ const ConsumerUnitEditForm = () => {
                 name="peakContractedDemandInKw"
                 rules={{
                   required: "Preencha este campo",
-                  validate: isValueGreaterThenZero,
+                  min: minimumDemand,
                 }}
                 render={({
                   field: { onChange, onBlur, value },
@@ -755,7 +748,7 @@ const ConsumerUnitEditForm = () => {
                 name="offPeakContractedDemandInKw"
                 rules={{
                   required: "Preencha este campo",
-                  validate: isValueGreaterThenZero,
+                  min: minimumDemand,
                 }}
                 render={({
                   field: { onChange, onBlur, value },
@@ -797,7 +790,7 @@ const ConsumerUnitEditForm = () => {
         )}
       </>
     ),
-    [control, tariffFlag, shouldShowGreenDemand]
+    [control, tariffFlag, shouldShowGreenDemand, sortedDistributorList]
   );
 
   const InstalledPower = useCallback(

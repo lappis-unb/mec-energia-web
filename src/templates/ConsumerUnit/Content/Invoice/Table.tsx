@@ -209,9 +209,8 @@ const ConsumerUnitInvoiceContentTable = () => {
     {
       field: "month",
       headerName: "Mês",
-      headerAlign: "center",
+      headerAlign: "left",
       align: "left",
-      flex: 1,
       valueGetter: ({ row: { id } }) => id,
       renderCell: ({ row }) => renderMonthCell(row),
       colSpan: ({ row: { isEnergyBillPending, energyBillId } }) => {
@@ -228,7 +227,6 @@ const ConsumerUnitInvoiceContentTable = () => {
       field: "isAtypical",
       headerAlign: "center",
       align: "center",
-      flex: 0,
       renderHeader: () => <InsightsRounded />,
       renderCell: ({ row: { isAtypical, energyBillId } }) => {
         if (energyBillId === undefined) {
@@ -259,13 +257,6 @@ const ConsumerUnitInvoiceContentTable = () => {
       flex: 1,
     },
     {
-      field: "demandSeparator",
-      headerName: "|",
-      sortable: false,
-      flex: 0,
-      headerAlign: "center",
-    },
-    {
       field: "peakMeasuredDemandInKw",
       headerClassName: "MuiDataGrid-columnHeaderMain",
       headerName: "Ponta",
@@ -292,10 +283,8 @@ const ConsumerUnitInvoiceContentTable = () => {
     {
       field: "id",
       headerClassName: "MuiDataGrid-columnHeaderMain",
-      headerName: "Ações",
-      headerAlign: "center",
+      headerName: "",
       align: "center",
-      flex: 1.5,
       sortable: false,
       renderCell: ({ row: { month, year, energyBillId } }) => {
         if (!energyBillId) {
@@ -373,12 +362,6 @@ const ConsumerUnitInvoiceContentTable = () => {
         { field: "peakConsumptionInKwh" },
         { field: "offPeakConsumptionInKwh" },
       ],
-    },
-    {
-      groupId: "separator",
-      headerName: "|",
-      headerAlign: "center",
-      children: [{ field: "demandSeparator" }],
     },
     {
       groupId: "demand",

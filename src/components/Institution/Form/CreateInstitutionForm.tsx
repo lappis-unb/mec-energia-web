@@ -7,6 +7,7 @@ import {
   setIsSuccessNotificationOpen,
 } from "../../../store/appSlice";
 import { PatternFormat } from "react-number-format";
+import isValidCnpj from "@/utils/validations/isValidCnpj";
 
 import {
   Controller,
@@ -184,11 +185,8 @@ const CreateInstitutionForm = () => {
           name="cnpj"
           rules={{
             required: "Preencha este campo",
-            pattern: {
-              value:
-                /([0-9]{2}[\.]?[0-9]{3}[\.]?[0-9]{3}[\/]?[0-9]{4}[-]?[0-9]{2})/,
-              message: "Insira um CNPJ válido com 14 dígitos",
-            },
+            validate: (value) =>
+              isValidCnpj(value) || "Insira um CNPJ válido com 14 dígitos",
           }}
           render={({
             field: { onChange, onBlur, value },

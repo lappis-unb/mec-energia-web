@@ -1,17 +1,33 @@
 import { getHeadTitle } from "@/utils/head";
-import { Alert, Box, Button, Grid, Paper, TextField, Typography, IconButton, InputAdornment } from "@mui/material";
+import {
+  Alert,
+  Box,
+  Button,
+  Grid,
+  Paper,
+  TextField,
+  Typography,
+  IconButton,
+  InputAdornment,
+} from "@mui/material";
 import { NextPage } from "next";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import Head from "next/head";
 import Image from "next/image";
 import { useMemo, useState, useEffect } from "react";
-import { ConfirmResetPasswordPayload, SignInRequestPayload } from "@/types/auth";
+import {
+  ConfirmResetPasswordPayload,
+  SignInRequestPayload,
+} from "@/types/auth";
 import { useRouter } from "next/router";
 import Footer from "@/components/Footer";
-import { useConfirmResetPasswordMutation, useValidateResetPasswordTokenQuery } from "@/api";
+import {
+  useConfirmResetPasswordMutation,
+  useValidateResetPasswordTokenQuery,
+} from "@/api";
 import FormWarningDialog from "@/components/ConsumerUnit/Form/WarningDialog";
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import ReportIcon from '@mui/icons-material/Report';
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import ReportIcon from "@mui/icons-material/Report";
 import { useDispatch } from "react-redux";
 import { setIsTokenValid, setUserAlreadyCreatedName } from "@/store/appSlice";
 import { TokenStatus } from "@/types/app";
@@ -21,22 +37,23 @@ import VisibilityOff from "@mui/icons-material/VisibilityOff";
 
 const defaultValues: ConfirmResetPasswordPayload = {
   newPassword: "",
-  confirmPassword: ""
+  confirmPassword: "",
 };
 
 const DefinePasswordPage: NextPage = () => {
-  const [confirmResetPassword, { isLoading, error: mutationError }] = useConfirmResetPasswordMutation();
+  const [confirmResetPassword, { isLoading, error: mutationError }] =
+    useConfirmResetPasswordMutation();
   const headTitle = useMemo(() => getHeadTitle("Definir Senha"), []);
   const [isValidPassword, setIsValidPassword] = useState<{
-    hasLetter: boolean | null,
-    hasNumber: boolean | null,
-    hasSpecialChar: boolean | null,
-    minLength: boolean | null
+    hasLetter: boolean | null;
+    hasNumber: boolean | null;
+    hasSpecialChar: boolean | null;
+    minLength: boolean | null;
   }>({
     hasLetter: null,
     hasNumber: null,
     hasSpecialChar: null,
-    minLength: null
+    minLength: null,
   });
   const [nome, setNome] = useState<string>("");
   const [token, setToken] = useState<string>("");
@@ -48,7 +65,9 @@ const DefinePasswordPage: NextPage = () => {
 
   const dispatch = useDispatch();
   const router = useRouter();
-  const { query: { nome: nomeParam, token: tokenParam } } = router;
+  const {
+    query: { nome: nomeParam, token: tokenParam },
+  } = router;
 
   useEffect(() => {
     if (nomeParam) {
@@ -59,27 +78,30 @@ const DefinePasswordPage: NextPage = () => {
     }
   }, [nomeParam, tokenParam]);
 
-  const { data: tokenStatus, error: validationError, status } = useValidateResetPasswordTokenQuery(token, {
+  const {
+    data: tokenStatus,
+    error: validationError,
+    status,
+  } = useValidateResetPasswordTokenQuery(token, {
     skip: !token,
   });
 
   useEffect(() => {
-    if (status === 'fulfilled') {
+    if (status === "fulfilled") {
       if (tokenStatus?.code === 1) {
-        setEmail(tokenStatus?.email)
+        setEmail(tokenStatus?.email);
         dispatch(setIsTokenValid(TokenStatus.FIRST_TIME_CREATION));
         setIsTokenVerified(true);
       } else if (tokenStatus?.code === 2) {
         dispatch(setIsTokenValid(TokenStatus.FIRST_TIME_CREATION_INVALID));
-        router.push('/');
+        router.push("/");
       }
-    } else if (status === 'rejected' || validationError) {
+    } else if (status === "rejected" || validationError) {
       dispatch(setIsTokenValid(TokenStatus.TOKEN_ALREADY_USED));
-      dispatch(setUserAlreadyCreatedName(nome))
-      router.push('/');
+      dispatch(setUserAlreadyCreatedName(nome));
+      router.push("/");
     }
   }, [tokenStatus, validationError, status]);
-
 
   useEffect(() => {
     const { nome: nomeParam, token: tokenParam } = router.query;
@@ -97,13 +119,7 @@ const DefinePasswordPage: NextPage = () => {
   } = useRouter();
 
   const form = useForm({ defaultValues: defaultValues });
-  const {
-    control,
-    handleSubmit,
-    watch,
-    setError,
-    clearErrors,
-  } = form;
+  const { control, handleSubmit, watch, setError, clearErrors } = form;
 
   const password = watch("newPassword");
 
@@ -113,24 +129,26 @@ const DefinePasswordPage: NextPage = () => {
         hasLetter: /[a-zA-Z]/.test(password),
         hasNumber: /[0-9]/.test(password),
         hasSpecialChar: /[!@#$%^&*(),.?":{}|<>]/.test(password),
-        minLength: password.length >= 8
+        minLength: password.length >= 8,
       });
     } else {
       setIsValidPassword({
         hasLetter: null,
         hasNumber: null,
         hasSpecialChar: null,
-        minLength: null
+        minLength: null,
       });
     }
   }, [password]);
 
-  const handleOnSubmitNewPassword: SubmitHandler<ConfirmResetPasswordPayload> = async ({
-    newPassword,
-    confirmPassword
-  }) => {
+  const handleOnSubmitNewPassword: SubmitHandler<
+    ConfirmResetPasswordPayload
+  > = async ({ newPassword, confirmPassword }) => {
     if (newPassword !== confirmPassword) {
-      setError("confirmPassword", { type: "manual", message: "Insira uma senha idêntica à \"Nova senha\"" });
+      setError("confirmPassword", {
+        type: "manual",
+        message: 'Insira uma senha idêntica à "Nova senha"',
+      });
       return;
     }
 
@@ -146,7 +164,7 @@ const DefinePasswordPage: NextPage = () => {
         handleOnSubmit({ username: email, password: password });
       }
     } catch (error) {
-      console.error('Erro ao definir a senha', error);
+      console.error("Erro ao definir a senha", error);
     }
   };
 
@@ -169,7 +187,7 @@ const DefinePasswordPage: NextPage = () => {
   };
 
   const handleDiscardForm = () => {
-    router.push('/');
+    router.push("/");
   };
 
   const handleCloseDialog = () => {
@@ -237,8 +255,12 @@ const DefinePasswordPage: NextPage = () => {
               </Box>
               <Box mt={4}>
                 <Typography variant="h5">Olá, {nome}</Typography>
-                <Typography variant="subtitle1">Cadastre uma senha para acessar o sistema.</Typography>
-                <Typography variant="subtitle1">Todos os campos são obrigatórios.</Typography>
+                <Typography variant="subtitle1">
+                  Cadastre uma senha para acessar o sistema.
+                </Typography>
+                <Typography variant="subtitle1">
+                  Todos os campos são obrigatórios.
+                </Typography>
               </Box>
 
               <Box mt={3}>
@@ -247,15 +269,12 @@ const DefinePasswordPage: NextPage = () => {
                   name="newPassword"
                   rules={{
                     required: "Preencha este campo",
-                    minLength: {
-                      value: 8,
-                      message: "A senha deve ter no mínimo 8 caracteres"
-                    },
                     validate: {
-                      hasLetter: value => /[a-zA-Z]/.test(value),
-                      hasNumber: value => /[0-9]/.test(value),
-                      hasSpecialChar: value => /[!@#$%^&*(),.?":{}|<>]/.test(value)
-                    }
+                      hasLetter: (value) => /[a-zA-Z]/.test(value),
+                      hasNumber: (value) => /[0-9]/.test(value),
+                      hasSpecialChar: (value) =>
+                        /[!@#$%^&*(),.?":{}|<>]/.test(value),
+                    },
                   }}
                   render={({
                     field: { onChange, onBlur, value, ref },
@@ -275,11 +294,17 @@ const DefinePasswordPage: NextPage = () => {
                         endAdornment: (
                           <InputAdornment position="end">
                             <IconButton
-                              style={{ color: '#000000DE' }}
-                              onClick={() => setShowNewPassword(!showNewPassword)}
+                              style={{ color: "#000000DE" }}
+                              onClick={() =>
+                                setShowNewPassword(!showNewPassword)
+                              }
                               onMouseDown={(e) => e.preventDefault()}
                             >
-                              {showNewPassword ? <VisibilityOff /> : <Visibility />}
+                              {showNewPassword ? (
+                                <VisibilityOff />
+                              ) : (
+                                <Visibility />
+                              )}
                             </IconButton>
                           </InputAdornment>
                         ),
@@ -287,17 +312,35 @@ const DefinePasswordPage: NextPage = () => {
                     />
                   )}
                 />
-                <Typography variant="subtitle1" color={getColor(isValidPassword.hasLetter)}>
-                  {renderValidationIcon(isValidPassword.hasLetter)} Ao menos 1 letra
+                <Typography
+                  variant="subtitle1"
+                  color={getColor(isValidPassword.hasLetter)}
+                >
+                  {renderValidationIcon(isValidPassword.hasLetter)} Ao menos 1
+                  letra
                 </Typography>
-                <Typography variant="subtitle1" color={getColor(isValidPassword.hasNumber)}>
-                  {renderValidationIcon(isValidPassword.hasNumber)} Ao menos 1 número
+                <Typography
+                  variant="subtitle1"
+                  color={getColor(isValidPassword.hasNumber)}
+                >
+                  {renderValidationIcon(isValidPassword.hasNumber)} Ao menos 1
+                  número
                 </Typography>
-                <Typography lineHeight={"1rem"} variant="subtitle1" color={getColor(isValidPassword.hasSpecialChar)}>
-                  {renderValidationIcon(isValidPassword.hasSpecialChar)} Ao menos 1 caractere especial (exs.: !?*-_.#$)
+                <Typography
+                  lineHeight={"1rem"}
+                  variant="subtitle1"
+                  color={getColor(isValidPassword.hasSpecialChar)}
+                >
+                  {renderValidationIcon(isValidPassword.hasSpecialChar)} Ao
+                  menos 1 caractere especial (exs.: !?*-_.#$)
                 </Typography>
-                <Typography alignContent={"center"} variant="subtitle1" color={getColor(isValidPassword.minLength)}>
-                  {renderValidationIcon(isValidPassword.minLength)} Mínimo de 8 caracteres
+                <Typography
+                  alignContent={"center"}
+                  variant="subtitle1"
+                  color={getColor(isValidPassword.minLength)}
+                >
+                  {renderValidationIcon(isValidPassword.minLength)} Mínimo de 8
+                  caracteres
                 </Typography>
               </Box>
               <Box mt={3}>
@@ -306,7 +349,9 @@ const DefinePasswordPage: NextPage = () => {
                   name="confirmPassword"
                   rules={{
                     required: "Preencha este campo",
-                    validate: value => value === password || "Insira uma senha idêntica à \"Nova senha\""
+                    validate: (value) =>
+                      value === password ||
+                      'Insira uma senha idêntica à "Nova senha"',
                   }}
                   render={({
                     field: { onChange, onBlur, value, ref },
@@ -326,11 +371,17 @@ const DefinePasswordPage: NextPage = () => {
                         endAdornment: (
                           <InputAdornment position="end">
                             <IconButton
-                              style={{ color: '#000000DE' }}
-                              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                              style={{ color: "#000000DE" }}
+                              onClick={() =>
+                                setShowConfirmPassword(!showConfirmPassword)
+                              }
                               onMouseDown={(e) => e.preventDefault()}
                             >
-                              {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                              {showConfirmPassword ? (
+                                <VisibilityOff />
+                              ) : (
+                                <Visibility />
+                              )}
                             </IconButton>
                           </InputAdornment>
                         ),
@@ -353,20 +404,32 @@ const DefinePasswordPage: NextPage = () => {
                   <Alert severity="error" variant="filled">
                     O limite de tempo para cadastrar a senha foi atingido.
                     <br />
-                    Por segurança, você reberá um novo link por e-mail em 1 hora.
+                    Por segurança, você reberá um novo link por e-mail em 1
+                    hora.
                   </Alert>
                 </Box>
               )}
 
               <Box mt={2}>
-                <Button type="submit" variant="contained" fullWidth disabled={isLoading}>
-                  {isLoading ? 'Gravando...' : 'Gravar'}
+                <Button
+                  type="submit"
+                  variant="contained"
+                  fullWidth
+                  disabled={isLoading}
+                >
+                  {isLoading ? "Gravando..." : "Gravar"}
                 </Button>
               </Box>
 
               <Box mt={5}>
                 <Box display="flex" justifyContent="center">
-                  <Button sx={{ textDecoration: 'underline' }} href="#" onClick={handleCancelEdition}>Cancelar</Button>
+                  <Button
+                    sx={{ textDecoration: "underline" }}
+                    href="#"
+                    onClick={handleCancelEdition}
+                  >
+                    Cancelar
+                  </Button>
                 </Box>
               </Box>
             </Box>
@@ -377,10 +440,10 @@ const DefinePasswordPage: NextPage = () => {
               onDiscard={handleDiscardForm}
             />
           </Paper>
-        </Box >
+        </Box>
 
         <Footer />
-      </Box >
+      </Box>
     </>
   );
 };

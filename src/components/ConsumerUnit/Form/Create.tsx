@@ -50,6 +50,7 @@ import { getSubgroupsText } from "@/utils/get-subgroup-text";
 import { isInSomeSubgroups } from "@/utils/validations/form-validations";
 import FormDrawerV2 from "@/components/Form/DrawerV2";
 import FormFieldError from "@/components/FormFieldError";
+import { minimumDemand } from "@/utils/tariff";
 
 const defaultValues: CreateConsumerUnitForm = {
   name: "",
@@ -147,14 +148,6 @@ const ConsumerUnitCreateForm = () => {
     }
 
     return true;
-  };
-
-  const isValueGreaterThenZero = (
-    value:
-      | CreateConsumerUnitForm["peakContractedDemandInKw"]
-      | CreateConsumerUnitForm["offPeakContractedDemandInKw"]
-  ) => {
-    if (value <= 0) return "Insira um valor maior que 0";
   };
 
   // Modal
@@ -572,7 +565,7 @@ const ConsumerUnitCreateForm = () => {
               name="contracted"
               rules={{
                 required: "Preencha este campo",
-                validate: isValueGreaterThenZero,
+                min: minimumDemand,
               }}
               render={({
                 field: { onChange, onBlur, value },
@@ -612,7 +605,7 @@ const ConsumerUnitCreateForm = () => {
                 name="peakContractedDemandInKw"
                 rules={{
                   required: "Preencha este campo",
-                  validate: isValueGreaterThenZero,
+                  min: minimumDemand,
                 }}
                 render={({
                   field: { onChange, onBlur, value },
@@ -651,7 +644,7 @@ const ConsumerUnitCreateForm = () => {
                 name="offPeakContractedDemandInKw"
                 rules={{
                   required: "Preencha este campo",
-                  validate: isValueGreaterThenZero,
+                  min: minimumDemand,
                 }}
                 render={({
                   field: { onChange, onBlur, value },

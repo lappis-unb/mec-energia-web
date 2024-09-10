@@ -9,8 +9,20 @@ interface Props {
 
 export const DetailedBaseCostsComparisonPlot = ({ dates, costs }: Props) => {
   return (
-    <Box>
+    <Box
+      sx={{
+        "@media print": {
+          width: "620px",
+          height: "350px",
+          marginX: "auto",
+        }
+      }}
+    >
       <Chart
+        style={{
+          maxWidth: "100%",
+          maxHeight: "350px",
+        }}
         type="bar"
         data={{
           labels: dates,
