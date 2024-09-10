@@ -201,12 +201,14 @@ const theme = createTheme(
             "& .MuiDataGrid-columnHeader--filledGroup": {
               backgroundColor: "rgba(10, 92, 103, 0.08)",
               color: "rgba(0, 0, 0, 0.87)",
+              borderRight: "solid 2px #F7F7F7",
+              borderLeft: "solid 2px #F7F7F7",
             },
             "& .MuiDataGrid-columnHeader--emptyGroup": {
               backgroundColor: "unset",
             },
             "& .MuiDataGrid-columnSeparator": {
-              color: primaryMain,
+              color: "rgba(255, 255, 255, 0.5)",
             },
             border: "unset",
           },
