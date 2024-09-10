@@ -151,9 +151,8 @@ export const DetailedAnalysisDrawer = ({
     "dd/MM/yyyy hh:mm"
   );
 
-  const documentPrintTitle = `Relatório MEC Energia  ${
-    consumerUnit.name
-  } ${generatedOn.replaceAll("/", "-")}`;
+  const documentPrintTitle = `Relatório MEC Energia  ${consumerUnit.name
+    } ${generatedOn.replaceAll("/", "-")}`;
 
   const toggleSections = (isOpen: boolean) => {
     setDropdownSectionState({
@@ -727,7 +726,6 @@ export const DetailedAnalysisDrawer = ({
                 <Subtitle
                   id="Tabela 3"
                   title="Proposta para ajuste de contrato de fornecimento de energia elétrica da unidade consumidora"
-                  width="100%"
                 />
                 <RecommendedContractTable
                   recommendedContract={recommendation.recommendedContract}
@@ -737,19 +735,19 @@ export const DetailedAnalysisDrawer = ({
 
               {recommendation.energyBillsCount <
                 recommendationSettings.IDEAL_ENERGY_BILLS_FOR_RECOMMENDATION && (
-                <>
-                  <br />
-                  <Alert
-                    variant="filled"
-                    severity="warning"
-                    sx={{ bgcolor: "rgb(217, 138, 11)", color: "#000" }}
-                    icon={<WarningAmberOutlined style={{ color: "#000" }} />}
-                  >
-                    Uma ou mais faturas estão indisponíveis. Isso reduz a
-                    precisão da análise.
-                  </Alert>
-                </>
-              )}
+                  <>
+                    <br />
+                    <Alert
+                      variant="filled"
+                      severity="warning"
+                      sx={{ bgcolor: "rgb(217, 138, 11)", color: "#000" }}
+                      icon={<WarningAmberOutlined style={{ color: "#000" }} />}
+                    >
+                      Uma ou mais faturas estão indisponíveis. Isso reduz a
+                      precisão da análise.
+                    </Alert>
+                  </>
+                )}
             </DropdownSection>
 
             <DropdownSection
