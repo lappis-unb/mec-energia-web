@@ -186,6 +186,10 @@ const CreateEditEnergyBillForm = () => {
     return false;
   };
 
+  const cardTitleStyles: CardTitleStyle = {
+    marginBottom: "15px",
+  };
+
   useEffect(() => {
     reset();
   }, [isCreateEnergyBillFormOpen]);
@@ -456,7 +460,7 @@ const CreateEditEnergyBillForm = () => {
     () => (
       <>
         <Grid item xs={8}>
-          <Typography variant="h5" style={{ marginBottom: "13px" }}>
+          <Typography variant="h5" style={cardTitleStyles}>
             Fatura
           </Typography>
         </Grid>
@@ -502,7 +506,7 @@ const CreateEditEnergyBillForm = () => {
                   const contractStartDateYear = contractStartDate.getFullYear();
 
                   const fixedDate = new Date(
-                    `${contractStartDateYear}/${contractStartDateMonth + 2}/01`
+                    `${contractStartDateYear}/${contractStartDateMonth + 2}`
                   );
 
                   const options = { year: "numeric", month: "long" };
@@ -796,7 +800,7 @@ const CreateEditEnergyBillForm = () => {
     () => (
       <>
         <Grid item xs={10}>
-          <Typography variant="h5" style={{ marginBottom: "16px" }}>
+          <Typography variant="h5" style={cardTitleStyles}>
             Consumo medido
           </Typography>
         </Grid>

@@ -84,7 +84,7 @@ const ConsumerUnitCreateForm = () => {
 
   const handleDistributorChange = (event) => {
     const selectedDistributor = event.id || event.target.value;
-        
+
     setCurrentDistributor(selectedDistributor);
     setValue("distributor", selectedDistributor);
   };
@@ -92,17 +92,17 @@ const ConsumerUnitCreateForm = () => {
   const mappedDistributorList = distributorList?.map((distributor) => {
     const idCopy = distributor.id;
     const valueCopy = distributor.value;
-  
+
     return {
       ...distributor,
       id: idCopy,
       value: valueCopy,
     };
-  });  
-  
-  const sortedDistributorList = mappedDistributorList?.slice().sort((a, b) => 
-    a.name.localeCompare(b.name)
-  );
+  });
+
+  const sortedDistributorList = mappedDistributorList
+    ?.slice()
+    .sort((a, b) => a.name.localeCompare(b.name));
 
   const [
     createConsumerUnit,
@@ -170,6 +170,10 @@ const ConsumerUnitCreateForm = () => {
     }
 
     return true;
+  };
+
+  const cardTitleStyles: CardTitleStyle = {
+    marginBottom: "15px",
   };
 
   // Modal
@@ -278,7 +282,9 @@ const ConsumerUnitCreateForm = () => {
     () => (
       <>
         <Grid item xs={12}>
-          <Typography variant="h5" style={{ marginBottom: '16px' }} >Unidade Consumidora</Typography>
+          <Typography variant="h5" style={cardTitleStyles}>
+            Unidade Consumidora
+          </Typography>
         </Grid>
         <Grid item xs={12}>
           <Controller
@@ -317,7 +323,9 @@ const ConsumerUnitCreateForm = () => {
     () => (
       <>
         <Grid item xs={12}>
-          <Typography variant="h5" style={{ marginBottom: '13px' }}>Contrato</Typography>
+          <Typography variant="h5" style={cardTitleStyles}>
+            Contrato
+          </Typography>
         </Grid>
 
         <Grid item xs={12}>
@@ -333,17 +341,16 @@ const ConsumerUnitCreateForm = () => {
               fieldState: { error },
             }) => (
               <TextField
+                style={cardTitleStyles}
                 ref={ref}
                 value={value}
                 label="Número da Unidade *"
                 placeholder="Número da Unidade Consumidora conforme a fatura"
                 error={!!error}
-                helperText={
-                  FormFieldError(
-                    error?.message,
-                    "Nº ou código da Unidade Consumidora conforme a fatura"
-                  )
-                }
+                helperText={FormFieldError(
+                  error?.message,
+                  "Nº ou código da Unidade Consumidora conforme a fatura"
+                )}
                 fullWidth
                 onChange={(e) => handleNumericInputChange(e, onChange)}
                 onBlur={onBlur}
@@ -358,14 +365,11 @@ const ConsumerUnitCreateForm = () => {
             control={control}
             name="distributor"
             rules={{ required: "Preencha este campo" }}
-            render={({
-              field: { onBlur, ref },
-              fieldState: { error },
-            }) => (
+            render={({ field: { onBlur, ref }, fieldState: { error } }) => (
               <FormControl
                 sx={{ minWidth: "200px", maxWidth: "100%" }}
                 error={!!error}
-                style={{ marginTop: '20px' }}
+                style={{ marginTop: "20px" }}
               >
                 <InputLabel>Distribuidora *</InputLabel>
 
@@ -405,7 +409,9 @@ const ConsumerUnitCreateForm = () => {
                   </MenuItem>
                 </Select>
 
-                <FormHelperText>{FormFieldError(error?.message)}</FormHelperText>
+                <FormHelperText>
+                  {FormFieldError(error?.message)}
+                </FormHelperText>
               </FormControl>
             )}
           />
@@ -481,12 +487,10 @@ const ConsumerUnitCreateForm = () => {
                   value={value}
                   customInput={TextField}
                   label="Tensão contratada *"
-                  helperText={
-                    FormFieldError(
-                      error?.message,
-                      "Se preciso, converta a tensão de V para kV dividindo o valor por 1.000."
-                    )
-                  }
+                  helperText={FormFieldError(
+                    error?.message,
+                    "Se preciso, converta a tensão de V para kV dividindo o valor por 1.000."
+                  )}
                   error={!!error}
                   fullWidth
                   InputProps={{
@@ -525,7 +529,12 @@ const ConsumerUnitCreateForm = () => {
         </Tooltip>
       </>
     ),
-    [control, sortedDistributorList, currentDistributor, handleDistributorChange]
+    [
+      control,
+      sortedDistributorList,
+      currentDistributor,
+      handleDistributorChange,
+    ]
   );
 
   const ContractedDemandSection = useCallback(
@@ -574,7 +583,9 @@ const ConsumerUnitCreateForm = () => {
                   </Box>
                 </RadioGroup>
 
-                <FormHelperText>{FormFieldError(error?.message)}</FormHelperText>
+                <FormHelperText>
+                  {FormFieldError(error?.message)}
+                </FormHelperText>
               </FormControl>
             )}
           />

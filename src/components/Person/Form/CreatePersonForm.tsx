@@ -73,6 +73,10 @@ const CreatePersonComponent = () => {
     handleDiscardForm();
   };
 
+  const cardTitleStyles: CardTitleStyle = {
+    marginBottom: "15px",
+  };
+
   const institutionsOptions = useMemo(() => {
     return institutions?.map((institution) => ({
       label: institution.name,
@@ -150,7 +154,7 @@ const CreatePersonComponent = () => {
     () => (
       <>
         <Grid item xs={12}>
-          <Typography variant="h5" style={{ marginBottom: "16px" }}>
+          <Typography variant="h5" style={cardTitleStyles}>
             Informações pessoais
           </Typography>
         </Grid>
