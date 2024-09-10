@@ -84,9 +84,29 @@ const ConsumerUnitEditForm = () => {
   const { data: distributorList } = useGetDistributorsQuery(
     session?.user?.universityId || skipToken
   );
+  const [currentDistributor, setCurrentDistributor] = useState();
 
-  const sortedDistributorList = distributorList?.slice().sort((a, b) => a.name.localeCompare(b.name));
+  const handleDistributorChange = (event) => {
+    const selectedDistributor = event.id || event.target.value;
+        
+    setCurrentDistributor(selectedDistributor);
+    setValue("distributor", selectedDistributor);
+  };
 
+  const mappedDistributorList = distributorList?.map((distributor) => {
+    const idCopy = distributor.id || distributor.value;
+    const valueCopy = distributor.value || distributor.id;
+  
+    return {
+      ...distributor,
+      id: idCopy,
+      value: valueCopy,
+    };
+  });  
+  
+  const sortedDistributorList = mappedDistributorList?.slice().sort((a, b) => 
+    a.name.localeCompare(b.name)
+  );
   const { data: contract } = useGetContractQuery(
     activeConsumerUnit || skipToken
   );
@@ -464,8 +484,8 @@ const ConsumerUnitEditForm = () => {
               name="distributor"
               rules={{ required: "Preencha este campo" }}
               render={({
-                field: { onChange, onBlur, value, ref },
-                fieldState: { error }
+                field: { onBlur, ref },
+                fieldState: { error },
               }) => (
                 <FormControl
                   sx={{ minWidth: "200px", maxWidth: "100%" }}
@@ -475,7 +495,7 @@ const ConsumerUnitEditForm = () => {
 
                   <Select
                     ref={ref}
-                    value={value}
+                    value={currentDistributor}
                     label="Distribuidora *"
                     MenuProps={{
                       anchorOrigin: {
@@ -487,9 +507,10 @@ const ConsumerUnitEditForm = () => {
                         horizontal: "left",
                       },
                     }}
-                    onChange={onChange}
+                    onChange={handleDistributorChange}
                     onBlur={onBlur}
                   >
+
                     {sortedDistributorList?.map(
                       (distributor: DistributorPropsTariffs) => {
                         return (
@@ -609,7 +630,8 @@ const ConsumerUnitEditForm = () => {
         </Grid>
       </>
     ),
-    [control, distributorList, subgroupsList, consumerUnit]
+    [control, sortedDistributorList, currentDistributor, handleDistributorChange]
+
   );
 
   const ContractedDemand = useCallback(
@@ -913,6 +935,7 @@ const ConsumerUnitEditForm = () => {
       <DistributorCreateFormDialog
         open={shouldShowDistributorFormDialog}
         onClose={handleCloseDistributorFormDialog}
+        handleDistributorChange={handleDistributorChange}
       />
     </Fragment>
   );
