@@ -80,7 +80,29 @@ const ConsumerUnitCreateForm = () => {
     session?.user?.universityId || skipToken
   );
 
-  const sortedDistributorList = distributorList?.slice().sort((a, b) => a.name.localeCompare(b.name));
+  const [currentDistributor, setCurrentDistributor] = useState();
+
+  const handleDistributorChange = (event) => {
+    const selectedDistributor = event.id || event.target.value;
+        
+    setCurrentDistributor(selectedDistributor);
+    setValue("distributor", selectedDistributor);
+  };
+
+  const mappedDistributorList = distributorList?.map((distributor) => {
+    const idCopy = distributor.id;
+    const valueCopy = distributor.value;
+  
+    return {
+      ...distributor,
+      id: idCopy,
+      value: valueCopy,
+    };
+  });  
+  
+  const sortedDistributorList = mappedDistributorList?.slice().sort((a, b) => 
+    a.name.localeCompare(b.name)
+  );
 
   const [
     createConsumerUnit,
@@ -337,7 +359,7 @@ const ConsumerUnitCreateForm = () => {
             name="distributor"
             rules={{ required: "Preencha este campo" }}
             render={({
-              field: { onChange, onBlur, value, ref },
+              field: { onBlur, ref },
               fieldState: { error },
             }) => (
               <FormControl
@@ -349,7 +371,7 @@ const ConsumerUnitCreateForm = () => {
 
                 <Select
                   ref={ref}
-                  value={value}
+                  value={currentDistributor}
                   label="Distribuidora *"
                   autoWidth
                   MenuProps={{
@@ -362,7 +384,7 @@ const ConsumerUnitCreateForm = () => {
                       horizontal: "left",
                     },
                   }}
-                  onChange={onChange}
+                  onChange={handleDistributorChange}
                   onBlur={onBlur}
                 >
                   {sortedDistributorList?.map(
@@ -503,7 +525,7 @@ const ConsumerUnitCreateForm = () => {
         </Tooltip>
       </>
     ),
-    [control, distributorList, subgroupsList]
+    [control, sortedDistributorList, currentDistributor, handleDistributorChange]
   );
 
   const ContractedDemandSection = useCallback(
@@ -809,6 +831,7 @@ const ConsumerUnitCreateForm = () => {
       <DistributorCreateFormDialog
         open={shouldShowDistributorFormDialog}
         onClose={handleCloseDistributorFormDialog}
+        handleDistributorChange={handleDistributorChange}
       />
     </Fragment>
   );

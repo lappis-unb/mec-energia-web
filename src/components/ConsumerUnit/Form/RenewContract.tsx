@@ -83,10 +83,29 @@ const ConsumerUnitRenewContractForm = () => {
   const { data: distributorList } = useGetDistributorsQuery(
     session?.user?.universityId || skipToken
   );
+  const [currentDistributor, setCurrentDistributor] = useState();
 
-  const sortedDistributorList = distributorList
-    ?.slice()
-    .sort((a, b) => a.name.localeCompare(b.name));
+  const handleDistributorChange = (event) => {
+    const selectedDistributor = event.id || event.target.value;
+        
+    setCurrentDistributor(selectedDistributor);
+    setValue("distributor", selectedDistributor);
+  };
+
+  const mappedDistributorList = distributorList?.map((distributor) => {
+    const idCopy = distributor.id || distributor.value;
+    const valueCopy = distributor.value || distributor.id;
+  
+    return {
+      ...distributor,
+      id: idCopy,
+      value: valueCopy,
+    };
+  });  
+  
+  const sortedDistributorList = mappedDistributorList?.slice().sort((a, b) => 
+    a.name.localeCompare(b.name)
+  );
 
   const [
     renewContract,
@@ -323,7 +342,7 @@ const ConsumerUnitRenewContractForm = () => {
             name="distributor"
             rules={{ required: "Preencha este campo" }}
             render={({
-              field: { onChange, onBlur, value, ref },
+              field: { onBlur, ref },
               fieldState: { error },
             }) => (
               <FormControl
@@ -334,7 +353,7 @@ const ConsumerUnitRenewContractForm = () => {
 
                 <Select
                   ref={ref}
-                  value={value}
+                  value={currentDistributor}
                   label="Distribuidora *"
                   autoWidth
                   MenuProps={{
@@ -347,7 +366,7 @@ const ConsumerUnitRenewContractForm = () => {
                       horizontal: "left",
                     },
                   }}
-                  onChange={onChange}
+                  onChange={handleDistributorChange}
                   onBlur={onBlur}
                 >
                   {sortedDistributorList?.map(
@@ -485,7 +504,7 @@ const ConsumerUnitRenewContractForm = () => {
         </Tooltip>
       </>
     ),
-    [control, distributorList, subgroupsList]
+    [control, sortedDistributorList, currentDistributor, handleDistributorChange]
   );
 
   const ContractedDemand = useCallback(
@@ -704,6 +723,7 @@ const ConsumerUnitRenewContractForm = () => {
       <DistributorCreateFormDialog
         open={shouldShowDistributorFormDialog}
         onClose={handleCloseDistributorFormDialog}
+        handleDistributorChange={handleDistributorChange}
       />
     </Fragment>
   );
