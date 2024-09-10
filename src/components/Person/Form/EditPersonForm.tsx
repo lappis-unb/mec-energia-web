@@ -7,9 +7,7 @@ import {
   setIsPersonEditFormOpen,
   setIsSuccessNotificationOpen,
 } from "../../../store/appSlice";
-
-import { Controller, SubmitHandler, useForm } from "react-hook-form";
-import { Grid, TextField, Typography } from "@mui/material";
+import { SubmitHandler, useForm } from "react-hook-form";
 import FormWarningDialog from "../../ConsumerUnit/Form/WarningDialog";
 import {
   EditPersonForm,
@@ -21,10 +19,9 @@ import {
   useGetPersonQuery,
   useGetUniversityPersonQuery,
 } from "@/api";
-import { isValidEmail } from "@/utils/validations/form-validations";
 import { skipToken } from "@reduxjs/toolkit/query";
 import FormDrawerV2 from "@/components/Form/DrawerV2";
-import FormFieldError from "@/components/FormFieldError";
+import PersonalInformationSection from "../Rules/FormEditPersonSections";
 
 const defaultValues: EditPersonForm = {
   email: "",
@@ -55,6 +52,7 @@ const EditPersonComponent = () => {
     setValue,
     formState: { isDirty, errors },
   } = form;
+
   const handleCancelEdition = () => {
     if (isDirty) {
       setShouldShowCancelDialog(true);
@@ -67,21 +65,20 @@ const EditPersonComponent = () => {
     const fetchData = async () => {
       try {
         const { data: currentPerson } = await refetchPerson();
-        if (!currentPerson) return;
-
-        setValue("firstName", currentPerson.firstName);
-        setValue("lastName", currentPerson.lastName);
-        setValue("email", currentPerson.email);
+        if (currentPerson) {
+          setValue("firstName", currentPerson.firstName);
+          setValue("lastName", currentPerson.lastName);
+          setValue("email", currentPerson.email);
+        }
       } catch (err) {
         console.error("Failed to refetch:", err);
       }
     };
 
-    // Garante que o refetch não seja executado antes do fetch
     if (isEditFormOpen) {
       fetchData();
     }
-  }, [currentPerson, isEditFormOpen, setValue]);
+  }, [currentPerson, isEditFormOpen, setValue, refetchPerson]);
 
   const handleDiscardForm = useCallback(() => {
     handleCloseDialog();
@@ -94,24 +91,20 @@ const EditPersonComponent = () => {
   };
 
   const onSubmitHandler: SubmitHandler<EditPersonForm> = async (data) => {
-    const { email, firstName, lastName } = data;
+    if (!currentPerson || !universityPerson) return;
 
-    if (!currentPerson) return;
-    if (!universityPerson) return;
+    const { email, firstName, lastName } = data;
     const body: EditPersonRequestPayload = {
       email,
       firstName,
       lastName,
       type: currentPerson.type,
       university: universityPerson.university,
-      id: currentPerson?.id,
+      id: currentPerson.id,
     };
-    await editPerson(body);
-  };
 
-  //Notificações
-  const handleNotification = useCallback(() => {
-    if (isSuccess) {
+    try {
+      await editPerson(body).unwrap();
       dispatch(
         setIsSuccessNotificationOpen({
           isOpen: true,
@@ -119,138 +112,37 @@ const EditPersonComponent = () => {
         })
       );
       reset();
-      resetMutation();
       dispatch(setIsPersonEditFormOpen(false));
-    } else if (isError) {
+    } catch {
       dispatch(
         setIsErrorNotificationOpen({
           isOpen: true,
           text: "Erro ao editar pessoa.",
         })
       );
+    } finally {
       resetMutation();
     }
-  }, [dispatch, isError, isSuccess, reset, resetMutation]);
-
-  useEffect(() => {
-    handleNotification();
-  }, [handleNotification, isSuccess, isError]);
-
-  //Validações
-
-  const hasEnoughCaracteresLength = (
-    value: EditPersonForm["firstName"] | EditPersonForm["lastName"]
-  ) => {
-    if (value.length < 3) return "Insira ao menos 3 caracteres";
-    return true;
   };
 
-  const PersonalInformationSection = useCallback(
-    () => (
-      <>
-        <Grid item xs={12}>
-          <Typography variant="h5" style={{ marginBottom: "16px" }}>
-            Informações pessoais
-          </Typography>
-        </Grid>
-
-        <Grid item xs={12}>
-          <Controller
-            control={control}
-            name="firstName"
-            rules={{
-              required: "Preencha este campo",
-              validate: hasEnoughCaracteresLength,
-            }}
-            render={({
-              field: { onChange, onBlur, value, ref },
-              fieldState: { error },
-            }) => (
-              <TextField
-                ref={ref}
-                value={value}
-                label="Nome *"
-                error={Boolean(error)}
-                helperText={FormFieldError(error?.message)}
-                fullWidth
-                onChange={onChange}
-                onBlur={onBlur}
-              />
-            )}
-          />
-        </Grid>
-
-        <Grid item xs={12} mt={0.3}>
-          <Controller
-            control={control}
-            name="lastName"
-            rules={{
-              required: "Preencha este campo",
-              validate: hasEnoughCaracteresLength,
-            }}
-            render={({
-              field: { onChange, onBlur, value, ref },
-              fieldState: { error },
-            }) => (
-              <TextField
-                ref={ref}
-                value={value}
-                label="Sobrenome *"
-                error={Boolean(error)}
-                helperText={FormFieldError(error?.message)}
-                fullWidth
-                onChange={onChange}
-                onBlur={onBlur}
-              />
-            )}
-          />
-        </Grid>
-
-        <Grid item xs={12} mt={0.3}>
-          <Controller
-            control={control}
-            name="email"
-            rules={{
-              required: "Preencha este campo",
-
-              validate: (e) => isValidEmail(e),
-            }}
-            render={({
-              field: { onChange, onBlur, value, ref },
-              fieldState: { error },
-            }) => (
-              <TextField
-                ref={ref}
-                value={value}
-                label="E-mail institucional *"
-                placeholder="Ex.: voce@universidade.br"
-                error={Boolean(error)}
-                helperText={FormFieldError(error?.message)}
-                fullWidth
-                onChange={onChange}
-                onBlur={onBlur}
-              />
-            )}
-          />
-        </Grid>
-      </>
-    ),
-    [control]
-  );
+  useEffect(() => {
+    if (isSuccess || isError) {
+      resetMutation();
+    }
+  }, [isSuccess, isError, resetMutation]);
 
   return (
     <Fragment>
       <FormDrawerV2
+        header={null}
         errorsLength={Object.keys(errors).length}
         open={isEditFormOpen}
         handleCloseDrawer={handleCancelEdition}
         handleSubmitDrawer={handleSubmit(onSubmitHandler)}
         isLoading={isLoading}
         title="Editar Pessoa"
-        header={<></>}
-        sections={[<PersonalInformationSection key={0} />]}
+        sections={[<PersonalInformationSection key={0} control={control} />]}
       />
-
       <FormWarningDialog
         open={shouldShowCancelDialog}
         entity={"registro"}
