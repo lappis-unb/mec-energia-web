@@ -86,7 +86,7 @@ const Card = ({
 
             {shouldShowActionIconButton && (
               <Box alignSelf="center" m={-1}>
-                <IconButton onClick={onActionIconClick}>
+                <IconButton style={{ color: '#000000DE' }} onClick={onActionIconClick}>
                   {actionIcon}
                 </IconButton>
               </Box>

@@ -39,6 +39,7 @@ import { getFormattedDateUTC, sendFormattedDate } from "@/utils/date";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import FormDrawerV2 from "@/components/Form/DrawerV2";
 import { getSession } from "next-auth/react";
+import FormFieldError from "@/components/FormFieldError";
 
 const defaultValues: CreateAndEditTariffForm = {
   startDate: new Date(),
@@ -67,10 +68,11 @@ const TariffCreateEditForm = () => {
   const isEditTariffFormOpen = useSelector(selectIsTariffEditFormOpen);
   const activeDistributorId = useSelector(selectActiveDistributorId);
   const activeSubgroup = useSelector(selectActiveSubgroup);
-  const { data: currentTariff, refetch: refetchCurrentTariff } = useGetTariffQuery({
-    distributor: activeDistributorId ?? 0,
-    subgroup: activeSubgroup ?? "0",
-  });
+  const { data: currentTariff, refetch: refetchCurrentTariff } =
+    useGetTariffQuery({
+      distributor: activeDistributorId ?? 0,
+      subgroup: activeSubgroup ?? "0",
+    });
   const [
     createTariff,
     {
@@ -110,9 +112,9 @@ const TariffCreateEditForm = () => {
       const fetchData = async () => {
         try {
           const { data: currentTariff } = await refetchCurrentTariff();
-          
+
           if (!currentTariff) return;
-          
+
           setValue(
             "blue.offPeakTeInReaisPerMwh",
             currentTariff.blue.offPeakTeInReaisPerMwh
@@ -157,13 +159,13 @@ const TariffCreateEditForm = () => {
             "green.peakTusdInReaisPerMwh",
             currentTariff.green.peakTusdInReaisPerMwh
           );
-    
+
           setValue("endDate", getFormattedDateUTC(currentTariff.endDate));
           setValue("startDate", getFormattedDateUTC(currentTariff.startDate));
         } catch (err) {
-          console.error('Failed to refetch:', err);
+          console.error("Failed to refetch:", err);
         }
-      }
+      };
 
       // Garante que o refetch não seja executado antes do fetch
       if (isEditTariffFormOpen) {
@@ -364,6 +366,7 @@ const TariffCreateEditForm = () => {
                 <DatePicker
                   value={value}
                   label="Início *"
+                  views={["month", "year"]}
                   minDate={new Date("2010")}
                   disableFuture
                   renderInput={(params) => (
@@ -373,7 +376,7 @@ const TariffCreateEditForm = () => {
                         ...params.inputProps,
                         placeholder: "dd/mm/aaaa",
                       }}
-                      helperText={error?.message ?? " "}
+                      helperText={FormFieldError(error?.message)}
                       error={!!error}
                     />
                   )}
@@ -397,6 +400,7 @@ const TariffCreateEditForm = () => {
                 <DatePicker
                   value={value}
                   label="Fim *"
+                  views={["month", "year"]}
                   renderInput={(params) => (
                     <TextField
                       {...params}
@@ -404,7 +408,7 @@ const TariffCreateEditForm = () => {
                         ...params.inputProps,
                         placeholder: "dd/mm/aaaa",
                       }}
-                      helperText={error?.message ?? " "}
+                      helperText={FormFieldError(error?.message)}
                       error={!!error}
                     />
                   )}
@@ -451,7 +455,7 @@ const TariffCreateEditForm = () => {
                   value={value}
                   customInput={TextField}
                   label="TUSD R$/kW  *"
-                  helperText={error?.message ?? " "}
+                  helperText={FormFieldError(error?.message)}
                   error={!!error}
                   fullWidth
                   InputProps={{
@@ -496,7 +500,7 @@ const TariffCreateEditForm = () => {
                   value={value !== 0 ? value : null}
                   customInput={TextField}
                   label="TUSD R$/MWh *"
-                  helperText={error?.message ?? " "}
+                  helperText={FormFieldError(error?.message)}
                   error={!!error}
                   fullWidth
                   InputProps={{
@@ -541,7 +545,7 @@ const TariffCreateEditForm = () => {
                   value={value !== 0 ? value : null}
                   customInput={TextField}
                   label="TE R$/MWh  *"
-                  helperText={error?.message ?? " "}
+                  helperText={FormFieldError(error?.message)}
                   error={!!error}
                   fullWidth
                   InputProps={{
@@ -593,7 +597,7 @@ const TariffCreateEditForm = () => {
                   value={value !== 0 ? value : null}
                   customInput={TextField}
                   label="TUSD R$/kW  *"
-                  helperText={error?.message ?? " "}
+                  helperText={FormFieldError(error?.message)}
                   error={!!error}
                   fullWidth
                   InputProps={{
@@ -638,7 +642,7 @@ const TariffCreateEditForm = () => {
                   value={value !== 0 ? value : null}
                   customInput={TextField}
                   label="TUSD R$/MWh *"
-                  helperText={error?.message ?? " "}
+                  helperText={FormFieldError(error?.message)}
                   error={!!error}
                   fullWidth
                   InputProps={{
@@ -683,7 +687,7 @@ const TariffCreateEditForm = () => {
                   value={value !== 0 ? value : undefined}
                   customInput={TextField}
                   label="TE R$/MWh  *"
-                  helperText={error?.message ?? " "}
+                  helperText={FormFieldError(error?.message)}
                   error={!!error}
                   fullWidth
                   InputProps={{
@@ -746,7 +750,7 @@ const TariffCreateEditForm = () => {
                 value={value !== 0 ? value : null}
                 customInput={TextField}
                 label="TUSD R$/kW  *"
-                helperText={error?.message ?? " "}
+                helperText={FormFieldError(error?.message)}
                 error={!!error}
                 fullWidth
                 InputProps={{
@@ -796,7 +800,7 @@ const TariffCreateEditForm = () => {
                   value={value !== 0 ? value : null}
                   customInput={TextField}
                   label="TUSD R$/MWh *"
-                  helperText={error?.message ?? " "}
+                  helperText={FormFieldError(error?.message)}
                   error={!!error}
                   fullWidth
                   InputProps={{
@@ -841,7 +845,7 @@ const TariffCreateEditForm = () => {
                   value={value !== 0 ? value : null}
                   customInput={TextField}
                   label="TE R$/MWh  *"
-                  helperText={error?.message ?? " "}
+                  helperText={FormFieldError(error?.message)}
                   error={!!error}
                   fullWidth
                   InputProps={{
@@ -892,7 +896,7 @@ const TariffCreateEditForm = () => {
                   value={value !== 0 ? value : null}
                   customInput={TextField}
                   label="TUSD R$/MWh *"
-                  helperText={error?.message ?? " "}
+                  helperText={FormFieldError(error?.message)}
                   error={!!error}
                   fullWidth
                   InputProps={{
@@ -937,7 +941,7 @@ const TariffCreateEditForm = () => {
                   value={value !== 0 ? value : null}
                   customInput={TextField}
                   label="TE R$/MWh  *"
-                  helperText={error?.message ?? " "}
+                  helperText={FormFieldError(error?.message)}
                   error={!!error}
                   fullWidth
                   InputProps={{
@@ -995,10 +999,7 @@ const TariffCreateEditForm = () => {
     [activeSubgroup, distributor.data?.name]
   );
 
-  const sections = [
-    <ValiditySection key={0} />,
-    <BlueMode key={1} />
-  ];
+  const sections = [<ValiditySection key={0} />, <BlueMode key={1} />];
 
   if (activeSubgroup !== "A3" && activeSubgroup !== "A2") {
     sections.push(<GreenMode key={2} />);

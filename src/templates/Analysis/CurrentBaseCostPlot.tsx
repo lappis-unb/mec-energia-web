@@ -13,8 +13,21 @@ export const CurrentBaseCostPlot = ({
   currentContractCostsPlot,
 }: Props) => {
   return (
-    <Box>
+    <Box
+      mt={4}
+      sx={{
+        "@media print": {
+          width: "620px",
+          height: "350px",
+          marginX: "auto",
+        }
+      }}
+    >
       <Chart
+        style={{
+          maxWidth: "100%",
+          maxHeight: "350px",
+        }}
         type="bar"
         data={{
           labels: dates,

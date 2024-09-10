@@ -1,4 +1,5 @@
 import { TariffFlag } from "@/types/tariffs";
+import { ValidationRule } from "react-hook-form";
 
 /**
  * Essa solução é **mais** restritiva que usar Map. Só podem ser indexados
@@ -23,4 +24,13 @@ const tariffFlagMap = new Map([
 
 export const getTariffFlagName = (tariffFlag: TariffFlag) => {
   return tariffFlagMap.get(tariffFlag);
+};
+
+/**
+ * @description A demanda contratada deve ser de no mínimo 30kW.
+ * @link https://gitlab.com/lappis-unb/projetos-energia/mec-energia/mec-energia-web/-/issues/396
+ */
+export const minimumDemand: ValidationRule<string | number> | undefined = {
+  value: 30,
+  message: "Insira um valor maior ou igual a 30",
 };
