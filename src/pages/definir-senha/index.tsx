@@ -153,16 +153,16 @@ const DefinePasswordPage: NextPage = () => {
   };
 
   const getColor = (criteria: boolean | null) => {
-    if (criteria === null) return "text.primary";
+    if (criteria === null) return "text.secondary";
     return criteria ? "primary.main" : "error";
   };
 
   const renderValidationIcon = (isValid: boolean | null) => {
     if (isValid === null) return "-";
     return isValid ? (
-      <CheckCircleIcon color="primary.main" sx={{ verticalAlign: "middle" }} />
+      <CheckCircleIcon color="primary.main" sx={{ verticalAlign: "middle", fontSize: 19 }} />
     ) : (
-      <ReportIcon color="error" sx={{ verticalAlign: "middle" }} />
+      <ReportIcon color="error" sx={{ verticalAlign: "middle", fontSize: 19 }} />
     );
   };
 
@@ -241,7 +241,7 @@ const DefinePasswordPage: NextPage = () => {
                 <Typography variant="h5">Olá, {nome}</Typography>
                 <Box mt={2}>
                   <Typography variant="body2">
-                    Cadastre uma senha para acessar o sistema.<br/>
+                    Cadastre uma senha para acessar o sistema.<br />
                     Todos os campos são obrigatórios.
                   </Typography>
                 </Box>
@@ -280,13 +280,13 @@ const DefinePasswordPage: NextPage = () => {
                         endAdornment: (
                           <InputAdornment position="end">
                             <Tooltip title={showNewPassword ? "Ocultar senha" : "Exibir senha"}>
-                                  <IconButton
-                                    onClick={() => setShowNewPassword(!showNewPassword)}
-                                    onMouseDown={(e) => e.preventDefault()}
-                                    sx={{ color: showNewPassword ? 'primary.main' : 'action.active' }}
-                                  >
-                                 {showNewPassword ? <VisibilityOff /> : <Visibility />}
-                                  </IconButton>
+                              <IconButton
+                                onClick={() => setShowNewPassword(!showNewPassword)}
+                                onMouseDown={(e) => e.preventDefault()}
+                                sx={{ color: showNewPassword ? 'primary.main' : 'action.active' }}
+                              >
+                                {showNewPassword ? <VisibilityOff /> : <Visibility />}
+                              </IconButton>
                             </Tooltip>
                           </InputAdornment>
                         ),
@@ -294,17 +294,17 @@ const DefinePasswordPage: NextPage = () => {
                     />
                   )}
                 />
-                <Box mt={1}>
-                  <Typography variant="subtitle1" color={getColor(isValidPassword.hasLetter)} style={{ color: 'gray' }}>
+                <Box mt={1} sx={{ display: "grid" }}>
+                  <Typography variant="caption" color={getColor(isValidPassword.hasLetter)}>
                     {renderValidationIcon(isValidPassword.hasLetter)} Ao menos 1 letra
                   </Typography>
-                  <Typography variant="subtitle1" color={getColor(isValidPassword.hasNumber)} style={{ color: 'gray' }}>
+                  <Typography variant="caption" color={getColor(isValidPassword.hasNumber)}>
                     {renderValidationIcon(isValidPassword.hasNumber)} Ao menos 1 número
                   </Typography>
-                  <Typography variant="subtitle1" color={getColor(isValidPassword.hasSpecialChar)} style={{ color: 'gray' }}>
+                  <Typography variant="caption" color={getColor(isValidPassword.hasSpecialChar)}>
                     {renderValidationIcon(isValidPassword.hasSpecialChar)} Ao menos 1 caractere especial (exs.: !?*-_.#$)
                   </Typography>
-                  <Typography alignContent={"center"} variant="subtitle1" color={getColor(isValidPassword.minLength)} style={{ color: 'gray' }}>
+                  <Typography alignContent={"center"} variant="caption" color={getColor(isValidPassword.minLength)}>
                     {renderValidationIcon(isValidPassword.minLength)} Mínimo de 8 caracteres
                   </Typography>
                 </Box>
@@ -329,10 +329,10 @@ const DefinePasswordPage: NextPage = () => {
                       error={Boolean(error)}
                       helperText={error ? (
                         <Box display="flex" alignItems="center">
-                            <ReportIcon color="error" sx={{ mr: 1 }} />
-                            {error.message}
+                          <ReportIcon color="error" sx={{ mr: 1 }} />
+                          {error.message}
                         </Box>
-                    ) : " "}
+                      ) : " "}
                       fullWidth
                       onChange={onChange}
                       onBlur={onBlur}
@@ -340,14 +340,14 @@ const DefinePasswordPage: NextPage = () => {
                         endAdornment: (
                           <InputAdornment position="end">
                             <Tooltip title={showConfirmPassword ? "Ocultar senha" : "Exibir senha"}>
-                                <IconButton
-                                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                  onMouseDown={(e) => e.preventDefault()}
-                                  sx={{ color: showConfirmPassword ? 'primary.main' : 'action.active' }}
-                                >
+                              <IconButton
+                                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                onMouseDown={(e) => e.preventDefault()}
+                                sx={{ color: showConfirmPassword ? 'primary.main' : 'action.active' }}
+                              >
                                 {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
-                                </IconButton>
-                              </Tooltip>
+                              </IconButton>
+                            </Tooltip>
                           </InputAdornment>
                         ),
                       }}
@@ -365,7 +365,7 @@ const DefinePasswordPage: NextPage = () => {
               )}
 
               {mutationError && (
-                <Box mt={2} mb={2}>
+                <Box mt={1} mb={2}>
                   <Alert severity="error" variant="filled">
                     O limite de tempo para cadastrar a senha foi atingido.
                     <br />

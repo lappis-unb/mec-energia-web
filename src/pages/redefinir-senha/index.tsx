@@ -152,16 +152,16 @@ const RedefinePasswordPage: NextPage = () => {
     };
 
     const getColor = (criteria: boolean | null) => {
-        if (criteria === null) return "text.primary";
+        if (criteria === null) return "text.secondary";
         return criteria ? "primary.main" : "error";
     };
 
     const renderValidationIcon = (isValid: boolean | null) => {
         if (isValid === null) return "-";
         return isValid ? (
-            <CheckCircleIcon color="primary.main" sx={{ verticalAlign: "middle" }} />
+            <CheckCircleIcon color="primary.main" sx={{ verticalAlign: "middle", fontSize: 19 }} />
         ) : (
-            <ReportIcon color="error" sx={{ verticalAlign: "middle" }} />
+            <ReportIcon color="error" sx={{ verticalAlign: "middle", fontSize: 19 }} />
         );
     };
 
@@ -295,18 +295,20 @@ const RedefinePasswordPage: NextPage = () => {
                                         />
                                     )}
                                 />
-                                <Typography variant="subtitle1" color={getColor(isValidPassword.hasLetter)} style={{ color: 'gray' }}>
-                                    {renderValidationIcon(isValidPassword.hasLetter)} Ao menos 1 letra
-                                </Typography>
-                                <Typography variant="subtitle1" color={getColor(isValidPassword.hasNumber)} style={{ color: 'gray' }}>
-                                    {renderValidationIcon(isValidPassword.hasNumber)} Ao menos 1 número
-                                </Typography>
-                                <Typography variant="subtitle1" color={getColor(isValidPassword.hasSpecialChar)} style={{ color: 'gray' }}>
-                                    {renderValidationIcon(isValidPassword.hasSpecialChar)} Ao menos 1 caractere especial (exs.: !?*-_.#$)
-                                </Typography>
-                                <Typography alignContent={"center"} variant="subtitle1" color={getColor(isValidPassword.minLength)} style={{ color: 'gray' }}>
-                                    {renderValidationIcon(isValidPassword.minLength)} Mínimo de 8 caracteres
-                                </Typography>
+                                <Box mt={1} sx={{ display: "grid" }}>
+                                    <Typography variant="caption" color={getColor(isValidPassword.hasLetter)}>
+                                        {renderValidationIcon(isValidPassword.hasLetter)} Ao menos 1 letra
+                                    </Typography>
+                                    <Typography variant="caption" color={getColor(isValidPassword.hasNumber)}>
+                                        {renderValidationIcon(isValidPassword.hasNumber)} Ao menos 1 número
+                                    </Typography>
+                                    <Typography variant="caption" color={getColor(isValidPassword.hasSpecialChar)}>
+                                        {renderValidationIcon(isValidPassword.hasSpecialChar)} Ao menos 1 caractere especial (exs.: !?*-_.#$)
+                                    </Typography>
+                                    <Typography alignContent={"center"} variant="caption" color={getColor(isValidPassword.minLength)}>
+                                        {renderValidationIcon(isValidPassword.minLength)} Mínimo de 8 caracteres
+                                    </Typography>
+                                </Box>
                             </Box>
                             <Box mt={3}>
                                 <Controller
