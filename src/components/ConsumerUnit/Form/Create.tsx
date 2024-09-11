@@ -49,6 +49,8 @@ import { sendFormattedDate } from "@/utils/date";
 import { getSubgroupsText } from "@/utils/get-subgroup-text";
 import { isInSomeSubgroups } from "@/utils/validations/form-validations";
 import FormDrawerV2 from "@/components/Form/DrawerV2";
+import FormFieldError from "@/components/FormFieldError";
+import { minimumDemand } from "@/utils/tariff";
 
 const defaultValues: CreateConsumerUnitForm = {
   name: "",
@@ -77,6 +79,31 @@ const ConsumerUnitCreateForm = () => {
   const { data: distributorList } = useGetDistributorsQuery(
     session?.user?.universityId || skipToken
   );
+
+  const [currentDistributor, setCurrentDistributor] = useState();
+
+  const handleDistributorChange = (event) => {
+    const selectedDistributor = event.id || event.target.value;
+
+    setCurrentDistributor(selectedDistributor);
+    setValue("distributor", selectedDistributor);
+  };
+
+  const mappedDistributorList = distributorList?.map((distributor) => {
+    const idCopy = distributor.id;
+    const valueCopy = distributor.value;
+
+    return {
+      ...distributor,
+      id: idCopy,
+      value: valueCopy,
+    };
+  });
+
+  const sortedDistributorList = mappedDistributorList
+    ?.slice()
+    .sort((a, b) => a.name.localeCompare(b.name));
+
   const [
     createConsumerUnit,
     { status, isError, isSuccess, isLoading, reset: resetMutation },
@@ -145,12 +172,8 @@ const ConsumerUnitCreateForm = () => {
     return true;
   };
 
-  const isValueGreaterThenZero = (
-    value:
-      | CreateConsumerUnitForm["peakContractedDemandInKw"]
-      | CreateConsumerUnitForm["offPeakContractedDemandInKw"]
-  ) => {
-    if (value <= 0) return "Insira um valor maior que 0";
+  const cardTitleStyles: CardTitleStyle = {
+    marginBottom: "15px",
   };
 
   // Modal
@@ -258,8 +281,10 @@ const ConsumerUnitCreateForm = () => {
   const ConsumerUnitSection = useCallback(
     () => (
       <>
-        <Grid item>
-          <Typography variant="h5">Unidade Consumidora</Typography>
+        <Grid item xs={12}>
+          <Typography variant="h5" style={cardTitleStyles}>
+            Unidade Consumidora
+          </Typography>
         </Grid>
         <Grid item>
           <Controller
@@ -280,7 +305,7 @@ const ConsumerUnitCreateForm = () => {
                 label="Nome *"
                 placeholder="Ex.: Campus Gama, Biblioteca, Faculdade de Medicina"
                 error={Boolean(error)}
-                helperText={error?.message ?? " "}
+                helperText={FormFieldError(error?.message)}
                 fullWidth
                 onChange={onChange}
                 onBlur={onBlur}
@@ -298,7 +323,9 @@ const ConsumerUnitCreateForm = () => {
     () => (
       <>
         <Grid item xs={12}>
-          <Typography variant="h5">Contrato</Typography>
+          <Typography variant="h5" style={cardTitleStyles}>
+            Contrato
+          </Typography>
         </Grid>
 
         <Grid item xs={12}>
@@ -314,16 +341,16 @@ const ConsumerUnitCreateForm = () => {
               fieldState: { error },
             }) => (
               <TextField
-                style={{ width: "18rem" }}
+                style={cardTitleStyles}
                 ref={ref}
                 value={value}
                 label="Número da Unidade *"
                 placeholder="Número da Unidade Consumidora conforme a fatura"
-                error={Boolean(error)}
-                helperText={
-                  error?.message ??
+                error={!!error}
+                helperText={FormFieldError(
+                  error?.message,
                   "Nº ou código da Unidade Consumidora conforme a fatura"
-                }
+                )}
                 fullWidth
                 onChange={(e) => handleNumericInputChange(e, onChange)}
                 onBlur={onBlur}
@@ -338,20 +365,18 @@ const ConsumerUnitCreateForm = () => {
             control={control}
             name="distributor"
             rules={{ required: "Preencha este campo" }}
-            render={({
-              field: { onChange, onBlur, value, ref },
-              fieldState: { error },
-            }) => (
+            render={({ field: { onBlur, ref }, fieldState: { error } }) => (
               <FormControl
                 sx={{ minWidth: "200px", maxWidth: "100%" }}
                 error={!!error}
+                style={{ marginTop: "20px" }}
               >
                 <InputLabel>Distribuidora *</InputLabel>
 
                 <Select
                   style={{ width: "10rem" }}
                   ref={ref}
-                  value={value}
+                  value={currentDistributor}
                   label="Distribuidora *"
                   autoWidth
                   MenuProps={{
@@ -364,10 +389,10 @@ const ConsumerUnitCreateForm = () => {
                       horizontal: "left",
                     },
                   }}
-                  onChange={onChange}
+                  onChange={handleDistributorChange}
                   onBlur={onBlur}
                 >
-                  {distributorList?.map(
+                  {sortedDistributorList?.map(
                     (distributor: DistributorPropsTariffs) => {
                       return (
                         <MenuItem key={distributor.id} value={distributor.id}>
@@ -385,7 +410,9 @@ const ConsumerUnitCreateForm = () => {
                   </MenuItem>
                 </Select>
 
-                <FormHelperText>{error?.message ?? " "}</FormHelperText>
+                <FormHelperText>
+                  {FormFieldError(error?.message)}
+                </FormHelperText>
               </FormControl>
             )}
           />
@@ -403,6 +430,7 @@ const ConsumerUnitCreateForm = () => {
               <DatePicker
                 value={value}
                 label="Início da vigência *"
+                views={["month", "year"]}
                 minDate={new Date("2010")}
                 disableFuture
                 renderInput={(params) => (
@@ -412,7 +440,7 @@ const ConsumerUnitCreateForm = () => {
                       ...params.inputProps,
                       placeholder: "dd/mm/aaaa",
                     }}
-                    helperText={error?.message ?? " "}
+                    helperText={FormFieldError(error?.message)}
                     error={!!error}
                   />
                 )}
@@ -461,10 +489,10 @@ const ConsumerUnitCreateForm = () => {
                   value={value}
                   customInput={TextField}
                   label="Tensão contratada *"
-                  helperText={
-                    error?.message ??
+                  helperText={FormFieldError(
+                    error?.message,
                     "Se preciso, converta a tensão de V para kV dividindo o valor por 1.000."
-                  }
+                  )}
                   error={!!error}
                   fullWidth
                   InputProps={{
@@ -503,7 +531,12 @@ const ConsumerUnitCreateForm = () => {
         </Tooltip>
       </>
     ),
-    [control, distributorList, subgroupsList]
+    [
+      control,
+      sortedDistributorList,
+      currentDistributor,
+      handleDistributorChange,
+    ]
   );
 
   const ContractedDemandSection = useCallback(
@@ -552,7 +585,9 @@ const ConsumerUnitCreateForm = () => {
                   </Box>
                 </RadioGroup>
 
-                <FormHelperText>{error?.message ?? " "}</FormHelperText>
+                <FormHelperText>
+                  {FormFieldError(error?.message)}
+                </FormHelperText>
               </FormControl>
             )}
           />
@@ -565,7 +600,7 @@ const ConsumerUnitCreateForm = () => {
               name="contracted"
               rules={{
                 required: "Preencha este campo",
-                validate: isValueGreaterThenZero,
+                min: minimumDemand,
               }}
               render={({
                 field: { onChange, onBlur, value },
@@ -591,7 +626,7 @@ const ConsumerUnitCreateForm = () => {
                   decimalSeparator=","
                   thousandSeparator={"."}
                   error={Boolean(error)}
-                  helperText={error?.message ?? " "}
+                  helperText={FormFieldError(error?.message)}
                   onValueChange={(values) => onChange(values.floatValue)}
                   onBlur={onBlur}
                 />
@@ -606,7 +641,7 @@ const ConsumerUnitCreateForm = () => {
                 name="peakContractedDemandInKw"
                 rules={{
                   required: "Preencha este campo",
-                  validate: isValueGreaterThenZero,
+                  min: minimumDemand,
                 }}
                 render={({
                   field: { onChange, onBlur, value },
@@ -632,7 +667,7 @@ const ConsumerUnitCreateForm = () => {
                     decimalSeparator=","
                     thousandSeparator={"."}
                     error={Boolean(error)}
-                    helperText={error?.message ?? " "}
+                    helperText={FormFieldError(error?.message)}
                     onValueChange={(values) => onChange(values.floatValue)}
                     onBlur={onBlur}
                   />
@@ -646,7 +681,7 @@ const ConsumerUnitCreateForm = () => {
                 name="offPeakContractedDemandInKw"
                 rules={{
                   required: "Preencha este campo",
-                  validate: isValueGreaterThenZero,
+                  min: minimumDemand,
                 }}
                 render={({
                   field: { onChange, onBlur, value },
@@ -672,7 +707,7 @@ const ConsumerUnitCreateForm = () => {
                     decimalSeparator=","
                     thousandSeparator={"."}
                     error={Boolean(error)}
-                    helperText={error?.message ?? " "}
+                    helperText={FormFieldError(error?.message)}
                     onValueChange={(values) => onChange(values.floatValue)}
                     onBlur={onBlur}
                   />
@@ -742,7 +777,7 @@ const ConsumerUnitCreateForm = () => {
                     required: "Preencha este campo",
                     min: {
                       value: 0.01,
-                      message: "Insira um valor maior que R$ 0,00",
+                      message: "Insira um valor maior que 0,00",
                     },
                   }}
                   render={({
@@ -767,8 +802,8 @@ const ConsumerUnitCreateForm = () => {
                       decimalScale={2}
                       decimalSeparator=","
                       thousandSeparator={"."}
-                      error={Boolean(error)}
-                      helperText={error?.message ?? " "}
+                      error={!!error}
+                      helperText={FormFieldError(error?.message)}
                       onValueChange={(values) => onChange(values.floatValue)}
                       onBlur={onBlur}
                     />
@@ -812,6 +847,7 @@ const ConsumerUnitCreateForm = () => {
       <DistributorCreateFormDialog
         open={shouldShowDistributorFormDialog}
         onClose={handleCloseDistributorFormDialog}
+        handleDistributorChange={handleDistributorChange}
       />
     </Fragment>
   );

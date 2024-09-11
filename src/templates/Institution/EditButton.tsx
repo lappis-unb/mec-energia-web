@@ -21,7 +21,7 @@ const InstitutionEditButton = ({
 
   return (
     <>
-      <IconButton size="small" onClick={handleClick}>
+      <IconButton style={{ color: '#000000DE' }} size="small" onClick={handleClick}>
         <EditRounded />
       </IconButton>
 

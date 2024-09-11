@@ -7,6 +7,7 @@ import {
   setIsSuccessNotificationOpen,
 } from "../../../store/appSlice";
 import { PatternFormat } from "react-number-format";
+import isValidCnpj from "@/utils/validations/isValidCnpj";
 
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { Grid, TextField, Typography } from "@mui/material";
@@ -17,6 +18,7 @@ import {
   CreateInstitutionRequestPayload,
 } from "@/types/institution";
 import FormDrawerV2 from "@/components/Form/DrawerV2";
+import FormFieldError from "@/components/FormFieldError";
 
 const defaultValues: CreateInstitutionForm = {
   acronym: "",
@@ -104,6 +106,13 @@ const CreateInstitutionForm = () => {
     return true;
   };
 
+  const noSpecialCharacters = (value: CreateInstitutionForm["name"]) => {
+    const regex = /^[a-zA-Z\s\u00C0-\u017F]*$/;
+    if (!regex.test(value))
+      return "Insira somente letras, sem números ou caracteres especiais";
+    return true;
+  };
+
   const InstitutionSection = useCallback(
     () => (
       <>
@@ -129,8 +138,8 @@ const CreateInstitutionForm = () => {
                 label="Sigla *"
                 placeholder="Ex.: UFX"
                 error={Boolean(error)}
-                helperText={error?.message ?? " "}
-                style={{ width: "160px" }}
+                helperText={FormFieldError(error?.message)}
+                fullWidth
                 onChange={onChange}
                 onBlur={onBlur}
               />
@@ -138,13 +147,16 @@ const CreateInstitutionForm = () => {
           />
         </Grid>
 
-        <Grid item xs={12}>
+        <Grid item xs={12} mt={0.3}>
           <Controller
             control={control}
             name="name"
             rules={{
               required: "Preencha este campo",
-              validate: hasEnoughCaracteresLength,
+              validate: {
+                length: hasEnoughCaracteresLength,
+                noSpecialChars: noSpecialCharacters,
+              },
             }}
             render={({
               field: { onChange, onBlur, value, ref },
@@ -156,7 +168,7 @@ const CreateInstitutionForm = () => {
                 label="Nome *"
                 placeholder="Ex.: Universidade Federal de ..."
                 error={Boolean(error)}
-                helperText={error?.message ?? " "}
+                helperText={FormFieldError(error?.message)}
                 fullWidth
                 onChange={onChange}
                 onBlur={onBlur}
@@ -165,17 +177,14 @@ const CreateInstitutionForm = () => {
           />
         </Grid>
 
-        <Grid item xs={12}>
+        <Grid item xs={12} mt={0.3}>
           <Controller
             control={control}
             name="cnpj"
             rules={{
               required: "Preencha este campo",
-              pattern: {
-                value:
-                  /([0-9]{2}[\.]?[0-9]{3}[\.]?[0-9]{3}[\/]?[0-9]{4}[-]?[0-9]{2})/,
-                message: "Insira um CNPJ válido com 14 dígitos",
-              },
+              validate: (value) =>
+                isValidCnpj(value) || "Insira um CNPJ válido com 14 dígitos",
             }}
             render={({
               field: { onChange, onBlur, value },
@@ -188,8 +197,8 @@ const CreateInstitutionForm = () => {
                 format="##.###.###/####-##"
                 placeholder="Ex.: 12345678000167"
                 error={Boolean(error)}
-                helperText={error?.message ?? " "}
-                style={{ width: "188px" }}
+                helperText={FormFieldError(error?.message)}
+                fullWidth
                 onChange={onChange}
                 onBlur={onBlur}
               />

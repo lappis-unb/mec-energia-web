@@ -31,6 +31,7 @@ import { useSession } from "next-auth/react";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import FormDrawerV2 from "@/components/Form/DrawerV2";
 import isValidCnpj from "@/utils/validations/isValidCnpj";
+import FormFieldError from "@/components/FormFieldError";
 
 const defaultValues: EditDistributorForm = {
   isActive: true,
@@ -67,6 +68,10 @@ const DistributorEditForm = () => {
       return;
     }
     handleDiscardForm();
+  };
+
+  const cardTitleStyles: CardTitleStyle = {
+    marginBottom: "15px",
   };
 
   const isActive = watch("isActive");
@@ -166,7 +171,9 @@ const DistributorEditForm = () => {
     () => (
       <Grid container spacing={1}>
         <Grid item xs={12}>
-          <Typography variant="h5">Distribuidora</Typography>
+          <Typography variant="h5" style={cardTitleStyles}>
+            Distribuidora
+          </Typography>
         </Grid>
         <Grid item xs={12}>
           <Controller
@@ -189,7 +196,7 @@ const DistributorEditForm = () => {
                 label="Nome *"
                 placeholder="Ex.: CEMIG, Enel, Neonergia"
                 error={Boolean(error)}
-                helperText={error?.message ?? " "}
+                helperText={FormFieldError(error?.message)}
                 fullWidth
                 onBlur={onBlur}
                 onChange={(e) => {
@@ -249,9 +256,9 @@ const DistributorEditForm = () => {
                 format="##.###.###/####-##"
                 placeholder="Ex.: 12345678000167"
                 error={Boolean(error) || !cnpjValid}
-                helperText={
-                  error?.message ?? (cnpjValid ? " " : "CNPJ inválido")
-                }
+                helperText={FormFieldError(
+                  error?.message ?? (cnpjValid ? undefined : "CNPJ inválido")
+                )}
                 fullWidth
                 onChange={(e) => {
                   const newValue = e.target.value;

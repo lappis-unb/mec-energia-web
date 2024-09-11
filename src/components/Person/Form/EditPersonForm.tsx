@@ -22,8 +22,9 @@ import {
   useGetUniversityPersonQuery,
 } from "@/api";
 import { isValidEmail } from "@/utils/validations/form-validations";
-import { skipToken } from "@reduxjs/toolkit/dist/query";
+import { skipToken } from "@reduxjs/toolkit/query";
 import FormDrawerV2 from "@/components/Form/DrawerV2";
+import FormFieldError from "@/components/FormFieldError";
 
 const defaultValues: EditPersonForm = {
   email: "",
@@ -33,7 +34,7 @@ const defaultValues: EditPersonForm = {
   type: UserRole.UNIVERSITY_USER,
 };
 
-const EditPersonForm = () => {
+const EditPersonComponent = () => {
   const dispatch = useDispatch();
   const isEditFormOpen = useSelector(selectIsPersonEditFormOpen);
   const [shouldShowCancelDialog, setShouldShowCancelDialog] = useState(false);
@@ -144,11 +145,17 @@ const EditPersonForm = () => {
     return true;
   };
 
+  const cardTitleStyles: CardTitleStyle = {
+    marginBottom: "15px",
+  };
+
   const PersonalInformationSection = useCallback(
     () => (
       <>
         <Grid item xs={12}>
-          <Typography variant="h5">Informações pessoais</Typography>
+          <Typography variant="h5" style={cardTitleStyles}>
+            Informações pessoais
+          </Typography>
         </Grid>
 
         <Grid item xs={12}>
@@ -164,12 +171,11 @@ const EditPersonForm = () => {
               fieldState: { error },
             }) => (
               <TextField
-                style={{ width: "200px" }}
                 ref={ref}
                 value={value}
                 label="Nome *"
                 error={Boolean(error)}
-                helperText={error?.message ?? " "}
+                helperText={FormFieldError(error?.message)}
                 fullWidth
                 onChange={onChange}
                 onBlur={onBlur}
@@ -178,7 +184,7 @@ const EditPersonForm = () => {
           />
         </Grid>
 
-        <Grid item xs={12}>
+        <Grid item xs={12} mt={0.3}>
           <Controller
             control={control}
             name="lastName"
@@ -195,7 +201,7 @@ const EditPersonForm = () => {
                 value={value}
                 label="Sobrenome *"
                 error={Boolean(error)}
-                helperText={error?.message ?? " "}
+                helperText={FormFieldError(error?.message)}
                 fullWidth
                 onChange={onChange}
                 onBlur={onBlur}
@@ -204,7 +210,7 @@ const EditPersonForm = () => {
           />
         </Grid>
 
-        <Grid item xs={12}>
+        <Grid item xs={12} mt={0.3}>
           <Controller
             control={control}
             name="email"
@@ -223,7 +229,7 @@ const EditPersonForm = () => {
                 label="E-mail institucional *"
                 placeholder="Ex.: voce@universidade.br"
                 error={Boolean(error)}
-                helperText={error?.message ?? " "}
+                helperText={FormFieldError(error?.message)}
                 fullWidth
                 onChange={onChange}
                 onBlur={onBlur}
@@ -260,4 +266,4 @@ const EditPersonForm = () => {
   );
 };
 
-export default EditPersonForm;
+export default EditPersonComponent;

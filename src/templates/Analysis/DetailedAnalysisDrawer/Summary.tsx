@@ -25,37 +25,37 @@ export const Summary = () => (
     }}>
       <li>
         <Link href="#goal" color="primary">
-          <Typography>Objetivo</Typography>
+          Objetivo
         </Link>
       </li>
       <li>
         <Link href="#assumptionsOfContractAnalytics" color="primary">
-          <Typography>Premissas para análise do contrato</Typography>
+          Premissas para análise do contrato
         </Link>
       </li>
       <li>
         <Link href="#characteristicsOfConsumerUnity" color="primary">
-          <Typography>Características de fornecimento da Unidade Consumidora</Typography>
+          Características de fornecimento da Unidade Consumidora
         </Link>
       </li>
       <li>
         <Link href="#actualContract" color="primary">
-          <Typography>Contrato atual</Typography>
+          Contrato atual
         </Link>
       </li>
       <li>
         <Link href="#proposedContract" color="primary">
-          <Typography>Contrato proposto</Typography>
+          Contrato proposto
         </Link>
       </li>
       <li>
         <Link href="#conclusions" color="primary">
-          <Typography>Conclusões</Typography>
+          Conclusões
         </Link>
       </li>
       <li>
         <Link href="#glossary" color="primary">
-          <Typography>Glossário</Typography>
+          Glossário
         </Link>
       </li>
     </ul>

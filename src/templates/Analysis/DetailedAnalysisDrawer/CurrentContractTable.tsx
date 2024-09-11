@@ -117,9 +117,23 @@ export const CurrentContractTable = ({
 
   return (
     <>
-      <Box>
+      <Box
+        sx={{
+          "@media print": {
+            width: "620px",
+            marginX: "auto",
+          }
+        }}
+      >
         <TableContainer component={Paper} sx={{ boxShadow: 0 }}>
-          <Table sx={{ minWidth: 650 }} aria-label="simple table">
+          <Table
+            sx={{
+              "@media print": {
+                overflow: "hidden",
+              }
+            }}
+            aria-label="simple table"
+          >
             <TableHead
               sx={{ bgcolor: "primary.main", display: "table-header-group" }}
             >
