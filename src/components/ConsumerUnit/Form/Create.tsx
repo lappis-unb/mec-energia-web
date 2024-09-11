@@ -734,7 +734,7 @@ const ConsumerUnitCreateForm = () => {
                 </Alert>
               </Grid>
 
-              <Grid item xs={12}>
+              <Grid item xs={5.3}>
                 <Controller
                   control={control}
                   name="totalInstalledPower"

@@ -220,6 +220,7 @@ const CreatePersonForm = () => {
               <TextField
                 ref={ref}
                 value={value}
+                hiddenLabel={false}
                 label="E-mail institucional *"
                 placeholder="Ex.: voce@universidade.br"
                 error={Boolean(error)}
@@ -247,7 +248,6 @@ const CreatePersonForm = () => {
                     id="university-select"
                     options={institutionsOptions || []}
                     getOptionLabel={(option) => option.label}
-                    sx={{ width: 450 }}
                     renderInput={(params) => (
                       <TextField
                         {...params}

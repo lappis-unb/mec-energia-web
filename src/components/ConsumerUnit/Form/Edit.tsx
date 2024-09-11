@@ -364,7 +364,7 @@ const ConsumerUnitEditForm = () => {
             />
           </Grid>
         </Grid>
-        
+
         <Grid item xs={12}>
           <Controller
             name="isActive"
@@ -383,7 +383,7 @@ const ConsumerUnitEditForm = () => {
                     <FormControlLabel
                       label="Unidade ativa"
                       labelPlacement="start"
-                      sx={{ margin: 0.5}}
+                      sx={{ margin: 0.5 }}
                       control={
                         <Box>
                           <Switch
@@ -399,8 +399,8 @@ const ConsumerUnitEditForm = () => {
 
                 <FormHelperText>
                   <p>
-                  Só unidades ativas geram recomendações e recebem faturas. Não é
-                  possível excluir unidades, apenas desativá-las.
+                    Só unidades ativas geram recomendações e recebem faturas.
+                    Não é possível excluir unidades, apenas desativá-las.
                   </p>
                 </FormHelperText>
               </FormGroup>
@@ -833,7 +833,7 @@ const ConsumerUnitEditForm = () => {
                 </Alert>
               </Grid>
 
-              <Grid item xs={12}>
+              <Grid item xs={5.3}>
                 <Controller
                   control={control}
                   name="totalInstalledPower"
