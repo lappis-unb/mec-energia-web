@@ -525,12 +525,12 @@ const CreateEditEnergyBillForm = () => {
                 <DatePicker
                   inputFormat="MMMM/yyyy"
                   value={value}
-                  views={["month", "year"]}
+                  views={["year", "month"]}
                   label="Mês de referência *"
                   minDate={new Date(minContractYear, 0)}
                   maxDate={new Date()}
-                  shouldDisableMonth={blockedMonths}
                   shouldDisableYear={blockedYears}
+                  shouldDisableMonth={blockedMonths}
                   renderInput={(params) => (
                     <TextField
                       {...params}
@@ -559,9 +559,11 @@ const CreateEditEnergyBillForm = () => {
                     sx: {
                       "& .Mui-disabled": {
                         textDecoration: "line-through",
+                        color: "rgba(0, 0, 0, 0.26)",
                       },
-                      "& .PrivatePickersMonth-root[disabled]": {
+                      "& .PrivatePickersMonth-root:disabled": {
                         textDecoration: "line-through",
+                        color: "rgba(0, 0, 0, 0.26)",
                       },
                     },
                   }}
