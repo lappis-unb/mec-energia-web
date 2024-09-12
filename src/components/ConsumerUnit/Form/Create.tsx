@@ -286,7 +286,7 @@ const ConsumerUnitCreateForm = () => {
             Unidade Consumidora
           </Typography>
         </Grid>
-        <Grid item xs={12}>
+        <Grid item>
           <Controller
             control={control}
             name="name"
@@ -374,6 +374,7 @@ const ConsumerUnitCreateForm = () => {
                 <InputLabel>Distribuidora *</InputLabel>
 
                 <Select
+                  style={{ width: "10rem" }}
                   ref={ref}
                   value={currentDistributor}
                   label="Distribuidora *"
@@ -417,7 +418,7 @@ const ConsumerUnitCreateForm = () => {
           />
         </Grid>
 
-        <Grid item xs={12}>
+        <Grid item xs={12} style={{ width: "14rem" }}>
           <Controller
             control={control}
             name="startDate"
@@ -484,6 +485,7 @@ const ConsumerUnitCreateForm = () => {
                 fieldState: { error },
               }) => (
                 <NumericFormat
+                  style={{ width: "10rem" }}
                   value={value}
                   customInput={TextField}
                   label="Tensão contratada *"
@@ -605,6 +607,7 @@ const ConsumerUnitCreateForm = () => {
                 fieldState: { error },
               }) => (
                 <NumericFormat
+                  style={{ width: "10rem" }}
                   value={value}
                   customInput={TextField}
                   label="Demanda *"
@@ -645,6 +648,7 @@ const ConsumerUnitCreateForm = () => {
                   fieldState: { error },
                 }) => (
                   <NumericFormat
+                    style={{ width: "11rem" }}
                     value={value}
                     customInput={TextField}
                     label="Dema. Ponta *"
@@ -684,6 +688,7 @@ const ConsumerUnitCreateForm = () => {
                   fieldState: { error },
                 }) => (
                   <NumericFormat
+                    style={{ width: "11rem" }}
                     value={value}
                     customInput={TextField}
                     label="Dem. Fora Ponta *"
@@ -764,7 +769,7 @@ const ConsumerUnitCreateForm = () => {
                 </Alert>
               </Grid>
 
-              <Grid item xs={12}>
+              <Grid item xs={5.3}>
                 <Controller
                   control={control}
                   name="totalInstalledPower"
