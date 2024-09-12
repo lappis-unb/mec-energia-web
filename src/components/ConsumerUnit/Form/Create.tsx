@@ -531,12 +531,7 @@ const ConsumerUnitCreateForm = () => {
         </Tooltip>
       </>
     ),
-    [
-      control,
-      sortedDistributorList,
-      currentDistributor,
-      handleDistributorChange,
-    ]
+    []
   );
 
   const ContractedDemandSection = useCallback(
