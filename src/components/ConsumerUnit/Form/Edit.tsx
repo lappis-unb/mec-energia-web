@@ -84,9 +84,29 @@ const ConsumerUnitEditForm = () => {
   const { data: distributorList } = useGetDistributorsQuery(
     session?.user?.universityId || skipToken
   );
+  const [currentDistributor, setCurrentDistributor] = useState();
 
-  const sortedDistributorList = distributorList?.slice().sort((a, b) => a.name.localeCompare(b.name));
+  const handleDistributorChange = (event) => {
+    const selectedDistributor = event.id || event.target.value;
 
+    setCurrentDistributor(selectedDistributor);
+    setValue("distributor", selectedDistributor);
+  };
+
+  const mappedDistributorList = distributorList?.map((distributor) => {
+    const idCopy = distributor.id || distributor.value;
+    const valueCopy = distributor.value || distributor.id;
+
+    return {
+      ...distributor,
+      id: idCopy,
+      value: valueCopy,
+    };
+  });
+
+  const sortedDistributorList = mappedDistributorList
+    ?.slice()
+    .sort((a, b) => a.name.localeCompare(b.name));
   const { data: contract } = useGetContractQuery(
     activeConsumerUnit || skipToken
   );
@@ -115,60 +135,64 @@ const ConsumerUnitEditForm = () => {
   const isActive = watch("isActive");
   const shouldShowInstalledPower = watch("shouldShowInstalledPower");
 
-  useEffect(() => {
-    if (isEditFormOpen && consumerUnit && contract) {
-      const fetchData = async () => {
-        try {
-          const { data: consumerUnit } = await refetchConsumerUnit();
+  useEffect(
+    () => {
+      if (isEditFormOpen && consumerUnit && contract) {
+        const fetchData = async () => {
+          try {
+            const { data: consumerUnit } = await refetchConsumerUnit();
 
-          if (!consumerUnit || !contract) {
-            return;
+            if (!consumerUnit || !contract) {
+              return;
+            }
+
+            setValue("name", consumerUnit?.name ?? "");
+            setValue("isActive", true);
+            setValue("code", consumerUnit?.code ?? "");
+            setValue("distributor", contract?.distributor);
+            setValue("supplyVoltage", contract?.supplyVoltage);
+            setValue(
+              "shouldShowInstalledPower",
+              consumerUnit?.totalInstalledPower != null
+            );
+            setValue("totalInstalledPower", consumerUnit?.totalInstalledPower);
+
+            if (contract?.supplyVoltage === 69) {
+              setShouldShowGreenDemand(false);
+            } else if (
+              contract?.supplyVoltage >= 88 &&
+              contract?.supplyVoltage <= 138
+            ) {
+              setShouldShowGreenDemand(false);
+            } else {
+              setShouldShowGreenDemand(true);
+            }
+            setValue(
+              "peakContractedDemandInKw",
+              contract?.peakContractedDemandInKw
+            );
+            setValue(
+              "offPeakContractedDemandInKw",
+              contract?.offPeakContractedDemandInKw
+            );
+
+            const currentDate = new Date(contract?.startDate);
+            currentDate.setDate(currentDate.getDate() + 1);
+            setValue("startDate", currentDate);
+          } catch (err) {
+            console.error("Failed to refetch:", err);
           }
+        };
 
-          setValue("name", consumerUnit?.name ?? "");
-          setValue("isActive", true);
-          setValue("code", consumerUnit?.code ?? "");
-          setValue("distributor", contract?.distributor);
-          setValue("supplyVoltage", contract?.supplyVoltage);
-          setValue(
-            "shouldShowInstalledPower",
-            consumerUnit?.totalInstalledPower != null
-          );
-          setValue("totalInstalledPower", consumerUnit?.totalInstalledPower);
-
-          if (contract?.supplyVoltage === 69) {
-            setShouldShowGreenDemand(false);
-          } else if (
-            contract?.supplyVoltage >= 88 &&
-            contract?.supplyVoltage <= 138
-          ) {
-            setShouldShowGreenDemand(false);
-          } else {
-            setShouldShowGreenDemand(true);
-          }
-          setValue(
-            "peakContractedDemandInKw",
-            contract?.peakContractedDemandInKw
-          );
-          setValue(
-            "offPeakContractedDemandInKw",
-            contract?.offPeakContractedDemandInKw
-          );
-
-          const currentDate = new Date(contract?.startDate);
-          currentDate.setDate(currentDate.getDate() + 1);
-          setValue("startDate", currentDate);
-        } catch (err) {
-          console.error("Failed to refetch:", err);
+        // Garante que o refetch não seja executado antes do fetch
+        if (isEditFormOpen) {
+          fetchData();
         }
-      };
-
-      // Garante que o refetch não seja executado antes do fetch
-      if (isEditFormOpen) {
-        fetchData();
       }
-    }
-  }, [isEditFormOpen, consumerUnit, contract, setValue], refetchConsumerUnit);
+    },
+    [isEditFormOpen, consumerUnit, contract, setValue],
+    refetchConsumerUnit
+  );
 
   useEffect(() => {
     setValue("isActive", isActive);
@@ -396,8 +420,8 @@ const ConsumerUnitEditForm = () => {
 
                 <FormHelperText>
                   <p>
-                    Só unidades ativas geram recomendações e recebem faturas. Não é
-                    possível excluir unidades, apenas desativá-las.
+                    Só unidades ativas geram recomendações e recebem faturas.
+                    Não é possível excluir unidades, apenas desativá-las.
                   </p>
                 </FormHelperText>
               </FormGroup>
@@ -443,12 +467,10 @@ const ConsumerUnitEditForm = () => {
                   label="Número da Unidade *"
                   placeholder="Número da Unidade Consumidora conforme a fatura"
                   error={Boolean(error)}
-                  helperText={
-                    FormFieldError(
-                      error?.message,
-                      "Nº ou código da Unidade Consumidora conforme a fatura"
-                    )
-                  }
+                  helperText={FormFieldError(
+                    error?.message,
+                    "Nº ou código da Unidade Consumidora conforme a fatura"
+                  )}
                   fullWidth
                   onChange={(e) => handleNumericInputChange(e, onChange)}
                   onBlur={onBlur}
@@ -463,10 +485,7 @@ const ConsumerUnitEditForm = () => {
               control={control}
               name="distributor"
               rules={{ required: "Preencha este campo" }}
-              render={({
-                field: { onChange, onBlur, value, ref },
-                fieldState: { error }
-              }) => (
+              render={({ field: { onBlur, ref }, fieldState: { error } }) => (
                 <FormControl
                   sx={{ minWidth: "200px", maxWidth: "100%" }}
                   error={!!error}
@@ -475,7 +494,7 @@ const ConsumerUnitEditForm = () => {
 
                   <Select
                     ref={ref}
-                    value={value}
+                    value={currentDistributor}
                     label="Distribuidora *"
                     MenuProps={{
                       anchorOrigin: {
@@ -487,7 +506,7 @@ const ConsumerUnitEditForm = () => {
                         horizontal: "left",
                       },
                     }}
-                    onChange={onChange}
+                    onChange={handleDistributorChange}
                     onBlur={onBlur}
                   >
                     {sortedDistributorList?.map(
@@ -508,7 +527,9 @@ const ConsumerUnitEditForm = () => {
                     </MenuItem>
                   </Select>
 
-                  <FormHelperText>{FormFieldError(error?.message)}</FormHelperText>
+                  <FormHelperText>
+                    {FormFieldError(error?.message)}
+                  </FormHelperText>
                 </FormControl>
               )}
             />
@@ -566,12 +587,10 @@ const ConsumerUnitEditForm = () => {
                   value={value}
                   customInput={TextField}
                   label="Tensão contratada *"
-                  helperText={
-                    FormFieldError(
-                      error?.message,
-                      "Se preciso, converta a tensão de V para kV dividindo o valor por 1.000."
-                    )
-                  }
+                  helperText={FormFieldError(
+                    error?.message,
+                    "Se preciso, converta a tensão de V para kV dividindo o valor por 1.000."
+                  )}
                   error={!!error}
                   fullWidth
                   InputProps={{
@@ -609,7 +628,12 @@ const ConsumerUnitEditForm = () => {
         </Grid>
       </>
     ),
-    [control, distributorList, subgroupsList, consumerUnit]
+    [
+      control,
+      sortedDistributorList,
+      currentDistributor,
+      handleDistributorChange,
+    ]
   );
 
   const ContractedDemand = useCallback(
@@ -720,7 +744,7 @@ const ConsumerUnitEditForm = () => {
           <NumericFormat
             value={value}
             customInput={TextField}
-            label="De. Ponta *"
+            label="Dem. Ponta *"
             fullWidth
             InputProps={{
               endAdornment: (
@@ -837,7 +861,7 @@ const ConsumerUnitEditForm = () => {
                 </Alert>
               </Grid>
 
-              <Grid item xs={12}>
+              <Grid item xs={5.3}>
                 <Controller
                   control={control}
                   name="totalInstalledPower"
@@ -915,6 +939,7 @@ const ConsumerUnitEditForm = () => {
       <DistributorCreateFormDialog
         open={shouldShowDistributorFormDialog}
         onClose={handleCloseDistributorFormDialog}
+        handleDistributorChange={handleDistributorChange}
       />
     </Fragment>
   );

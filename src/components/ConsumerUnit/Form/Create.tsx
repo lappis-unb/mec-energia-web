@@ -80,7 +80,29 @@ const ConsumerUnitCreateForm = () => {
     session?.user?.universityId || skipToken
   );
 
-  const sortedDistributorList = distributorList?.slice().sort((a, b) => a.name.localeCompare(b.name));
+  const [currentDistributor, setCurrentDistributor] = useState();
+
+  const handleDistributorChange = (event) => {
+    const selectedDistributor = event.id || event.target.value;
+
+    setCurrentDistributor(selectedDistributor);
+    setValue("distributor", selectedDistributor);
+  };
+
+  const mappedDistributorList = distributorList?.map((distributor) => {
+    const idCopy = distributor.id;
+    const valueCopy = distributor.value;
+
+    return {
+      ...distributor,
+      id: idCopy,
+      value: valueCopy,
+    };
+  });
+
+  const sortedDistributorList = mappedDistributorList
+    ?.slice()
+    .sort((a, b) => a.name.localeCompare(b.name));
 
   const [
     createConsumerUnit,
@@ -148,6 +170,10 @@ const ConsumerUnitCreateForm = () => {
     }
 
     return true;
+  };
+
+  const cardTitleStyles: CardTitleStyle = {
+    marginBottom: "15px",
   };
 
   // Modal
@@ -256,9 +282,11 @@ const ConsumerUnitCreateForm = () => {
     () => (
       <>
         <Grid item xs={12}>
-          <Typography variant="h5" style={{ marginBottom: '16px' }} >Unidade Consumidora</Typography>
+          <Typography variant="h5" style={cardTitleStyles}>
+            Unidade Consumidora
+          </Typography>
         </Grid>
-        <Grid item xs={12}>
+        <Grid item>
           <Controller
             control={control}
             name="name"
@@ -295,7 +323,9 @@ const ConsumerUnitCreateForm = () => {
     () => (
       <>
         <Grid item xs={12}>
-          <Typography variant="h5" style={{ marginBottom: '13px' }}>Contrato</Typography>
+          <Typography variant="h5" style={cardTitleStyles}>
+            Contrato
+          </Typography>
         </Grid>
 
         <Grid item xs={12}>
@@ -311,17 +341,16 @@ const ConsumerUnitCreateForm = () => {
               fieldState: { error },
             }) => (
               <TextField
+                style={cardTitleStyles}
                 ref={ref}
                 value={value}
                 label="Número da Unidade *"
                 placeholder="Número da Unidade Consumidora conforme a fatura"
                 error={!!error}
-                helperText={
-                  FormFieldError(
-                    error?.message,
-                    "Nº ou código da Unidade Consumidora conforme a fatura"
-                  )
-                }
+                helperText={FormFieldError(
+                  error?.message,
+                  "Nº ou código da Unidade Consumidora conforme a fatura"
+                )}
                 fullWidth
                 onChange={(e) => handleNumericInputChange(e, onChange)}
                 onBlur={onBlur}
@@ -336,20 +365,18 @@ const ConsumerUnitCreateForm = () => {
             control={control}
             name="distributor"
             rules={{ required: "Preencha este campo" }}
-            render={({
-              field: { onChange, onBlur, value, ref },
-              fieldState: { error },
-            }) => (
+            render={({ field: { onBlur, ref }, fieldState: { error } }) => (
               <FormControl
                 sx={{ minWidth: "200px", maxWidth: "100%" }}
                 error={!!error}
-                style={{ marginTop: '20px' }}
+                style={{ marginTop: "20px" }}
               >
                 <InputLabel>Distribuidora *</InputLabel>
 
                 <Select
+                  style={{ width: "10rem" }}
                   ref={ref}
-                  value={value}
+                  value={currentDistributor}
                   label="Distribuidora *"
                   autoWidth
                   MenuProps={{
@@ -362,7 +389,7 @@ const ConsumerUnitCreateForm = () => {
                       horizontal: "left",
                     },
                   }}
-                  onChange={onChange}
+                  onChange={handleDistributorChange}
                   onBlur={onBlur}
                 >
                   {sortedDistributorList?.map(
@@ -383,13 +410,15 @@ const ConsumerUnitCreateForm = () => {
                   </MenuItem>
                 </Select>
 
-                <FormHelperText>{FormFieldError(error?.message)}</FormHelperText>
+                <FormHelperText>
+                  {FormFieldError(error?.message)}
+                </FormHelperText>
               </FormControl>
             )}
           />
         </Grid>
 
-        <Grid item xs={12}>
+        <Grid item xs={12} style={{ width: "14rem" }}>
           <Controller
             control={control}
             name="startDate"
@@ -456,15 +485,14 @@ const ConsumerUnitCreateForm = () => {
                 fieldState: { error },
               }) => (
                 <NumericFormat
+                  style={{ width: "10rem" }}
                   value={value}
                   customInput={TextField}
                   label="Tensão contratada *"
-                  helperText={
-                    FormFieldError(
-                      error?.message,
-                      "Se preciso, converta a tensão de V para kV dividindo o valor por 1.000."
-                    )
-                  }
+                  helperText={FormFieldError(
+                    error?.message,
+                    "Se preciso, converta a tensão de V para kV dividindo o valor por 1.000."
+                  )}
                   error={!!error}
                   fullWidth
                   InputProps={{
@@ -503,7 +531,12 @@ const ConsumerUnitCreateForm = () => {
         </Tooltip>
       </>
     ),
-    [control, distributorList, subgroupsList]
+    [
+      control,
+      sortedDistributorList,
+      currentDistributor,
+      handleDistributorChange,
+    ]
   );
 
   const ContractedDemandSection = useCallback(
@@ -552,7 +585,9 @@ const ConsumerUnitCreateForm = () => {
                   </Box>
                 </RadioGroup>
 
-                <FormHelperText>{FormFieldError(error?.message)}</FormHelperText>
+                <FormHelperText>
+                  {FormFieldError(error?.message)}
+                </FormHelperText>
               </FormControl>
             )}
           />
@@ -572,6 +607,7 @@ const ConsumerUnitCreateForm = () => {
                 fieldState: { error },
               }) => (
                 <NumericFormat
+                  style={{ width: "10rem" }}
                   value={value}
                   customInput={TextField}
                   label="Demanda *"
@@ -615,7 +651,7 @@ const ConsumerUnitCreateForm = () => {
             <NumericFormat
               value={value}
               customInput={TextField}
-              label="De. Ponta *"
+              label="Dem. Ponta *"
               fullWidth
               InputProps={{
                 endAdornment: (
@@ -733,7 +769,7 @@ const ConsumerUnitCreateForm = () => {
                 </Alert>
               </Grid>
 
-              <Grid item xs={12}>
+              <Grid item xs={5.3}>
                 <Controller
                   control={control}
                   name="totalInstalledPower"
@@ -811,6 +847,7 @@ const ConsumerUnitCreateForm = () => {
       <DistributorCreateFormDialog
         open={shouldShowDistributorFormDialog}
         onClose={handleCloseDistributorFormDialog}
+        handleDistributorChange={handleDistributorChange}
       />
     </Fragment>
   );

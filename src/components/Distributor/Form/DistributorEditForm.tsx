@@ -70,6 +70,10 @@ const DistributorEditForm = () => {
     handleDiscardForm();
   };
 
+  const cardTitleStyles: CardTitleStyle = {
+    marginBottom: "15px",
+  };
+
   const isActive = watch("isActive");
 
   useEffect(() => {
@@ -167,7 +171,9 @@ const DistributorEditForm = () => {
     () => (
       <Grid container spacing={1}>
         <Grid item xs={12}>
-          <Typography variant="h5" style={{ marginBottom: '10px' }}>Distribuidora</Typography>
+          <Typography variant="h5" style={cardTitleStyles}>
+            Distribuidora
+          </Typography>
         </Grid>
         <Grid item xs={12}>
           <Controller
@@ -243,15 +249,16 @@ const DistributorEditForm = () => {
               fieldState: { error },
             }) => (
               <PatternFormat
+                style={{ width: "12rem" }}
                 value={value}
                 customInput={TextField}
                 label="CNPJ *"
                 format="##.###.###/####-##"
                 placeholder="Ex.: 12345678000167"
                 error={Boolean(error) || !cnpjValid}
-                helperText={
-                  FormFieldError(error?.message ?? (cnpjValid ? undefined : "CNPJ inválido"))
-                }
+                helperText={FormFieldError(
+                  error?.message ?? (cnpjValid ? undefined : "CNPJ inválido")
+                )}
                 fullWidth
                 onChange={(e) => {
                   const newValue = e.target.value;
