@@ -1,8 +1,10 @@
-import { ReactNode } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { Box, Container, ContainerProps } from "@mui/material";
 import Drawer from "@/components/Drawer";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { useSelector } from "react-redux";
+import { selectIsDrawerOpen } from "@/store/appSlice";
 
 type DefaultTemplateProps = {
   headerAction?: ReactNode;
@@ -19,11 +21,18 @@ const DefaultTemplateV2 = ({
   contentContainerMaxWidth,
   children,
 }: DefaultTemplateProps) => {
+  const isDrawerOpen = useSelector(selectIsDrawerOpen);
+  const [width, setWidth] = useState("calc(100vw - 64px)");
+
+  useEffect(() => {
+    setWidth("80vw");
+  }, [isDrawerOpen]);
+
   return (
     <Box display="flex" height="100vh">
       <Drawer />
 
-      <Box flexGrow={1}>
+      <Box width={width} flexGrow={1}>
         <Header>{headerAction}</Header>
 
         <Box display="flex">

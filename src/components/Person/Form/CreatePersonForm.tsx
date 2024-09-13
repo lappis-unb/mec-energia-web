@@ -38,8 +38,9 @@ import { useCreatePersonMutation, useGetAllInstitutionQuery } from "@/api";
 import { isValidEmail } from "@/utils/validations/form-validations";
 import { FormInfoAlert } from "@/components/Form/FormInfoAlert";
 import FormDrawerV2 from "@/components/Form/DrawerV2";
+import FormFieldError from "@/components/FormFieldError";
 
-const defaultValues: CreatePersonForm = {
+const defaultFormValues: CreatePersonForm = {
   email: "",
   firstName: "",
   lastName: "",
@@ -47,7 +48,7 @@ const defaultValues: CreatePersonForm = {
   type: UserRole.UNIVERSITY_USER,
 };
 
-const CreatePersonForm = () => {
+const CreatePersonComponent = () => {
   const dispatch = useDispatch();
   const isCreateFormOpen = useSelector(selectIsPersonCreateFormOpen);
   const [shouldShowCancelDialog, setShouldShowCancelDialog] = useState(false);
@@ -57,7 +58,7 @@ const CreatePersonForm = () => {
     { isError, isSuccess, isLoading, reset: resetMutation },
   ] = useCreatePersonMutation();
   const { data: session } = useSession();
-  const form = useForm({ defaultValues });
+  const form = useForm({ defaultValues: defaultFormValues });
   const {
     control,
     reset,
@@ -70,6 +71,10 @@ const CreatePersonForm = () => {
       return;
     }
     handleDiscardForm();
+  };
+
+  const cardTitleStyles: CardTitleStyle = {
+    marginBottom: "15px",
   };
 
   const institutionsOptions = useMemo(() => {
@@ -163,7 +168,9 @@ const CreatePersonForm = () => {
     () => (
       <>
         <Grid item xs={12}>
-          <Typography variant="h5">Informações pessoais</Typography>
+          <Typography variant="h5" style={cardTitleStyles}>
+            Informações pessoais
+          </Typography>
         </Grid>
 
         <Grid item xs={12}>
@@ -179,12 +186,12 @@ const CreatePersonForm = () => {
               fieldState: { error },
             }) => (
               <TextField
+                style={{ width: "200px" }}
                 ref={ref}
                 value={value}
                 label="Nome *"
                 error={Boolean(error)}
-                helperText={error?.message ?? " "}
-                fullWidth
+                helperText={FormFieldError(error?.message)}
                 onChange={onChange}
                 onBlur={onBlur}
               />
@@ -209,7 +216,7 @@ const CreatePersonForm = () => {
                 value={value}
                 label="Sobrenome *"
                 error={Boolean(error)}
-                helperText={error?.message ?? " "}
+                helperText={FormFieldError(error?.message)}
                 fullWidth
                 onChange={onChange}
                 onBlur={onBlur}
@@ -237,7 +244,7 @@ const CreatePersonForm = () => {
                 label="E-mail institucional *"
                 placeholder="Ex.: voce@universidade.br"
                 error={Boolean(error)}
-                helperText={error?.message ?? " "}
+                helperText={FormFieldError(error?.message)}
                 fullWidth
                 onChange={onChange}
                 onBlur={onBlur}
@@ -261,7 +268,6 @@ const CreatePersonForm = () => {
                     id="university-select"
                     options={institutionsOptions || []}
                     getOptionLabel={(option) => option.label}
-                    sx={{ width: 450 }}
                     renderInput={(params) => (
                       <TextField
                         {...params}
@@ -383,4 +389,4 @@ const CreatePersonForm = () => {
   );
 };
 
-export default CreatePersonForm;
+export default CreatePersonComponent;

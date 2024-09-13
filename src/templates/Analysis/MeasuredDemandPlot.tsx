@@ -89,7 +89,16 @@ export const MeasuredDemandPlot = ({
   ];
 
   return (
-    <Box mt={2}>
+    <Box
+      mt={4}
+      sx={{
+        "@media print": {
+          width: "620px",
+          height: "350px",
+          marginX: "auto",
+        }
+      }}
+    >
       {isDetailedAnalysis ? (
         <Subtitle
           id="Figura 3"
@@ -99,6 +108,10 @@ export const MeasuredDemandPlot = ({
         />
       ) : null}
       <Chart
+        style={{
+          maxWidth: "100%",
+          maxHeight: "350px",
+        }}
         type="line"
         datasetIdKey="measured-demand"
         data={{

@@ -16,7 +16,22 @@ interface SubtitleProps {
  */
 export const Subtitle = ({ id, title, children, minWidth = "200px" }: SubtitleProps) => {
   return (
-    <Box mt={4} minWidth={minWidth} mx="auto" display="flex" alignItems="center" justifyContent="center" mb="8px" textAlign="center">
+    <Box
+      mt={4}
+      minWidth={minWidth}
+      mx="auto"
+      display="flex"
+      alignItems="center"
+      justifyContent="center"
+      mb="8px"
+      textAlign="center"
+      sx={{
+        "@media print": {
+          width: "520px",
+          marginX: "auto",
+        }
+      }}
+    >
       <Typography variant="caption" color="primary" letterSpacing={0.6}>
         <strong>{id}</strong>: {(title) ? title : children}
       </Typography>
