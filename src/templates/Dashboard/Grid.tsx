@@ -7,7 +7,7 @@ import {
   setIsConsumerUnitCreateFormOpen,
 } from "@/store/appSlice";
 import DistributorCard from "@/components//Distributor/DistributorCard";
-import ConsumerUnitCard from "@/components/ConsumerUnit/CardV2";
+import ConsumerUnitCard from "@/components/ConsumerUnit/Card";
 import { useFetchConsumerUnitsQuery, useFetchPendingDistributorsQuery } from "@/api";
 import { useSession } from "next-auth/react";
 import { skipToken } from "@reduxjs/toolkit/dist/query";

@@ -14,6 +14,7 @@ import { TokenStatus } from "@/types/app";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import ReportRounded from '@mui/icons-material/Error';
+import { isValidEmail } from "@/utils/validations/form-validations";
 
 const defaultValues: SignInRequestPayload = {
   username: "",
@@ -112,10 +113,8 @@ const SignInTemplate = () => {
                   name="username"
                   rules={{
                     required: "Preencha este campo",
-                    pattern: {
-                      value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                      message: "Insira um e-mail válido",
-                    },
+        
+                    validate: (e) => isValidEmail(e),
                   }}
                   render={({
                     field: { onChange, onBlur, value, ref },
@@ -166,6 +165,7 @@ const SignInTemplate = () => {
                         endAdornment: (
                           <InputAdornment position="end">
                             <IconButton
+                              style={{ color: '#000000DE' }}
                               onClick={() => setShowPassword(!showPassword)}
                               onMouseDown={(e) => e.preventDefault()}
                               >

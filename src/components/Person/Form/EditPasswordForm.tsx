@@ -81,7 +81,7 @@ const EditPasswordForm = () => {
   const renderValidationIcon = (isValid: boolean | null) => {
     if (isValid === null) return "-";
     return isValid ? (
-      <CheckCircleIcon color="primary.main" sx={{ verticalAlign: "middle" }} />
+      <CheckCircleIcon color="primary" sx={{ verticalAlign: "middle" }} />
     ) : (
       <ReportIcon color="error" sx={{ verticalAlign: "middle" }} />
     );
@@ -206,10 +206,6 @@ const EditPasswordForm = () => {
             name="newPassword"
             rules={{
               required: "Preencha este campo",
-              minLength: {
-                value: 8,
-                message: "A senha deve ter no mínimo 8 caracteres",
-              },
               validate: {
                 hasLetter: (value) => /[a-zA-Z]/.test(value),
                 hasNumber: (value) => /[0-9]/.test(value),
@@ -327,10 +323,12 @@ const EditPasswordForm = () => {
     ),
     [
       control,
-      showCurrentPassword,
       showNewPassword,
       showConfirmPassword,
-      isValidPassword,
+      isValidPassword.hasLetter,
+      isValidPassword.hasNumber,
+      isValidPassword.hasSpecialChar,
+      isValidPassword.minLength,
     ]
   );
 
