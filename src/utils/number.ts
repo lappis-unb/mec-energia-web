@@ -38,9 +38,6 @@ export const formatToPtBrCurrency = (
 export const formatNumberConditional = (n: number | null | undefined | "") => {
   if (n === null || n === undefined || n === "") return "";
 
-  const hasNonZeroDecimal = n % 1 !== 0;
-
-  return hasNonZeroDecimal
-    ? n.toLocaleString('pt-BR', { maximumFractionDigits: 2, minimumFractionDigits: 2 })
-    : n.toLocaleString('pt-BR', { maximumFractionDigits: 0 });
+  return n.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 };
+
