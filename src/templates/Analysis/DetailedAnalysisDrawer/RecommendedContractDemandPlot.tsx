@@ -1,7 +1,6 @@
 import { Chart } from "react-chartjs-2";
 import type { ChartOptions, ChartDataset } from "chart.js";
 import { Recommendation } from "@/types/recommendation";
-import { Subtitle } from "./Subtitle";
 import { Box } from "@mui/material";
 
 const options: ChartOptions = {
@@ -85,12 +84,13 @@ const options: ChartOptions = {
 
 interface Props {
   dates: string[][];
-  isGreen?: boolean;
   recommendation: Recommendation;
+  isGreen?: boolean;
 }
 
 export const RecommendedContractDemandPlot = ({
   dates,
+  recommendation,
   isGreen,
 }: Props) => {
   // const maxValue = findMaxValue([
@@ -100,13 +100,13 @@ export const RecommendedContractDemandPlot = ({
   //   [recommendation.recommendedContract.offPeakDemandInKw],
   // ]);
 
-  // const contractPeakDemands = Array(12).fill(
-  //   recommendation.recommendedContract.peakDemandInKw
-  // );
+  const contractPeakDemands = Array(12).fill(
+    recommendation.recommendedContract.peakDemandInKw
+  );
 
-  // const contractOffPeakDemands = Array(12).fill(
-  //   recommendation.recommendedContract.offPeakDemandInKw
-  // );
+  const contractOffPeakDemands = Array(12).fill(
+    recommendation.recommendedContract.offPeakDemandInKw
+  );
 
   // const missingData =
   //   recommendation.consumptionHistoryPlot.offPeakMeasuredDemandInKw.map((n) =>
@@ -117,7 +117,7 @@ export const RecommendedContractDemandPlot = ({
     {
       type: 'line',
       label: 'Demanda Proposta',
-      data: [220, 220, 220, 220, 220, 220, 220, 220, 220, 220, 220, 220,],
+      data: contractPeakDemands,
       backgroundColor: '#EE8F84',
       borderColor: '#EE8F84',
       pointStyle: 'rect',
@@ -126,7 +126,7 @@ export const RecommendedContractDemandPlot = ({
     {
       type: 'bar',
       label: 'Demanda Medida',
-      data: [152.46, 141.12, 294.89, null, 260.82, 217.98, 153.72, 207.90, 313.74, 309.96, 332.64, 296.10],
+      data: recommendation.consumptionHistoryPlot.peakMeasuredDemandInKw,
       backgroundColor: '#7C0AC1',
       borderColor: '#7C0AC1',
     },
@@ -136,7 +136,7 @@ export const RecommendedContractDemandPlot = ({
     {
       type: 'line',
       label: 'Demanda Proposta Ponta',
-      data: [220, 220, 220, 220, 220, 220, 220, 220, 220, 220, 220, 220,],
+      data: contractPeakDemands,
       backgroundColor: '#B31B0A',
       borderColor: '#B31B0A',
       pointStyle: 'rectRot',
@@ -145,7 +145,7 @@ export const RecommendedContractDemandPlot = ({
     {
       type: 'line',
       label: 'Demanda Proposta Fora Ponta',
-      data: [400, 400, 400, 400, 400, 400, 400, 400, 400, 400, 400, 400],
+      data: contractOffPeakDemands,
       backgroundColor: '#EE8F84',
       borderColor: '#EE8F84',
       pointStyle: 'rect',
@@ -154,7 +154,7 @@ export const RecommendedContractDemandPlot = ({
     {
       type: 'bar',
       label: 'Demanda Medida Ponta',
-      data: [152.46, 141.12, 294.89, null, 260.82, 217.98, 153.72, 207.90, 313.74, 309.96, 332.64, 296.10],
+      data: recommendation.consumptionHistoryPlot.peakMeasuredDemandInKw,
       backgroundColor: '#7C0AC1',
       borderColor: '#7C0AC1',
       pointStyle: 'triangle',
@@ -162,7 +162,7 @@ export const RecommendedContractDemandPlot = ({
     {
       type: 'bar',
       label: 'Demanda Medida Fora Ponta',
-      data: [328.86, 335.16, 419.50, null, 375.48, 349.02, 244.44, 284.76, 454.86, 471.24, 506.52, 454.86],
+      data: recommendation.consumptionHistoryPlot.offPeakMeasuredDemandInKw,
       backgroundColor: '#CB95EC',
       borderColor: '#CB95EC',
       pointStyle: 'circle',
@@ -172,12 +172,20 @@ export const RecommendedContractDemandPlot = ({
   const datasets = isGreen ? greenDatasets : blueDatasets;
 
   return (
-    <Box mt={4}>
-      <Subtitle
-        id="Figura 4"
-        title="Gráfico comparativo entre a demanda proposta - carga e os valores medidos nos horários de ponta e fora de ponta"
-      />
+    <Box
+      sx={{
+        "@media print": {
+          width: "620px",
+          height: "350px",
+          marginX: "auto",
+        }
+      }}
+    >
       <Chart
+        style={{
+          maxWidth: "100%",
+          maxHeight: "350px",
+        }}
         type="line"
         options={options}
         data={{

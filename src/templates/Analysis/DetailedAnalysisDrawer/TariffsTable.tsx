@@ -1,20 +1,20 @@
-import StripedDataGrid from "@/components/StripedDataGrid";
 import { tariffLabelToPtBr, TariffsTableRow } from "@/types/recommendation";
 import {
   Box,
+  Table,
+  TableBody,
+  TableCell,
   TableContainer,
+  TableHead,
+  TableRow,
 } from "@mui/material";
 import Paper from "@mui/material/Paper";
-import { GridColDef } from "@mui/x-data-grid";
-import { Subtitle } from "./Subtitle";
 
 interface Props {
   rows: TariffsTableRow[];
-  tariffStartDate: string | null;
-  tariffEndDate: string | null;
 }
 
-export const TariffsTable = ({ rows, tariffStartDate, tariffEndDate }: Props) => {
+export const TariffsTable = ({ rows }: Props) => {
   const copy = [...rows].sort((a, b) => {
     if (a.billingTime > b.billingTime) return -1;
     if (a.billingTime < b.billingTime) return 1;
@@ -32,35 +32,6 @@ export const TariffsTable = ({ rows, tariffStartDate, tariffEndDate }: Props) =>
     blue: r.blue ? r.blue.toLocaleString("pt-BR") : "-",
     green: r.green ? r.green.toLocaleString("pt-BR") : "-",
   }));
-
-  const columns: GridColDef<TariffsTableRow>[] = [
-    {
-      field: "label",
-      headerName: "Tarifa",
-      headerAlign: "left",
-      align: "left",
-      flex: 2,
-      sortable: false,
-    },
-    {
-      field: "blue",
-      headerClassName: "MuiDataGrid-columnHeaderMain",
-      headerName: "Valor tarifa Azul",
-      headerAlign: "right",
-      align: "right",
-      flex: 0.65,
-      sortable: false,
-    },
-    {
-      field: "green",
-      headerClassName: "MuiDataGrid-columnHeaderMain",
-      headerName: "Valor tarifa Verde",
-      headerAlign: "right",
-      align: "right",
-      flex: 0.65,
-      sortable: false,
-    },
-  ];
 
   const getDataGridRows = (
     tariffsTableRow: TariffsTableRow[],
@@ -88,15 +59,51 @@ export const TariffsTable = ({ rows, tariffStartDate, tariffEndDate }: Props) =>
 
   return (
     <>
-      <Box>
-        <Subtitle id="Tabela 2">
-          <span>Tarifas utilizadas para metodologia de cálculo comparativo, com vigência de <strong>{tariffStartDate}</strong> a <strong>{tariffEndDate}</strong></span>
-        </Subtitle>
+      <Box
+        sx={{
+          "@media print": {
+            width: "620px",
+            marginX: "auto",
+          }
+        }}
+      >
         <TableContainer component={Paper} sx={{ boxShadow: 0 }}>
-          <StripedDataGrid
-            columns={columns}
-            rows={getDataGridRows(tableRows)}
-          />
+          <Table aria-label="simple table">
+            <TableHead
+              sx={{ bgcolor: "primary.main", display: "table-header-group" }}
+            >
+              <TableRow sx={{ th: { color: "white" } }}>
+                <TableCell align="left">
+                  Tarifa
+                </TableCell>
+                <TableCell align="right">
+                  Valor tarifa Azul
+                </TableCell>
+                <TableCell align="right">
+                  Valor tarifa Verde
+                </TableCell>
+              </TableRow>
+            </TableHead>
+
+            <TableBody
+              sx={{
+                "tr:nth-of-type(even)": { bgcolor: "background.default" },
+              }}
+            >
+              {getDataGridRows(tableRows).map((row) => {
+                return row.label && (
+                  <TableRow
+                    key={row.label}
+                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                  >
+                    <TableCell align="left">{row.label}</TableCell>
+                    <TableCell align="right">{row.blue}</TableCell>
+                    <TableCell align="right">{row.green}</TableCell>
+                  </TableRow>
+                )
+              })}
+            </TableBody>
+          </Table>
         </TableContainer>
       </Box>
     </>

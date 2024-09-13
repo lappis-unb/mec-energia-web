@@ -20,6 +20,8 @@ export interface Recommendation {
     offPeakConsumptionInKwh: number[],
     peakMeasuredDemandInKw: number[],
     offPeakMeasuredDemandInKw: number[],
+    contractPeakDemandInKw?: number[],
+    contractOffPeakDemandInKw?: number[],
   }
   consumptionHistoryTable: ConsumptionHistoryTableRow[],
   currentContractCostsPlot: ContractCostsPlot,

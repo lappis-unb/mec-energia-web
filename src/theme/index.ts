@@ -66,9 +66,9 @@ const theme = createTheme(
         baseCostMain: "#54BF86",
         baseCostSecondary: "#EE9083",
         measuredConsumptionMain: "#0E438C",
-        measuredConsumptionSecondary: "#296DCC",
+        measuredConsumptionSecondary: "#6F9AC7",
         measuredDemandMain: "#7C07C0",
-        measuredDemandSecondary: "#D1A3E8",
+        measuredDemandSecondary: "#CB95EC",
         measuredDemandPeakLine: "#008940",
         measuredDemandOffPeakLine: "#55BF87",
       },
@@ -201,12 +201,14 @@ const theme = createTheme(
             "& .MuiDataGrid-columnHeader--filledGroup": {
               backgroundColor: "rgba(10, 92, 103, 0.08)",
               color: "rgba(0, 0, 0, 0.87)",
+              borderRight: "solid 2px #F7F7F7",
+              borderLeft: "solid 2px #F7F7F7",
             },
             "& .MuiDataGrid-columnHeader--emptyGroup": {
               backgroundColor: "unset",
             },
             "& .MuiDataGrid-columnSeparator": {
-              color: primaryMain,
+              color: "rgba(255, 255, 255, 0.5)",
             },
             border: "unset",
           },

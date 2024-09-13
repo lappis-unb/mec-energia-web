@@ -47,6 +47,11 @@ import { styled } from "@mui/system";
 import theme from "@/theme";
 import { formatToPtBrCurrency } from "@/utils/number";
 import { GetContractsResponsePayload } from "@/types/contract";
+import { Subtitle } from "./Subtitle";
+import { Chart as ChartJs } from "chart.js";
+import ChartDataLabels from "chartjs-plugin-datalabels";
+
+ChartJs.register(ChartDataLabels);
 
 interface Props {
   open: boolean;
@@ -57,24 +62,32 @@ interface Props {
   actualContract: GetContractsResponsePayload | undefined;
 }
 
-const GreenTitle = ({ text }: { text: string }) => (
+const GreenTitle = ({
+  text,
+  children,
+}: {
+  text?: string;
+  children?: ReactNode;
+}) => (
   <Typography
     color="primary"
     variant="body1"
     sx={{ fontWeight: "bold", my: 1 }}
   >
-    {text}
+    {text ?? children}
   </Typography>
 );
 
 const TypographyBody1 = ({
   children,
   sx,
+  mb = 2,
 }: {
   children: ReactNode | ReactNode[];
   sx?: SxProps;
+  mb?: number;
 }) => (
-  <Typography variant="body1" sx={{ ...sx, mb: 2 }}>
+  <Typography variant="body1" sx={{ ...sx, mb }}>
     {children}
   </Typography>
 );
@@ -138,9 +151,8 @@ export const DetailedAnalysisDrawer = ({
     "dd/MM/yyyy hh:mm"
   );
 
-  const documentPrintTitle = `Relatório MEC Energia  ${
-    consumerUnit.name
-  } ${generatedOn.replaceAll("/", "-")}`;
+  const documentPrintTitle = `Relatório MEC Energia  ${consumerUnit.name
+    } ${generatedOn.replaceAll("/", "-")}`;
 
   const toggleSections = (isOpen: boolean) => {
     setDropdownSectionState({
@@ -185,21 +197,34 @@ export const DetailedAnalysisDrawer = ({
 
   const valueOldContractConsumptionDemandAboutTotal = (value: number[]) => {
     const totalCostSum = value.reduce((sum, cost) => sum + cost, 0);
-    const percent = (totalCostSum / recommendation.currentTotalCost) * 100;
+    const percent =
+      (totalCostSum /
+        recommendation.contractsComparisonTotals.totalCostInReaisInCurrent) *
+      100;
 
-    return percent.toFixed(2);
+    return percent.toFixed(1).replace(".", ",");
   };
 
   const valueNewContractConsumptionDemandAboutTotal = (value: number[]) => {
     const totalCostSum = value.reduce((sum, cost) => sum + cost, 0);
-    const total =
-      recommendation.detailedContractsCostsComparisonPlot.totalCostInReaisInCurrent.reduce(
-        (sum, cost) => sum + cost,
-        0
-      );
-    const percent = (totalCostSum / total) * 100;
+    const percent =
+      (totalCostSum /
+        recommendation.contractsComparisonTotals
+          .totalCostInReaisInRecommended) *
+      100;
 
-    return percent.toFixed(2);
+    return percent.toFixed(1).replace(".", ",");
+  };
+
+  const periodInterval = () => {
+    const len = recommendation.dates.length;
+    const start = recommendation.dates[0];
+    const end = recommendation.dates[len - 1];
+
+    return [
+      getFormattedDate(start)?.substring(3),
+      getFormattedDate(end)?.substring(3),
+    ];
   };
 
   return (
@@ -242,7 +267,8 @@ export const DetailedAnalysisDrawer = ({
           ref={toPrint}
           sx={{
             height: "100%",
-            width: "63%",
+            maxWidth: "800px",
+            padding: 2,
             margin: "auto",
             "@media print": {
               display: "block",
@@ -350,8 +376,8 @@ export const DetailedAnalysisDrawer = ({
             >
               <TypographyBody1>
                 Este relatório tem por objetivo analisar o contrato de
-                fornecimento de energia elétrica da Universidade de Brasília com
-                a Distribuidora de energia por intermédio da MEPA —
+                fornecimento de energia elétrica da {consumerUnit.university}{" "}
+                com a Distribuidora de energia por intermédio da MEPA —
                 Monitoramento de Energia em Plataforma Aberta.
               </TypographyBody1>
               <TypographyBody1>
@@ -452,10 +478,18 @@ export const DetailedAnalysisDrawer = ({
                   vistos na tabela 1.
                 </TypographyBody1>
 
-                <CurrentContractTable
-                  recommendationCurrentContract={recommendation.currentContract}
-                  actualContract={actualContract}
-                />
+                <Box display="flex" flexDirection="column" marginBottom={4}>
+                  <Subtitle
+                    id="Tabela 1"
+                    title="Informações características de fornecimento da unidade consumidora"
+                  />
+                  <CurrentContractTable
+                    recommendationCurrentContract={
+                      recommendation.currentContract
+                    }
+                    actualContract={actualContract}
+                  />
+                </Box>
               </Box>
 
               <Box sx={{ "@media print": { breakInside: "avoid" } }}>
@@ -466,11 +500,17 @@ export const DetailedAnalysisDrawer = ({
                   utilizadas para o cálculo.
                 </TypographyBody1>
 
-                <TariffsTable
-                  rows={recommendation.tariffsTable}
-                  tariffStartDate={tariffStartDate}
-                  tariffEndDate={tariffEndDate}
-                />
+                <Box marginBottom={4}>
+                  <Subtitle id="Tabela 2">
+                    <span>
+                      Tarifas utilizadas para metodologia de cálculo
+                      comparativo, com vigência de{" "}
+                      <strong>{tariffStartDate}</strong> a{" "}
+                      <strong>{tariffEndDate}</strong>
+                    </span>
+                  </Subtitle>
+                  <TariffsTable rows={recommendation.tariffsTable} />
+                </Box>
               </Box>
             </DropdownSection>
 
@@ -490,19 +530,24 @@ export const DetailedAnalysisDrawer = ({
               <Box sx={{ "@media print": { breakInside: "avoid" } }}>
                 <Typography>
                   A Figura 1 apresenta a composição da fatura de energia
-                  elétrica durante o período de {tariffStartDate?.substring(3)}{" "}
-                  a {tariffEndDate?.substring(3)}. São considerados apenas a
-                  demanda-carga e o consumo medidos nesse perído multiplicados
-                  pelas{" "}
+                  elétrica durante o período de {periodInterval()[0]} a{" "}
+                  {periodInterval()[1]}. São considerados apenas a demanda-carga
+                  e o consumo medidos nesse perído multiplicados pelas{" "}
                   <strong>tarifas atuais disponíveis na plataforma.</strong>
                 </Typography>
 
-                <CurrentBaseCostPlot
-                  dates={dates}
-                  currentContractCostsPlot={
-                    recommendation.currentContractCostsPlot
-                  }
-                />
+                <Box mt={4} mb={4}>
+                  <Subtitle
+                    id="Figura 1"
+                    title="Representação da composição da fatura de energia elétrica da unidade consumidora"
+                  />
+                  <CurrentBaseCostPlot
+                    dates={dates}
+                    currentContractCostsPlot={
+                      recommendation.currentContractCostsPlot
+                    }
+                  />
+                </Box>
               </Box>
 
               <Box
@@ -510,7 +555,6 @@ export const DetailedAnalysisDrawer = ({
                 my={4}
                 display="flex"
                 flexDirection="column"
-                gap={2}
               >
                 <Typography>
                   O valor de consumo contribuiu com{" "}
@@ -524,7 +568,7 @@ export const DetailedAnalysisDrawer = ({
                   )}
                   % do mesmo valor.
                 </Typography>
-
+                <br />
                 <Typography>
                   Na figura 2 é mostrado o perfil de consumo da unidade
                   consumidora{" "}
@@ -533,18 +577,24 @@ export const DetailedAnalysisDrawer = ({
                     : "."}
                 </Typography>
 
-                <AverageConsumptionPlot
-                  dates={dates}
-                  data={{
-                    peakConsumptionInKwh:
-                      recommendation.consumptionHistoryPlot
-                        .peakConsumptionInKwh,
-                    offPeakConsumptionInKwh:
-                      recommendation.consumptionHistoryPlot
-                        .offPeakConsumptionInKwh,
-                  }}
-                  isGreen={recommendation.currentContract.tariffFlag === "G"}
-                />
+                <Box mt={2} mb={4}>
+                  <Subtitle
+                    id="Figura 2"
+                    title="Consumo medido nos horários de ponta e fora de ponta"
+                  />
+                  <AverageConsumptionPlot
+                    dates={dates}
+                    data={{
+                      peakConsumptionInKwh:
+                        recommendation.consumptionHistoryPlot
+                          .peakConsumptionInKwh,
+                      offPeakConsumptionInKwh:
+                        recommendation.consumptionHistoryPlot
+                          .offPeakConsumptionInKwh,
+                    }}
+                    isGreen={recommendation.currentContract.tariffFlag === "G"}
+                  />
+                </Box>
               </Box>
 
               <Box sx={{ "@media print": { breakInside: "avoid" } }}>
@@ -559,6 +609,7 @@ export const DetailedAnalysisDrawer = ({
                   dates={dates}
                   recommendation={recommendation}
                   isGreen={recommendation.currentContract.tariffFlag === "G"}
+                  isDetailedAnalysis={true}
                 />
               </Box>
             </DropdownSection>
@@ -576,11 +627,17 @@ export const DetailedAnalysisDrawer = ({
                 horários de ponta e fora de ponta para a unidade consumidora.
               </TypographyBody1>
 
-              <RecommendedContractDemandPlot
-                dates={dates}
-                recommendation={recommendation}
-                isGreen={recommendation.currentContract.tariffFlag === "G"}
-              />
+              <Box mt={4} mb={4}>
+                <Subtitle
+                  id="Figura 4"
+                  title="Gráfico comparativo entre a demanda proposta - carga e os valores medidos nos horários de ponta e fora de ponta"
+                />
+                <RecommendedContractDemandPlot
+                  dates={dates}
+                  recommendation={recommendation}
+                  isGreen={recommendation.currentContract.tariffFlag === "G"}
+                />
+              </Box>
 
               <TypographyBody1>
                 O gráfico da figura 5 mostra o valor total calculado
@@ -598,10 +655,16 @@ export const DetailedAnalysisDrawer = ({
                 % do mesmo valor.
               </TypographyBody1>
 
-              <DetailedBaseCostsComparisonPlot
-                dates={dates}
-                costs={recommendation.detailedContractsCostsComparisonPlot}
-              />
+              <Box mt={4} mb={4}>
+                <Subtitle
+                  id="Figura 5"
+                  title="Gráfico dos valores de consumo e demanda-carga em reais considerando as condições de contrato propostas"
+                />
+                <DetailedBaseCostsComparisonPlot
+                  dates={dates}
+                  costs={recommendation.detailedContractsCostsComparisonPlot}
+                />
+              </Box>
 
               <Box sx={{ "@media print": { breakInside: "avoid" } }}>
                 <TypographyBody1>
@@ -610,10 +673,16 @@ export const DetailedAnalysisDrawer = ({
                   a nova proposição.
                 </TypographyBody1>
 
-                <ComparativeScenarioCurrentNewContractPlot
-                  dates={dates}
-                  costs={recommendation.detailedContractsCostsComparisonPlot}
-                />
+                <Box mt={4} mb={4}>
+                  <Subtitle
+                    id="Figura 6"
+                    title="Gráfico comparativo considerando o contrato atual e o contrato proposto"
+                  />
+                  <ComparativeScenarioCurrentNewContractPlot
+                    dates={dates}
+                    costs={recommendation.detailedContractsCostsComparisonPlot}
+                  />
+                </Box>
               </Box>
 
               <Alert
@@ -653,26 +722,32 @@ export const DetailedAnalysisDrawer = ({
                 considerando os valores indicados na tabela 3.
               </TypographyBody1>
 
-              <RecommendedContractTable
-                recommendedContract={recommendation.recommendedContract}
-                currentContract={recommendation.currentContract}
-              />
+              <Box marginBottom={4}>
+                <Subtitle
+                  id="Tabela 3"
+                  title="Proposta para ajuste de contrato de fornecimento de energia elétrica da unidade consumidora"
+                />
+                <RecommendedContractTable
+                  recommendedContract={recommendation.recommendedContract}
+                  currentContract={recommendation.currentContract}
+                />
+              </Box>
 
               {recommendation.energyBillsCount <
                 recommendationSettings.IDEAL_ENERGY_BILLS_FOR_RECOMMENDATION && (
-                <>
-                  <br />
-                  <Alert
-                    variant="filled"
-                    severity="warning"
-                    sx={{ bgcolor: "rgb(217, 138, 11)", color: "#000" }}
-                    icon={<WarningAmberOutlined style={{ color: "#000" }} />}
-                  >
-                    Uma ou mais faturas estão indisponíveis. Isso reduz a
-                    precisão da análise.
-                  </Alert>
-                </>
-              )}
+                  <>
+                    <br />
+                    <Alert
+                      variant="filled"
+                      severity="warning"
+                      sx={{ bgcolor: "rgb(217, 138, 11)", color: "#000" }}
+                      icon={<WarningAmberOutlined style={{ color: "#000" }} />}
+                    >
+                      Uma ou mais faturas estão indisponíveis. Isso reduz a
+                      precisão da análise.
+                    </Alert>
+                  </>
+                )}
             </DropdownSection>
 
             <DropdownSection
@@ -693,6 +768,13 @@ export const DetailedAnalysisDrawer = ({
                 consumidora.
               </TypographyBody1>
 
+              <GreenTitle text="Concessionária" />
+              <TypographyBody1>
+                Agente titular de concessão federal para prestar o serviço
+                público de distribuição de energia elétrica, doravante
+                denominado &ldquo;distribuidora&rdquo;.
+              </TypographyBody1>
+
               <GreenTitle text="Consumidor" />
               <TypographyBody1>
                 Pessoa física ou jurídica, de direito público ou privado,
@@ -701,6 +783,11 @@ export const DetailedAnalysisDrawer = ({
                 distribuidora, assumindo as obrigações decorrentes deste
                 atendimento à(s) sua(s) unidade(s) consumidora(s), segundo
                 disposto nas normas e nos contratos.
+              </TypographyBody1>
+
+              <GreenTitle text="CUSD" />
+              <TypographyBody1>
+                Contrato de Uso do Sistema de Distribuição.
               </TypographyBody1>
 
               <GreenTitle text="Demanda" />
@@ -726,6 +813,16 @@ export const DetailedAnalysisDrawer = ({
                 Valor da demanda de potência ativa, considerada para fins de
                 faturamento, com aplicação da respectiva tarifa, expressa em
                 quilowatts (kW).
+              </TypographyBody1>
+
+              <GreenTitle>
+                <span>
+                  Demanda<sub>G</sub>
+                </span>
+              </GreenTitle>
+              <TypographyBody1>
+                Demanda de injeção de geração a ser atendida ou acrescida, em
+                quilowatt (kW).
               </TypographyBody1>
 
               <GreenTitle text="Demanda medida" />
@@ -761,7 +858,7 @@ export const DetailedAnalysisDrawer = ({
               </TypographyBody1>
 
               <GreenTitle text="Grupo A" />
-              <TypographyBody1>
+              <TypographyBody1 mb={0}>
                 Grupamento composto de unidades consumidoras com fornecimento em
                 tensão igual ou superior a 2,3 kV, ou atendidas a partir de
                 sistema subterrâneo de distribuição em tensão secundária,
@@ -790,13 +887,16 @@ export const DetailedAnalysisDrawer = ({
                   a 25 kV;
                 </ListItem>
                 <ListItem>
-                  <Bold>● subgrupo AS</Bold> - tensão de fornecimento inferior a
-                  2,3 kV, a partir de sistema subterrâneo de distribuição.
+                  <span>
+                    <strong>● subgrupo AS</strong> - tensão de fornecimento
+                    inferior a 2,3 kV, a partir de sistema subterrâneo de
+                    distribuição.
+                  </span>
                 </ListItem>
               </List>
 
               <GreenTitle text="Grupo B" />
-              <TypographyBody1>
+              <TypographyBody1 mb={0}>
                 Grupamento composto de unidades consumidoras com fornecimento em
                 tensão inferior a 2,3 kV, caracterizado pela tarifa monômia e
                 subdividido nos seguintes subgrupos:
@@ -840,28 +940,32 @@ export const DetailedAnalysisDrawer = ({
               </TypographyBody1>
 
               <GreenTitle text="Posto tarifário" />
-              <TypographyBody1>
+              <TypographyBody1 mb={0}>
                 Período em horas para aplicação das tarifas de forma
                 diferenciada ao longo do dia, considerando a seguinte divisão:
               </TypographyBody1>
 
               <List dense>
                 <ListItem>
-                  ● <Bold>Posto tarifário ponta</Bold> - período composto por 3
-                  (três) horas diárias consecutivas definidas pela distribuidora
-                  considerando a curva de carga de seu sistema elétrico,
-                  aprovado pela ANEEL para toda a área de concessão ou
-                  permissão;
+                  <span>
+                    ● <strong>Posto tarifário ponta</strong> - período composto
+                    por 3 (três) horas diárias consecutivas definidas pela
+                    distribuidora considerando a curva de carga de seu sistema
+                    elétrico, aprovado pela ANEEL para toda a área de concessão
+                    ou permissão;
+                  </span>
                 </ListItem>
                 <ListItem>
-                  ● <Bold>Posto tarifário fora de ponta</Bold> - período
-                  composto pelo conjunto das horas diárias consecutivas e
-                  complementares àquelas definidas nos postos ponta.
+                  <span>
+                    ● <strong>Posto tarifário fora de ponta</strong> - período
+                    composto pelo conjunto das horas diárias consecutivas e
+                    complementares àquelas definidas nos postos ponta.
+                  </span>
                 </ListItem>
               </List>
 
               <GreenTitle text="Tarifa" />
-              <TypographyBody1>
+              <TypographyBody1 mb={0}>
                 Valor monetário estabelecido pela ANEEL, fixado em R$ (reais)
                 por unidade de energia elétrica ativa ou da demanda de potência
                 ativa, sendo:
@@ -869,16 +973,31 @@ export const DetailedAnalysisDrawer = ({
 
               <List dense>
                 <ListItem>
-                  ● Tarifa de energia (TE) - valor monetário unitário
-                  determinado pela ANEEL, em R$/MWh, utilizado para efetuar o
-                  faturamento mensal referente ao consumo de energia;
+                  <span>
+                    ● <strong>Tarifa de energia (TE)</strong> - valor monetário
+                    unitário determinado pela ANEEL, em R$/MWh, utilizado para
+                    efetuar o faturamento mensal referente ao consumo de
+                    energia;
+                  </span>
                 </ListItem>
                 <ListItem>
-                  ● Tarifa de uso do sistema de distribuição (TUSD) - valor
-                  monetário unitário determinado pela ANEEL, em R$/MWh ou em
-                  R$/kW, utilizado para efetuar o faturamento mensal de usuários
-                  do sistema de distribuição de energia elétrica pelo uso do
-                  sistema.
+                  <span>
+                    ●{" "}
+                    <strong>
+                      Tarifa de uso do sistema de distribuição (TUSD)
+                    </strong>{" "}
+                    - valor monetário unitário determinado pela ANEEL, em R$/MWh
+                    ou em R$/kW, utilizado para efetuar o faturamento mensal de
+                    usuários do sistema de distribuição de energia elétrica pelo
+                    uso do sistema.
+                  </span>
+                </ListItem>
+                <ListItem>
+                  <Bold>
+                    ● TUSD<sub>G</sub>
+                  </Bold>
+                  &nbsp;- tarifa de uso do sistema de distribuição aplicável à
+                  cenral geradora.
                 </ListItem>
               </List>
 
@@ -902,25 +1021,38 @@ export const DetailedAnalysisDrawer = ({
           </DropdownSectionManager>
         </Box>
 
-        <Box position="sticky">
-          <GoToTopButton
-            color="primary"
-            size="large"
-            variant="contained"
+        <Box
+          mx="auto"
+          maxWidth="900px"
+          display="flex"
+          justifyContent="flex-end"
+        >
+          <Box
             sx={{
-              "@media print": { display: "none" },
-              //bgcolor: "primary.main",
-              color: "#fff",
-              bottom: "10px",
-              right: "164px",
+              bottom: "40px",
               position: "fixed",
-              zIndex: 1,
-              cursor: "pointer",
+              "@media (max-width: 500px)": {
+                width: "110px",
+                position: "relative",
+                marginTop: "16px",
+              },
             }}
-            onClick={scrollToTop}
           >
-            <ArrowUpwardRoundedIcon />
-          </GoToTopButton>
+            <GoToTopButton
+              color="primary"
+              size="large"
+              sx={{
+                "@media print": { display: "none" },
+                //bgcolor: "primary.main",
+                color: "#fff",
+                zIndex: 1,
+                cursor: "pointer",
+              }}
+              onClick={scrollToTop}
+            >
+              <ArrowUpwardRoundedIcon />
+            </GoToTopButton>
+          </Box>
         </Box>
       </Box>
     </Drawer>

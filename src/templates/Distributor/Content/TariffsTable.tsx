@@ -25,6 +25,7 @@ import {
   selectActiveSubgroup,
   setIsTariffCreateFormOpen,
   setIsTariffEdiFormOpen,
+  selectIsDrawerOpen,
 } from "@/store/appSlice";
 import { useGetDistributorSubgroupsQuery, useGetTariffQuery } from "@/api";
 import WarningRounded from "@mui/icons-material/WarningRounded";
@@ -47,6 +48,7 @@ const DistributorContentTariffsTable = () => {
   const activeDistributorId = useSelector(selectActiveDistributorId);
   const activeSubgroup = useSelector(selectActiveSubgroup);
   const distributorId = useSelector(selectActiveDistributorId);
+  const isDrawerOpen = useSelector(selectIsDrawerOpen);
 
   const { data: tariffsSubgroups } = useGetDistributorSubgroupsQuery(
     distributorId ?? skipToken
@@ -103,6 +105,11 @@ const DistributorContentTariffsTable = () => {
 
     return () => clearTimeout(timeoutId);
   }, [overdue]);
+
+  useEffect(() => {
+      setIsTooltipOpen(false);
+      setTimeout(() => setIsTooltipOpen(true), 300);
+  }, [isDrawerOpen]);
 
   const handleOnEditTariffButtonClick = useCallback(() => {
     dispatch(setIsTariffEdiFormOpen(true));

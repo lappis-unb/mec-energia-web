@@ -186,7 +186,7 @@ const Drawer = () => {
             disableGutters
             sx={{ position: "absolute", top: 0, right: 0 }}
           >
-            <IconButton onClick={handleToggleDrawer}>
+            <IconButton onClick={handleToggleDrawer} style={{ color: '#000000DE' }}>
               <ChevronLeftRoundedIcon fontSize="large" />
             </IconButton>
           </Toolbar>
@@ -205,7 +205,7 @@ const Drawer = () => {
             }}
           >
             <Toolbar>
-              <IconButton onClick={handleToggleDrawer}>
+              <IconButton style={{ color: '#000000DE' }} onClick={handleToggleDrawer}>
                 <MenuRoundedIcon fontSize="large" />
               </IconButton>
             </Toolbar>

@@ -43,9 +43,11 @@ import {
   useGetCurrentInvoiceQuery,
   useGetDistributorsQuery,
   usePostInvoiceMutation,
+  useFetchInvoicesQuery,
 } from "@/api";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { useSession } from "next-auth/react";
+import FormFieldError from "../../FormFieldError";
 import { DistributorPropsTariffs } from "@/types/distributor";
 import { sendFormattedDate } from "@/utils/date";
 import FormDrawerV2 from "@/components/Form/DrawerV2";
@@ -106,6 +108,10 @@ const CreateEditEnergyBillForm = () => {
   const { data: currentInvoice, refetch: refetchCurrentInvoice } =
     useGetCurrentInvoiceQuery(currentInvoiceId || skipToken);
 
+  const { data: invoices } = useFetchInvoicesQuery(
+    activeConsumerUnitId || skipToken
+  );
+
   const [currentDistributor, setCurrentDistributor] =
     useState<DistributorPropsTariffs>();
 
@@ -126,6 +132,67 @@ const CreateEditEnergyBillForm = () => {
   const offPeakConsumptionInKwh = watch("offPeakConsumptionInKwh");
   const peakMeasuredDemandInKw = watch("peakMeasuredDemandInKw");
   const offPeakMeasuredDemandInKw = watch("offPeakMeasuredDemandInKw");
+  const [currentInvoiceYear, currentInvoiceMonth] = String(currentInvoice?.date)
+    .split("-")
+    .map(Number);
+
+  const findMinContractDate = () => {
+    if (contracts && contracts.length > 0) {
+      const earliestContract = contracts.reduce((earliest, current) => {
+        return new Date(current.startDate) < new Date(earliest.startDate)
+          ? current
+          : earliest;
+      });
+      const dateParts = earliestContract.startDate.split("-");
+      return new Date(
+        parseInt(dateParts[0], 10),
+        parseInt(dateParts[1], 10) - 1,
+        parseInt(dateParts[2], 10)
+      );
+    }
+    return new Date("2009-01-01");
+  };
+
+  const blockedYears = (datePickerElement: Date) => {
+    const year = datePickerElement.getFullYear();
+    const minContractYear = findMinContractDate().getFullYear();
+    if (year < minContractYear) {
+      return true;
+    }
+
+    return false;
+  };
+
+  const minContractYear = findMinContractDate().getFullYear();
+  const blockedMonths = (datePickerElement: Date) => {
+    const year = datePickerElement.getFullYear();
+    const month = datePickerElement.getMonth();
+    const minContractMonth = findMinContractDate().getMonth();
+
+    if (year == minContractYear && month < minContractMonth) {
+      return true;
+    }
+
+    if (invoices && invoices[year]) {
+      const monthData = invoices[year].find((entry) => entry.month === month);
+      if (
+        monthData &&
+        monthData.energyBill &&
+        (year !== currentInvoiceYear || month + 1 !== currentInvoiceMonth)
+      ) {
+        return true;
+      }
+    }
+    return false;
+  };
+
+  const cardTitleStyles: CardTitleStyle = {
+    marginBottom: "15px",
+  };
+
+  useEffect(() => {
+    reset();
+  }, [isCreateEnergyBillFormOpen]);
 
   useEffect(() => {
     if (isEditEnergyBillFormOpen) {
@@ -146,8 +213,11 @@ const CreateEditEnergyBillForm = () => {
   }, [isEditEnergyBillFormOpen]);
 
   useEffect(() => {
-    if (month != null || month != undefined) {
-      const date = new Date(`${year}/${month + 1}`);
+    if (
+      (month != null || month != undefined) &&
+      (year != null || year != undefined)
+    ) {
+      const date = new Date(year, month, 1);
       setValue("date", date);
     }
   }, [
@@ -360,6 +430,21 @@ const CreateEditEnergyBillForm = () => {
     handleNotification();
   }, [handleNotification, isPostInvoiceSuccess, isPostInvoiceError]);
 
+  const checkIfInvoiceExists = (
+    selectedYear: number,
+    selectedMonth: number
+  ): boolean => {
+    if (selectedMonth == month && selectedYear == year) return false;
+
+    if (invoices && selectedYear in invoices) {
+      return invoices[selectedYear].some(
+        (invoice) =>
+          invoice.month === selectedMonth && invoice.energyBill !== null
+      );
+    }
+    return false;
+  };
+
   const Header = useCallback(
     () => (
       <>
@@ -375,14 +460,16 @@ const CreateEditEnergyBillForm = () => {
     () => (
       <>
         <Grid item xs={8}>
-          <Typography variant="h5">Fatura</Typography>
+          <Typography variant="h5" style={cardTitleStyles}>
+            Fatura
+          </Typography>
         </Grid>
         <Grid item xs={12} mt={1}>
           <Controller
             control={control}
             name="date"
             rules={{
-              required: "Já existe uma fatura lançada neste mês",
+              required: "Preencha esse campo",
               validate: (value: Date | string) => {
                 if (value == "Invalid Date") {
                   const validationDateMessage =
@@ -391,6 +478,16 @@ const CreateEditEnergyBillForm = () => {
                 }
 
                 const selectedDate = new Date(value);
+
+                const month = selectedDate.getMonth();
+                const year = selectedDate.getFullYear();
+
+                const existingInvoice = checkIfInvoiceExists(year, month);
+
+                if (existingInvoice) {
+                  return "Já existe uma fatura lançada neste mês";
+                }
+
                 if (contracts && contracts.length > 0) {
                   const earliestContract = contracts.reduce(
                     (earliest, current) => {
@@ -405,8 +502,23 @@ const CreateEditEnergyBillForm = () => {
                     earliestContract.startDate
                   );
 
+                  const contractStartDateMonth = contractStartDate.getMonth();
+                  const contractStartDateYear = contractStartDate.getFullYear();
+
+                  const fixedDate = new Date(
+                    `${contractStartDateYear}/${contractStartDateMonth + 2}`
+                  );
+
+                  const options = { year: "numeric", month: "long" };
+                  const formattedDate = fixedDate.toLocaleDateString(
+                    "pt-BR",
+                    options
+                  );
+
+                  const message = `Selecione uma data a partir de ${formattedDate}. Não existem contratos registrados antes disso.`;
+
                   if (selectedDate <= contractStartDate) {
-                    return "Este mês não é coberto por um contrato registrado no sistema";
+                    return message;
                   }
                 }
                 return true;
@@ -417,15 +529,20 @@ const CreateEditEnergyBillForm = () => {
                 <DatePicker
                   inputFormat="MMMM/yyyy"
                   value={value}
+                  views={["month", "year"]}
                   label="Mês de referência *"
-                  minDate={new Date("2010")}
-                  disableFuture
+                  minDate={new Date(minContractYear, 0)}
+                  maxDate={new Date()}
+                  shouldDisableMonth={blockedMonths}
+                  shouldDisableYear={blockedYears}
                   renderInput={(params) => (
                     <TextField
                       {...params}
                       inputProps={{
                         ...params.inputProps,
-                        placeholder: "mm/aaaa",
+                        placeholder: "mês/aaaa",
+                        readOnly: true,
+                        style: { userSelect: "none" },
                       }}
                       error={!!error}
                       helperText={
@@ -442,6 +559,16 @@ const CreateEditEnergyBillForm = () => {
                     />
                   )}
                   onChange={onChange}
+                  PopperProps={{
+                    sx: {
+                      "& .Mui-disabled": {
+                        textDecoration: "line-through",
+                      },
+                      "& .PrivatePickersMonth-root[disabled]": {
+                        textDecoration: "line-through",
+                      },
+                    },
+                  }}
                 />
               </Box>
             )}
@@ -544,10 +671,8 @@ const CreateEditEnergyBillForm = () => {
                       </Box>
                     )}
                     <FormHelperText>
-                      <p>
-                        Inclua todas as faturas, exceto casos radicalmente
-                        excepcionais como greves ou a pandemia
-                      </p>
+                      Inclua todas as faturas, exceto casos radicalmente
+                      excepcionais como greves ou a pandemia
                     </FormHelperText>
                   </Box>
                 </FormGroup>
@@ -562,6 +687,7 @@ const CreateEditEnergyBillForm = () => {
       currentInvoice,
       isCreateEnergyBillFormOpen,
       isEditEnergyBillFormOpen,
+      contracts,
     ]
   );
 
@@ -579,7 +705,7 @@ const CreateEditEnergyBillForm = () => {
               name="peakMeasuredDemandInKw"
               rules={{
                 validate: (value) => {
-                  if (contract?.tariffFlag !== 'G' && !value) {
+                  if (contract?.tariffFlag !== "G" && !value) {
                     return "Preencha este campo";
                   }
                 },
@@ -595,7 +721,7 @@ const CreateEditEnergyBillForm = () => {
                 <NumericFormat
                   value={value}
                   customInput={TextField}
-                  label={contract?.tariffFlag === 'G' ? 'Ponta' : 'Ponta *'}
+                  label={contract?.tariffFlag === "G" ? "Ponta" : "Ponta *"}
                   fullWidth
                   InputProps={{
                     endAdornment: (
@@ -605,14 +731,17 @@ const CreateEditEnergyBillForm = () => {
                   type="text"
                   allowNegative={false}
                   isAllowed={({ floatValue }) =>
-                    !floatValue || floatValue <= 99999.99
+                    !floatValue || floatValue <= 9999999.99
                   }
                   placeholder="0"
                   decimalScale={2}
                   decimalSeparator=","
                   thousandSeparator={"."}
                   error={Boolean(error)}
-                  helperText={error?.message ?? (contract?.tariffFlag !== 'G' ? "" : "Campo opcional")}
+                  helperText={
+                    error?.message ??
+                    (contract?.tariffFlag !== "G" ? "" : "Campo opcional")
+                  }
                   onValueChange={(values) => onChange(values.floatValue)}
                   onBlur={onBlur}
                 />
@@ -647,7 +776,7 @@ const CreateEditEnergyBillForm = () => {
                   type="text"
                   allowNegative={false}
                   isAllowed={({ floatValue }) =>
-                    !floatValue || floatValue <= 99999.99
+                    !floatValue || floatValue <= 9999999.99
                   }
                   placeholder="0"
                   decimalScale={2}
@@ -664,18 +793,16 @@ const CreateEditEnergyBillForm = () => {
         </Grid>
       </>
     ),
-    [
-      control,
-      activeConsumerUnitId,
-      contract?.tariffFlag,
-    ]
+    [control, activeConsumerUnitId, contract?.tariffFlag]
   );
 
   const MeasuredConsumption = useCallback(
     () => (
       <>
         <Grid item xs={10}>
-          <Typography variant="h5">Consumo medido</Typography>
+          <Typography variant="h5" style={cardTitleStyles}>
+            Consumo medido
+          </Typography>
         </Grid>
 
         <Grid container spacing={2}>
@@ -707,14 +834,14 @@ const CreateEditEnergyBillForm = () => {
                   type="text"
                   allowNegative={false}
                   isAllowed={({ floatValue }) =>
-                    !floatValue || floatValue <= 99999.99
+                    !floatValue || floatValue <= 9999999.99
                   }
                   decimalScale={2}
                   placeholder="0"
                   decimalSeparator=","
                   thousandSeparator={"."}
                   error={Boolean(error)}
-                  helperText={error?.message ?? " "}
+                  helperText={FormFieldError(error?.message)}
                   onValueChange={(values) => onChange(values.floatValue)}
                   onBlur={onBlur}
                 />
@@ -749,14 +876,14 @@ const CreateEditEnergyBillForm = () => {
                   type="text"
                   allowNegative={false}
                   isAllowed={({ floatValue }) =>
-                    !floatValue || floatValue <= 99999.99
+                    !floatValue || floatValue <= 9999999.99
                   }
                   placeholder="0"
                   decimalScale={2}
                   decimalSeparator=","
                   thousandSeparator={"."}
                   error={Boolean(error)}
-                  helperText={error?.message ?? " "}
+                  helperText={FormFieldError(error?.message)}
                   onValueChange={(values) => onChange(values.floatValue)}
                   onBlur={onBlur}
                 />
@@ -849,6 +976,7 @@ const CreateEditEnergyBillForm = () => {
         open={shouldShowCancelDialog}
         onClose={handleCloseDialog}
         onDiscard={handleDiscardForm}
+        type={isCreateEnergyBillFormOpen ? "create" : "update"}
       />
     </Fragment>
   );

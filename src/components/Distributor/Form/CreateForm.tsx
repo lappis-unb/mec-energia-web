@@ -40,12 +40,13 @@ const defaultValues: CreateDistributorForm = {
 type DistributorCreateFormDialogProps = {
   open: boolean;
   onClose: () => void;
+  handleDistributorChange: (value) => void;
 };
 
 const DistributorCreateFormDialog = (
   props: DistributorCreateFormDialogProps
 ) => {
-  const { open, onClose } = props;
+  const { open, onClose, handleDistributorChange } = props;
 
   // Redux
   const dispatch = useDispatch();
@@ -101,7 +102,10 @@ const DistributorCreateFormDialog = (
       isActive: true,
       university: user?.universityId as number,
     };
-    await createDistributor(body);
+    const response = await createDistributor(body).unwrap();
+    if (response) {
+      handleDistributorChange(response);
+    }
   };
 
   //Notificações
@@ -230,6 +234,7 @@ const DistributorCreateFormDialog = (
               entity={"distribuidora"}
               onClose={handleCloseDialog}
               onDiscard={handleDiscardForm}
+              type="create"
             />
           </Box>
         </FormProvider>

@@ -183,7 +183,7 @@ const CsvForm: React.FC<CsvFormProps> = ({ csvData }) => {
     const initialSelected = csvData.filter(
       (item) => !hasRowWithErrorInCsv(item)
     );
-    const hasErrorInCsv = csvData.some(hasRowWithErrorInCsv);
+    const hasErrorInCsv = csvData.every(hasRowWithErrorInCsv);
 
     setSelectedRows(initialSelected);
     setHasErrorInCsv(hasErrorInCsv);
@@ -207,13 +207,13 @@ const CsvForm: React.FC<CsvFormProps> = ({ csvData }) => {
       PaperProps={{ sx: { height: "100%" } }}
       onClose={handleCloseDrawer}
     >
-      <AppBar position="static">
+      <AppBar position="sticky">
         <Toolbar>
           <Container maxWidth="lg">
             <Box display="flex" alignItems="center">
               <IconButton
                 edge="start"
-                color="inherit"
+                style={{ color: '#000000DE' }}
                 aria-label="Fechar formulário"
                 onClick={handleCloseDrawer}
               >
@@ -246,7 +246,6 @@ const CsvForm: React.FC<CsvFormProps> = ({ csvData }) => {
                         colSpan={1}
                         style={{
                           backgroundColor: "transparent",
-                          border: "none",
                           borderBottom: "none",
                           padding: "8px",
                         }}
@@ -412,7 +411,7 @@ const CsvForm: React.FC<CsvFormProps> = ({ csvData }) => {
                             <TableCell
                               style={{
                                 backgroundColor: item.peakMeasuredDemandInKw
-                                  .error
+                                  .errors
                                   ? theme.palette.error.main
                                   : "inherit",
                                 color: item.peakMeasuredDemandInKw.errors
@@ -432,7 +431,7 @@ const CsvForm: React.FC<CsvFormProps> = ({ csvData }) => {
                             <TableCell
                               style={{
                                 backgroundColor: item.offPeakMeasuredDemandInKw
-                                  .error
+                                  .errors
                                   ? theme.palette.error.main
                                   : "inherit",
                                 color: item.offPeakMeasuredDemandInKw.errors
@@ -469,9 +468,7 @@ const CsvForm: React.FC<CsvFormProps> = ({ csvData }) => {
                             <TableRow
                               style={{
                                 backgroundColor:
-                                  index % 2 === 0
-                                    ? "#FFFFFF"
-                                    : theme.palette.background.default,
+                                  index % 2 === 0 ? "#FFFFFF" : "#EEF4F4",
                               }}
                             >
                               <TableCell

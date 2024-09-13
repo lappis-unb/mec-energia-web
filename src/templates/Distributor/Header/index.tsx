@@ -36,6 +36,7 @@ import { Delete } from "@mui/icons-material";
 import Tooltip from "@mui/material/Tooltip";
 import DeleteDistributorDialog from "@/components/Distributor/Form/DeleteDistributorDialog";
 import { getSession, useSession } from "next-auth/react";
+import { formatCnpj } from "@/utils/formatters/formatCnpj";
 
 const DistributorContentHeader = () => {
   const dispatch = useDispatch();
@@ -305,7 +306,7 @@ const DistributorContentHeader = () => {
             />
 
             <Typography>
-              CNPJ: <strong>{distributor?.cnpj}</strong>
+              CNPJ: <strong>{formatCnpj(distributor?.cnpj)}</strong>
             </Typography>
           </Box>
 
@@ -321,6 +322,7 @@ const DistributorContentHeader = () => {
 
       <Box>
         <IconButton
+          style={{ color: '#000000DE' }}
           onClick={() => setOpenModalInfoAboutSubGroupsAndTariff(true)}
         >
           <HelpOutlineSharpIcon />

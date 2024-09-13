@@ -10,7 +10,6 @@ import {
   TableHead,
   TableRow,
 } from "@mui/material";
-import { Subtitle } from "./Subtitle";
 import { selectActiveConsumerUnitId } from "@/store/appSlice";
 import { useSelector } from "react-redux";
 import { skipToken } from "@reduxjs/toolkit/query";
@@ -98,14 +97,16 @@ export const RecommendedContractTable = ({
   };
 
   return (
-    <Box mt={4}>
-      <Subtitle
-        id="Tabela 3"
-        title="Proposta para ajuste de contrato de fornecimento de energia elétrica da unidade consumidora"
-        width="100%"
-      />
+    <Box
+      sx={{
+        "@media print": {
+          width: "620px",
+          marginX: "auto",
+        }
+      }}
+    >
       <TableContainer component={Paper} sx={{ boxShadow: 0 }}>
-        <Table sx={{ minWidth: 650 }} aria-label="simple table">
+        <Table aria-label="simple table">
           <TableHead
             sx={{ bgcolor: "primary.main", display: "table-header-group" }}
           >
