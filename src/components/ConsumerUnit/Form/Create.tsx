@@ -104,7 +104,7 @@ const ConsumerUnitCreateForm = () => {
     return mappedDistributorList
       ?.slice()
       .sort((a, b) => a.name.localeCompare(b.name))
-  }, []);
+  }, [isCreateFormOpen]);
 
   const [
     createConsumerUnit,
@@ -432,7 +432,7 @@ const ConsumerUnitCreateForm = () => {
               <DatePicker
                 value={value}
                 label="Início da vigência *"
-                views={["month", "year"]}
+                views={["day", "month", "year"]}
                 minDate={new Date("2010")}
                 disableFuture
                 renderInput={(params) => (
