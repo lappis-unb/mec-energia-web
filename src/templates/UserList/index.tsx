@@ -292,15 +292,6 @@ const UserListTemplate = () => {
                   </Typography>
                 </TableCell>
                 <TableCell>
-                  <Typography
-                    variant="body2"
-                    fontWeight={isUniversityAdmin(user) ? "bold" : "normal"}
-                  >
-                    {user.universityDetail.name}
-                  </Typography>
-                </TableCell>
-
-                <TableCell>
                   {user.id === session?.user.id ? (
                     <Chip color="primary" label={UserRoleLabelMap[user.type]} />
                   ) : (
@@ -313,7 +304,7 @@ const UserListTemplate = () => {
                       variant="body2"
                       fontWeight={isUniversityAdmin(user) ? "bold" : "normal"}
                     >
-                      {user.email ? getUniversityAcronym(user.email) : "-"}
+                      {user.universityDetail.name}
                     </Typography>
                   </TableCell>
                 )}
