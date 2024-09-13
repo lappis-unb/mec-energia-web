@@ -1,4 +1,4 @@
-import { Fragment, useCallback, useEffect, useState } from "react";
+import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import {
@@ -82,12 +82,12 @@ const ConsumerUnitCreateForm = () => {
 
   const [currentDistributor, setCurrentDistributor] = useState();
 
-  const handleDistributorChange = (event) => {
+  const handleDistributorChange = useCallback((event) => {
     const selectedDistributor = event.id || event.target.value;
 
     setCurrentDistributor(selectedDistributor);
     setValue("distributor", selectedDistributor);
-  };
+  }, []);
 
   const mappedDistributorList = distributorList?.map((distributor) => {
     const idCopy = distributor.id;
@@ -100,9 +100,11 @@ const ConsumerUnitCreateForm = () => {
     };
   });
 
-  const sortedDistributorList = mappedDistributorList
-    ?.slice()
-    .sort((a, b) => a.name.localeCompare(b.name));
+  const sortedDistributorList = useMemo(() => {
+    return mappedDistributorList
+      ?.slice()
+      .sort((a, b) => a.name.localeCompare(b.name))
+  }, []);
 
   const [
     createConsumerUnit,
@@ -533,8 +535,8 @@ const ConsumerUnitCreateForm = () => {
     ),
     [
       control,
-      sortedDistributorList,
       currentDistributor,
+      sortedDistributorList,
       handleDistributorChange,
     ]
   );
