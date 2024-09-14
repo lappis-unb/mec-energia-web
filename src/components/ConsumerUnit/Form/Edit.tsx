@@ -108,7 +108,7 @@ const ConsumerUnitEditForm = () => {
     return mappedDistributorList
       ?.slice()
       .sort((a, b) => a.name.localeCompare(b.name));
-  }, []);
+  }, [isEditFormOpen]);
 
   const { data: contract } = useGetContractQuery(
     activeConsumerUnit || skipToken
@@ -153,6 +153,7 @@ const ConsumerUnitEditForm = () => {
             setValue("isActive", true);
             setValue("code", consumerUnit?.code ?? "");
             setValue("distributor", contract?.distributor);
+            setCurrentDistributor(contract?.distributor);
             setValue("supplyVoltage", contract?.supplyVoltage);
             setValue(
               "shouldShowInstalledPower",
@@ -553,7 +554,7 @@ const ConsumerUnitEditForm = () => {
                 <DatePicker
                   value={value}
                   label="Início da vigência *"
-                  views={["month", "year"]}
+                  views={["day", "month", "year"]}
                   minDate={new Date("2010")}
                   disableFuture
                   renderInput={(params) => (
@@ -635,6 +636,7 @@ const ConsumerUnitEditForm = () => {
       control,
       currentDistributor,
       sortedDistributorList,
+      setValue,
       handleDistributorChange,
     ]
   );
