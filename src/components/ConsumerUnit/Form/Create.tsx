@@ -487,7 +487,7 @@ const ConsumerUnitCreateForm = () => {
                 fieldState: { error },
               }) => (
                 <NumericFormat
-                  style={{ width: "10rem" }}
+                  style={{ width: "13rem" }}
                   value={value}
                   customInput={TextField}
                   label="Tensão contratada *"
