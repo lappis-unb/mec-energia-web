@@ -100,9 +100,11 @@ const ConsumerUnitCreateForm = () => {
     };
   });
 
-  const sortedDistributorList = mappedDistributorList
-    ?.slice()
-    .sort((a, b) => a.name.localeCompare(b.name));
+  const sortedDistributorList = useMemo(() => {
+    return mappedDistributorList
+      ?.slice()
+      .sort((a, b) => a.name.localeCompare(b.name));
+  }, [isCreateFormOpen]);
 
   const [
     createConsumerUnit,
