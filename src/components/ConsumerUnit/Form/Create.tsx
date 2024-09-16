@@ -1,4 +1,4 @@
-import { Fragment, useCallback, useEffect, useState } from "react";
+import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import {
@@ -82,12 +82,12 @@ const ConsumerUnitCreateForm = () => {
 
   const [currentDistributor, setCurrentDistributor] = useState();
 
-  const handleDistributorChange = (event) => {
+  const handleDistributorChange = useCallback((event) => {
     const selectedDistributor = event.id || event.target.value;
 
     setCurrentDistributor(selectedDistributor);
     setValue("distributor", selectedDistributor);
-  };
+  }, []);
 
   const mappedDistributorList = distributorList?.map((distributor) => {
     const idCopy = distributor.id;
@@ -100,9 +100,11 @@ const ConsumerUnitCreateForm = () => {
     };
   });
 
-  const sortedDistributorList = mappedDistributorList
-    ?.slice()
-    .sort((a, b) => a.name.localeCompare(b.name));
+  const sortedDistributorList = useMemo(() => {
+    return mappedDistributorList
+      ?.slice()
+      .sort((a, b) => a.name.localeCompare(b.name))
+  }, [isCreateFormOpen]);
 
   const [
     createConsumerUnit,
@@ -286,7 +288,7 @@ const ConsumerUnitCreateForm = () => {
             Unidade Consumidora
           </Typography>
         </Grid>
-        <Grid item xs={12}>
+        <Grid item>
           <Controller
             control={control}
             name="name"
@@ -374,6 +376,7 @@ const ConsumerUnitCreateForm = () => {
                 <InputLabel>Distribuidora *</InputLabel>
 
                 <Select
+                  style={{ width: "10rem" }}
                   ref={ref}
                   value={currentDistributor}
                   label="Distribuidora *"
@@ -417,7 +420,7 @@ const ConsumerUnitCreateForm = () => {
           />
         </Grid>
 
-        <Grid item xs={12}>
+        <Grid item xs={12} style={{ width: "14rem" }}>
           <Controller
             control={control}
             name="startDate"
@@ -429,7 +432,7 @@ const ConsumerUnitCreateForm = () => {
               <DatePicker
                 value={value}
                 label="Início da vigência *"
-                views={["month", "year"]}
+                views={["day", "month", "year"]}
                 minDate={new Date("2010")}
                 disableFuture
                 renderInput={(params) => (
@@ -484,6 +487,7 @@ const ConsumerUnitCreateForm = () => {
                 fieldState: { error },
               }) => (
                 <NumericFormat
+                  style={{ width: "13rem" }}
                   value={value}
                   customInput={TextField}
                   label="Tensão contratada *"
@@ -531,8 +535,8 @@ const ConsumerUnitCreateForm = () => {
     ),
     [
       control,
-      sortedDistributorList,
       currentDistributor,
+      sortedDistributorList,
       handleDistributorChange,
     ]
   );
@@ -605,6 +609,7 @@ const ConsumerUnitCreateForm = () => {
                 fieldState: { error },
               }) => (
                 <NumericFormat
+                  style={{ width: "10rem" }}
                   value={value}
                   customInput={TextField}
                   label="Demanda *"
@@ -645,6 +650,7 @@ const ConsumerUnitCreateForm = () => {
                   fieldState: { error },
                 }) => (
                   <NumericFormat
+                    style={{ width: "11rem" }}
                     value={value}
                     customInput={TextField}
                     label="Dema. Ponta *"
@@ -684,6 +690,7 @@ const ConsumerUnitCreateForm = () => {
                   fieldState: { error },
                 }) => (
                   <NumericFormat
+                    style={{ width: "11rem" }}
                     value={value}
                     customInput={TextField}
                     label="Dem. Fora Ponta *"
@@ -764,7 +771,7 @@ const ConsumerUnitCreateForm = () => {
                 </Alert>
               </Grid>
 
-              <Grid item xs={12}>
+              <Grid item xs={5.3}>
                 <Controller
                   control={control}
                   name="totalInstalledPower"
