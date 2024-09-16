@@ -71,9 +71,11 @@ export const mecEnergiaApi = createApi({
         headers.set("Authorization", `Token ${session.user.token}`);
       }
 
-      return headers;
+    return headers;
     },
   }),
+  keepUnusedDataFor: 0,               // Descarta dados não utilizados imediatamente
+  // refetchOnMountOrArgChange: true, // Refetch ao montar o componente ou quando os argumentos mudam
   tagTypes: [
     "Distributors",
     "ConsumerUnit",
