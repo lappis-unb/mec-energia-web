@@ -268,12 +268,6 @@ const RedefinePasswordPage: NextPage = () => {
                                             label="Nova senha"
                                             type={showNewPassword ? "text" : "password"}
                                             error={Boolean(error)}
-                                            helperText={error ? (
-                                                <Box display="flex" alignItems="center">
-                                                    <ReportIcon color="error" sx={{ mr: 1 }} />
-                                                    {error.message}
-                                                </Box>
-                                            ) : " "}
                                             fullWidth
                                             onChange={onChange}
                                             onBlur={onBlur}
@@ -366,7 +360,7 @@ const RedefinePasswordPage: NextPage = () => {
                             )}
 
                             {mutationError && (
-                                <Box mt={2}>
+                                <Box mb={2}>
                                     <Alert severity="error" variant="filled">
                                         O limite de tempo para cadastrar a senha foi atingido.
                                         <br />
