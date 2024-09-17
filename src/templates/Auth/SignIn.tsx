@@ -13,7 +13,7 @@ import { selectIsTokenValid, selectUserAlreadyCreatedName } from "@/store/appSli
 import { TokenStatus } from "@/types/app";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import ReportRounded from '@mui/icons-material/Error';
+import ReportRounded from "@mui/icons-material/ReportRounded";
 import { isValidEmail } from "@/utils/validations/form-validations";
 
 const defaultValues: SignInRequestPayload = {

@@ -73,6 +73,10 @@ const CreatePersonComponent = () => {
     handleDiscardForm();
   };
 
+  const cardTitleStyles: CardTitleStyle = {
+    marginBottom: "15px",
+  };
+
   const institutionsOptions = useMemo(() => {
     return institutions?.map((institution) => ({
       label: institution.name,
@@ -150,7 +154,7 @@ const CreatePersonComponent = () => {
     () => (
       <>
         <Grid item xs={12}>
-          <Typography variant="h5" style={{ marginBottom: "16px" }}>
+          <Typography variant="h5" style={cardTitleStyles}>
             Informações pessoais
           </Typography>
         </Grid>
@@ -168,12 +172,12 @@ const CreatePersonComponent = () => {
               fieldState: { error },
             }) => (
               <TextField
+                style={{ width: "200px" }}
                 ref={ref}
                 value={value}
                 label="Nome *"
                 error={Boolean(error)}
                 helperText={FormFieldError(error?.message)}
-                fullWidth
                 onChange={onChange}
                 onBlur={onBlur}
               />
@@ -250,7 +254,6 @@ const CreatePersonComponent = () => {
                     id="university-select"
                     options={institutionsOptions || []}
                     getOptionLabel={(option) => option.label}
-                    sx={{ width: 450 }}
                     renderInput={(params) => (
                       <TextField
                         {...params}

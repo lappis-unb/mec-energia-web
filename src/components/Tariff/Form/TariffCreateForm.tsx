@@ -366,7 +366,7 @@ const TariffCreateEditForm = () => {
                 <DatePicker
                   value={value}
                   label="Início *"
-                  views={["month", "year"]}
+                  views={["day", "month", "year"]}
                   minDate={new Date("2010")}
                   disableFuture
                   renderInput={(params) => (
@@ -400,7 +400,7 @@ const TariffCreateEditForm = () => {
                 <DatePicker
                   value={value}
                   label="Fim *"
-                  views={["month", "year"]}
+                  views={["day", "month", "year"]}
                   renderInput={(params) => (
                     <TextField
                       {...params}

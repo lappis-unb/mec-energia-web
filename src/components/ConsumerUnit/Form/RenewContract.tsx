@@ -1,4 +1,4 @@
-import { Fragment, useCallback, useEffect, useState } from "react";
+import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { isAfter, isFuture, isValid } from "date-fns";
 
@@ -83,10 +83,31 @@ const ConsumerUnitRenewContractForm = () => {
   const { data: distributorList } = useGetDistributorsQuery(
     session?.user?.universityId || skipToken
   );
+  const [currentDistributor, setCurrentDistributor] = useState();
 
-  const sortedDistributorList = distributorList
-    ?.slice()
-    .sort((a, b) => a.name.localeCompare(b.name));
+  const handleDistributorChange = useCallback((event) => {
+    const selectedDistributor = event.id || event.target.value;
+
+    setCurrentDistributor(selectedDistributor);
+    setValue("distributor", selectedDistributor);
+  }, []);
+
+  const mappedDistributorList = distributorList?.map((distributor) => {
+    const idCopy = distributor.id || distributor.value;
+    const valueCopy = distributor.value || distributor.id;
+
+    return {
+      ...distributor,
+      id: idCopy,
+      value: valueCopy,
+    };
+  });
+
+  const sortedDistributorList = useMemo(() => {
+    return mappedDistributorList?.slice().sort((a, b) =>
+      a.name.localeCompare(b.name)
+    )
+  }, [isRenewContractFormOpen]);
 
   const [
     renewContract,
@@ -323,7 +344,7 @@ const ConsumerUnitRenewContractForm = () => {
             name="distributor"
             rules={{ required: "Preencha este campo" }}
             render={({
-              field: { onChange, onBlur, value, ref },
+              field: { onBlur, ref },
               fieldState: { error },
             }) => (
               <FormControl
@@ -334,7 +355,7 @@ const ConsumerUnitRenewContractForm = () => {
 
                 <Select
                   ref={ref}
-                  value={value}
+                  value={currentDistributor}
                   label="Distribuidora *"
                   autoWidth
                   MenuProps={{
@@ -347,7 +368,7 @@ const ConsumerUnitRenewContractForm = () => {
                       horizontal: "left",
                     },
                   }}
-                  onChange={onChange}
+                  onChange={handleDistributorChange}
                   onBlur={onBlur}
                 >
                   {sortedDistributorList?.map(
@@ -386,7 +407,7 @@ const ConsumerUnitRenewContractForm = () => {
               <DatePicker
                 value={value}
                 label="Início da vigência *"
-                views={["month", "year"]}
+                views={["day", "month", "year"]}
                 minDate={new Date("2010")}
                 disableFuture
                 renderInput={(params) => (
@@ -485,7 +506,7 @@ const ConsumerUnitRenewContractForm = () => {
         </Tooltip>
       </>
     ),
-    [control, distributorList, subgroupsList]
+    [control, sortedDistributorList, currentDistributor, handleDistributorChange]
   );
 
   const ContractedDemand = useCallback(
@@ -704,6 +725,7 @@ const ConsumerUnitRenewContractForm = () => {
       <DistributorCreateFormDialog
         open={shouldShowDistributorFormDialog}
         onClose={handleCloseDistributorFormDialog}
+        handleDistributorChange={handleDistributorChange}
       />
     </Fragment>
   );
