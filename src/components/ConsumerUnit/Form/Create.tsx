@@ -452,85 +452,65 @@ const ConsumerUnitCreateForm = () => {
           />
         </Grid>
 
-        <Tooltip
-          componentsProps={{
-            tooltip: {
-              sx: {
-                bgcolor: "warning.main",
-                color: "warning.contrastText",
-                "& .MuiTooltip-arrow": {
-                  color: "warning.main",
-                },
-              },
-            },
-          }}
-          title={
-            <div style={{ whiteSpace: "pre-line" }}>
-              {subgroupsList ? getSubgroupsText(subgroupsList?.subgroups) : ""}
-            </div>
-          }
-          arrow
-          placement="right"
-          sx={{ color: "red" }}
-        >
-          <Grid item xs={8} sm={6}>
-            <Controller
-              control={control}
-              name={"supplyVoltage"}
-              rules={{
-                required: "Preencha este campo",
-                validate: (v) =>
-                  isInSomeSubgroups(v, subgroupsList?.subgroups || []),
-              }}
-              render={({
-                field: { onChange, onBlur, value },
-                fieldState: { error },
-              }) => (
-                <NumericFormat
-                  style={{ width: "13rem" }}
+        <Grid item xs={12}>
+          <Controller
+            control={control}
+            name="supplyVoltage"
+            rules={{ required: "Preencha este campo" }}
+            render={({
+              field: { onChange, onBlur, value, ref },
+              fieldState: { error },
+            }) => (
+              <FormControl
+                sx={{ minWidth: "200px", maxWidth: "100%" }}
+                error={!!error}
+                style={{ marginTop: '20px' }}
+              >
+                <InputLabel>Subgrupo e tensão contratada *</InputLabel>
+
+                <Select
+                  ref={ref}
                   value={value}
-                  customInput={TextField}
-                  label="Tensão contratada *"
-                  helperText={FormFieldError(
-                    error?.message,
-                    "Se preciso, converta a tensão de V para kV dividindo o valor por 1.000."
-                  )}
-                  error={!!error}
-                  fullWidth
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">kV</InputAdornment>
-                    ),
+                  label="Subgrupo e tensão contratada *"
+                  autoWidth
+                  MenuProps={{
+                    anchorOrigin: {
+                      vertical: "bottom",
+                      horizontal: "left",
+                    },
+                    transformOrigin: {
+                      vertical: "top",
+                      horizontal: "left",
+                    },
                   }}
-                  type="text"
-                  allowNegative={false}
-                  isAllowed={({ floatValue }) =>
-                    !floatValue || floatValue <= 9999.99
-                  }
-                  decimalScale={2}
-                  decimalSeparator=","
-                  thousandSeparator={"."}
-                  onValueChange={(values) => {
-                    const newVoltage = values ? values.floatValue : 0;
-                    if (newVoltage === 69) {
-                      setShouldShowGreenDemand(false);
-                    } else if (
-                      newVoltage !== undefined &&
-                      newVoltage >= 88 &&
-                      newVoltage <= 138
-                    ) {
-                      setShouldShowGreenDemand(false);
-                    } else {
-                      setShouldShowGreenDemand(true);
-                    }
-                    onChange(values.floatValue);
-                  }}
+                  onChange={onChange}
                   onBlur={onBlur}
-                />
-              )}
-            />
-          </Grid>
-        </Tooltip>
+                >
+                  <MenuItem value={1}>
+                    Subgrupo AS: inferior a 2,3 kV
+                  </MenuItem>
+                  <MenuItem value={2}>
+                    Subgrupo A4: 2,3 kV a 25 kV
+                  </MenuItem>
+                  <MenuItem value={3}>
+                    Subgrupo A3a: 30 kV a 44 kV
+                  </MenuItem>
+                  <MenuItem value={4}>
+                    Subgrupo A3: 69 kV
+                  </MenuItem>
+                  <MenuItem value={5}>
+                    Subgrupo A2: 88 kV a 138 kV
+                  </MenuItem>
+                  <MenuItem value={6}>
+                    Subgrupo A1: 230 kV ou superior
+                  </MenuItem>
+                </Select>
+
+                <FormHelperText>{FormFieldError(error?.message)}</FormHelperText>
+              </FormControl>
+            )}
+          />
+        </Grid>
       </>
     ),
     [
