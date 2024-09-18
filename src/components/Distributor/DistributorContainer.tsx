@@ -11,7 +11,6 @@ import { Badge } from "@mui/material";
 import { mockedDistributor } from "../../mocks/mockedDistributor";
 import { useDispatch } from "react-redux";
 import { setActiveSubgroup } from "@/store/appSlice";
-
 interface TabPanelProps {
   children?: React.ReactNode;
   index: number;
@@ -50,35 +49,51 @@ export default function DistributorContainer() {
   const dispatch = useDispatch();
 
   const getAllSubgroups = React.useCallback(() => {
-    const sub: Array<SubGroup> = [];
-    currentDist?.tariffs?.forEach((tariff) => {
-      if (sub.findIndex((sub) => sub.subgroup === tariff.subgroup) === -1) {
-        sub.push({
-          subgroup: tariff.subgroup,
-          pending: tariff.overdue,
-        });
-      } else {
-        const index = sub.findIndex((sub) => sub.subgroup === tariff.subgroup);
-        const pending = tariff.overdue;
-        if (pending && !sub[index].pending) sub[index].pending = pending;
-      }
-    });
-    setSubgroups(sub);
+    try {
+      const sub: Array<SubGroup> = [];
+      currentDist?.tariffs?.forEach((tariff) => {
+        if (sub.findIndex((sub) => sub.subgroup === tariff.subgroup) === -1) {
+          sub.push({
+            subgroup: tariff.subgroup,
+            pending: tariff.overdue,
+          });
+        } else {
+          const index = sub.findIndex((sub) => sub.subgroup === tariff.subgroup);
+          const pending = tariff.overdue;
+          if (pending && !sub[index].pending) sub[index].pending = pending;
+        }
+      });
+      setSubgroups(sub);
+    } catch (err) {
+      console.error("Erro ao obter subgrupos:", err);
+    }
   }, [currentDist?.tariffs]);
 
   useEffect(() => {
-    const { id } = router.query;
-    setCurrentDist(mockedDistributor[Number(id) - 1]);
-    getAllSubgroups();
+    try {
+      const { id } = router.query;
+      setCurrentDist(mockedDistributor[Number(id) - 1]);
+      getAllSubgroups();
+    } catch (err) {
+      console.error("Erro ao carregar o distribuidor:", err);
+    }
   }, [getAllSubgroups, router.query]);
 
   useEffect(() => {
-    const { id } = router.query;
-    setCurrentDist(mockedDistributor[Number(id) - 1]);
+    try {
+      const { id } = router.query;
+      setCurrentDist(mockedDistributor[Number(id) - 1]);
+    } catch (err) {
+      console.error("Erro ao atualizar o distribuidor:", err);
+    }
   }, [router.asPath, router.query]);
 
   useEffect(() => {
-    getAllSubgroups();
+    try {
+      getAllSubgroups();
+    } catch (err) {
+      console.error("Erro ao atualizar subgrupos:", err);
+    }
   }, [currentDist, getAllSubgroups]);
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {

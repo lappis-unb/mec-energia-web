@@ -26,6 +26,7 @@ const DistributorCardActionIcon = ({
   pendingTariffsCount,
 }: DistributorCardActionIcon) => {
   if (!isActive) {
+    console.error("Distribuidora inativa.");
     return null;
   }
 
@@ -57,6 +58,7 @@ const DistributorCard = ({
     pendingTariffsCount: number;
   }) => {
     if (!isActive) {
+      console.error("Tentativa de acessar uma distribuidora inativa.");
       return "disabled";
     }
 
@@ -74,6 +76,10 @@ const DistributorCard = ({
   >(
     async (event) => {
       event.stopPropagation();
+      if (!id && !activeDistributorId) {
+        console.error("ID da distribuidora não encontrado.");
+        return;
+      }
 
       router.push(`/distribuidoras/${id ?? activeDistributorId}`);
     },
@@ -90,6 +96,11 @@ const DistributorCard = ({
   );
 
   const handleDistributorClick = useCallback(() => {
+    if (!id) {
+      console.error("ID da distribuidora não encontrado ao tentar navegar.");
+      return;
+    }
+
     router.push(`/distribuidoras/${id}`);
   }, [router, id]);
 
