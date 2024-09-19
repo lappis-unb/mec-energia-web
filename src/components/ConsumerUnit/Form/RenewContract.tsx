@@ -111,7 +111,7 @@ const ConsumerUnitRenewContractForm = () => {
     return mappedDistributorList
       ?.slice()
       .sort((a, b) => a.name.localeCompare(b.name));
-  }, []);
+  }, [isRenewContractFormOpen]);
 
   const [
     renewContract,

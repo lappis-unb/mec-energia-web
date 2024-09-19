@@ -8,9 +8,9 @@ E='\033[0m'
 ENV_PROD=.envs/.env.prod
 ENV_DEV=.envs/.env.dev
 ENV_TEST=.envs/.env.test
-COMPOSE_FILE_PROD=compose.prod.yml
-COMPOSE_FILE_DEV=compose.dev.yml
-COMPOSE_FILE_TEST=compose.test.yml
+COMPOSE_FILE_DEV=compose.yml
+COMPOSE_FILE_TEST=compose-test.yml
+COMPOSE_FILE_PROD=compose-prod.yml
 
 define load-env
 	$(eval include $(1))

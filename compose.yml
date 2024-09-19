@@ -1,7 +1,7 @@
 services:
   mepa-web:
     container_name: mepa-web
-    image: mepa-web:${TAG:-latest-dev}
+    image: mepa-web:latest-dev
     build:
       context: ./
       target: dev
@@ -14,16 +14,16 @@ services:
     env_file:
       - ./.envs/.env.dev
     environment:
-      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET} 
       NEXTAUTH_URL: ${NEXTAUTH_URL}
       API_URL: ${API_URL}
     volumes:
       - .:/app
     networks:
-      - mec-energia-network
+      - web-network
     restart: unless-stopped
 
 networks:
-  mec-energia-network:
-    name: mec-energia-network
-    external: true
+  web-network:
+    name: web-network
+    driver: bridge
