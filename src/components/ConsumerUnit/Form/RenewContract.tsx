@@ -67,6 +67,10 @@ const defaultValues: RenewContractForm = {
   offPeakContractedDemandInKw: "",
 };
 
+const cardTitleStyles: CardTitleStyle = {
+  marginBottom: "15px",
+};
+
 const ConsumerUnitRenewContractForm = () => {
   //Sessão
   const { data: session } = useSession();
@@ -104,9 +108,9 @@ const ConsumerUnitRenewContractForm = () => {
   });
 
   const sortedDistributorList = useMemo(() => {
-    return mappedDistributorList?.slice().sort((a, b) =>
-      a.name.localeCompare(b.name)
-    )
+    return mappedDistributorList
+      ?.slice()
+      .sort((a, b) => a.name.localeCompare(b.name));
   }, [isRenewContractFormOpen]);
 
   const [
@@ -306,7 +310,9 @@ const ConsumerUnitRenewContractForm = () => {
     () => (
       <>
         <Grid item xs={12}>
-          <Typography variant="h5">Contrato</Typography>
+          <Typography variant="h5" style={cardTitleStyles}>
+            Contrato
+          </Typography>
         </Grid>
 
         <Grid item xs={12}>
@@ -327,9 +333,10 @@ const ConsumerUnitRenewContractForm = () => {
                 label="Número da Unidade *"
                 placeholder="Número da Unidade Consumidora conforme a fatura"
                 error={Boolean(error)}
-                helperText={
-                  FormFieldError(error?.message, "Nº ou código da Unidade Consumidora conforme a fatura")
-                }
+                helperText={FormFieldError(
+                  error?.message,
+                  "Nº ou código da Unidade Consumidora conforme a fatura"
+                )}
                 fullWidth
                 onChange={(e) => handleNumericInputChange(e, onChange)}
                 onBlur={onBlur}
@@ -343,10 +350,7 @@ const ConsumerUnitRenewContractForm = () => {
             control={control}
             name="distributor"
             rules={{ required: "Preencha este campo" }}
-            render={({
-              field: { onBlur, ref },
-              fieldState: { error },
-            }) => (
+            render={({ field: { onBlur, ref }, fieldState: { error } }) => (
               <FormControl
                 sx={{ minWidth: "200px", maxWidth: "100%" }}
                 error={!!error}
@@ -389,7 +393,9 @@ const ConsumerUnitRenewContractForm = () => {
                   </MenuItem>
                 </Select>
 
-                <FormHelperText>{FormFieldError(error?.message)}</FormHelperText>
+                <FormHelperText>
+                  {FormFieldError(error?.message)}
+                </FormHelperText>
               </FormControl>
             )}
           />
@@ -465,9 +471,10 @@ const ConsumerUnitRenewContractForm = () => {
                   value={value}
                   customInput={TextField}
                   label="Tensão contratada *"
-                  helperText={
-                    FormFieldError(error?.message, "Se preciso, converta a tensão de V para kV dividindo o valor por 1.000.")
-                  }
+                  helperText={FormFieldError(
+                    error?.message,
+                    "Se preciso, converta a tensão de V para kV dividindo o valor por 1.000."
+                  )}
                   error={!!error}
                   fullWidth
                   InputProps={{
@@ -506,7 +513,12 @@ const ConsumerUnitRenewContractForm = () => {
         </Tooltip>
       </>
     ),
-    [control, sortedDistributorList, currentDistributor, handleDistributorChange]
+    [
+      control,
+      sortedDistributorList,
+      currentDistributor,
+      handleDistributorChange,
+    ]
   );
 
   const ContractedDemand = useCallback(
