@@ -141,11 +141,17 @@ const EditInstitutionForm = () => {
     return true;
   };
 
+  const cardTitleStyles: CardTitleStyle = {
+    marginBottom: "15px",
+  };
+
   const InstitutionSection = useCallback(
     () => (
       <>
         <Grid item xs={12}>
-          <Typography variant="h5">Instituição</Typography>
+          <Typography variant="h5" style={cardTitleStyles}>
+            Instituição
+          </Typography>
         </Grid>
 
         <Grid item xs={12}>

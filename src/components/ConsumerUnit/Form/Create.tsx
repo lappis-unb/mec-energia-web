@@ -103,7 +103,7 @@ const ConsumerUnitCreateForm = () => {
   const sortedDistributorList = useMemo(() => {
     return mappedDistributorList
       ?.slice()
-      .sort((a, b) => a.name.localeCompare(b.name))
+      .sort((a, b) => a.name.localeCompare(b.name));
   }, [isCreateFormOpen]);
 
   const [
@@ -535,8 +535,8 @@ const ConsumerUnitCreateForm = () => {
     ),
     [
       control,
-      currentDistributor,
       sortedDistributorList,
+      currentDistributor,
       handleDistributorChange,
     ]
   );
