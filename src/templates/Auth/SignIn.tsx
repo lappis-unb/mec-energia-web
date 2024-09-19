@@ -1,13 +1,20 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useRouter } from "next/router";
 import Head from "next/head";
 import Image from "next/image";
 import { signIn } from "next-auth/react";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
-import { Alert, Box, Button, Link, Paper, TextField } from "@mui/material";
+import { Alert, Box, Button, IconButton, InputAdornment, Link, Paper, TextField, Typography } from "@mui/material";
 import { SignInRequestPayload } from "@/types/auth";
 import { getHeadTitle } from "@/utils/head";
 import Footer from "@/components/Footer";
+import { useSelector } from "react-redux";
+import { selectIsTokenValid, selectUserAlreadyCreatedName } from "@/store/appSlice";
+import { TokenStatus } from "@/types/app";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import ReportRounded from "@mui/icons-material/ReportRounded";
+import { isValidEmail } from "@/utils/validations/form-validations";
 
 const defaultValues: SignInRequestPayload = {
   username: "",
@@ -16,6 +23,11 @@ const defaultValues: SignInRequestPayload = {
 
 const SignInTemplate = () => {
   const headTitle = useMemo(() => getHeadTitle("Entrar"), []);
+
+  const tokenStatus = useSelector(selectIsTokenValid);
+  const userAlreadyCreatedName = useSelector(selectUserAlreadyCreatedName);
+
+  const [showPassword, setShowPassword] = useState(false);
 
   const {
     query: { error },
@@ -28,7 +40,8 @@ const SignInTemplate = () => {
     username,
     password,
   }) => {
-    signIn("credentials", { username, password, callbackUrl: "/" });
+    const normalizedEmail = username.toLowerCase();
+    signIn("credentials", { username: normalizedEmail, password, callbackUrl: "/" });
   };
 
   return (
@@ -53,19 +66,46 @@ const SignInTemplate = () => {
               onSubmit={handleSubmit(handleOnSubmit)}
             >
               <Box
-                mt={8}
+                mt={3}
                 height="112px"
                 display="flex"
                 alignItems="center"
                 justifyContent="center"
               >
                 <Image
-                  src="/icons/mec-energia.svg"
-                  alt="Logo do MEC Energia"
-                  height="144px"
-                  width="144px"
+                  src="/icons/logo_mepa_nome.svg"
+                  alt="Logo MEPA"
+                  height="250px"
+                  width="250px"
                 />
               </Box>
+
+              {tokenStatus === TokenStatus.TOKEN_ALREADY_USED && (
+                <Box mt={4}>
+                  <Typography variant="h5">Olá, {userAlreadyCreatedName}</Typography>
+                  <Typography variant="subtitle1">Você já tem uma senha de acesso ao sistema.</Typography>
+                  <Typography variant="subtitle1">Preencha os campos abaixo para entrar ou clique em</Typography>
+                  <Typography variant="subtitle1">&quot;Esqueci minha senha&quot; para criar uma nova senha.</Typography>
+                </Box>
+              )}
+
+              {tokenStatus === TokenStatus.RESET_PASSWORD_INVALID && (
+                <Box mt={4}>
+                  <Alert severity="error" variant="filled">
+                    O link clicado para cadastrar a senha de acesso está vencido.
+                    Você receberá um novo link por e-mail em 1 hora.
+                  </Alert>
+                </Box>
+              )}
+
+              {tokenStatus === TokenStatus.FIRST_TIME_CREATION_INVALID && (
+                <Box mt={4}>
+                  <Alert severity="error" variant="filled">
+                    O link clicado para cadastrar a senha de acesso está vencido.
+                    Você receberá um novo link por e-mail em 1 hora.
+                  </Alert>
+                </Box>
+              )}
 
               <Box mt={8}>
                 <Controller
@@ -73,10 +113,8 @@ const SignInTemplate = () => {
                   name="username"
                   rules={{
                     required: "Preencha este campo",
-                    pattern: {
-                      value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                      message: "Insira um e-mail válido",
-                    },
+        
+                    validate: (e) => isValidEmail(e),
                   }}
                   render={({
                     field: { onChange, onBlur, value, ref },
@@ -87,16 +125,25 @@ const SignInTemplate = () => {
                       value={value}
                       label="E-mail institucional"
                       error={Boolean(error)}
-                      helperText={error?.message ?? " "}
                       fullWidth
                       onChange={onChange}
                       onBlur={onBlur}
+                      helperText={
+                        error ? (
+                          <Box display="flex" alignItems="center" gap={0.5} ml={-2}>
+                            <ReportRounded color="error" fontSize="small"/>
+                            {error.message}
+                          </Box>
+                        ) : (
+                          " "
+                        )
+                      }
                     />
                   )}
                 />
               </Box>
 
-              <Box mt={3}>
+              <Box mt={1}>
                 <Controller
                   control={control}
                   name="password"
@@ -109,19 +156,41 @@ const SignInTemplate = () => {
                       ref={ref}
                       value={value}
                       label="Senha"
-                      type="password"
+                      type={showPassword ? "text" : "password"}
                       error={Boolean(error)}
-                      helperText={error?.message ?? " "}
                       fullWidth
                       onChange={onChange}
                       onBlur={onBlur}
+                      InputProps={{
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <IconButton
+                              style={{ color: '#000000DE' }}
+                              onClick={() => setShowPassword(!showPassword)}
+                              onMouseDown={(e) => e.preventDefault()}
+                              >
+                              {showPassword ? <VisibilityOff /> : <Visibility />}
+                            </IconButton>
+                          </InputAdornment>
+                        ),
+                      }}
+                      helperText={
+                        error ? (
+                          <Box display="flex" alignItems="center" gap={0.5} ml={-2}>
+                            <ReportRounded color="error" fontSize="small"/>
+                            {error.message}
+                          </Box>
+                        ) : (
+                          " "
+                        )
+                      }
                     />
                   )}
                 />
               </Box>
 
-              <Box display="flex" flexDirection="row-reverse">
-                <Link variant="caption">Esqueci minha senha</Link>
+              <Box display="flex" mt={-2} flexDirection="row-reverse">
+                <Link variant="caption" href="/esqueci-senha">Esqueci minha senha</Link>
               </Box>
 
               {error && (
@@ -133,15 +202,9 @@ const SignInTemplate = () => {
               )}
 
               <Box mt={2}>
-                <Button type="submit" variant="contained" fullWidth>
+                <Button type="submit" variant="contained" fullWidth size="large">
                   Entrar
                 </Button>
-              </Box>
-
-              <Box mt={5}>
-                <Box display="flex" justifyContent="center">
-                  <Link>Não tenho cadastro</Link>
-                </Box>
               </Box>
             </Box>
           </Paper>

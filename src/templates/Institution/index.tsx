@@ -10,13 +10,18 @@ import {
 } from "@mui/material";
 import { FlashOn, FlashOff } from "@mui/icons-material";
 import InstitutionEditButton from "./EditButton";
-import { EditInstitutionRequestPayload } from '@/types/institution';
+import { EditInstitutionRequestPayload } from "@/types/institution";
 
 const InstitutionsTemplate = () => {
   const { data: institutions } = useFetchInstitutionsQuery();
   const [editInstitution] = useEditInstitutionMutation();
 
-  const handleToggleActivation = async (institutionId: number, institutionActive: boolean, institutionName: string, institutionCnpj: string) => {
+  const handleToggleActivation = async (
+    institutionId: number,
+    institutionActive: boolean,
+    institutionName: string,
+    institutionCnpj: string
+  ) => {
     const institutionToUpdate: EditInstitutionRequestPayload = {
       id: institutionId,
       is_active: !institutionActive,
@@ -42,13 +47,25 @@ const InstitutionsTemplate = () => {
 
         <TableBody>
           {institutions?.map((institution) => (
-            <TableRow key={institution.id} style={{
-              textDecoration: institution.isActive ? "none" : "line-through",
-              color: institution.isActive ? "inherit" : "#888888",
-            }}>
+            <TableRow
+              key={institution.id}
+              style={{
+                textDecoration: institution.isActive ? "none" : "line-through",
+                color: "inherit",
+              }}
+            >
               <TableCell>
                 <IconButton
-                  onClick={() => handleToggleActivation(institution.id, institution.isActive, institution.name, institution.cnpj)}>
+                  style={{ color: '#000000DE' }}
+                  onClick={() =>
+                    handleToggleActivation(
+                      institution.id,
+                      institution.isActive,
+                      institution.name,
+                      institution.cnpj
+                    )
+                  }
+                >
                   {institution.isActive ? <FlashOn /> : <FlashOff />}
                 </IconButton>
               </TableCell>

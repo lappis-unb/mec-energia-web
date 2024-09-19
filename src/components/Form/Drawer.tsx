@@ -31,7 +31,7 @@ const FormDrawer = ({ open, children, handleCloseDrawer }: FormDrawerProps) => {
       <Box position="relative" py={3}>
         {isSmUp && (
           <Box position="absolute" top={0} left={0} p={2}>
-            <IconButton onClick={handleCloseDrawer}>
+            <IconButton style={{ color: '#000000DE' }} onClick={handleCloseDrawer}>
               <Close fontSize="large" />
             </IconButton>
           </Box>

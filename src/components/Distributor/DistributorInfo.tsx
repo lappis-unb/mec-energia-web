@@ -111,7 +111,7 @@ export const DistributorInfo = () => {
         >
           <Typography variant="h5">{titleTariffs}</Typography>
           {!isPendingTariffAddition && (
-            <IconButton onClick={handleEditTariffClick} color="inherit">
+            <IconButton onClick={handleEditTariffClick} style={{ color: '#000000DE' }}>
               <EditIcon />
             </IconButton>
           )}

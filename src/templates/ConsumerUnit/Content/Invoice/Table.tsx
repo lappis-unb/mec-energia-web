@@ -3,11 +3,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import ConfirmWarning from "@/components/ConfirmWarning/ConfirmWarning";
-import { GetApp } from "@mui/icons-material";
 import { formatToPtBrCurrency } from "@/utils/number";
 
-import { Box, Button, Grid, IconButton, styled } from "@mui/material";
+import { Box, Button, Grid, IconButton, styled, Tooltip } from "@mui/material";
 import {
   DataGrid,
   GridColDef,
@@ -40,6 +38,9 @@ import {
   InvoicePayload,
   InvoicesPayload,
 } from "@/types/consumerUnit";
+import ConfirmDelete from "@/components/ConfirmDelete/ConfirmDelete";
+import { parseNumberToMonth } from "@/utils/parseNumberToMonth";
+import theme from "@/theme";
 
 const getMonthFromNumber = (
   month: number,
@@ -128,8 +129,10 @@ const ConsumerUnitInvoiceContentTable = () => {
   const dispatch = useDispatch();
   const consumerUnitId = useSelector(selectActiveConsumerUnitId);
   const [deleteEnergiBill] = useDeleteEnergiBillMutation();
-  const [isWarningOpen, setIsWarningOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedBillenergyId, setSelectedEnergyBillId] = useState<number>(0);
+  const [selectedMonth, setSelectedMonth] = useState<number>(0);
+  const [selectedYear, setSelectedYear] = useState<number>(0);
 
   const { data: invoicesPayload } = useFetchInvoicesQuery(
     consumerUnitId ?? skipToken,
@@ -159,38 +162,41 @@ const ConsumerUnitInvoiceContentTable = () => {
     }
   };
 
-  const confirmWarning = () => {
-    setIsWarningOpen(false);
+  const confirmDelete = () => {
+    setIsDeleteDialogOpen(false);
     handleDeleteInvoice();
   };
 
-  const cancelWarning = () => {
-    setIsWarningOpen(false);
+  const cancelDelete = () => {
+    setIsDeleteDialogOpen(false);
   };
 
-  const handleDownloadPDF = (energyBillId: number) => {
-    const pdfUrl = `/media/energy_bills/`;
+  // const handleDownloadPDF = (energyBillId: number) => {
+  //   const pdfUrl = `/media/energy_bills/`;
 
-    // Criando um novo link para realizar o download do arquivo PDF
-    const link = document.createElement("a");
-    link.href = pdfUrl;
-    link.download = `${energyBillId}.pdf`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
+  //   // Criando um novo link para realizar o download do arquivo PDF
+  //   const link = document.createElement("a");
+  //   link.href = pdfUrl;
+  //   link.download = `${energyBillId}.pdf`;
+  //   document.body.appendChild(link);
+  //   link.click();
+  //   document.body.removeChild(link);
+  // };
 
   const columns: GridColDef<InvoiceDataGridRow>[] = [
     {
       field: "month",
       headerName: "Mês",
-      headerAlign: "center",
+      headerAlign: "left",
       align: "left",
-      flex: 2,
       valueGetter: ({ row: { id } }) => id,
       renderCell: ({ row }) => renderMonthCell(row),
-      colSpan: ({ row: { isEnergyBillPending } }) => {
+      colSpan: ({ row: { isEnergyBillPending, energyBillId } }) => {
         if (isEnergyBillPending) {
+          return columns.length;
+        }
+
+        if (!energyBillId) {
           return columns.length;
         }
       },
@@ -199,7 +205,6 @@ const ConsumerUnitInvoiceContentTable = () => {
       field: "isAtypical",
       headerAlign: "center",
       align: "center",
-      flex: 0,
       renderHeader: () => <InsightsRounded />,
       renderCell: ({ row: { isAtypical, energyBillId } }) => {
         if (energyBillId === undefined) {
@@ -256,10 +261,8 @@ const ConsumerUnitInvoiceContentTable = () => {
     {
       field: "id",
       headerClassName: "MuiDataGrid-columnHeaderMain",
-      headerName: "Ações",
-      headerAlign: "center",
+      headerName: "",
       align: "center",
-      flex: 1,
       sortable: false,
       renderCell: ({ row: { month, year, energyBillId } }) => {
         if (!energyBillId) {
@@ -268,50 +271,64 @@ const ConsumerUnitInvoiceContentTable = () => {
 
         return (
           <>
-            <IconButton
-              onClick={() => {
-                handleEditInvoiceFormOpen({ month, year, id: energyBillId });
-              }}
-            >
-              <Edit />
-            </IconButton>
-            <IconButton
-              onClick={() => {
-                setSelectedEnergyBillId(energyBillId);
-                setIsWarningOpen(true);
-              }}
-            >
-              <Delete />
-            </IconButton>
+            <Tooltip title="Editar" arrow placement="top">
+              <IconButton
+                style={{ color: '#000000DE' }}
+                onClick={() => {
+                  handleEditInvoiceFormOpen({ month, year, id: energyBillId });
+                }}
+              >
+                <Edit />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Excluir" arrow placement="top">
+              <IconButton
+                style={{ color: '#000000DE' }}
+                onClick={() => {
+                  setSelectedEnergyBillId(energyBillId);
+                  setSelectedMonth(month)
+                  setSelectedYear(year)
+                  setIsDeleteDialogOpen(true)
+                }}
+              >
+                <Delete />
+              </IconButton>
+            </Tooltip>
           </>
         );
       },
     },
-    {
-      field: "download",
-      headerClassName: "MuiDataGrid-columnHeaderMain",
-      headerName: "Download",
-      headerAlign: "center",
-      align: "center",
-      flex: 1.4,
-      sortable: false,
-      renderCell: ({ row: { energyBillId } }) => {
-        if (!energyBillId) {
-          return <></>;
-        }
+    // {
+    //   field: "download",
+    //   headerClassName: "MuiDataGrid-columnHeaderMain",
+    //   headerName: "Download",
+    //   headerAlign: "center",
+    //   align: "center",
+    //   flex: 1.4,
+    //   sortable: false,
+    //   renderCell: ({ row: { energyBillId } }) => {
+    //     if (!energyBillId) {
+    //       return <></>;
+    //     }
 
-        return (
-          <IconButton
-            onClick={() => {
-              handleDownloadPDF(energyBillId);
-            }}
-          >
-            <GetApp />{" "}
-            {/* Este é um ícone de download do Material Icons. Se não for adequado, você pode substituí-lo por outro ícone de sua preferência. */}
-          </IconButton>
-        );
-      },
-    },
+    //     return (
+    //       <Tooltip
+    //          title="Baixar"
+    //          arrow
+    //          placement="top"
+    //       >
+    //       <IconButton
+    //         onClick={() => {
+    //           handleDownloadPDF(energyBillId);
+    //         }}
+    //       >
+    //         <GetApp />{" "}
+    //         {/* Este é um ícone de download do Material Icons. Se não for adequado, você pode substituí-lo por outro ícone de sua preferência. */}
+    //       </IconButton>
+    // </Tooltip>
+    //     );
+    //   },
+    // },
   ];
 
   const columnGroupingModel: GridColumnGroupingModel = [
@@ -362,7 +379,7 @@ const ConsumerUnitInvoiceContentTable = () => {
       const buttonLabel =
         "Lançar " +
         getMonthFromNumber(month, year) +
-        `${activeFilter === "pending" ? " — " + year : ""}`;
+        `${activeFilter === "pending" ? "  " + year : ""}`;
 
       if (isEnergyBillPending) {
         return (
@@ -404,7 +421,7 @@ const ConsumerUnitInvoiceContentTable = () => {
     },
     "& .MuiDataGrid-columnHeaders": {
       position: "sticky",
-      backgroundColor: "#EEF4F4",
+      backgroundColor: theme.palette.background.default,
       zIndex: 1,
       top: 70,
     },
@@ -412,11 +429,14 @@ const ConsumerUnitInvoiceContentTable = () => {
       // remove the space left for the header
       marginTop: "0!important",
     },
+    "& .MuiDataGrid-row.pending-row": {
+      backgroundColor: theme.palette.secondaryFocus,
+    },
   }));
 
   return (
     <>
-      <Grid container justifyContent="flex-end"></Grid>
+      <Grid container justifyContent="flex-end"></Grid >
       <FixedMenuDataGrid
         experimentalFeatures={{ columnGrouping: true }}
         columnGroupingModel={columnGroupingModel}
@@ -427,11 +447,15 @@ const ConsumerUnitInvoiceContentTable = () => {
         autoHeight
         hideFooter
         disableColumnMenu
+        getRowClassName={(params) =>
+          params.row.isEnergyBillPending ? "pending-row" : ""
+        }
       />
-      <ConfirmWarning
-        open={isWarningOpen}
-        onConfirm={confirmWarning}
-        onCancel={cancelWarning}
+      <ConfirmDelete
+        title={`Apagar fatura de ${parseNumberToMonth(selectedMonth)} de ${selectedYear}?`}
+        open={isDeleteDialogOpen}
+        onConfirm={confirmDelete}
+        onCancel={cancelDelete}
       />
     </>
   );

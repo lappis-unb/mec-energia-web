@@ -39,7 +39,7 @@ const ProfileTemplate = () => {
         }
 
         <Box ml={2}>
-          <ProfileResetPasswordButton />
+          <ProfileResetPasswordButton personId={currentUser.id as number} />
         </Box>
       </Box>
 

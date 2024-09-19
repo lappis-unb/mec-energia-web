@@ -6,10 +6,32 @@ import { ptBR } from "@mui/x-date-pickers";
 declare module "@mui/material/styles" {
   interface Palette {
     highlighted: Palette["primary"];
+    secondaryFocus: string;
+    graph: {
+      baseCostMain: string;
+      baseCostSecondary: string;
+      measuredConsumptionMain: string;
+      measuredConsumptionSecondary: string;
+      measuredDemandMain: string;
+      measuredDemandSecondary: string;
+      measuredDemandPeakLine: string;
+      measuredDemandOffPeakLine: string;
+    };
   }
 
   interface PaletteOptions {
     highlighted: PaletteOptions["primary"];
+    secondaryFocus?: string;
+    graph?: {
+      baseCostMain?: string;
+      baseCostSecondary?: string;
+      measuredConsumptionMain?: string;
+      measuredConsumptionSecondary?: string;
+      measuredDemandMain?: string;
+      measuredDemandSecondary?: string;
+      measuredDemandPeakLine?: string;
+      measuredDemandOffPeakLine?: string;
+    };
   }
 }
 
@@ -23,21 +45,32 @@ const theme = createTheme(
         contrastText: "#fff",
       },
       secondary: {
-        main: "#FB736C",
+        main: "#FAAD10",
       },
       background: {
-        default: "#EEF4F4",
+        default: "#F7F7F7",
         paper: "#fff",
       },
       error: {
         main: "#B31B0A",
       },
       warning: {
-        main: "#FB736C",
+        main: "#FAAD10",
         contrastText: "#000",
       },
       highlighted: {
         main: "rgba(10, 92, 103, 0.12)",
+      },
+      secondaryFocus: "#FAAD101F",
+      graph: {
+        baseCostMain: "#54BF86",
+        baseCostSecondary: "#EE9083",
+        measuredConsumptionMain: "#0E438C",
+        measuredConsumptionSecondary: "#6F9AC7",
+        measuredDemandMain: "#7C07C0",
+        measuredDemandSecondary: "#CB95EC",
+        measuredDemandPeakLine: "#008940",
+        measuredDemandOffPeakLine: "#55BF87",
       },
     },
     typography: {
@@ -66,64 +99,73 @@ const theme = createTheme(
         },
       },
       MuiAlert: {
+        defaultProps: {
+          variant: "filled",
+        },
         styleOverrides: {
           standardError: {
-            backgroundColor: "#F8E9E7",
-            color: "#520D05",
+            backgroundColor: "#FDEDED",
+            color: "#5F2120",
+            "& .MuiAlert-icon": {
+              color: "#B31B0A",
+            },
           },
           standardSuccess: {
-            backgroundColor: "#ECF2E9",
-            color: "#25401A",
+            backgroundColor: "#EDF7ED",
+            color: "#1E4620",
+            "& .MuiAlert-icon": {
+              color: "#008940",
+            },
           },
           standardWarning: {
-            backgroundColor: "#FBF4E7",
-            color: "#613E05",
+            backgroundColor: "#FFF4E5",
+            color: "#663C00",
             "& .MuiAlert-icon": {
               color: "#D98A0B",
             },
           },
           standardInfo: {
-            backgroundColor: "#E6ECF3",
-            color: "#0F294D",
+            backgroundColor: "#E5F6FD",
+            color: "#014361",
+            "& .MuiAlert-icon": {
+              color: "#003A7A",
+            },
           },
           filledError: {
             backgroundColor: "#B31B0A",
             color: "#FFF",
           },
           filledSuccess: {
-            backgroundColor: "#418026",
+            backgroundColor: "#008940",
             color: "#FFF",
           },
           filledWarning: {
             backgroundColor: "#D98A0B",
             color: "#000",
-            "& .MuiAlert-icon": {
-              color: "#000",
-            },
           },
           filledInfo: {
-            backgroundColor: "#0E438C",
+            backgroundColor: "#003A7A",
             color: "#FFF",
           },
           outlinedError: {
-            backgroundColor: "#FFF",
+            backgroundColor: "#F7F7F7",
             borderColor: "#B31B0A",
-            color: "#520D05",
+            color: "#5F2120",
           },
           outlinedSuccess: {
-            backgroundColor: "#FFF",
-            borderColor: "#418026",
-            color: "#25401A",
+            backgroundColor: "#F7F7F7",
+            borderColor: "#008940",
+            color: "#1E4620",
           },
           outlinedWarning: {
-            backgroundColor: "#FFF",
+            backgroundColor: "#F7F7F7",
             borderColor: "#D98A0B",
-            color: "#613E05",
+            color: "#663C00",
           },
           outlinedInfo: {
-            backgroundColor: "#FFF",
-            borderColor: "#0E438C",
-            color: "#0F294D",
+            backgroundColor: "#F7F7F7",
+            borderColor: "#003A7A",
+            color: "#014361",
           },
           icon: {
             color: "#FFFFFF",
@@ -159,9 +201,14 @@ const theme = createTheme(
             "& .MuiDataGrid-columnHeader--filledGroup": {
               backgroundColor: "rgba(10, 92, 103, 0.08)",
               color: "rgba(0, 0, 0, 0.87)",
+              borderRight: "solid 2px #F7F7F7",
+              borderLeft: "solid 2px #F7F7F7",
             },
             "& .MuiDataGrid-columnHeader--emptyGroup": {
               backgroundColor: "unset",
+            },
+            "& .MuiDataGrid-columnSeparator": {
+              color: "rgba(255, 255, 255, 0.5)",
             },
             border: "unset",
           },
@@ -179,7 +226,7 @@ const theme = createTheme(
             button: {
               color: "white",
             },
-            // Remove o último separador de coluna dos componentes baseados no MuiDataGrid
+
             "&:last-of-type": {
               "& .MuiDataGrid-columnSeparator": {
                 display: "none",
@@ -189,7 +236,21 @@ const theme = createTheme(
         },
       },
       MuiDrawer: {
-        styleOverrides: { paper: { backgroundColor: "#EEF4F4" } },
+        styleOverrides: { paper: { backgroundColor: "#F7F7F7" } },
+      },
+      MuiFormHelperText: {
+        styleOverrides: {
+          root: {
+            marginLeft: "0px",
+          },
+        },
+      },
+      MuiFormControlLabel: {
+        styleOverrides: {
+          root: {
+            marginRight: "8px",
+          },
+        },
       },
     },
   },

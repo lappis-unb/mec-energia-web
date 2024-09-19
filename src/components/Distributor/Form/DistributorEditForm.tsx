@@ -31,6 +31,7 @@ import { useSession } from "next-auth/react";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import FormDrawerV2 from "@/components/Form/DrawerV2";
 import isValidCnpj from "@/utils/validations/isValidCnpj";
+import FormFieldError from "@/components/FormFieldError";
 
 const defaultValues: EditDistributorForm = {
   isActive: true,
@@ -49,9 +50,8 @@ const DistributorEditForm = () => {
     editDistributor,
     { isError, isSuccess, isLoading, reset: resetMutation },
   ] = useEditDistributorMutation();
-  const { data: distributor, refetch: refetchDistributor } = useGetDistributorQuery(
-    activeDistributor || skipToken
-  );
+  const { data: distributor, refetch: refetchDistributor } =
+    useGetDistributorQuery(activeDistributor || skipToken);
   const form = useForm({ defaultValues });
   const {
     control,
@@ -70,6 +70,10 @@ const DistributorEditForm = () => {
     handleDiscardForm();
   };
 
+  const cardTitleStyles: CardTitleStyle = {
+    marginBottom: "15px",
+  };
+
   const isActive = watch("isActive");
 
   useEffect(() => {
@@ -79,15 +83,15 @@ const DistributorEditForm = () => {
           const { data: distributor } = await refetchDistributor();
 
           if (!distributor) return;
-          
+
           const { name, isActive, cnpj } = distributor;
           setValue("name", name);
           setValue("cnpj", cnpj);
           setValue("isActive", isActive);
         } catch (err) {
-          console.error('Failed to refetch:', err);
+          console.error("Failed to refetch:", err);
         }
-      }
+      };
 
       fetchData();
     }
@@ -167,7 +171,9 @@ const DistributorEditForm = () => {
     () => (
       <Grid container spacing={1}>
         <Grid item xs={12}>
-          <Typography variant="h5">Distribuidora</Typography>
+          <Typography variant="h5" style={cardTitleStyles}>
+            Distribuidora
+          </Typography>
         </Grid>
         <Grid item xs={12}>
           <Controller
@@ -187,10 +193,10 @@ const DistributorEditForm = () => {
               <TextField
                 ref={ref}
                 value={value}
-                label="Nome (ao menos 3 caracteres)"
+                label="Nome *"
                 placeholder="Ex.: CEMIG, Enel, Neonergia"
                 error={Boolean(error)}
-                helperText={error?.message ?? " "}
+                helperText={FormFieldError(error?.message)}
                 fullWidth
                 onBlur={onBlur}
                 onChange={(e) => {
@@ -243,15 +249,16 @@ const DistributorEditForm = () => {
               fieldState: { error },
             }) => (
               <PatternFormat
+                style={{ width: "12rem" }}
                 value={value}
                 customInput={TextField}
-                label="CNPJ * (14 dígitos)"
+                label="CNPJ *"
                 format="##.###.###/####-##"
                 placeholder="Ex.: 12345678000167"
                 error={Boolean(error) || !cnpjValid}
-                helperText={
-                  error?.message ?? (cnpjValid ? " " : "CNPJ inválido")
-                }
+                helperText={FormFieldError(
+                  error?.message ?? (cnpjValid ? undefined : "CNPJ inválido")
+                )}
                 fullWidth
                 onChange={(e) => {
                   const newValue = e.target.value;
@@ -335,6 +342,7 @@ const DistributorEditForm = () => {
         entity={"distribuidora"}
         onClose={handleCloseDialog}
         onDiscard={handleDiscardForm}
+        type="update"
       />
     </Fragment>
   );

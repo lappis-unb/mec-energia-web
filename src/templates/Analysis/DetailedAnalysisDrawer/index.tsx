@@ -10,6 +10,7 @@ import {
   Divider,
   Drawer,
   Grid,
+  IconButton,
   List,
   ListItem,
   SxProps,
@@ -20,7 +21,6 @@ import DropdownSection from "@/components/ConsumerUnit/Content/DropdownSection";
 import DropdownSectionManager from "@/components/ConsumerUnit/Content/DropdownSectionManager";
 import DetailedAnalysisHeader from "../DetailedAnalysisHeader";
 import { CurrentContractTable } from "./CurrentContractTable";
-import { GreenAndBluePercentilesPlot } from "./GreenAndBluePercentilesPlot";
 import { TariffsTable } from "./TariffsTable";
 import {
   getFormattedDate,
@@ -28,17 +28,30 @@ import {
   monthYearForPlot,
 } from "@/utils/date";
 import { RecommendedContractTable } from "./RecommendedContractTable";
-import { ConsumptionHistoryTable } from "./ConsumptionHistoryTable";
 import { MeasuredDemandPlot } from "../MeasuredDemandPlot";
 import { CurrentBaseCostPlot } from "../CurrentBaseCostPlot";
-import { BaseCostInfoModal } from "@/components/ConsumerUnit/Content/BaseCostInfoModal";
 import { ConsumerUnitInfo } from "./ConsumerUnitInfo";
 import { Logos } from "./Logos";
-import { OpenBaseCostInfo } from "./OpenBaseCostInfo";
-import { ContractsComparisonTable } from "./ContractsComparisonTable";
-import { BaseCostComparisonTable } from "./BaseCostComparisonTable";
 import { DetailedBaseCostsComparisonPlot } from "./DetailedBaseCostsComparisonPlot";
 import { RecommendedContractDemandPlot } from "./RecommendedContractDemandPlot";
+import { Summary } from "./Summary";
+import {
+  KeyboardDoubleArrowDown,
+  KeyboardDoubleArrowUp,
+  WarningAmberOutlined,
+} from "@mui/icons-material";
+import { AverageConsumptionPlot } from "../AverageConsumptionPlot";
+import { ComparativeScenarioCurrentNewContractPlot } from "./ComparativeScenarioCurrentNewContractPlot";
+import ArrowUpwardRoundedIcon from "@mui/icons-material/ArrowUpwardRounded";
+import { styled } from "@mui/system";
+import theme from "@/theme";
+import { formatToPtBrCurrency } from "@/utils/number";
+import { GetContractsResponsePayload } from "@/types/contract";
+import { Subtitle } from "./Subtitle";
+import { Chart as ChartJs } from "chart.js";
+import ChartDataLabels from "chartjs-plugin-datalabels";
+
+ChartJs.register(ChartDataLabels);
 
 interface Props {
   open: boolean;
@@ -46,43 +59,52 @@ interface Props {
   dates: string[];
   recommendation: Recommendation;
   recommendationSettings: RecommendationSettings;
+  actualContract: GetContractsResponsePayload | undefined;
 }
 
-const GreenTitle = ({ text }: { text: string }) => (
+const GreenTitle = ({
+  text,
+  children,
+}: {
+  text?: string;
+  children?: ReactNode;
+}) => (
   <Typography
     color="primary"
     variant="body1"
     sx={{ fontWeight: "bold", my: 1 }}
   >
-    {text}
+    {text ?? children}
   </Typography>
 );
 
 const TypographyBody1 = ({
   children,
   sx,
+  mb = 2,
 }: {
   children: ReactNode | ReactNode[];
   sx?: SxProps;
+  mb?: number;
 }) => (
-  <Typography variant="body1" sx={{ ...sx, mb: 2 }}>
+  <Typography variant="body1" sx={{ ...sx, mb }}>
     {children}
   </Typography>
 );
 
-const EquationListItem = ({
-  children,
-  sx,
-}: {
-  children: ReactNode;
-  sx?: SxProps;
-}) => (
-  <ListItem sx={{ ...sx }}>
-    <Typography variant="h5" sx={{ sub: { fontWeight: "normal" } }}>
-      {children}
-    </Typography>
-  </ListItem>
-);
+// const EquationListItem = ({
+//   children,
+//   sx,
+// }: {
+//   children: ReactNode;
+//   sx?: SxProps;
+// }) => (
+//   <ListItem sx={{ ...sx }}>
+//     <Typography variant="h5" sx={{ sub: { fontWeight: "normal" } }}>
+//       {children}
+//     </Typography>
+//   </ListItem>
+// );
 
 const Bold = ({ children }: { children: ReactNode }) => (
   <Typography sx={{ fontWeight: "bold" }}>{children} </Typography>
@@ -94,9 +116,23 @@ export const DetailedAnalysisDrawer = ({
   dates: isoDates,
   recommendation,
   recommendationSettings,
+  actualContract,
 }: Props) => {
   const toPrint = useRef(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const [dropdownSectionState, setDropdownSectionState] = useState({
+    goal: false,
+    assumptionsOfContractAnalytics: false,
+    characteristicsOfConsumerUnity: false,
+    actualContract: true,
+    proposedContract: true,
+    conclusions: true,
+    glossary: false,
+  });
+
+  const [isAllSessionsOpen, setIsAllSessionsOpen] = useState<boolean | null>(
+    null
+  );
 
   const tariffStartDate = getFormattedDate(
     recommendation.tariffDates.startDate
@@ -110,25 +146,103 @@ export const DetailedAnalysisDrawer = ({
     university: recommendation.currentContract.university,
   };
 
-  const generatedOn = getFormattedDateAndTime(recommendation.generatedOn);
+  const generatedOn = getFormattedDateAndTime(
+    recommendation.generatedOn,
+    "dd/MM/yyyy hh:mm"
+  );
 
   const documentPrintTitle = `Relatório MEC Energia  ${consumerUnit.name
     } ${generatedOn.replaceAll("/", "-")}`;
 
-  const isRecommendationGreen =
-    recommendation.recommendedContract.tariffFlag === "G";
+  const toggleSections = (isOpen: boolean) => {
+    setDropdownSectionState({
+      goal: isOpen,
+      assumptionsOfContractAnalytics: isOpen,
+      characteristicsOfConsumerUnity: isOpen,
+      actualContract: isOpen,
+      proposedContract: isOpen,
+      conclusions: isOpen,
+      glossary: isOpen,
+    });
+    setIsAllSessionsOpen(isOpen);
+  };
+
+  const resetSectionsState = () => {
+    setDropdownSectionState({
+      goal: false,
+      assumptionsOfContractAnalytics: false,
+      characteristicsOfConsumerUnity: false,
+      actualContract: true,
+      proposedContract: true,
+      conclusions: true,
+      glossary: false,
+    });
+    setIsAllSessionsOpen(null);
+    onClose();
+  };
+
+  const scrollToTop = () => {
+    window.location.href = "#startRecommendationPage";
+  };
+
+  const GoToTopButton = styled(IconButton)({
+    backgroundColor: theme.palette.primary.main,
+    borderColor: theme.palette.primary.main,
+    "&:hover": {
+      backgroundColor: theme.palette.primary.dark,
+      borderColor: theme.palette.primary.main,
+      boxShadow: "none",
+    },
+  });
+
+  const valueOldContractConsumptionDemandAboutTotal = (value: number[]) => {
+    const totalCostSum = value.reduce((sum, cost) => sum + cost, 0);
+    const percent =
+      (totalCostSum /
+        recommendation.contractsComparisonTotals.totalCostInReaisInCurrent) *
+      100;
+
+    return percent.toFixed(1).replace(".", ",");
+  };
+
+  const valueNewContractConsumptionDemandAboutTotal = (value: number[]) => {
+    const totalCostSum = value.reduce((sum, cost) => sum + cost, 0);
+    const percent =
+      (totalCostSum /
+        recommendation.contractsComparisonTotals
+          .totalCostInReaisInRecommended) *
+      100;
+
+    return percent.toFixed(1).replace(".", ",");
+  };
+
+  const periodInterval = () => {
+    const len = recommendation.dates.length;
+    const start = recommendation.dates[0];
+    const end = recommendation.dates[len - 1];
+
+    return [
+      getFormattedDate(start)?.substring(3),
+      getFormattedDate(end)?.substring(3),
+    ];
+  };
 
   return (
-    <Drawer open={open} onClose={onClose} anchor="bottom">
+    <Drawer open={open} onClose={resetSectionsState} anchor="bottom">
       <Box
+        id="startRecommendationPage"
         sx={{
           bgcolor: "background.default",
           boxShadow: 24,
+          minWidth: "800px",
         }}
       >
         <DetailedAnalysisHeader>
           <Grid item sx={{ display: "flex", alignItems: "center" }}>
-            <Button sx={{ color: "background.paper" }} onClick={onClose}>
+            <Button
+              sx={{ color: "background.paper" }}
+              onClick={resetSectionsState}
+            >
               <CloseIcon />
             </Button>
             <Typography variant="h6" display="inline">
@@ -153,7 +267,8 @@ export const DetailedAnalysisDrawer = ({
           ref={toPrint}
           sx={{
             height: "100%",
-            width: "55%",
+            maxWidth: "800px",
+            padding: 2,
             margin: "auto",
             "@media print": {
               display: "block",
@@ -200,10 +315,11 @@ export const DetailedAnalysisDrawer = ({
             <br />
             <Logos />
             <Divider />
+            <Summary />
           </Box>
 
-          {/* NOTE: adicionar funcionalidade de abrir/fechar todas seções */}
-          {/* <Box
+          {/* botões de abrir/fechar todas seções */}
+          <Box
             sx={{
               my: 2,
               display: "flex",
@@ -213,20 +329,432 @@ export const DetailedAnalysisDrawer = ({
               },
             }}
           >
-            <Button disabled variant="outlined">
-              <KeyboardDoubleArrowDown />
-              Abrir tudo
+            <Button
+              onClick={() => toggleSections(true)}
+              variant="outlined"
+              sx={{ height: "30px", padding: "5px 8px" }}
+              disabled={isAllSessionsOpen !== null ? isAllSessionsOpen : false}
+            >
+              <Box
+                display="flex"
+                alignItems="center"
+                justifyContent="space-between"
+                gap="8px"
+              >
+                <KeyboardDoubleArrowDown />
+                <Typography fontSize="14px" fontWeight={600}>
+                  Abrir tudo
+                </Typography>
+              </Box>
             </Button>
-            <Button disabled variant="outlined" sx={{ marginLeft: 2 }}>
-              <KeyboardDoubleArrowUp />
-              Fechar tudo
+            <Button
+              onClick={() => toggleSections(false)}
+              variant="outlined"
+              sx={{ height: "30px", marginLeft: 2, padding: "5px 8px" }}
+              disabled={isAllSessionsOpen !== null ? !isAllSessionsOpen : false}
+            >
+              <Box
+                display="flex"
+                alignItems="center"
+                justifyContent="space-between"
+                gap="8px"
+              >
+                <KeyboardDoubleArrowUp />
+                <Typography fontSize="14px" fontWeight={600}>
+                  Fechar tudo
+                </Typography>
+              </Box>
             </Button>
-          </Box> */}
+          </Box>
 
           <DropdownSectionManager>
             <DropdownSection
-              title={<Typography variant="h5">Definições</Typography>}
-              open
+              title={<Typography variant="h5">Objetivo</Typography>}
+              open={dropdownSectionState.goal}
+              dropdownSectionState={dropdownSectionState}
+              htmlId="goal"
+            >
+              <TypographyBody1>
+                Este relatório tem por objetivo analisar o contrato de
+                fornecimento de energia elétrica da {consumerUnit.university}{" "}
+                com a Distribuidora de energia por intermédio da MEPA —
+                Monitoramento de Energia em Plataforma Aberta.
+              </TypographyBody1>
+              <TypographyBody1>
+                A plataforma tem por alvo as unidades consumidoras enquadradas
+                no grupo A, caracterizadas pelo fornecimento de energia elétrica
+                via rede de distribuição em média tensão e faturadas por Tarifa
+                Horo-Sazonal (THS) Azul ou Verde.
+              </TypographyBody1>
+            </DropdownSection>
+
+            <DropdownSection
+              title={
+                <Typography variant="h5">
+                  Premissas para análise do contrato
+                </Typography>
+              }
+              open={dropdownSectionState.assumptionsOfContractAnalytics}
+              htmlId="assumptionsOfContractAnalytics"
+              dropdownSectionState={dropdownSectionState}
+            >
+              <Typography variant="body1">
+                Para o desenvolvimento da análise de enquadramento tarifário, as
+                seguintes premissas foram aplicadas:
+              </Typography>
+
+              <List dense disablePadding sx={{ my: "4px" }}>
+                <ListItem>
+                  ● São analisadas de forma individualizada as unidades
+                  consumidoras;
+                </ListItem>
+                <ListItem>
+                  ● São utilizados os valores de tarifas praticadas pela
+                  distribuidora e cadastradas na plataforma da área de concessão
+                  da unidade consumidora;
+                </ListItem>
+                <ListItem>
+                  ● Não são considerados no cálculo os impostos, encargos
+                  setoriais e bandeiras tarifárias. Ou seja, utiliza-se os
+                  custos relacionados ao consumo e demanda da UC e não o valor
+                  total da fatura.
+                </ListItem>
+              </List>
+
+              <Typography variant="body1">
+                A metodologia empregada a análise dos contratos de fornecimento
+                de energia para o enquadramento tarifário das unidades
+                consumidoras segue o seguinte fluxo:
+              </Typography>
+
+              <List dense sx={{ my: "4px" }}>
+                <ListItem>
+                  1. Lançamento de informações de demanda (kW) e consumo de
+                  energia (kWh) na plataforma;
+                </ListItem>
+                <ListItem>
+                  2. Cadastro das tarifas de energia praticadas pela
+                  distribuidora;
+                </ListItem>
+                <ListItem>
+                  3. Cálculo de otimização de contrato, baseado nos dados
+                  históricos;
+                </ListItem>
+                <ListItem>
+                  4. Geração de relatórios com recomendação de alteração do
+                  contrato.
+                </ListItem>
+              </List>
+
+              <TypographyBody1>
+                As considerações gerais para análise dos contratos de
+                fornecimento de energia e a metodologia empregada para o
+                enquadramento tarifário das unidades consumidoras são
+                apresentadas dentro da MEPA.
+              </TypographyBody1>
+            </DropdownSection>
+
+            <DropdownSection
+              htmlId="characteristicsOfConsumerUnity"
+              sx={{
+                "@media page": {
+                  breakBefore: "always",
+                  pageBreakBefore: "always",
+                },
+              }}
+              title={
+                <Typography variant="h5">
+                  Características de fornecimento da Unidade Consumidora
+                </Typography>
+              }
+              open={dropdownSectionState.characteristicsOfConsumerUnity}
+              dropdownSectionState={dropdownSectionState}
+            >
+              <Box sx={{ "@media print": { breakInside: "avoid" } }}>
+                <TypographyBody1>
+                  As informações em relação ao contrato de fornecimento de
+                  energia elétrica celebrado pela unidade consumidora e a
+                  distribuidora de energia de sua área de concessão podem ser
+                  vistos na tabela 1.
+                </TypographyBody1>
+
+                <Box display="flex" flexDirection="column" marginBottom={4}>
+                  <Subtitle
+                    id="Tabela 1"
+                    title="Informações características de fornecimento da unidade consumidora"
+                  />
+                  <CurrentContractTable
+                    recommendationCurrentContract={
+                      recommendation.currentContract
+                    }
+                    actualContract={actualContract}
+                  />
+                </Box>
+              </Box>
+
+              <Box sx={{ "@media print": { breakInside: "avoid" } }}>
+                <br />
+                <TypographyBody1>
+                  Na tabela 2 é possível verificar os valores das tarifas da
+                  distribuidora que estão cadastradas na plataforma e são
+                  utilizadas para o cálculo.
+                </TypographyBody1>
+
+                <Box marginBottom={4}>
+                  <Subtitle id="Tabela 2">
+                    <span>
+                      Tarifas utilizadas para metodologia de cálculo
+                      comparativo, com vigência de{" "}
+                      <strong>{tariffStartDate}</strong> a{" "}
+                      <strong>{tariffEndDate}</strong>
+                    </span>
+                  </Subtitle>
+                  <TariffsTable rows={recommendation.tariffsTable} />
+                </Box>
+              </Box>
+            </DropdownSection>
+
+            <DropdownSection
+              htmlId="actualContract"
+              sx={{
+                "@media print": {
+                  breakBefore: "always",
+                  // Por algum motivo só funciona com essa regra que foi deprecada
+                  pageBreakBefore: "always",
+                },
+              }}
+              title={<Typography variant="h5">Contrato atual</Typography>}
+              open={dropdownSectionState.actualContract}
+              dropdownSectionState={dropdownSectionState}
+            >
+              <Box sx={{ "@media print": { breakInside: "avoid" } }}>
+                <Typography>
+                  A Figura 1 apresenta a composição da fatura de energia
+                  elétrica durante o período de {periodInterval()[0]} a{" "}
+                  {periodInterval()[1]}. São considerados apenas a demanda-carga
+                  e o consumo medidos nesse perído multiplicados pelas{" "}
+                  <strong>tarifas atuais disponíveis na plataforma.</strong>
+                </Typography>
+
+                <Box mt={4} mb={4}>
+                  <Subtitle
+                    id="Figura 1"
+                    title="Representação da composição da fatura de energia elétrica da unidade consumidora"
+                  />
+                  <CurrentBaseCostPlot
+                    dates={dates}
+                    currentContractCostsPlot={
+                      recommendation.currentContractCostsPlot
+                    }
+                  />
+                </Box>
+              </Box>
+
+              <Box
+                sx={{ "@media print": { breakInside: "avoid" } }}
+                my={4}
+                display="flex"
+                flexDirection="column"
+              >
+                <Typography>
+                  O valor de consumo contribuiu com{" "}
+                  {valueOldContractConsumptionDemandAboutTotal(
+                    recommendation.currentContractCostsPlot
+                      .consumptionCostInReais
+                  )}
+                  % do valor total, enquanto a demanda-carga correspondeu a{" "}
+                  {valueOldContractConsumptionDemandAboutTotal(
+                    recommendation.currentContractCostsPlot.demandCostInReais
+                  )}
+                  % do mesmo valor.
+                </Typography>
+                <br />
+                <Typography>
+                  Na figura 2 é mostrado o perfil de consumo da unidade
+                  consumidora{" "}
+                  {recommendation.currentContract.tariffFlag === "B"
+                    ? "com os valores na ponta e fora de ponta."
+                    : "."}
+                </Typography>
+
+                <Box mt={2} mb={4}>
+                  <Subtitle
+                    id="Figura 2"
+                    title="Consumo medido nos horários de ponta e fora de ponta"
+                  />
+                  <AverageConsumptionPlot
+                    dates={dates}
+                    data={{
+                      peakConsumptionInKwh:
+                        recommendation.consumptionHistoryPlot
+                          .peakConsumptionInKwh,
+                      offPeakConsumptionInKwh:
+                        recommendation.consumptionHistoryPlot
+                          .offPeakConsumptionInKwh,
+                    }}
+                    isGreen={recommendation.currentContract.tariffFlag === "G"}
+                  />
+                </Box>
+              </Box>
+
+              <Box sx={{ "@media print": { breakInside: "avoid" } }}>
+                <Typography>
+                  O gráfico da Figura 3 apresenta de forma consolidada a
+                  comparação entre os valores de demanda contratada - carga da
+                  unidade consumidora quando comparada com a demanda medida -
+                  carga nos horários de ponta e fora de ponta.
+                </Typography>
+
+                <MeasuredDemandPlot
+                  dates={dates}
+                  recommendation={recommendation}
+                  isGreen={recommendation.currentContract.tariffFlag === "G"}
+                  isDetailedAnalysis={true}
+                />
+              </Box>
+            </DropdownSection>
+
+            <DropdownSection
+              htmlId="proposedContract"
+              sx={{ "@media print": { breakInside: "avoid" } }}
+              title={<Typography variant="h5">Contrato proposto</Typography>}
+              open={dropdownSectionState.proposedContract}
+              dropdownSectionState={dropdownSectionState}
+            >
+              <TypographyBody1>
+                A Figura 4 apresenta uma comparação entre os valores de
+                demanda-carga do contrato proposto e demanda medida - carga nos
+                horários de ponta e fora de ponta para a unidade consumidora.
+              </TypographyBody1>
+
+              <Box mt={4} mb={4}>
+                <Subtitle
+                  id="Figura 4"
+                  title="Gráfico comparativo entre a demanda proposta - carga e os valores medidos nos horários de ponta e fora de ponta"
+                />
+                <RecommendedContractDemandPlot
+                  dates={dates}
+                  recommendation={recommendation}
+                  isGreen={recommendation.currentContract.tariffFlag === "G"}
+                />
+              </Box>
+
+              <TypographyBody1>
+                O gráfico da figura 5 mostra o valor total calculado
+                considerando as condições referentes ao novo contrato proposto.
+                Neste cenário, o valor de consumo contribui com{" "}
+                {valueNewContractConsumptionDemandAboutTotal(
+                  recommendation.detailedContractsCostsComparisonPlot
+                    .consumptionCostInReaisInRecommended
+                )}
+                % do valor total, enquanto a demanda-carga corresponde a{" "}
+                {valueNewContractConsumptionDemandAboutTotal(
+                  recommendation.detailedContractsCostsComparisonPlot
+                    .demandCostInReaisInRecommended
+                )}
+                % do mesmo valor.
+              </TypographyBody1>
+
+              <Box mt={4} mb={4}>
+                <Subtitle
+                  id="Figura 5"
+                  title="Gráfico dos valores de consumo e demanda-carga em reais considerando as condições de contrato propostas"
+                />
+                <DetailedBaseCostsComparisonPlot
+                  dates={dates}
+                  costs={recommendation.detailedContractsCostsComparisonPlot}
+                />
+              </Box>
+
+              <Box sx={{ "@media print": { breakInside: "avoid" } }}>
+                <TypographyBody1>
+                  Por fim, o gráfico da figura 6 apresenta o comparativo do
+                  cenário atual de contrato e os valores calculados considerando
+                  a nova proposição.
+                </TypographyBody1>
+
+                <Box mt={4} mb={4}>
+                  <Subtitle
+                    id="Figura 6"
+                    title="Gráfico comparativo considerando o contrato atual e o contrato proposto"
+                  />
+                  <ComparativeScenarioCurrentNewContractPlot
+                    dates={dates}
+                    costs={recommendation.detailedContractsCostsComparisonPlot}
+                  />
+                </Box>
+              </Box>
+
+              <Alert
+                variant="filled"
+                severity="info"
+                sx={{ bgcolor: "#242a8e", fontWeight: "normal", mt: 4 }}
+              >
+                <AlertTitle>
+                  Redução estimada:{" "}
+                  {recommendation.nominalSavingsPercentage.toFixed(2)}%
+                </AlertTitle>
+                O contrato proposto estima uma redução de R$
+                {formatToPtBrCurrency(
+                  recommendation.contractsComparisonTotals.absoluteDifference,
+                  2
+                )}{" "}
+                nos custos, em comparação à demanda-carga e ao consumo medidos
+                no período de análise multiplicados pelas{" "}
+                <strong>tarifas atuais disponíveis na plataforma.</strong>
+              </Alert>
+            </DropdownSection>
+
+            <DropdownSection
+              htmlId="conclusions"
+              sx={{ "@media print": { breakInside: "avoid" } }}
+              title={
+                <>
+                  <Typography variant="h5"> Conclusões </Typography>
+                </>
+              }
+              open={dropdownSectionState.conclusions}
+              dropdownSectionState={dropdownSectionState}
+            >
+              <TypographyBody1>
+                A partir de análises do perfil de demanda e consumo de energia
+                elétrica da unidade consumidora, propõe-se ajustes no contrato,
+                considerando os valores indicados na tabela 3.
+              </TypographyBody1>
+
+              <Box marginBottom={4}>
+                <Subtitle
+                  id="Tabela 3"
+                  title="Proposta para ajuste de contrato de fornecimento de energia elétrica da unidade consumidora"
+                />
+                <RecommendedContractTable
+                  recommendedContract={recommendation.recommendedContract}
+                  currentContract={recommendation.currentContract}
+                />
+              </Box>
+
+              {recommendation.energyBillsCount <
+                recommendationSettings.IDEAL_ENERGY_BILLS_FOR_RECOMMENDATION && (
+                  <>
+                    <br />
+                    <Alert
+                      variant="filled"
+                      severity="warning"
+                      sx={{ bgcolor: "rgb(217, 138, 11)", color: "#000" }}
+                      icon={<WarningAmberOutlined style={{ color: "#000" }} />}
+                    >
+                      Uma ou mais faturas estão indisponíveis. Isso reduz a
+                      precisão da análise.
+                    </Alert>
+                  </>
+                )}
+            </DropdownSection>
+
+            <DropdownSection
+              title={<Typography variant="h5">Glossário</Typography>}
+              open={dropdownSectionState.glossary}
+              htmlId="glossary"
+              dropdownSectionState={dropdownSectionState}
             >
               <TypographyBody1>
                 Esta seção apresenta todos os termos técnicos relevantes,
@@ -240,6 +768,13 @@ export const DetailedAnalysisDrawer = ({
                 consumidora.
               </TypographyBody1>
 
+              <GreenTitle text="Concessionária" />
+              <TypographyBody1>
+                Agente titular de concessão federal para prestar o serviço
+                público de distribuição de energia elétrica, doravante
+                denominado &ldquo;distribuidora&rdquo;.
+              </TypographyBody1>
+
               <GreenTitle text="Consumidor" />
               <TypographyBody1>
                 Pessoa física ou jurídica, de direito público ou privado,
@@ -248,6 +783,11 @@ export const DetailedAnalysisDrawer = ({
                 distribuidora, assumindo as obrigações decorrentes deste
                 atendimento à(s) sua(s) unidade(s) consumidora(s), segundo
                 disposto nas normas e nos contratos.
+              </TypographyBody1>
+
+              <GreenTitle text="CUSD" />
+              <TypographyBody1>
+                Contrato de Uso do Sistema de Distribuição.
               </TypographyBody1>
 
               <GreenTitle text="Demanda" />
@@ -273,6 +813,16 @@ export const DetailedAnalysisDrawer = ({
                 Valor da demanda de potência ativa, considerada para fins de
                 faturamento, com aplicação da respectiva tarifa, expressa em
                 quilowatts (kW).
+              </TypographyBody1>
+
+              <GreenTitle>
+                <span>
+                  Demanda<sub>G</sub>
+                </span>
+              </GreenTitle>
+              <TypographyBody1>
+                Demanda de injeção de geração a ser atendida ou acrescida, em
+                quilowatt (kW).
               </TypographyBody1>
 
               <GreenTitle text="Demanda medida" />
@@ -308,7 +858,7 @@ export const DetailedAnalysisDrawer = ({
               </TypographyBody1>
 
               <GreenTitle text="Grupo A" />
-              <TypographyBody1>
+              <TypographyBody1 mb={0}>
                 Grupamento composto de unidades consumidoras com fornecimento em
                 tensão igual ou superior a 2,3 kV, ou atendidas a partir de
                 sistema subterrâneo de distribuição em tensão secundária,
@@ -337,13 +887,16 @@ export const DetailedAnalysisDrawer = ({
                   a 25 kV;
                 </ListItem>
                 <ListItem>
-                  <Bold>● subgrupo AS</Bold> - tensão de fornecimento inferior a
-                  2,3 kV, a partir de sistema subterrâneo de distribuição.
+                  <span>
+                    <strong>● subgrupo AS</strong> - tensão de fornecimento
+                    inferior a 2,3 kV, a partir de sistema subterrâneo de
+                    distribuição.
+                  </span>
                 </ListItem>
               </List>
 
               <GreenTitle text="Grupo B" />
-              <TypographyBody1>
+              <TypographyBody1 mb={0}>
                 Grupamento composto de unidades consumidoras com fornecimento em
                 tensão inferior a 2,3 kV, caracterizado pela tarifa monômia e
                 subdividido nos seguintes subgrupos:
@@ -387,27 +940,32 @@ export const DetailedAnalysisDrawer = ({
               </TypographyBody1>
 
               <GreenTitle text="Posto tarifário" />
-              <TypographyBody1>
+              <TypographyBody1 mb={0}>
                 Período em horas para aplicação das tarifas de forma
                 diferenciada ao longo do dia, considerando a seguinte divisão:
               </TypographyBody1>
 
               <List dense>
                 <ListItem>
-                  ● Posto tarifário ponta - período composto por 3 (três) horas
-                  diárias consecutivas definidas pela distribuidora considerando
-                  a curva de carga de seu sistema elétrico, aprovado pela ANEEL
-                  para toda a área de concessão ou permissão;
+                  <span>
+                    ● <strong>Posto tarifário ponta</strong> - período composto
+                    por 3 (três) horas diárias consecutivas definidas pela
+                    distribuidora considerando a curva de carga de seu sistema
+                    elétrico, aprovado pela ANEEL para toda a área de concessão
+                    ou permissão;
+                  </span>
                 </ListItem>
                 <ListItem>
-                  ● Posto tarifário fora de ponta - período composto pelo
-                  conjunto das horas diárias consecutivas e complementares
-                  àquelas definidas nos postos ponta.
+                  <span>
+                    ● <strong>Posto tarifário fora de ponta</strong> - período
+                    composto pelo conjunto das horas diárias consecutivas e
+                    complementares àquelas definidas nos postos ponta.
+                  </span>
                 </ListItem>
               </List>
 
               <GreenTitle text="Tarifa" />
-              <TypographyBody1>
+              <TypographyBody1 mb={0}>
                 Valor monetário estabelecido pela ANEEL, fixado em R$ (reais)
                 por unidade de energia elétrica ativa ou da demanda de potência
                 ativa, sendo:
@@ -415,16 +973,31 @@ export const DetailedAnalysisDrawer = ({
 
               <List dense>
                 <ListItem>
-                  ● Tarifa de energia (TE) - valor monetário unitário
-                  determinado pela ANEEL, em R$/MWh, utilizado para efetuar o
-                  faturamento mensal referente ao consumo de energia;
+                  <span>
+                    ● <strong>Tarifa de energia (TE)</strong> - valor monetário
+                    unitário determinado pela ANEEL, em R$/MWh, utilizado para
+                    efetuar o faturamento mensal referente ao consumo de
+                    energia;
+                  </span>
                 </ListItem>
                 <ListItem>
-                  ● Tarifa de uso do sistema de distribuição (TUSD) - valor
-                  monetário unitário determinado pela ANEEL, em R$/MWh ou em
-                  R$/kW, utilizado para efetuar o faturamento mensal de usuários
-                  do sistema de distribuição de energia elétrica pelo uso do
-                  sistema.
+                  <span>
+                    ●{" "}
+                    <strong>
+                      Tarifa de uso do sistema de distribuição (TUSD)
+                    </strong>{" "}
+                    - valor monetário unitário determinado pela ANEEL, em R$/MWh
+                    ou em R$/kW, utilizado para efetuar o faturamento mensal de
+                    usuários do sistema de distribuição de energia elétrica pelo
+                    uso do sistema.
+                  </span>
+                </ListItem>
+                <ListItem>
+                  <Bold>
+                    ● TUSD<sub>G</sub>
+                  </Bold>
+                  &nbsp;- tarifa de uso do sistema de distribuição aplicável à
+                  cenral geradora.
                 </ListItem>
               </List>
 
@@ -445,614 +1018,67 @@ export const DetailedAnalysisDrawer = ({
                 propriedades contíguas.
               </TypographyBody1>
             </DropdownSection>
-
-            <DropdownSection
-              title={<Typography variant="h5">Objetivo</Typography>}
-              open
-            >
-              <TypographyBody1>
-                Analisar o contrato de fornecimento de energia elétrica desta
-                unidade consumidora com a distribuidora de energia local.
-              </TypographyBody1>
-              <TypographyBody1>
-                Esta unidade consumidora se enquadrada no Grupo A, caracterizado
-                pelo fornecimento de energia elétrica via rede de distribuição
-                em média tensão e faturado por Tarifa Horo-Sazonal (THS) Azul ou
-                Verde.
-              </TypographyBody1>
-            </DropdownSection>
-
-            <DropdownSection
-              title={<Typography variant="h5">Considerações gerais</Typography>}
-              open
-            >
-              <List dense disablePadding>
-                <ListItem>
-                  ● Foram consideradas as faturas dos últimos 12 meses
-                  disponíveis no sistema para esta unidade consumidora.
-                </ListItem>
-                <ListItem>
-                  ● Não foram consideradas as faturas que a equipe responsável
-                  pela entrada de dados indicou para exclusão da análise.
-                </ListItem>
-                <ListItem>
-                  ● Foram utilizados os valores de tarifas vigentes disponíveis
-                  no sistema na data de geração deste estudo, correspondentes à
-                  distribuidora indicada no contrato desta unidade consumidora.
-                </ListItem>
-                <ListItem>
-                  ● Foram considerados apenas os valores relacionados ao consumo
-                  e à demanda para a análise entre os cenários.
-                </ListItem>
-                <ListItem>
-                  ● Não foi considerado o valor total das faturas porque costuma
-                  incluir tributos, encargos setoriais, bandeiras tarifárias e
-                  cobranças adicionais que dificultariam a análise.
-                </ListItem>
-                <ListItem>
-                  ● Foi aplicado o conceito de “custo-base” em substituição ao
-                  valor das faturas. O custo-base é calculado multiplicando o
-                  consumo medido (ou a demanda medida) pelas tarifas vigentes.
-                </ListItem>
-                <ListItem>
-                  ● Foi utilizada a “economia nominal” como medida de eficácia
-                  da recomendação. A economia nominal é calculada comparando o
-                  custo-base total dos últimos 12 meses com o total projetado
-                  para o novo contrato no mesmo período.
-                </ListItem>
-                <ListItem>
-                  ● A alteração de contrato só é recomendada se a economia
-                  nominal for igual ou superior a{" "}
-                  {
-                    recommendationSettings.MINIMUM_PERCENTAGE_DIFFERENCE_FOR_CONTRACT_RENOVATION
-                  }
-                  %. Essa é uma margem de segurança que leva em consideração
-                  possíveis mudanças no padrão de uso de energia da instituição,
-                  bem como os custos operacionais relacionados ao processo de
-                  alteração do contrato.
-                </ListItem>
-              </List>
-              <TypographyBody1>
-                Considerações gerais para análise, conforme Resolução Normativa
-                ANEEL nº 1.000, de 7 de dezembro de 2021:
-              </TypographyBody1>
-
-              <List dense>
-                <ListItem>
-                  1. Consumidores do grupo A, inclusive cada unidade consumidora
-                  que integre comunhão de interesses de fato ou de direito de
-                  consumidores especiais e outros usuários: a demanda mínima
-                  contratada é 30 kW.
-                </ListItem>
-                <ListItem>
-                  2. A unidade consumidora do grupo A deve ser enquadrada nas
-                  seguintes modalidades tarifárias:
-                </ListItem>
-                <ListItem>
-                  2.1. No caso de tensão de conexão maior ou igual a 69 kV:
-                  horária azul; e
-                </ListItem>
-                <ListItem>
-                  2.2. No caso de tensão de conexão menor que 69 kV: horária
-                  azul ou verde, de acordo com a opção do consumidor.
-                </ListItem>
-              </List>
-            </DropdownSection>
-
-            <DropdownSection
-              title={
-                <Typography variant="h5">Metodologia de Cálculo</Typography>
-              }
-              open
-            >
-              <TypographyBody1>
-                Para a apresentação de proposta de análise ddo contrato de
-                fornecimento de energia é necessária a avaliação de consumo da
-                unidade consumidora. O ideal é que seja feita a apreciação de
-                faturas de 12 meses, o que representa um ano fiscal e o perfil
-                de consumo da unidade.
-              </TypographyBody1>
-
-              <TypographyBody1>As grandezas monitoradas são:</TypographyBody1>
-
-              <List dense>
-                <ListItem>● Tensão de fornecimento;</ListItem>
-                <ListItem>● Consumo ponta;</ListItem>
-                <ListItem>● Consumo fora ponta;</ListItem>
-                <ListItem>● Demanda medida ponta;</ListItem>
-                <ListItem>● Demanda medida fora de ponta.</ListItem>
-              </List>
-
-              <GreenTitle text="Tarifa na modalidade horária azul" />
-              <TypographyBody1>
-                A fatura de energia elétrica dos consumidores enquadrados na
-                modalidade tarifária horária azul é composta da soma de parcelas
-                referentes ao consumo e à demanda, de acordo com o horário do
-                dia. Os cálculos efetuados para obter os custos neste cenário
-                são:
-              </TypographyBody1>
-
-              <List>
-                <EquationListItem>
-                  V<sub>consumo</sub> = T<sub>cp</sub> Cp + T<sub>cfp</sub> C
-                  <sub>fp</sub>
-                </EquationListItem>
-                <EquationListItem>
-                  V<sub>demanda</sub> = T<sub>dp</sub> D<sub>p</sub> + T
-                  <sub>dfp</sub> D<sub>fp</sub> + 3T<sub>dp</sub>U<sub>p</sub>+
-                  3T<sub>dfp</sub> U<sub>fp</sub>
-                </EquationListItem>
-                <EquationListItem>
-                  V<sub>ultrapassagem</sub> = 3T<sub>dp</sub>U<sub>p</sub> + 3T
-                  <sub>dfp</sub>U<sub>fp</sub>
-                </EquationListItem>
-              </List>
-
-              <TypographyBody1>Em que:</TypographyBody1>
-
-              <List dense>
-                <ListItem>
-                  V<sub>consumo</sub> = Valor total de consumo (R$);
-                </ListItem>
-                <ListItem>
-                  V<sub>demanda</sub> = Valor total de demanda (R$);
-                </ListItem>
-                <ListItem>
-                  T<sub>cp</sub> = Tarifa de consumo ponta (R$/MWh);
-                </ListItem>
-                <ListItem>
-                  T<sub>cfp</sub> = Tarifa de consumo fora de ponta (R$/MWh);
-                </ListItem>
-                <ListItem>
-                  C<sub>p</sub> = Consumo medido ponta (MWh);
-                </ListItem>
-                <ListItem>
-                  C<sub>fp</sub> = Consumo medido fora de ponta (MWh);
-                </ListItem>
-                <ListItem>
-                  T<sub>dp</sub> = Tarifa de demanda ponta (R$/MW);
-                </ListItem>
-                <ListItem>
-                  T<sub>dfp</sub> = Tarifa de demanda fora de ponta (R$/MW);
-                </ListItem>
-                <ListItem>
-                  D<sub>p</sub> = Demanda contratada ponta (MW);
-                </ListItem>
-                <ListItem>
-                  D<sub>fp</sub> = Demanda contratada fora de ponta (MW);
-                </ListItem>
-                <ListItem>
-                  U<sub>p</sub> = Ultrapassagem de demanda ponta (MW);
-                </ListItem>
-                <ListItem>
-                  U<sub>fp</sub> = Ultrapassagem de demanda fora de ponta (MW).
-                </ListItem>
-              </List>
-
-              <GreenTitle text="Tarifa na modalidade horária verde" />
-              <TypographyBody1>
-                A fatura de energia elétrica dos consumidores enquadrados na
-                modalidade tarifária horária verde é composta da soma de
-                parcelas referentes ao consumo, de acordo com o horário do dia,
-                e à demanda. Os cálculos efetuados para obter os custos neste
-                cenário são:
-              </TypographyBody1>
-
-              <List>
-                <EquationListItem>
-                  V<sub>consumo</sub> = T<sub>cp</sub> C<sub>p</sub> + T
-                  <sub>cfp</sub> C<sub>fp</sub>
-                </EquationListItem>
-                <EquationListItem>
-                  V<sub>demanda</sub> = T<sub>d</sub>
-                  (D<sub>p</sub> + D<sub>fp</sub>)
-                </EquationListItem>
-                <EquationListItem>
-                  V<sub>ultrapassagem</sub> = 3T<sub>d</sub> (U<sub>p</sub> + U
-                  <sub>fp</sub>)
-                </EquationListItem>
-              </List>
-
-              <Typography>Em que:</Typography>
-
-              <List dense>
-                <ListItem>
-                  V<sub>consumo</sub> = Valor total de consumo (R$);
-                </ListItem>
-                <ListItem>
-                  V<sub>demanda</sub> = Valor total de demanda (R$);
-                </ListItem>
-                <ListItem>
-                  T<sub>cp</sub> = Tarifa de consumo ponta (R$/MWh);
-                </ListItem>
-                <ListItem>
-                  T<sub>cfp</sub> = Tarifa de consumo fora de ponta (R$/MWh);{" "}
-                </ListItem>
-                <ListItem>
-                  C<sub>p</sub> = Consumo medido ponta (MWh);
-                </ListItem>
-                <ListItem>
-                  C<sub>fp</sub> = Consumo medido fora de ponta (MWh);
-                </ListItem>
-                <ListItem>
-                  T<sub>d</sub> = Tarifa de demanda (R$/MW);
-                </ListItem>
-                <ListItem>
-                  D<sub>p</sub> = Demanda medida ponta (MW);
-                </ListItem>
-                <ListItem>
-                  D<sub>fp</sub> = Demanda medida fora de ponta (MW);
-                </ListItem>
-                <ListItem>
-                  U<sub>p</sub> = Ultrapassagem de demanda ponta (MW);
-                </ListItem>
-                <ListItem>
-                  U<sub>fp</sub> = Ultrapassagem de demanda fora de ponta (MW).
-                </ListItem>
-              </List>
-
-              <TypographyBody1>
-                É importante ressaltar, que no caso da demanda medida, nas duas
-                modalidades tarifárias em que haja ultrapassagem da demanda
-                contratada, a unidade consumidora paga a multa por
-                ultrapassagem, o que corresponde a três vezes o valor da tarifa
-                de demanda.
-              </TypographyBody1>
-
-              <GreenTitle text="Escolha da demanda de contrato" />
-              <TypographyBody1>
-                Foi aplicada a metodologia estatística de percentil para a
-                análise do contrato de fornecimento de energia. Foram utilizados
-                10 cenários de percentil 10 a percentil 95, verificando o ponto
-                em que se apresenta o melhor cenário econômico, de forma
-                aproximar a demanda de seu valor ótimo.
-              </TypographyBody1>
-
-              <TypographyBody1>
-                O gráfico abaixo exemplifica a metodologia estatística
-                mencionada.
-              </TypographyBody1>
-
-              <GreenAndBluePercentilesPlot />
-            </DropdownSection>
-
-            <DropdownSection
-              sx={{
-                "@media page": {
-                  breakBefore: "always",
-                  pageBreakBefore: "always",
-                },
-              }}
-              title={
-                <Typography variant="h5">
-                  Características de fornecimento
-                </Typography>
-              }
-              open
-            >
-              <Box sx={{ "@media print": { breakInside: "avoid" } }}>
-                <TypographyBody1>
-                  O contrato de fornecimento de energia elétrica celebrado pela
-                  unidade consumidora e a distribuidora de energia de sua área
-                  de concessão tem as seguintes características:
-                </TypographyBody1>
-
-                <CurrentContractTable
-                  recommendationCurrentContract={recommendation.currentContract}
-                />
-              </Box>
-
-              <Box sx={{ "@media print": { breakInside: "avoid" } }}>
-                <br />
-                <TypographyBody1>
-                  As tarifas da distribuidora, com vigência de {tariffStartDate}{" "}
-                  a {tariffEndDate}, usadas neste estudo são as seguintes:
-                </TypographyBody1>
-
-                <TariffsTable rows={recommendation.tariffsTable} />
-              </Box>
-            </DropdownSection>
-
-            <DropdownSection
-              sx={{
-                "@media print": {
-                  breakBefore: "always",
-                  // Por algum motivo só funciona com essa regra que foi deprecada
-                  pageBreakBefore: "always",
-                },
-              }}
-              title={
-                <Typography variant="h5">Custo de energia atual</Typography>
-              }
-              open
-            >
-              <Box sx={{ "@media print": { breakInside: "avoid" } }}>
-                <Typography>
-                  Os dados de entrada usados na anślise foram a demanda e o
-                  consumo medidos da unidade consumidora nos úlitmos 12 meses,
-                  disponíveis no sistema, conforme a tabela abaixo:
-                </Typography>
-
-                <ConsumptionHistoryTable
-                  consumptionHistory={recommendation.consumptionHistoryTable}
-                />
-              </Box>
-
-              <Box sx={{ "@media print": { breakInside: "avoid" } }}>
-                <Typography>
-                  O gráfico abaixo compara os valores de demanda contratada à
-                  demanda medida nos horários de ponta e fora de ponta ao longo
-                  do período.
-                </Typography>
-
-                <MeasuredDemandPlot
-                  displayTitle
-                  dates={dates}
-                  recommendation={recommendation}
-                  isGreen={isRecommendationGreen}
-                />
-              </Box>
-
-              <Box sx={{ "@media print": { breakInside: "avoid" } }}>
-                <Typography>
-                  O gráfico abaixo mostra o{" "}
-                  <OpenBaseCostInfo onClick={() => setIsModalOpen(true)} />*
-                  total considerando as características de fornecimento atuais.
-                </Typography>
-
-                <CurrentBaseCostPlot
-                  displayTitle
-                  dates={dates}
-                  currentContractCostsPlot={
-                    recommendation.currentContractCostsPlot
-                  }
-                />
-                <Typography>* Ver considerações gerais.</Typography>
-              </Box>
-            </DropdownSection>
-
-            <DropdownSection
-              sx={{ "@media print": { breakInside: "avoid" } }}
-              title={
-                <Typography variant="h5">
-                  Comparativo do custo de energia
-                </Typography>
-              }
-              open
-            >
-              <TypographyBody1>
-                O gráfico abaixo compara a nova a demanda proposta à demanda
-                medida nos horários de ponta e fora de ponta ao longo do
-                período.
-              </TypographyBody1>
-
-              <RecommendedContractDemandPlot
-                dates={dates}
-                recommendation={recommendation}
-                isGreen={isRecommendationGreen}
-              />
-
-              <TypographyBody1>
-                O gráfico abaixo compara o{" "}
-                <OpenBaseCostInfo onClick={() => setIsModalOpen(true)} />* atual
-                ao custo-base calculado de acordo com o contrato proposto.
-              </TypographyBody1>
-
-              <DetailedBaseCostsComparisonPlot
-                dates={dates}
-                costs={recommendation.detailedContractsCostsComparisonPlot}
-              />
-
-              <Alert
-                variant="filled"
-                severity="info"
-                sx={{ bgcolor: "#242a8e", fontWeight: "normal" }}
-              >
-                <AlertTitle>
-                  Economia nominal: ${recommendation.nominalSavingsPercentage}%
-                </AlertTitle>
-                A economia é calculada comparando o{" "}
-                <OpenBaseCostInfo
-                  sx={{ color: "white", fontWeight: "bold" }}
-                  onClick={() => setIsModalOpen(true)}
-                />
-                * total dos últimos 12 meses com o total estimado para um novo
-                contrato no mesmo período
-              </Alert>
-
-              <Box sx={{ "@media print": { breakInside: "avoid" } }}>
-                <TypographyBody1>
-                  A tabela abaixo apresenta os valores usados na estimativa de
-                  economia, demonstrando as diferenças entre o{" "}
-                  <OpenBaseCostInfo onClick={() => setIsModalOpen(true)} />*
-                  atual e o estimado de acordo com o contrato proposto.
-                </TypographyBody1>
-
-                <BaseCostComparisonTable
-                  rows={recommendation.contractsComparisonTable}
-                  totals={recommendation.contractsComparisonTotals}
-                />
-              </Box>
-
-              <Box sx={{ "@media print": { breakInside: "avoid" } }}>
-                <Typography>
-                  A tabela a seguir detalha os valores de consumo e demanda
-                  usados no cálculo do{" "}
-                  <OpenBaseCostInfo onClick={() => setIsModalOpen(true)} />
-                  *.
-                </Typography>
-
-                <ContractsComparisonTable
-                  rows={recommendation.contractsComparisonTable}
-                  totals={recommendation.contractsComparisonTotals}
-                />
-              </Box>
-            </DropdownSection>
-
-            <DropdownSection
-              sx={{ "@media print": { breakInside: "avoid" } }}
-              title={
-                <>
-                  <Typography variant="h5"> Recomendação: </Typography>
-                  {recommendation.shouldRenewContract ? (
-                    <ColoredText color="warning.main">
-                      Ajuste o contrato
-                    </ColoredText>
-                  ) : (
-                    <ColoredText color="primary.main">
-                      Manutenção de contrato
-                    </ColoredText>
-                  )}
-                </>
-              }
-              open
-            >
-              <TypographyBody1>
-                A partir de análises do perfil de demanda e de consumo de
-                energia elétrica da unidade consumidora, propõe-se os seguintes
-                ajustes no contrato:
-              </TypographyBody1>
-
-              <RecommendedContractTable
-                recommendedContract={recommendation.recommendedContract}
-                currentContract={recommendation.currentContract}
-              />
-
-              {recommendation.recommendedContract.tariffFlag === "G" && (
-                <>
-                  <br />
-                  <TypographyBody1>
-                    No caso da tarifa recomendada ser VERDE, considere
-                    {' "'}demanda contratada de ponta{'"'} e {'"'}demanda
-                    contratada fora de ponta{'"'} como iguais e equivalentes à
-                    {' "'}demanda contratada{'"'}, ou seja, uma única demanda.
-                  </TypographyBody1>
-                </>
-              )}
-
-              {recommendation.energyBillsCount <
-                recommendationSettings.IDEAL_ENERGY_BILLS_FOR_RECOMMENDATION && (
-                  <>
-                    <br />
-                    <Alert
-                      variant="filled"
-                      severity="info"
-                      sx={{ bgcolor: "#242a8e" }}
-                    >
-                      Uma ou mais faturas estão indisponíveis. Isso reduz a
-                      precisão da análise.
-                    </Alert>
-                  </>
-                )}
-            </DropdownSection>
-
-            <DropdownSection
-              sx={{
-                "@media print": { breakInside: "avoid", breakBefore: "always" },
-              }}
-              title={<Typography variant="h5">Anexos I</Typography>}
-              open
-            >
-              <TypographyBody1>
-                Considerações gerais sobre ajuste de contrato, conforme
-                Resolução Normativa ANEEL nº 1.000, de 7 de dezembro de 2021:
-              </TypographyBody1>
-
-              <GreenTitle text="Do Período de Testes e Ajustes" />
-              <TypographyBody1>
-                A fatura de energia elétrica dos consumidores enquadrados na
-                modalidade tarifária horária verde é composta da soma de
-                parcelas referentes ao consumo, de acordo com o horário do dia,
-                e à demanda. Os cálculos efetuados para obter os custos neste
-                cenário são:
-              </TypographyBody1>
-
-              <TypographyBody1>
-                Art. 311. A distribuidora deve aplicar o período de testes para
-                unidade consumidora para permitir a adequação da demanda
-                contratada e a escolha da modalidade tarifária, nas seguintes
-                situações:
-              </TypographyBody1>
-
-              <List dense>
-                <ListItem>
-                  I - início do fornecimento de energia elétrica;
-                </ListItem>
-                <ListItem>
-                  II - mudança para faturamento aplicável à unidade consumidora
-                  do grupo A, cuja opção anterior tenha sido por faturamento do
-                  grupo B;
-                </ListItem>
-                <ListItem>
-                  III - enquadramento na modalidade tarifária horária azul; e
-                </ListItem>
-                <ListItem>
-                  IV - Acréscimo de demanda, quando maior que 5% (cinco por
-                  cento) da contratada.
-                </ListItem>
-                <ListItem>
-                  Parágrafo único. Quando do enquadramento na modalidade
-                  tarifária horária azul, o período de testes abrangerá
-                  exclusivamente o montante contratado para o posto tarifário
-                  ponta.
-                </ListItem>
-              </List>
-
-              <TypographyBody1>
-                Art. 312. O período de testes deve ter duração de 3 (três)
-                ciclos consecutivos e completos de faturamento.
-              </TypographyBody1>
-
-              <TypographyBody1 sx={{ pl: 2 }}>
-                Parágrafo único. A distribuidora pode prorrogar o período de
-                testes, mediante solicitação fundamentada do consumidor.
-              </TypographyBody1>
-
-              <TypographyBody1>
-                Art. 313. A distribuidora deve faturar a demanda medida durante
-                o período de testes, exceto na situação de acréscimo de demanda,
-                em que a distribuidora deve considerar o maior valor entre a
-                demanda medida e a demanda contratada anteriormente à
-                solicitação de acréscimo.
-              </TypographyBody1>
-
-              <TypographyBody1 sx={{ pl: 2 }}>
-                § 1o A distribuidora deve faturar o valor mínimo disposto no
-                caput do art. 148 em ao menos 1 (um) dos postos tarifários.
-              </TypographyBody1>
-            </DropdownSection>
           </DropdownSectionManager>
+        </Box>
 
-          <BaseCostInfoModal
-            open={isModalOpen}
-            onClose={() => setIsModalOpen(false)}
-          />
+        <Box
+          mx="auto"
+          maxWidth="900px"
+          display="flex"
+          justifyContent="flex-end"
+        >
+          <Box
+            sx={{
+              bottom: "40px",
+              position: "fixed",
+              "@media (max-width: 500px)": {
+                width: "110px",
+                position: "relative",
+                marginTop: "16px",
+              },
+            }}
+          >
+            <GoToTopButton
+              color="primary"
+              size="large"
+              sx={{
+                "@media print": { display: "none" },
+                //bgcolor: "primary.main",
+                color: "#fff",
+                zIndex: 1,
+                cursor: "pointer",
+              }}
+              onClick={scrollToTop}
+            >
+              <ArrowUpwardRoundedIcon />
+            </GoToTopButton>
+          </Box>
         </Box>
       </Box>
     </Drawer>
   );
 };
 
-const ColoredText = ({
-  children,
-  color,
-}: {
-  children: ReactNode;
-  color: string;
-}) => {
-  return (
-    <Typography
-      variant="h5"
-      sx={{
-        boxSizing: "initial",
-        display: "inline",
-        bgcolor: color,
-        color: color === "primary.main" ? "background.paper" : "#000",
-        borderRadius: 1,
-        p: 0.5,
-      }}
-    >
-      {children}
-    </Typography>
-  );
-};
+// const ColoredText = ({
+//   children,
+//   color,
+// }: {
+//   children: ReactNode;
+//   color: string;
+// }) => {
+//   return (
+//     <Typography
+//       variant="h5"
+//       sx={{
+//         boxSizing: "initial",
+//         display: "inline",
+//         bgcolor: color,
+//         color: color === "primary.main" ? "background.paper" : "#000",
+//         borderRadius: 1,
+//         p: 0.5,
+//       }}
+//     >
+//       {children}
+//     </Typography>
+//   );
+// };

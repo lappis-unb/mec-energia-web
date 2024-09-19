@@ -1,7 +1,6 @@
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useRouter } from "next/router";
 import Image from "next/image";
-import { useDispatch, useSelector } from "react-redux";
 import { signOut, useSession } from "next-auth/react";
 
 import theme from "@/theme";
@@ -20,7 +19,6 @@ import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
 
 import DrawerListItem from "@/components/Drawer/ListItem";
 
-import { selectIsDrawerOpen, setIsDrawerOpen } from "@/store/appSlice";
 import {
   CONSUMER_UNITS_ROUTE,
   DASHBOARD_ROUTE,
@@ -29,10 +27,11 @@ import {
   USER_LIST_ROUTE,
 } from "@/routes";
 import { Route } from "@/types/router";
-import { useGetPersonQuery } from "@/api";
+import { useFetchConsumerUnitsQuery, useGetPersonQuery } from "@/api";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { Session } from "next-auth";
 import { getTimeFromDateUTC } from "@/utils/date";
+import { Grid } from "@mui/material";
 
 interface RouteItem extends Route {
   active: boolean;
@@ -102,16 +101,18 @@ const verifySession = (session: Session | null) => {
 
 const Drawer = () => {
   const router = useRouter();
-  const dispatch = useDispatch();
   const { data: session } = useSession();
   const { data: currentUser } = useGetPersonQuery(
     (session?.user.id as number) || skipToken,
     {
-      refetchOnMountOrArgChange: true
+      refetchOnMountOrArgChange: true,
     }
   );
+  const { data: consumerUnitsData } = useFetchConsumerUnitsQuery(
+    session?.user.universityId ?? skipToken
+  );
 
-  const isDrawerOpen = useSelector(selectIsDrawerOpen);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(true);
 
   verifySession(session);
 
@@ -130,7 +131,10 @@ const Drawer = () => {
 
       if (!routeItem.roles) {
         allowedRoutes.push(routeItem);
-      } else if (currentUser?.type && routeItem.roles.includes(currentUser.type)) {
+      } else if (
+        currentUser?.type &&
+        routeItem.roles.includes(currentUser.type)
+      ) {
         allowedRoutes.push(routeItem);
       }
     });
@@ -150,7 +154,19 @@ const Drawer = () => {
   };
 
   const handleToggleDrawer = () => {
-    dispatch(setIsDrawerOpen(!isDrawerOpen));
+    setIsDrawerOpen(!isDrawerOpen);
+  };
+
+  const disableRoute = (index: number) => {
+    const routesToDisable: Route[] = [CONSUMER_UNITS_ROUTE, DISTRIBUTORS_ROUTE];
+
+    return (
+      consumerUnitsData &&
+      consumerUnitsData?.length <= 0 &&
+      routesToDisable.findIndex(
+        (it) => it.href === allowedRoutes[index].href
+      ) != -1
+    );
   };
 
   return (
@@ -164,7 +180,7 @@ const Drawer = () => {
         display="flex"
         alignItems="center"
         justifyContent="center"
-        height="192px"
+        maxHeight="144px"
         p={1}
         pb={0}
       >
@@ -173,7 +189,7 @@ const Drawer = () => {
             disableGutters
             sx={{ position: "absolute", top: 0, right: 0 }}
           >
-            <IconButton onClick={handleToggleDrawer}>
+            <IconButton onClick={handleToggleDrawer} style={{ color: '#000000DE' }}>
               <ChevronLeftRoundedIcon fontSize="large" />
             </IconButton>
           </Toolbar>
@@ -192,7 +208,7 @@ const Drawer = () => {
             }}
           >
             <Toolbar>
-              <IconButton onClick={handleToggleDrawer}>
+              <IconButton style={{ color: '#000000DE' }} onClick={handleToggleDrawer}>
                 <MenuRoundedIcon fontSize="large" />
               </IconButton>
             </Toolbar>
@@ -202,17 +218,48 @@ const Drawer = () => {
         <Box
           sx={{
             width: "100%",
-            maxWidth: "144px",
-            aspectRatio: "1/1",
+            maxWidth: "196px",
+            mt: 8,
+            mb: 2,
           }}
         >
-          <Image
-            src="/icons/mec-energia.svg"
-            alt="MEC Energia"
-            layout="responsive"
-            width="144px"
-            height="144px"
-          />
+          <Grid
+            container
+            sx={{
+              width: "100%",
+              minWidth: "144px",
+              height: "80px",
+              justifyContent: "center",
+              alignItems: "center",
+              mb: "4px",
+            }}
+          >
+            <Grid key="1" item xs={4}>
+              <Image
+                src="/icons/logo_mepa_cor.svg"
+                alt="MEPA"
+                layout="responsive"
+                width="144px"
+                height="144px"
+                style={{ display: "absolute" }}
+              />
+            </Grid>
+
+            <Grid key="2" item xs={8}>
+              <Image
+                src="/icons/logo_mepa_somente_nome.svg"
+                alt="MEPA"
+                layout="responsive"
+                width="144px"
+                height="40px"
+                style={{
+                  opacity: !isDrawerOpen ? 0 : 1,
+                  transition: "opacity 0.2s ease-in-out",
+                }}
+              />
+            </Grid>
+          </Grid>
+          <Divider />
         </Box>
       </Box>
 
@@ -224,6 +271,7 @@ const Drawer = () => {
               text={title}
               href={href}
               active={active}
+              disable={disableRoute(index)}
             />
           </Box>
         ))}

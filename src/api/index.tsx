@@ -17,29 +17,16 @@ import {
   EditDistributorResponsePayload,
 } from "@/types/distributor";
 
+import { ConsumerUnit, ConsumerUnitsPayload } from "@/types/consumerUnit";
 import {
   CurrentEnergyBillResponsePayload,
   EditEnergyBillRequestPayload,
   EditEnergyBillResponsePayload,
+  IEnergyBill,
   PostEnergyBillRequestPayload,
   PostEnergyBillResponsePayload,
-  IEnergyBill,
   PostMultipleEnergyBillResponsePayload,
 } from "@/types/energyBill";
-import { GetSubgroupsResponsePayload } from "@/types/subgroups";
-import { Recommendation, RecommendationSettings } from "@/types/recommendation";
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { getSession } from "next-auth/react";
-import { ConsumerUnit, ConsumerUnitsPayload } from "@/types/consumerUnit";
-import { DistributorSubgroup } from "@/types/tariffs";
-import {
-  CreateTariffRequestPayload,
-  CreateTariffResponsePayload,
-  EditTariffRequestPayload,
-  EditTariffResponsePayload,
-  GetTariffRequestPayload,
-  Tariff,
-} from "@/types/tariffs";
 import {
   CreateInstitutionRequestPayload,
   CreateInstitutionResponsePayload,
@@ -60,14 +47,23 @@ import {
   PatchUserRequestPayload,
   User,
 } from "@/types/person";
+import { Recommendation, RecommendationSettings } from "@/types/recommendation";
+import { GetSubgroupsResponsePayload } from "@/types/subgroups";
+import {
+  CreateTariffRequestPayload,
+  CreateTariffResponsePayload, DistributorSubgroup, EditTariffRequestPayload,
+  EditTariffResponsePayload,
+  GetTariffRequestPayload,
+  Tariff
+} from "@/types/tariffs";
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { getSession } from "next-auth/react";
 
-//import { signOut } from "next-auth/react";
-const baseUrl = process.env.NEXT_PUBLIC_API_URL;
 
 export const mecEnergiaApi = createApi({
   reducerPath: "mecEnergiaApi",
   baseQuery: fetchBaseQuery({
-    baseUrl,
+    baseUrl: process.env.NEXT_PUBLIC_API_URL,
     prepareHeaders: async (headers) => {
       const session = await getSession();
 
@@ -75,9 +71,11 @@ export const mecEnergiaApi = createApi({
         headers.set("Authorization", `Token ${session.user.token}`);
       }
 
-      return headers;
+    return headers;
     },
   }),
+  keepUnusedDataFor: 0,               // Descarta dados não utilizados imediatamente
+  // refetchOnMountOrArgChange: true, // Refetch ao montar o componente ou quando os argumentos mudam
   tagTypes: [
     "Distributors",
     "ConsumerUnit",
@@ -88,6 +86,7 @@ export const mecEnergiaApi = createApi({
     "Tariffs",
     "Institution",
     "Person",
+    "Token",
   ],
   endpoints: (builder) => ({
     fetchConsumerUnits: builder.query<ConsumerUnitsPayload, number>({
@@ -193,10 +192,10 @@ export const mecEnergiaApi = createApi({
       providesTags: (result, error, arg) =>
         result
           ? [
-              { type: "CurrentContract", arg },
-              "CurrentContract",
-              "Recommendation",
-            ]
+            { type: "CurrentContract", arg },
+            "CurrentContract",
+            "Recommendation",
+          ]
           : ["CurrentContract", "Recommendation"],
     }),
     getAllContracts: builder.query<GetContractsResponsePayload[], number>({
@@ -205,10 +204,10 @@ export const mecEnergiaApi = createApi({
       providesTags: (result, error, arg) =>
         result
           ? [
-              { type: "CurrentContract", arg },
-              "CurrentContract",
-              "Recommendation",
-            ]
+            { type: "CurrentContract", arg },
+            "CurrentContract",
+            "Recommendation",
+          ]
           : ["CurrentContract", "Recommendation"],
     }),
     renewContract: builder.mutation<
@@ -421,6 +420,37 @@ export const mecEnergiaApi = createApi({
         method: "POST",
       }),
     }),
+    confirmResetPassword: builder.mutation<void, { user_token: string; user_new_password: string }>({
+      query: ({ user_token, user_new_password }) => ({
+        url: "/reset-password/confirm",
+        method: "POST",
+        body: {
+          user_token,
+          user_new_password,
+        },
+      }),
+    }),
+    resetPasswordRequest: builder.mutation<void, { email: string }>({
+      query: ({ email }) => ({
+        url: `/reset-password/?email=${email}`,
+        method: "POST",
+        body: {},
+      }),
+    }),
+    validateResetPasswordToken: builder.query<boolean, string>({
+      query: (token) => `reset-password/?token=${token}`,
+      providesTags: ["Token"],
+    }),
+    changeUserPassword: builder.mutation<void, { current_password: string; new_password: string }>({
+      query: ({ current_password, new_password }) => ({
+        url: "/users/change-user-password/",
+        method: "POST",
+        body: {
+          current_password,
+          new_password,
+        },
+      }),
+    }),
   }),
 });
 
@@ -466,4 +496,8 @@ export const {
   useDeleteEnergiBillMutation,
   useDeleteDistributorMutation,
   useLazyResetPasswordAdminRequestQuery,
+  useConfirmResetPasswordMutation,
+  useResetPasswordRequestMutation,
+  useValidateResetPasswordTokenQuery,
+  useChangeUserPasswordMutation,
 } = mecEnergiaApi;

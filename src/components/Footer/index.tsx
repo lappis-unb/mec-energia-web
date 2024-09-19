@@ -5,51 +5,53 @@ const Footer = () => {
   return (
     <Box
       sx={{ backgroundColor: "primary.main" }}
-      height="220px"
-      minHeight="220px"
+      height="72px"
+      minHeight="72px"
       display="flex"
-      flexDirection="column"
-      justifyContent="center"
+      flexDirection="row"
+      justifyContent="space-between"
       alignItems="center"
+      padding="16px 32px"
+      gap="16px"
     >
-      <Typography variant="body2" color="white">
-        © 2022 • Suporte técnico: pessoa@mec.gov.br
-      </Typography>
+      <Box display="flex" alignItems="center">
+        <Image
+          src="/icons/logo-mepa.svg"
+          alt="MEPA"
+          width="124px"
+          height="40px"
+        />
+      </Box>
 
-      <Box mt={5} display="flex" justifyContent="center">
-        <Box>
+      <Box display="flex" alignItems="center" gap="4px" textAlign="center">
+        <Typography display="flex" gap="16px" alignItems="center" fontFamily="Lexend" color="white" fontSize="14px" letterSpacing="0.15px">
+          Monitoramento de Energia em Plataforma Aberta 2024
+          {/* <Image
+              src="/icons/star-of-life.svg"
+              alt="Star of life"
+              width="16px"
+              height="16px"
+            />
+            Consumo de energia com sabedoria */}
+        </Typography>
+      </Box>
+
+      <Box display="flex" alignItems="center" gap="16px">
+        <Box display="flex" alignItems="center">
           <Image
-            src="/icons/lappis.svg"
-            alt="LAPPIS"
-            height="40px"
-            width={`${324 / 2.075}px`}
+            src="/icons/logo-unb.svg"
+            alt="UnB"
+            width="115px"
+            height="22px"
           />
         </Box>
 
-        <Box ml={4}>
+        <Box display="flex" alignItems="center">
           <Image
-            src="/icons/unb-energia.svg"
-            alt="UnB Energia"
+            src="/icons/governo-federal.svg"
+            alt="Governo Federal"
+            width="89.5px"
             height="40px"
-            width={`${379 / 2.075}px`}
-          />
-        </Box>
-
-        <Box ml={4}>
-          <Image
-            src="/icons/cgee.svg"
-            alt="CGEE"
-            height="40px"
-            width={`${279 / 2.075}px`}
-          />
-        </Box>
-
-        <Box ml={4}>
-          <Image
-            src="/icons/mec.svg"
-            alt="MEC Energia"
-            height="40px"
-            width={`${335 / 2.075}px`}
           />
         </Box>
       </Box>

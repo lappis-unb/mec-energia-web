@@ -4,6 +4,7 @@ import {
   ConsumerUnitFilter,
   ConsumerUnitInvoiceFilter,
   ConsumerUnitTab,
+  TokenStatus,
   DashboardFilter,
   EnergyBillEdiFormParams,
   NotificationProps,
@@ -16,7 +17,7 @@ import { getActualYear } from "@/utils/date";
 const initialState: AppState = {
   isDrawerOpen: true,
   dashboard: {
-    activeFilter: "all",
+    activeFilter: "active",
   },
   consumerUnit: {
     activeId: null,
@@ -58,6 +59,7 @@ const initialState: AppState = {
     activeId: null,
     isCreateFormOpen: false,
     isEditFormOpen: false,
+    isEditPasswordFormOpen: false,
   },
   notifications: {
     success: {
@@ -69,6 +71,11 @@ const initialState: AppState = {
       text: "",
     },
   },
+  token: {
+    status: null,
+    passwordAlreadyCreated: null,
+    userName: "",
+  }
 };
 
 export const appSlice = createSlice({
@@ -209,6 +216,9 @@ export const appSlice = createSlice({
     setIsPersonEditFormOpen: (state, action: PayloadAction<boolean>) => {
       state.person.isEditFormOpen = action.payload;
     },
+    setIsEditPasswordFormOpen: (state, action: PayloadAction<boolean>) => {
+      state.person.isEditPasswordFormOpen = action.payload;
+    },
     setIsSuccessNotificationOpen: (
       state,
       action: PayloadAction<NotificationProps>
@@ -220,6 +230,24 @@ export const appSlice = createSlice({
       action: PayloadAction<NotificationProps>
     ) => {
       state.notifications.error = action.payload;
+    },
+    setIsTokenValid: (
+      state,
+      action: PayloadAction<TokenStatus | null>
+    ) => {
+      state.token.status = action.payload;
+    },
+    setPasswordAlreadyCreated: (
+      state,
+      action: PayloadAction<boolean | null>
+    ) => {
+      state.token.passwordAlreadyCreated = action.payload;
+    },
+    setUserAlreadyCreatedName: (
+      state,
+      action: PayloadAction<string>
+    ) => {
+      state.token.userName = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -262,9 +290,14 @@ export const {
   setActivePersonId,
   setIsPersonCreateFormOpen,
   setIsPersonEditFormOpen,
+  setIsEditPasswordFormOpen,
 
   setIsSuccessNotificationOpen,
   setIsErrorNotificationOpen,
+
+  setIsTokenValid,
+  setPasswordAlreadyCreated,
+  setUserAlreadyCreatedName,
 } = appSlice.actions;
 
 // App
@@ -377,6 +410,10 @@ export const selectIsPersonEditFormOpen = (state: RootState) => {
   return state.app.person.isEditFormOpen;
 };
 
+export const selectIsPasswordEditFormOpen = (state: RootState) => {
+  return state.app.person.isEditPasswordFormOpen;
+};
+
 //Notification
 
 export const selectSuccessNotification = (state: RootState) => {
@@ -385,4 +422,18 @@ export const selectSuccessNotification = (state: RootState) => {
 
 export const selectErrorNotification = (state: RootState) => {
   return state.app.notifications.error;
+};
+
+// Token
+
+export const selectIsTokenValid = (state: RootState) => {
+  return state.app.token.status;
+};
+
+export const selectPasswordAlreadyCreated = (state: RootState) => {
+  return state.app.token.passwordAlreadyCreated;
+};
+
+export const selectUserAlreadyCreatedName = (state: RootState) => {
+  return state.app.token.userName;
 };

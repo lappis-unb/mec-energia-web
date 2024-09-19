@@ -2,6 +2,7 @@ import React, { Fragment, useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   selectIsDistributorCreateFormOpen,
+  setActiveDistributorId,
   setIsDistributorCreateFormOpen,
   setIsErrorNotificationOpen,
   setIsSuccessNotificationOpen,
@@ -19,6 +20,7 @@ import { useCreateDistributorMutation } from "@/api";
 import { useSession } from "next-auth/react";
 import FormDrawerV2 from "@/components/Form/DrawerV2";
 import isValidCnpj from "@/utils/validations/isValidCnpj";
+import FormFieldError from "@/components/FormFieldError";
 
 const defaultValues: CreateDistributorForm = {
   name: "",
@@ -75,8 +77,10 @@ const DistributorCreateForm = () => {
       isActive: true,
       university: user?.universityId as number,
     };
-    await createDistributor(body);
+    const createdDistributor = await createDistributor(body);
     setCnpjValid(true);
+    if ("data" in createdDistributor)
+      dispatch(setActiveDistributorId(createdDistributor.data.id ?? null));
   };
 
   //Notificações
@@ -144,10 +148,10 @@ const DistributorCreateForm = () => {
               <TextField
                 ref={ref}
                 value={value}
-                label="Nome * (ao menos 3 caracteres)"
+                label="Nome *"
                 placeholder="Ex.: CEMIG, Enel, Neonergia"
-                error={Boolean(error)}
-                helperText={error?.message ?? " "}
+                error={!!error}
+                helperText={FormFieldError(error?.message)}
                 fullWidth
                 onBlur={onBlur}
                 onChange={(e) => {
@@ -186,7 +190,7 @@ const DistributorCreateForm = () => {
           />
         </Grid>
 
-        <Grid item xs={12}>
+        <Grid item xs={12} mt={0.2}>
           <Controller
             control={control}
             name="cnpj"
@@ -200,15 +204,16 @@ const DistributorCreateForm = () => {
               fieldState: { error },
             }) => (
               <PatternFormat
+                style={{ width: "12rem" }}
                 value={value}
                 customInput={TextField}
-                label="CNPJ * (14 dígitos)"
+                label="CNPJ *"
                 format="##.###.###/####-##"
                 placeholder="Ex.: 12345678000167"
-                error={Boolean(error) || !cnpjValid}
-                helperText={
-                  error?.message ?? (cnpjValid ? " " : "CNPJ inválido")
-                }
+                error={!!error || !cnpjValid}
+                helperText={FormFieldError(
+                  error?.message ?? (cnpjValid ? undefined : "CNPJ inválido")
+                )}
                 fullWidth
                 onChange={(e) => {
                   const newValue = e.target.value;
@@ -245,6 +250,7 @@ const DistributorCreateForm = () => {
         entity={"distribuidora"}
         onClose={handleCloseDialog}
         onDiscard={handleDiscardForm}
+        type="create"
       />
     </Fragment>
   );
