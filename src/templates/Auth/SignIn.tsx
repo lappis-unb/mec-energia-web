@@ -67,6 +67,7 @@ const SignInTemplate = () => {
             >
               <Box
                 mt={3}
+                mb={4}
                 height="112px"
                 display="flex"
                 alignItems="center"
@@ -81,7 +82,7 @@ const SignInTemplate = () => {
               </Box>
 
               {tokenStatus === TokenStatus.TOKEN_ALREADY_USED && (
-                <Box mt={4}>
+                <Box>
                   <Typography variant="h5">Olá, {userAlreadyCreatedName}</Typography>
                   <Typography variant="subtitle1">Você já tem uma senha de acesso ao sistema.</Typography>
                   <Typography variant="subtitle1">Preencha os campos abaixo para entrar ou clique em</Typography>
@@ -90,7 +91,7 @@ const SignInTemplate = () => {
               )}
 
               {tokenStatus === TokenStatus.RESET_PASSWORD_INVALID && (
-                <Box mt={4}>
+                <Box>
                   <Alert severity="error" variant="filled">
                     O link clicado para cadastrar a senha de acesso está vencido.
                     Você receberá um novo link por e-mail em 1 hora.
@@ -99,7 +100,7 @@ const SignInTemplate = () => {
               )}
 
               {tokenStatus === TokenStatus.FIRST_TIME_CREATION_INVALID && (
-                <Box mt={4}>
+                <Box>
                   <Alert severity="error" variant="filled">
                     O link clicado para cadastrar a senha de acesso está vencido.
                     Você receberá um novo link por e-mail em 1 hora.
@@ -107,13 +108,13 @@ const SignInTemplate = () => {
                 </Box>
               )}
 
-              <Box mt={8}>
+              <Box mt={4}>
                 <Controller
                   control={control}
                   name="username"
                   rules={{
                     required: "Preencha este campo",
-        
+
                     validate: (e) => isValidEmail(e),
                   }}
                   render={({
@@ -131,7 +132,7 @@ const SignInTemplate = () => {
                       helperText={
                         error ? (
                           <Box display="flex" alignItems="center" gap={0.5} ml={-2}>
-                            <ReportRounded color="error" fontSize="small"/>
+                            <ReportRounded color="error" fontSize="small" />
                             {error.message}
                           </Box>
                         ) : (
@@ -168,7 +169,7 @@ const SignInTemplate = () => {
                               style={{ color: '#000000DE' }}
                               onClick={() => setShowPassword(!showPassword)}
                               onMouseDown={(e) => e.preventDefault()}
-                              >
+                            >
                               {showPassword ? <VisibilityOff /> : <Visibility />}
                             </IconButton>
                           </InputAdornment>
@@ -177,7 +178,7 @@ const SignInTemplate = () => {
                       helperText={
                         error ? (
                           <Box display="flex" alignItems="center" gap={0.5} ml={-2}>
-                            <ReportRounded color="error" fontSize="small"/>
+                            <ReportRounded color="error" fontSize="small" />
                             {error.message}
                           </Box>
                         ) : (
