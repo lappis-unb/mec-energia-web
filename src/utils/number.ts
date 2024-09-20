@@ -20,8 +20,24 @@ export const formatNumber = (n: number | null, defaultOutput = "") => {
   return numberFormatter.format(n)
 }
 
-export const formatToPtBrCurrency = (n: number | null, decimalPlaces = 0, defaultOutput = 0) => {
-  if (n == null) 
+export const formatToPtBrCurrency = (
+  n: number | null | undefined,
+  decimalPlaces = 0,
+  defaultOutput = 0
+) => {
+  if (n === null || n === undefined) {
     return defaultOutput;
-  return Number(n).toLocaleString('pt-BR', { maximumFractionDigits: 2, minimumFractionDigits: decimalPlaces });
+  }
+  return Number(n).toLocaleString('pt-BR', {
+    maximumFractionDigits: 2,
+    minimumFractionDigits: decimalPlaces,
+  });
 };
+
+
+export const formatNumberConditional = (n: number | null | undefined | "") => {
+  if (n === null || n === undefined || n === "") return "";
+
+  return n.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+};
+

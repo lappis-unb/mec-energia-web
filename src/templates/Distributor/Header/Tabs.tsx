@@ -1,4 +1,4 @@
-import { Fragment, SyntheticEvent, useCallback, useMemo } from "react";
+import React, { Fragment, SyntheticEvent, useCallback, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 
@@ -16,7 +16,9 @@ const getTabLabel = (subgroup: string) => {
   return `Subgrupo ${subgroup}`;
 };
 
-const DistributorContentHeaderTabs = () => {
+const ORDER = ["AS", "A4", "A3", "A3a", "A2", "A1"];
+
+const DistributorContentHeaderTabs: React.FC = () => {
   const dispatch = useDispatch();
   const distributorId = useSelector(selectActiveDistributorId);
   const selectedTariffSubgroup = useSelector(selectActiveSubgroup);
@@ -25,25 +27,43 @@ const DistributorContentHeaderTabs = () => {
     distributorId ?? skipToken
   );
 
+  // Ordenar os subgrupos de acordo com a ordem especificada
+  const sortedTariffsSubgroups = useMemo(() => {
+    if (!tariffsSubgroups) return [];
+    const orderMap = ORDER.reduce<{ [key: string]: number }>(
+      (acc, key, index) => {
+        acc[key] = index;
+        return acc;
+      },
+      {}
+    );
+
+    return [...tariffsSubgroups].sort((a, b) => {
+      return (
+        (orderMap[a.subgroup] ?? Infinity) - (orderMap[b.subgroup] ?? Infinity)
+      );
+    });
+  }, [tariffsSubgroups]);
+
   const selectedTabIndex = useMemo(() => {
-    if (!tariffsSubgroups || tariffsSubgroups.length === 0) {
+    if (!sortedTariffsSubgroups || sortedTariffsSubgroups.length === 0) {
       return false;
     }
 
-    const selectedTariffSubgroupIndex = tariffsSubgroups.findIndex(
+    const selectedTariffSubgroupIndex = sortedTariffsSubgroups.findIndex(
       ({ subgroup }) => subgroup === selectedTariffSubgroup
     );
 
     return selectedTariffSubgroupIndex >= 0 ? selectedTariffSubgroupIndex : 0;
-  }, [selectedTariffSubgroup, tariffsSubgroups]);
+  }, [selectedTariffSubgroup, sortedTariffsSubgroups]);
 
   const handleTabChange = useCallback(
     (_event: SyntheticEvent, tabIndex: number) => {
-      const selectedSubgroup = tariffsSubgroups?.[tabIndex].subgroup ?? null;
-
+      const selectedSubgroup =
+        sortedTariffsSubgroups?.[tabIndex].subgroup ?? null;
       dispatch(setActiveSubgroup(selectedSubgroup));
     },
-    [tariffsSubgroups, dispatch]
+    [sortedTariffsSubgroups, dispatch]
   );
 
   return (
@@ -53,7 +73,7 @@ const DistributorContentHeaderTabs = () => {
         variant="fullWidth"
         onChange={handleTabChange}
       >
-        {tariffsSubgroups?.map(({ subgroup, pending }) => (
+        {sortedTariffsSubgroups?.map(({ subgroup, pending }) => (
           <Tab
             key={subgroup}
             label={getTabLabel(subgroup)}
