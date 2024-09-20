@@ -29,6 +29,7 @@ import {
 } from "@/store/appSlice";
 import { useGetDistributorSubgroupsQuery, useGetTariffQuery } from "@/api";
 import WarningRounded from "@mui/icons-material/WarningRounded";
+import { formatNumberConditional } from "@/utils/number";
 
 const getTariffQueryParams = (
   activeDistributorId: number | null,
@@ -107,8 +108,8 @@ const DistributorContentTariffsTable = () => {
   }, [overdue]);
 
   useEffect(() => {
-      setIsTooltipOpen(false);
-      setTimeout(() => setIsTooltipOpen(true), 300);
+    setIsTooltipOpen(false);
+    setTimeout(() => setIsTooltipOpen(true), 300);
   }, [isDrawerOpen]);
 
   const handleOnEditTariffButtonClick = useCallback(() => {
@@ -224,13 +225,13 @@ const DistributorContentTariffsTable = () => {
                     <TableCell>Ponta</TableCell>
 
                     <TableCell align="right">
-                      {blue.peakTusdInReaisPerKw}
+                      {formatNumberConditional(blue.peakTusdInReaisPerKw)}
                     </TableCell>
                     <TableCell align="right">
-                      {blue.peakTusdInReaisPerMwh}
+                      {formatNumberConditional(blue.peakTusdInReaisPerMwh)}
                     </TableCell>
                     <TableCell align="right">
-                      {blue.peakTeInReaisPerMwh}
+                      {formatNumberConditional(blue.peakTeInReaisPerMwh)}
                     </TableCell>
                   </TableRow>
 
@@ -242,13 +243,13 @@ const DistributorContentTariffsTable = () => {
                     <TableCell>Fora ponta</TableCell>
 
                     <TableCell align="right">
-                      {blue.offPeakTusdInReaisPerKw}
+                      {formatNumberConditional(blue.offPeakTusdInReaisPerKw)}
                     </TableCell>
                     <TableCell align="right">
-                      {blue.offPeakTusdInReaisPerMwh}
+                      {formatNumberConditional(blue.offPeakTusdInReaisPerMwh)}
                     </TableCell>
                     <TableCell align="right">
-                      {blue.offPeakTeInReaisPerMwh}
+                      {formatNumberConditional(blue.offPeakTeInReaisPerMwh)}
                     </TableCell>
                   </TableRow>
 
@@ -266,7 +267,7 @@ const DistributorContentTariffsTable = () => {
                         <TableCell>NA</TableCell>
 
                         <TableCell align="right">
-                          {green.naTusdInReaisPerKw}
+                          {formatNumberConditional(green.naTusdInReaisPerKw)}
                         </TableCell>
                         <TableCell align="right">-</TableCell>
                         <TableCell align="right">-</TableCell>
@@ -281,10 +282,10 @@ const DistributorContentTariffsTable = () => {
 
                         <TableCell align="right">-</TableCell>
                         <TableCell align="right">
-                          {green.peakTusdInReaisPerMwh}
+                          {formatNumberConditional(green.peakTusdInReaisPerMwh)}
                         </TableCell>
                         <TableCell align="right">
-                          {green.peakTeInReaisPerMwh}
+                          {formatNumberConditional(green.peakTeInReaisPerMwh)}
                         </TableCell>
                       </TableRow>
 
@@ -293,10 +294,10 @@ const DistributorContentTariffsTable = () => {
 
                         <TableCell align="right">-</TableCell>
                         <TableCell align="right">
-                          {green.offPeakTusdInReaisPerMwh}
+                          {formatNumberConditional(green.offPeakTusdInReaisPerMwh)}
                         </TableCell>
                         <TableCell align="right">
-                          {green.offPeakTeInReaisPerMwh}
+                          {formatNumberConditional(green.offPeakTeInReaisPerMwh)}
                         </TableCell>
                       </TableRow>
                     </>

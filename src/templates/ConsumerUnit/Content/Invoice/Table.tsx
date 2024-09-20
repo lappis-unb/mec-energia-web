@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { formatToPtBrCurrency } from "@/utils/number";
+import { formatNumberConditional, formatToPtBrCurrency } from "@/utils/number";
 
 import { Box, Button, Grid, IconButton, styled, Tooltip } from "@mui/material";
 import {
@@ -84,17 +84,18 @@ const formatConsumptionDemandToPtBrCurrency = (energyBill: EnergyBill) => {
   return {
     invoiceInReais:
       typeof energyBill.invoiceInReais == "number"
-        ? formatToPtBrCurrency(energyBill.invoiceInReais, 2)
+        ? formatToPtBrCurrency(energyBill.invoiceInReais, 2
+        )
         : "-",
-    offPeakConsumptionInKwh: formatToPtBrCurrency(
-      energyBill.offPeakConsumptionInKwh
+    offPeakConsumptionInKwh: formatNumberConditional(
+      energyBill.offPeakConsumptionInKwh, 2
     ),
-    peakConsumptionInKwh: formatToPtBrCurrency(energyBill.peakConsumptionInKwh),
-    offPeakMeasuredDemandInKw: formatToPtBrCurrency(
-      energyBill.offPeakMeasuredDemandInKw
+    peakConsumptionInKwh: formatNumberConditional(energyBill.peakConsumptionInKwh),
+    offPeakMeasuredDemandInKw: formatNumberConditional(
+      energyBill.offPeakMeasuredDemandInKw, 2
     ),
-    peakMeasuredDemandInKw: formatToPtBrCurrency(
-      energyBill.peakMeasuredDemandInKw
+    peakMeasuredDemandInKw: formatNumberConditional(
+      energyBill.peakMeasuredDemandInKw, 2
     ),
   };
 };
