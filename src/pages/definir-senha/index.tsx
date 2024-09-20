@@ -9,6 +9,7 @@ import {
   Typography,
   IconButton,
   InputAdornment,
+  Tooltip,
 } from "@mui/material";
 import { NextPage } from "next";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
@@ -148,7 +149,7 @@ const DefinePasswordPage: NextPage = () => {
     if (newPassword !== confirmPassword) {
       setError("confirmPassword", {
         type: "manual",
-        message: 'Insira uma senha idêntica à "Nova senha"',
+        message: 'Insira uma senha idêntica à "Senha"',
       });
       return;
     }
@@ -293,20 +294,16 @@ const DefinePasswordPage: NextPage = () => {
                       InputProps={{
                         endAdornment: (
                           <InputAdornment position="end">
-                            <IconButton
-                              style={{ color: "#000000DE" }}
-                              onClick={() =>
-                                setShowNewPassword(!showNewPassword)
-                              }
-                              onMouseDown={(e) => e.preventDefault()}
-                            >
-                              {showNewPassword ? (
-                                <VisibilityOff />
-                              ) : (
-                                <Visibility />
-                              )}
-                            </IconButton>
-                          </InputAdornment >
+                            <Tooltip title={showNewPassword ? "Ocultar senha" : "Exibir senha"}>
+                              <IconButton
+                                onClick={() => setShowNewPassword(!showNewPassword)}
+                                onMouseDown={(e) => e.preventDefault()}
+                                sx={{ color: '#000000DE' }}
+                              >
+                                {showNewPassword ? <VisibilityOff /> : <Visibility />}
+                              </IconButton>
+                            </Tooltip>
+                          </InputAdornment>
                         ),
                       }}
                     />
@@ -335,7 +332,7 @@ const DefinePasswordPage: NextPage = () => {
                     required: "Preencha este campo",
                     validate: (value) =>
                       value === password ||
-                      'Insira uma senha idêntica à "Nova senha"',
+                      'Insira uma senha idêntica à "Senha"',
                   }}
                   render={({
                     field: { onChange, onBlur, value, ref },
@@ -359,20 +356,16 @@ const DefinePasswordPage: NextPage = () => {
                       InputProps={{
                         endAdornment: (
                           <InputAdornment position="end">
-                            <IconButton
-                              style={{ color: "#000000DE" }}
-                              onClick={() =>
-                                setShowConfirmPassword(!showConfirmPassword)
-                              }
-                              onMouseDown={(e) => e.preventDefault()}
-                            >
-                              {showConfirmPassword ? (
-                                <VisibilityOff />
-                              ) : (
-                                <Visibility />
-                              )}
-                            </IconButton>
-                          </InputAdornment >
+                            <Tooltip title={showConfirmPassword ? "Ocultar senha" : "Exibir senha"}>
+                              <IconButton
+                                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                onMouseDown={(e) => e.preventDefault()}
+                                sx={{ color: "#000000DE" }}
+                              >
+                                {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                              </IconButton>
+                            </Tooltip>
+                          </InputAdornment>
                         ),
                       }}
                     />

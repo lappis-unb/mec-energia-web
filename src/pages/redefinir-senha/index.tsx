@@ -278,7 +278,7 @@ const RedefinePasswordPage: NextPage = () => {
                                                             <IconButton
                                                                 onClick={() => setShowNewPassword(!showNewPassword)}
                                                                 onMouseDown={(e) => e.preventDefault()}
-                                                                sx={{ color: showNewPassword ? 'primary.main' : 'action.active' }}
+                                                                sx={{ color: '#000000DE' }}
                                                             >
                                                                 {showNewPassword ? <VisibilityOff /> : <Visibility />}
                                                             </IconButton>
@@ -338,7 +338,7 @@ const RedefinePasswordPage: NextPage = () => {
                                                             <IconButton
                                                                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                                                                 onMouseDown={(e) => e.preventDefault()}
-                                                                sx={{ color: showConfirmPassword ? 'primary.main' : 'action.active' }}
+                                                                sx={{ color: '#000000DE' }}
                                                             >
                                                                 {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
                                                             </IconButton>
