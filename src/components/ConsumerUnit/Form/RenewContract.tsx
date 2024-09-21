@@ -1,4 +1,4 @@
-import { Fragment, useCallback, useEffect, useState } from "react";
+import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { isAfter, isFuture, isValid } from "date-fns";
 
@@ -67,6 +67,10 @@ const defaultValues: RenewContractForm = {
   offPeakContractedDemandInKw: "",
 };
 
+const cardTitleStyles: CardTitleStyle = {
+  marginBottom: "15px",
+};
+
 const ConsumerUnitRenewContractForm = () => {
   //Sessão
   const { data: session } = useSession();
@@ -85,27 +89,29 @@ const ConsumerUnitRenewContractForm = () => {
   );
   const [currentDistributor, setCurrentDistributor] = useState();
 
-  const handleDistributorChange = (event) => {
+  const handleDistributorChange = useCallback((event) => {
     const selectedDistributor = event.id || event.target.value;
-        
+
     setCurrentDistributor(selectedDistributor);
     setValue("distributor", selectedDistributor);
-  };
+  }, []);
 
   const mappedDistributorList = distributorList?.map((distributor) => {
     const idCopy = distributor.id || distributor.value;
     const valueCopy = distributor.value || distributor.id;
-  
+
     return {
       ...distributor,
       id: idCopy,
       value: valueCopy,
     };
-  });  
-  
-  const sortedDistributorList = mappedDistributorList?.slice().sort((a, b) => 
-    a.name.localeCompare(b.name)
-  );
+  });
+
+  const sortedDistributorList = useMemo(() => {
+    return mappedDistributorList
+      ?.slice()
+      .sort((a, b) => a.name.localeCompare(b.name));
+  }, [isRenewContractFormOpen]);
 
   const [
     renewContract,
@@ -304,7 +310,9 @@ const ConsumerUnitRenewContractForm = () => {
     () => (
       <>
         <Grid item xs={12}>
-          <Typography variant="h5">Contrato</Typography>
+          <Typography variant="h5" style={cardTitleStyles}>
+            Contrato
+          </Typography>
         </Grid>
 
         <Grid item xs={12}>
@@ -325,9 +333,10 @@ const ConsumerUnitRenewContractForm = () => {
                 label="Número da Unidade *"
                 placeholder="Número da Unidade Consumidora conforme a fatura"
                 error={Boolean(error)}
-                helperText={
-                  FormFieldError(error?.message, "Nº ou código da Unidade Consumidora conforme a fatura")
-                }
+                helperText={FormFieldError(
+                  error?.message,
+                  "Nº ou código da Unidade Consumidora conforme a fatura"
+                )}
                 fullWidth
                 onChange={(e) => handleNumericInputChange(e, onChange)}
                 onBlur={onBlur}
@@ -341,10 +350,7 @@ const ConsumerUnitRenewContractForm = () => {
             control={control}
             name="distributor"
             rules={{ required: "Preencha este campo" }}
-            render={({
-              field: { onBlur, ref },
-              fieldState: { error },
-            }) => (
+            render={({ field: { onBlur, ref }, fieldState: { error } }) => (
               <FormControl
                 sx={{ minWidth: "200px", maxWidth: "100%" }}
                 error={!!error}
@@ -387,7 +393,9 @@ const ConsumerUnitRenewContractForm = () => {
                   </MenuItem>
                 </Select>
 
-                <FormHelperText>{FormFieldError(error?.message)}</FormHelperText>
+                <FormHelperText>
+                  {FormFieldError(error?.message)}
+                </FormHelperText>
               </FormControl>
             )}
           />
@@ -405,7 +413,7 @@ const ConsumerUnitRenewContractForm = () => {
               <DatePicker
                 value={value}
                 label="Início da vigência *"
-                views={["month", "year"]}
+                views={["day", "month", "year"]}
                 minDate={new Date("2010")}
                 disableFuture
                 renderInput={(params) => (
@@ -463,9 +471,10 @@ const ConsumerUnitRenewContractForm = () => {
                   value={value}
                   customInput={TextField}
                   label="Tensão contratada *"
-                  helperText={
-                    FormFieldError(error?.message, "Se preciso, converta a tensão de V para kV dividindo o valor por 1.000.")
-                  }
+                  helperText={FormFieldError(
+                    error?.message,
+                    "Se preciso, converta a tensão de V para kV dividindo o valor por 1.000."
+                  )}
                   error={!!error}
                   fullWidth
                   InputProps={{
@@ -504,7 +513,12 @@ const ConsumerUnitRenewContractForm = () => {
         </Tooltip>
       </>
     ),
-    [control, sortedDistributorList, currentDistributor, handleDistributorChange]
+    [
+      control,
+      sortedDistributorList,
+      currentDistributor,
+      handleDistributorChange,
+    ]
   );
 
   const ContractedDemand = useCallback(

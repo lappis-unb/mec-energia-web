@@ -79,7 +79,7 @@ const DistributorCreateForm = () => {
     };
     const createdDistributor = await createDistributor(body);
     setCnpjValid(true);
-    if ('data' in createdDistributor)
+    if ("data" in createdDistributor)
       dispatch(setActiveDistributorId(createdDistributor.data.id ?? null));
   };
 
@@ -204,15 +204,16 @@ const DistributorCreateForm = () => {
               fieldState: { error },
             }) => (
               <PatternFormat
+                style={{ width: "12rem" }}
                 value={value}
                 customInput={TextField}
                 label="CNPJ *"
                 format="##.###.###/####-##"
                 placeholder="Ex.: 12345678000167"
                 error={!!error || !cnpjValid}
-                helperText={
-                  FormFieldError(error?.message ?? (cnpjValid ? undefined : "CNPJ inválido"))
-                }
+                helperText={FormFieldError(
+                  error?.message ?? (cnpjValid ? undefined : "CNPJ inválido")
+                )}
                 fullWidth
                 onChange={(e) => {
                   const newValue = e.target.value;

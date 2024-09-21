@@ -51,6 +51,7 @@ import FormFieldError from "../../FormFieldError";
 import { DistributorPropsTariffs } from "@/types/distributor";
 import { sendFormattedDate } from "@/utils/date";
 import FormDrawerV2 from "@/components/Form/DrawerV2";
+import { formatNumberConditional } from "@/utils/number";
 
 const defaultValues: CreateAndEditEnergyBillForm = {
   date: new Date(),
@@ -184,6 +185,10 @@ const CreateEditEnergyBillForm = () => {
       }
     }
     return false;
+  };
+
+  const cardTitleStyles: CardTitleStyle = {
+    marginBottom: "15px",
   };
 
   useEffect(() => {
@@ -456,7 +461,7 @@ const CreateEditEnergyBillForm = () => {
     () => (
       <>
         <Grid item xs={8}>
-          <Typography variant="h5" style={{ marginBottom: "13px" }}>
+          <Typography variant="h5" style={cardTitleStyles}>
             Fatura
           </Typography>
         </Grid>
@@ -502,7 +507,7 @@ const CreateEditEnergyBillForm = () => {
                   const contractStartDateYear = contractStartDate.getFullYear();
 
                   const fixedDate = new Date(
-                    `${contractStartDateYear}/${contractStartDateMonth + 2}/01`
+                    `${contractStartDateYear}/${contractStartDateMonth + 2}`
                   );
 
                   const options = { year: "numeric", month: "long" };
@@ -715,7 +720,7 @@ const CreateEditEnergyBillForm = () => {
                 fieldState: { error },
               }) => (
                 <NumericFormat
-                  value={value}
+                  value={formatNumberConditional(value)}
                   customInput={TextField}
                   label={contract?.tariffFlag === "G" ? "Ponta" : "Ponta *"}
                   fullWidth
@@ -760,7 +765,7 @@ const CreateEditEnergyBillForm = () => {
                 fieldState: { error },
               }) => (
                 <NumericFormat
-                  value={value}
+                  value={formatNumberConditional(value)}
                   customInput={TextField}
                   label="Fora Ponta *"
                   fullWidth
@@ -796,7 +801,7 @@ const CreateEditEnergyBillForm = () => {
     () => (
       <>
         <Grid item xs={10}>
-          <Typography variant="h5" style={{ marginBottom: "16px" }}>
+          <Typography variant="h5" style={cardTitleStyles}>
             Consumo medido
           </Typography>
         </Grid>
@@ -818,7 +823,7 @@ const CreateEditEnergyBillForm = () => {
                 fieldState: { error },
               }) => (
                 <NumericFormat
-                  value={value}
+                  value={formatNumberConditional(value)}
                   customInput={TextField}
                   label="Ponta *"
                   fullWidth
@@ -860,7 +865,7 @@ const CreateEditEnergyBillForm = () => {
                 fieldState: { error },
               }) => (
                 <NumericFormat
-                  value={value}
+                  value={formatNumberConditional(value)}
                   customInput={TextField}
                   label="Fora Ponta *"
                   fullWidth

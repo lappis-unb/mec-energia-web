@@ -1,7 +1,6 @@
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useRouter } from "next/router";
 import Image from "next/image";
-import { useDispatch, useSelector } from "react-redux";
 import { signOut, useSession } from "next-auth/react";
 
 import theme from "@/theme";
@@ -20,7 +19,6 @@ import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
 
 import DrawerListItem from "@/components/Drawer/ListItem";
 
-import { selectIsDrawerOpen, setIsDrawerOpen } from "@/store/appSlice";
 import {
   CONSUMER_UNITS_ROUTE,
   DASHBOARD_ROUTE,
@@ -103,19 +101,18 @@ const verifySession = (session: Session | null) => {
 
 const Drawer = () => {
   const router = useRouter();
-  const dispatch = useDispatch();
   const { data: session } = useSession();
   const { data: currentUser } = useGetPersonQuery(
     (session?.user.id as number) || skipToken,
     {
-      refetchOnMountOrArgChange: true
+      refetchOnMountOrArgChange: true,
     }
   );
   const { data: consumerUnitsData } = useFetchConsumerUnitsQuery(
     session?.user.universityId ?? skipToken
   );
 
-  const isDrawerOpen = useSelector(selectIsDrawerOpen);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(true);
 
   verifySession(session);
 
@@ -134,7 +131,10 @@ const Drawer = () => {
 
       if (!routeItem.roles) {
         allowedRoutes.push(routeItem);
-      } else if (currentUser?.type && routeItem.roles.includes(currentUser.type)) {
+      } else if (
+        currentUser?.type &&
+        routeItem.roles.includes(currentUser.type)
+      ) {
         allowedRoutes.push(routeItem);
       }
     });
@@ -154,17 +154,20 @@ const Drawer = () => {
   };
 
   const handleToggleDrawer = () => {
-    dispatch(setIsDrawerOpen(!isDrawerOpen));
+    setIsDrawerOpen(!isDrawerOpen);
   };
 
   const disableRoute = (index: number) => {
-    const routesToDisable: Route[] = [
-      CONSUMER_UNITS_ROUTE,
-      DISTRIBUTORS_ROUTE,
-    ];
+    const routesToDisable: Route[] = [CONSUMER_UNITS_ROUTE, DISTRIBUTORS_ROUTE];
 
-    return (consumerUnitsData && consumerUnitsData?.length <= 0) && routesToDisable.findIndex(it => it.href === allowedRoutes[index].href) != -1;
-  }
+    return (
+      consumerUnitsData &&
+      consumerUnitsData?.length <= 0 &&
+      routesToDisable.findIndex(
+        (it) => it.href === allowedRoutes[index].href
+      ) != -1
+    );
+  };
 
   return (
     <StyledDrawer
@@ -220,14 +223,17 @@ const Drawer = () => {
             mb: 2,
           }}
         >
-          <Grid container sx={{
-            width: "100%",
-            minWidth: "144px",
-            height: "80px",
-            justifyContent: "center",
-            alignItems: "center",
-            mb: "4px",
-          }}>
+          <Grid
+            container
+            sx={{
+              width: "100%",
+              minWidth: "144px",
+              height: "80px",
+              justifyContent: "center",
+              alignItems: "center",
+              mb: "4px",
+            }}
+          >
             <Grid key="1" item xs={4}>
               <Image
                 src="/icons/logo_mepa_cor.svg"

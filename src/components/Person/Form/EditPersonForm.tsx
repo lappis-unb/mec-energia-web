@@ -145,11 +145,15 @@ const EditPersonComponent = () => {
     return true;
   };
 
+  const cardTitleStyles: CardTitleStyle = {
+    marginBottom: "15px",
+  };
+
   const PersonalInformationSection = useCallback(
     () => (
       <>
         <Grid item xs={12}>
-          <Typography variant="h5" style={{ marginBottom: "16px" }}>
+          <Typography variant="h5" style={cardTitleStyles}>
             Informações pessoais
           </Typography>
         </Grid>
