@@ -19,7 +19,7 @@ import { ConsumerUnit } from "@/types/consumerUnit";
 import Card from "@/components/Card";
 import { getMonthFromNumber } from "@/utils/date";
 import { EditFavoritesRequestPayload } from "@/types/person";
-import { useEditPersonFavoritesMutation } from "@/api"
+import { useEditPersonFavoritesMutation } from "@/api";
 import { useSession } from "next-auth/react";
 
 interface ConsumerUnitCardProps extends CardProps {
@@ -131,7 +131,9 @@ const ConsumerUnitCardActionIcon = ({
     return null;
   }
 
-  const handleConsumerUnitClick = async (filtro: string = new Date().getUTCFullYear().toString()) => {
+  const handleConsumerUnitClick = async (
+    filtro: string = new Date().getUTCFullYear().toString()
+  ) => {
     router.push(`/uc/${consumerUnitId}`).then(() => {
       dispatch(setActiveConsumerUnitId(consumerUnitId));
       dispatch(setConsumerUnitInvoiceActiveFilter(filtro));
@@ -141,7 +143,7 @@ const ConsumerUnitCardActionIcon = ({
   if (pendingEnergyBillsNumber > 0) {
     return (
       <Badge
-        onClick={() => handleConsumerUnitClick('pending')}
+        onClick={() => handleConsumerUnitClick("pending")}
         badgeContent={pendingEnergyBillsNumber}
         color="primary"
       >
@@ -152,7 +154,9 @@ const ConsumerUnitCardActionIcon = ({
 
   return (
     <InsightsRoundedIcon
-      onClick={() => handleConsumerUnitClick(new Date().getUTCFullYear().toString())}
+      onClick={() =>
+        handleConsumerUnitClick(new Date().getUTCFullYear().toString())
+      }
     />
   );
 };
@@ -188,11 +192,15 @@ const ConsumerUnitCard = ({
     MouseEventHandler<HTMLButtonElement>
   >(
     async (event) => {
-      const consumerUnitCardActionHtmlButton = (event.target as HTMLButtonElement);
-      const applyMultipleRedirectOnlyInPanelPage = router.pathname === '/';
+      const consumerUnitCardActionHtmlButton =
+        event.target as HTMLButtonElement;
+      const applyMultipleRedirectOnlyInPanelPage = router.pathname === "/";
 
       // Verifica se o alvo da ação de clique é diferente do botão de Lançar
-      if ((applyMultipleRedirectOnlyInPanelPage || id !== activeConsumerUnit) && consumerUnitCardActionHtmlButton.type !== 'button') {
+      if (
+        (applyMultipleRedirectOnlyInPanelPage || id !== activeConsumerUnit) &&
+        consumerUnitCardActionHtmlButton.type !== "button"
+      ) {
         router.push(`/uc/${id}`);
       }
     },
@@ -211,25 +219,30 @@ const ConsumerUnitCard = ({
           dispatch(setConsumerUnitOpenedTab(ConsumerUnitTab.INVOICE));
         });
       } else {
-        router.push(`/uc/${id}`).then(() =>
-          dispatch(setConsumerUnitOpenedTab(ConsumerUnitTab.ANALYSIS)));
+        router
+          .push(`/uc/${id}`)
+          .then(() =>
+            dispatch(setConsumerUnitOpenedTab(ConsumerUnitTab.ANALYSIS))
+          );
       }
     },
     [dispatch, id, pendingEnergyBillsNumber, router]
   );
 
-
   const handleFavoriteButtonClick = useCallback<
     MouseEventHandler<HTMLButtonElement>
-  >(async (event) => {
-    event.stopPropagation();
-    const body: EditFavoritesRequestPayload = {
-      consumerUnitId: id,
-      personId: session?.user?.id,
-      action: isFavorite ? "remove" : "add"
-    };
-    await editPersonFavorites(body);
-  }, [isFavorite]);
+  >(
+    async (event) => {
+      event.stopPropagation();
+      const body: EditFavoritesRequestPayload = {
+        consumerUnitId: id,
+        personId: session?.user?.id,
+        action: isFavorite ? "remove" : "add",
+      };
+      await editPersonFavorites(body);
+    },
+    [isFavorite]
+  );
 
   return (
     <Card
