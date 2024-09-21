@@ -36,7 +36,7 @@ const ConsumerUnitContractContent = () => {
   );
   const { data: consumerUnit } = useGetConsumerUnitQuery(
     consumerUnitId ?? skipToken
-  )
+  );
   const [isRenewContractDialogOpen, setIsRenewContractDialogOpen] =
     useState(false);
 
@@ -74,7 +74,7 @@ const ConsumerUnitContractContent = () => {
       <Card sx={{ maxWidth: "450px" }}>
         <CardHeader title={contract?.distributorName} />
         <CardContent>
-          <Grid container rowSpacing="28px" columnSpacing={4} >
+          <Grid container rowSpacing="28px" columnSpacing={4}>
             <Grid item xs={6}>
               <Typography variant="body2" color="GrayText">
                 Início
@@ -102,9 +102,13 @@ const ConsumerUnitContractContent = () => {
                 </Typography>
               </Grid>
 
-              {consumerUnit?.totalInstalledPower &&
+              {consumerUnit?.totalInstalledPower && (
                 <Grid mt="28px">
-                  <Typography variant="body2" color="GrayText" sx={{ maxWidth: "167px" }}>
+                  <Typography
+                    variant="body2"
+                    color="GrayText"
+                    sx={{ maxWidth: "167px" }}
+                  >
                     Potência de geração total instalada
                   </Typography>
 
@@ -112,7 +116,7 @@ const ConsumerUnitContractContent = () => {
                     {consumerUnit?.totalInstalledPower} kW
                   </Typography>
                 </Grid>
-              }
+              )}
             </Grid>
 
             <Grid item xs={6}>
@@ -153,13 +157,16 @@ const ConsumerUnitContractContent = () => {
           </Grid>
         </CardContent>
 
-
         <CardActions>
           <Button size="small" onClick={handleEditFormClick}>
             Editar
           </Button>
 
-          <Button size="small" onClick={handleRenewContractClick}>
+          <Button
+            size="small"
+            onClick={handleRenewContractClick}
+            disabled={!consumerUnit?.isActive}
+          >
             Renovar contrato
           </Button>
         </CardActions>

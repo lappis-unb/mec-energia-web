@@ -21,7 +21,11 @@ import {
   Delete,
 } from "@mui/icons-material";
 
-import { useFetchInvoicesQuery, useDeleteEnergiBillMutation } from "@/api";
+import {
+  useFetchInvoicesQuery,
+  useDeleteEnergiBillMutation,
+  useGetConsumerUnitQuery,
+} from "@/api";
 import {
   selectActiveConsumerUnitId,
   selectConsumerUnitInvoiceActiveFilter,
@@ -102,10 +106,11 @@ const formatConsumptionDemandToPtBrCurrency = (energyBill: EnergyBill) => {
 
 const getDataGridRows = (
   invoicesPayload: InvoicePayload[],
-  activeFilter: ConsumerUnitInvoiceFilter
+  activeFilter: ConsumerUnitInvoiceFilter,
+  isActive: boolean | undefined
 ): InvoiceDataGridRow[] => {
-  return invoicesPayload.map(
-    ({ month, year, isEnergyBillPending, energyBill }) => ({
+  return invoicesPayload
+    .map(({ month, year, isEnergyBillPending, energyBill }) => ({
       ...energyBill,
       id: parseInt(`${year}${month >= 10 ? month : "0" + month}`),
       ...(energyBill && {
@@ -116,8 +121,21 @@ const getDataGridRows = (
       year,
       isEnergyBillPending,
       activeFilter,
-    })
-  );
+      isActive,
+    }))
+    .filter((row) => {
+      if (
+        row.isActive === false &&
+        row.isEnergyBillPending === false &&
+        row.invoiceInReais === undefined
+      ) {
+        return false;
+      }
+      if (!row.isActive && row.isEnergyBillPending) {
+        return false;
+      }
+      return true;
+    });
 };
 
 const NoRowsOverlay = () => (
@@ -134,6 +152,10 @@ const ConsumerUnitInvoiceContentTable = () => {
   const [selectedBillenergyId, setSelectedEnergyBillId] = useState<number>(0);
   const [selectedMonth, setSelectedMonth] = useState<number>(0);
   const [selectedYear, setSelectedYear] = useState<number>(0);
+
+  const { data: consumerUnit } = useGetConsumerUnitQuery(
+    consumerUnitId ?? skipToken
+  );
 
   const { data: invoicesPayload } = useFetchInvoicesQuery(
     consumerUnitId ?? skipToken,
@@ -274,7 +296,7 @@ const ConsumerUnitInvoiceContentTable = () => {
           <>
             <Tooltip title="Editar" arrow placement="top">
               <IconButton
-                style={{ color: '#000000DE' }}
+                style={{ color: "#000000DE" }}
                 onClick={() => {
                   handleEditInvoiceFormOpen({ month, year, id: energyBillId });
                 }}
@@ -284,12 +306,12 @@ const ConsumerUnitInvoiceContentTable = () => {
             </Tooltip>
             <Tooltip title="Excluir" arrow placement="top">
               <IconButton
-                style={{ color: '#000000DE' }}
+                style={{ color: "#000000DE" }}
                 onClick={() => {
                   setSelectedEnergyBillId(energyBillId);
-                  setSelectedMonth(month)
-                  setSelectedYear(year)
-                  setIsDeleteDialogOpen(true)
+                  setSelectedMonth(month);
+                  setSelectedYear(year);
+                  setIsDeleteDialogOpen(true);
                 }}
               >
                 <Delete />
@@ -354,15 +376,19 @@ const ConsumerUnitInvoiceContentTable = () => {
   ];
 
   useEffect(() => {
-    if (!invoicesPayload) {
+    if (!invoicesPayload || consumerUnit === undefined) {
       return;
     }
 
     const filteredInvoices = getFilteredInvoices(invoicesPayload, activeFilter);
-    const dataGridRows = getDataGridRows(filteredInvoices, activeFilter);
+    const dataGridRows = getDataGridRows(
+      filteredInvoices,
+      activeFilter,
+      consumerUnit?.isActive
+    );
 
     dispatch(setConsumerUnitInvoiceDataGridRows(dataGridRows));
-  }, [activeFilter, invoicesPayload, dispatch]);
+  }, [activeFilter, invoicesPayload, consumerUnit, dispatch]);
 
   const handleOpenAddEnergyBillForm = useCallback(
     (month: number, year: number) => {
@@ -374,13 +400,23 @@ const ConsumerUnitInvoiceContentTable = () => {
 
   const renderMonthCell = useCallback(
     (invoiceRow: InvoiceDataGridRow) => {
-      const { activeFilter, isEnergyBillPending, month, year, energyBillId } =
-        invoiceRow;
+      const {
+        activeFilter,
+        isEnergyBillPending,
+        month,
+        year,
+        energyBillId,
+        isActive,
+      } = invoiceRow;
 
       const buttonLabel =
         "Lançar " +
         getMonthFromNumber(month, year) +
         `${activeFilter === "pending" ? "  " + year : ""}`;
+
+      if (!isActive) {
+        return getMonthFromNumber(month, year, true);
+      }
 
       if (isEnergyBillPending) {
         return (
@@ -437,7 +473,7 @@ const ConsumerUnitInvoiceContentTable = () => {
 
   return (
     <>
-      <Grid container justifyContent="flex-end"></Grid >
+      <Grid container justifyContent="flex-end"></Grid>
       <FixedMenuDataGrid
         experimentalFeatures={{ columnGrouping: true }}
         columnGroupingModel={columnGroupingModel}
@@ -453,7 +489,9 @@ const ConsumerUnitInvoiceContentTable = () => {
         }
       />
       <ConfirmDelete
-        title={`Apagar fatura de ${parseNumberToMonth(selectedMonth)} de ${selectedYear}?`}
+        title={`Apagar fatura de ${parseNumberToMonth(
+          selectedMonth
+        )} de ${selectedYear}?`}
         open={isDeleteDialogOpen}
         onConfirm={confirmDelete}
         onCancel={cancelDelete}
