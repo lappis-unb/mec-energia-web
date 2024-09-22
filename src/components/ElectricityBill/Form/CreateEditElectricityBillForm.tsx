@@ -51,6 +51,7 @@ import FormFieldError from "../../FormFieldError";
 import { DistributorPropsTariffs } from "@/types/distributor";
 import { sendFormattedDate } from "@/utils/date";
 import FormDrawerV2 from "@/components/Form/DrawerV2";
+import { formatNumberConditional } from "@/utils/number";
 
 const defaultValues: CreateAndEditEnergyBillForm = {
   date: new Date(),
@@ -719,7 +720,7 @@ const CreateEditEnergyBillForm = () => {
                 fieldState: { error },
               }) => (
                 <NumericFormat
-                  value={value}
+                  value={formatNumberConditional(value)}
                   customInput={TextField}
                   label={contract?.tariffFlag === "G" ? "Ponta" : "Ponta *"}
                   fullWidth
@@ -764,7 +765,7 @@ const CreateEditEnergyBillForm = () => {
                 fieldState: { error },
               }) => (
                 <NumericFormat
-                  value={value}
+                  value={formatNumberConditional(value)}
                   customInput={TextField}
                   label="Fora Ponta *"
                   fullWidth
@@ -822,7 +823,7 @@ const CreateEditEnergyBillForm = () => {
                 fieldState: { error },
               }) => (
                 <NumericFormat
-                  value={value}
+                  value={formatNumberConditional(value)}
                   customInput={TextField}
                   label="Ponta *"
                   fullWidth
@@ -864,7 +865,7 @@ const CreateEditEnergyBillForm = () => {
                 fieldState: { error },
               }) => (
                 <NumericFormat
-                  value={value}
+                  value={formatNumberConditional(value)}
                   customInput={TextField}
                   label="Fora Ponta *"
                   fullWidth

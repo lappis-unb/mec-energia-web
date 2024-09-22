@@ -1,4 +1,4 @@
-import { Fragment, useCallback, useEffect, useState } from "react";
+import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { NumericFormat } from "react-number-format";
@@ -86,12 +86,12 @@ const ConsumerUnitEditForm = () => {
   );
   const [currentDistributor, setCurrentDistributor] = useState();
 
-  const handleDistributorChange = (event) => {
+  const handleDistributorChange = useCallback((event) => {
     const selectedDistributor = event.id || event.target.value;
 
     setCurrentDistributor(selectedDistributor);
     setValue("distributor", selectedDistributor);
-  };
+  }, []);
 
   const mappedDistributorList = distributorList?.map((distributor) => {
     const idCopy = distributor.id || distributor.value;
@@ -104,9 +104,12 @@ const ConsumerUnitEditForm = () => {
     };
   });
 
-  const sortedDistributorList = mappedDistributorList
-    ?.slice()
-    .sort((a, b) => a.name.localeCompare(b.name));
+  const sortedDistributorList = useMemo(() => {
+    return mappedDistributorList
+      ?.slice()
+      .sort((a, b) => a.name.localeCompare(b.name));
+  }, [isEditFormOpen]);
+
   const { data: contract } = useGetContractQuery(
     activeConsumerUnit || skipToken
   );
@@ -150,6 +153,7 @@ const ConsumerUnitEditForm = () => {
             setValue("isActive", true);
             setValue("code", consumerUnit?.code ?? "");
             setValue("distributor", contract?.distributor);
+            setCurrentDistributor(contract?.distributor);
             setValue("supplyVoltage", contract?.supplyVoltage);
             setValue(
               "shouldShowInstalledPower",
@@ -550,7 +554,7 @@ const ConsumerUnitEditForm = () => {
                 <DatePicker
                   value={value}
                   label="Início da vigência *"
-                  views={["month", "year"]}
+                  views={["day", "month", "year"]}
                   minDate={new Date("2010")}
                   disableFuture
                   renderInput={(params) => (
@@ -630,8 +634,9 @@ const ConsumerUnitEditForm = () => {
     ),
     [
       control,
-      sortedDistributorList,
       currentDistributor,
+      sortedDistributorList,
+      setValue,
       handleDistributorChange,
     ]
   );
