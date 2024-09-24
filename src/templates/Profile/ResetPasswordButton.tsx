@@ -1,4 +1,3 @@
-import { useCallback } from "react";
 import LockRoundedIcon from "@mui/icons-material/LockRounded";
 import { Button } from "@mui/material";
 import { useDispatch } from "react-redux";
@@ -9,13 +8,13 @@ interface ProfileEditPasswordButtonProps {
   personId: number;
 }
 
-const ProfileResetPasswordButton = (props: ProfileEditPasswordButtonProps) => {
+const ProfileResetPasswordButton = ({ personId }: ProfileEditPasswordButtonProps) => {
   const dispatch = useDispatch();
 
-  const handleClick = useCallback(() => {
-    dispatch(setActivePersonId(props.personId))
+  const handleClick = () => {
+    dispatch(setActivePersonId(personId));
     dispatch(setIsEditPasswordFormOpen(true));
-  }, [dispatch, props.personId]);
+  };
 
   return (
     <>
@@ -34,3 +33,4 @@ const ProfileResetPasswordButton = (props: ProfileEditPasswordButtonProps) => {
 };
 
 export default ProfileResetPasswordButton;
+
