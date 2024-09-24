@@ -596,125 +596,128 @@ const ConsumerUnitCreateForm = () => {
         </Grid>
 
         {tariffFlag === "G" ? (
-          <Grid item xs={7}>
-            <Controller
-              control={control}
-              name="contracted"
-              rules={{
-                required: "Preencha este campo",
-                min: minimumDemand,
-              }}
-              render={({
-                field: { onChange, onBlur, value },
-                fieldState: { error },
-              }) => (
-                <NumericFormat
-                  style={{ width: "10rem" }}
-                  value={value}
-                  customInput={TextField}
-                  label="Demanda *"
-                  fullWidth
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">kW</InputAdornment>
-                    ),
+          <>
+            <Grid item xs={12} container spacing={2}>
+              <Grid item xs={5}>
+                <Controller
+                  control={control}
+                  name="contracted"
+                  rules={{
+                    required: "Preencha este campo",
+                    min: minimumDemand,
                   }}
-                  type="text"
-                  allowNegative={false}
-                  isAllowed={({ floatValue }) =>
-                    !floatValue || floatValue <= 9999999.99
-                  }
-                  decimalScale={2}
-                  decimalSeparator=","
-                  thousandSeparator={"."}
-                  error={Boolean(error)}
-                  helperText={FormFieldError(error?.message)}
-                  onValueChange={(values) => onChange(values.floatValue)}
-                  onBlur={onBlur}
+                  render={({
+                    field: { onChange, onBlur, value },
+                    fieldState: { error },
+                  }) => (
+                    <NumericFormat
+                      value={value}
+                      customInput={TextField}
+                      label="Demanda *"
+                      fullWidth
+                      InputProps={{
+                        endAdornment: (
+                          <InputAdornment position="end">kW</InputAdornment>
+                        ),
+                      }}
+                      type="text"
+                      allowNegative={false}
+                      isAllowed={({ floatValue }) =>
+                        !floatValue || floatValue <= 99999.99
+                      }
+                      decimalScale={2}
+                      decimalSeparator=","
+                      thousandSeparator={"."}
+                      error={Boolean(error)}
+                      helperText={FormFieldError(error?.message)}
+                      onValueChange={(values) => onChange(values.floatValue)}
+                      onBlur={onBlur}
+                    />
+                  )}
                 />
-              )}
-            />
-          </Grid>
-        ) : (
-          <Box>
-            <Grid item xs={8}>
-              <Controller
-                control={control}
-                name="peakContractedDemandInKw"
-                rules={{
-                  required: "Preencha este campo",
-                  min: minimumDemand,
-                }}
-                render={({
-                  field: { onChange, onBlur, value },
-                  fieldState: { error },
-                }) => (
-                  <NumericFormat
-                    style={{ width: "11rem" }}
-                    value={value}
-                    customInput={TextField}
-                    label="Dema. Ponta *"
-                    fullWidth
-                    InputProps={{
-                      endAdornment: (
-                        <InputAdornment position="end">kW</InputAdornment>
-                      ),
-                    }}
-                    type="text"
-                    allowNegative={false}
-                    isAllowed={({ floatValue }) =>
-                      !floatValue || floatValue <= 9999999.99
-                    }
-                    decimalScale={2}
-                    decimalSeparator=","
-                    thousandSeparator={"."}
-                    error={Boolean(error)}
-                    helperText={FormFieldError(error?.message)}
-                    onValueChange={(values) => onChange(values.floatValue)}
-                    onBlur={onBlur}
-                  />
-                )}
-              />
+              </Grid>
             </Grid>
+          </>
+        ) : (
+          <>
+            <Grid item xs={12} container spacing={2}>
+              <Grid item xs={5}>
+                <Controller
+                  control={control}
+                  name="peakContractedDemandInKw"
+                  rules={{
+                    required: "Preencha este campo",
+                    min: minimumDemand,
+                  }}
+                  render={({
+                    field: { onChange, onBlur, value },
+                    fieldState: { error },
+                  }) => (
+                    <NumericFormat
+                      value={value}
+                      customInput={TextField}
+                      label="Dem. Ponta *"
+                      fullWidth
+                      InputProps={{
+                        endAdornment: (
+                          <InputAdornment position="end">kW</InputAdornment>
+                        ),
+                      }}
+                      type="text"
+                      allowNegative={false}
+                      isAllowed={({ floatValue }) =>
+                        !floatValue || floatValue <= 99999.99
+                      }
+                      decimalScale={2}
+                      decimalSeparator=","
+                      thousandSeparator={"."}
+                      error={Boolean(error)}
+                      helperText={error?.message ?? " "}
+                      onValueChange={(values) => onChange(values.floatValue)}
+                      onBlur={onBlur}
+                    />
+                  )}
+                />
+              </Grid>
 
-            <Grid item xs={8}>
-              <Controller
-                control={control}
-                name="offPeakContractedDemandInKw"
-                rules={{
-                  required: "Preencha este campo",
-                  min: minimumDemand,
-                }}
-                render={({
-                  field: { onChange, onBlur, value },
-                  fieldState: { error },
-                }) => (
-                  <NumericFormat
-                    style={{ width: "11rem" }}
-                    value={value}
-                    customInput={TextField}
-                    label="Dem. Fora Ponta *"
-                    fullWidth
-                    InputProps={{
-                      endAdornment: (
-                        <InputAdornment position="end">kW</InputAdornment>
-                      ),
-                    }}
-                    type="text"
-                    allowNegative={false}
-                    isAllowed={({ floatValue }) =>
-                      !floatValue || floatValue <= 9999999.99
-                    }
-                    decimalScale={2}
-                    decimalSeparator=","
-                    thousandSeparator={"."}
-                    error={Boolean(error)}
-                    helperText={FormFieldError(error?.message)}
-                    onValueChange={(values) => onChange(values.floatValue)}
-                    onBlur={onBlur}
-                  />
-                )}
-              />
+              <Grid item xs={5}>
+                <Controller
+                  control={control}
+                  name="offPeakContractedDemandInKw"
+                  rules={{
+                    required: "Preencha este campo",
+                    min: minimumDemand,
+                  }}
+                  render={({
+                    field: { onChange, onBlur, value },
+                    fieldState: { error },
+                  }) => (
+                    <NumericFormat
+                      value={value}
+                      customInput={TextField}
+                      label="Dem. Fora Pta *"
+                      fullWidth
+                      InputProps={{
+                        endAdornment: (
+                          <InputAdornment position="end">kW</InputAdornment>
+                        ),
+                      }}
+                      type="text"
+                      allowNegative={false}
+                      isAllowed={({ floatValue }) =>
+                        !floatValue || floatValue <= 99999.99
+                      }
+                      decimalScale={2}
+                      decimalSeparator=","
+                      thousandSeparator={"."}
+                      error={Boolean(error)}
+                      helperText={error?.message ?? " "}
+                      onValueChange={(values) => onChange(values.floatValue)}
+                      onBlur={onBlur}
+                    />
+                  )}
+                />
+              </Grid>
             </Grid>
             {!shouldShowGreenDemand && (
               <Typography variant="body2" sx={{ px: 2 }}>
@@ -722,7 +725,7 @@ const ConsumerUnitCreateForm = () => {
                 modalidade azul
               </Typography>
             )}
-          </Box>
+          </>
         )}
       </>
     ),
