@@ -213,7 +213,7 @@ const CsvForm: React.FC<CsvFormProps> = ({ csvData }) => {
             <Box display="flex" alignItems="center">
               <IconButton
                 edge="start"
-                style={{ color: '#000000DE' }}
+                style={{ color: "#000000DE" }}
                 aria-label="Fechar formulário"
                 onClick={handleCloseDrawer}
               >
@@ -468,7 +468,9 @@ const CsvForm: React.FC<CsvFormProps> = ({ csvData }) => {
                             <TableRow
                               style={{
                                 backgroundColor:
-                                  index % 2 === 0 ? "#FFFFFF" : "#EEF4F4",
+                                  index % 2 === 0
+                                    ? "#FFFFFF"
+                                    : theme.palette.background.default,
                               }}
                             >
                               <TableCell
