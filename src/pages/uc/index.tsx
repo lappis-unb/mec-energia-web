@@ -10,11 +10,7 @@ import DefaultTemplateV2 from "@/templates/DefaultV2";
 
 const ConsumerUnitLoadingPage: NextPage = () => {
   const router = useRouter();
-  const { data: session } = useSession();
-
-  if (session && session.user.universityId === undefined) {
-    router.push("/instituicoes");
-  }
+  const { data: session, status } = useSession();
 
   const { data: consumerUnits } = useFetchConsumerUnitsQuery(
     session?.user.universityId ?? skipToken
@@ -22,6 +18,28 @@ const ConsumerUnitLoadingPage: NextPage = () => {
 
   if (consumerUnits) {
     router.push(`/uc/${consumerUnits!.length > 0 ? consumerUnits[0].id : -1}`);
+  }
+
+  if (status === "loading") {
+    return (
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        height="100vh"
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (status === "unauthenticated") {
+    router.push("/");
+    return null;
+  }
+
+  if (session && session.user.universityId === undefined) {
+    router.push("/instituicoes");
   }
 
   return (

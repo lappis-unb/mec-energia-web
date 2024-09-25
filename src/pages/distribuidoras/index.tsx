@@ -10,7 +10,7 @@ import DefaultTemplateV2 from "@/templates/DefaultV2";
 
 const DistributorLoadingPage: NextPage = () => {
   const router = useRouter();
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
 
   if (session && session.user.universityId === undefined) {
     router.push("/instituicoes");
@@ -25,6 +25,24 @@ const DistributorLoadingPage: NextPage = () => {
       distributors[0].id : -1
       }`);
   }
+  if (status === "loading") {
+    return (
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        height="100vh"
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (status === "unauthenticated") {
+    router.push("/");
+    return null;
+  }
+
 
   return (
     <DefaultTemplateV2>
