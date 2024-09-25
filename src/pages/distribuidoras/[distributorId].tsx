@@ -17,6 +17,9 @@ import { useSelector } from "react-redux";
 import { useSession } from "next-auth/react";
 import { useFetchDistributorsQuery } from "@/api";
 import { skipToken } from "@reduxjs/toolkit/query";
+import { useMemo } from "react";
+import { getHeadTitle } from "@/utils/head";
+import Head from "next/head";
 
 type ExpectedQuery = {
   distributorId: string;
@@ -68,23 +71,34 @@ const DistributorPage: NextPage = () => {
   );
 
   const contentContainerMaxWidth = activeDistributorData === undefined
-  ? false
-  : undefined;
-  return (
-    <DefaultTemplateV2
-      headerAction={<DistributorHeaderAction />}
-      secondaryDrawer={<DistributorsCardGrid />}
-      contentHeader={<DistributorContentHeader />}
-      contentContainerMaxWidth={contentContainerMaxWidth}
-    >
-      {<DistributorContent />}
+    ? false
+    : undefined;
 
-      <DistributorCreateForm />
-      <DistributorEditForm />
-      <TariffCreateEditForm />
-      <SuccessNotification />
-      <FailNotification />
-    </DefaultTemplateV2>
+  const headTitle = useMemo(() =>
+    getHeadTitle(activeDistributorData?.name || "Distribuidoras"),
+    [activeDistributorData]
+  );
+
+  return (
+    <>
+      <Head>
+        <title>{headTitle}</title>
+      </Head>
+      <DefaultTemplateV2
+        headerAction={<DistributorHeaderAction />}
+        secondaryDrawer={<DistributorsCardGrid />}
+        contentHeader={<DistributorContentHeader />}
+        contentContainerMaxWidth={contentContainerMaxWidth}
+      >
+        {<DistributorContent />}
+
+        <DistributorCreateForm />
+        <DistributorEditForm />
+        <TariffCreateEditForm />
+        <SuccessNotification />
+        <FailNotification />
+      </DefaultTemplateV2>
+    </>
   );
 };
 

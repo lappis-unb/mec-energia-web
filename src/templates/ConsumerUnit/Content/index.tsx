@@ -1,6 +1,5 @@
 import { ReactNode, useMemo } from "react";
 import { useSelector } from "react-redux";
-import Head from "next/head";
 
 import { Alert, AlertTitle, Box } from "@mui/material";
 
@@ -16,8 +15,6 @@ import { AnalysisAndRecommendation } from "@/components/ConsumerUnit/Content/Ana
 import { useSession } from "next-auth/react";
 import { useFetchConsumerUnitsQuery } from "@/api";
 import { skipToken } from "@reduxjs/toolkit/query";
-
-import { getHeadTitle } from "@/utils/head";
 interface TabPanelProps {
   children?: ReactNode;
   dir?: string;
@@ -64,8 +61,6 @@ const ConsumerUnitContent = () => {
     (consumerUnit) => consumerUnit?.id === activeConsumerUnit
   );
 
-  const headTitle = useMemo(() => getHeadTitle("Unidades Consumidoras"), []);
-
   if (isConsumerUnitsLoading || !data) {
     return <Box pt={2}>Carregando...</Box>;
   }
@@ -73,9 +68,6 @@ const ConsumerUnitContent = () => {
   if (!activeConsumerUnitData) {
     return (
       <Box marginRight={3}>
-        <Head>
-          <title>{headTitle}</title>
-        </Head>
         <Alert
           sx={{ ml: 4, width: 1, mt: 2 }}
           severity="error"
@@ -93,10 +85,6 @@ const ConsumerUnitContent = () => {
     : ConsumerUnitTab.ANALYSIS;
   return (
     <Box marginRight={3}>
-      <Head>
-        <title>{headTitle}</title>
-      </Head>
-
       <TabPanel value={openedTab} index={ConsumerUnitTab.INVOICE}>
         <ConsumerUnitInvoiceContent />
       </TabPanel>

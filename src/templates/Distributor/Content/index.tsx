@@ -1,7 +1,5 @@
 import { useSelector } from "react-redux";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
-import { useMemo } from "react";
-import Head from "next/head";
 
 import { Alert, AlertTitle, Box, Grid, Typography } from "@mui/material";
 
@@ -19,8 +17,6 @@ import DistributorContentConsumerUnitsList from "./ConsumerUnitsList";
 import DistributorContentTariffsTable from "./TariffsTable";
 import { FlashOffRounded } from "@mui/icons-material";
 import { useSession } from "next-auth/react";
-
-import { getHeadTitle } from "@/utils/head";
 
 export const EmptyDistributorContent = () => {
   return (
@@ -57,8 +53,6 @@ const DistributorContent = () => {
     distributorId ?? skipToken
   );
 
-  const headTitle = useMemo(() => getHeadTitle("Distribuidoras"), []);
-
   if (isDistributorLoading || isSubgroupLoading || isDistributorsLoading) {
     return <Box pt={2}>Carregando...</Box>;
   }
@@ -66,9 +60,6 @@ const DistributorContent = () => {
   if (!activeDistributorData) {
     return (
       <Box marginRight={3}>
-        <Head>
-          <title>{headTitle}</title>
-        </Head>
         <Alert
           sx={{ ml: 4, width: 1, mt: 2 }}
           severity="error"
@@ -84,9 +75,6 @@ const DistributorContent = () => {
   if (distributor && !distributor.isActive) {
     return (
       <Box pt={2}>
-        <Head>
-          <title>{headTitle}</title>
-        </Head>
         <Alert
           color="warning"
           icon={
@@ -116,9 +104,6 @@ const DistributorContent = () => {
   if (!selectedSubgroupTariff) {
     return (
       <Box pt={2}>
-        <Head>
-          <title>{headTitle}</title>
-        </Head>
         <Typography variant="h5">
           Nenhuma unidade consumidora associada
         </Typography>
@@ -135,9 +120,6 @@ const DistributorContent = () => {
 
   return (
     <Box pt={2}>
-      <Head>
-        <title>{headTitle}</title>
-      </Head>
       <Grid container pt={2} spacing={2}>
         <Grid item xs={8}>
           <DistributorContentTariffsTable />

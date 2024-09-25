@@ -19,6 +19,9 @@ import { useSelector } from "react-redux";
 import { useSession } from "next-auth/react";
 import { useFetchConsumerUnitsQuery } from "@/api";
 import { skipToken } from "@reduxjs/toolkit/query";
+import { getHeadTitle } from "@/utils/head";
+import { useMemo } from "react";
+import Head from "next/head";
 
 type ExpectedQuery = {
   id: string;
@@ -72,23 +75,33 @@ const ConsumerUnitPage: NextPage = () => {
     ? false
     : undefined;
 
+  const headTitle = useMemo(() =>
+    getHeadTitle(activeConsumerUnitData?.name || "Unidades Consumidoras"),
+    [activeConsumerUnit]
+  );
+
   return (
-    <DefaultTemplateV2
-      headerAction={<ConsumerUnitHeaderAction />}
-      secondaryDrawer={<ConsumerUnitsCardGrid />}
-      contentHeader={<ConsumerUnitContentHeader />}
-      contentContainerMaxWidth={contentContainerMaxWidth}
-    >
-      {<ConsumerUnitContent />}
+    <>
+      <Head>
+        <title>{headTitle}</title>
+      </Head>
+      <DefaultTemplateV2
+        headerAction={<ConsumerUnitHeaderAction />}
+        secondaryDrawer={<ConsumerUnitsCardGrid />}
+        contentHeader={<ConsumerUnitContentHeader />}
+        contentContainerMaxWidth={contentContainerMaxWidth}
+      >
+        {<ConsumerUnitContent />}
 
 
-      <ConsumerUnitCreateForm />
-      <ConsumerUnitEditForm />
-      <ConsumerUnitRenewContractForm />
-      <SuccessNotification />
-      <FailNotification />
-      <CreateEditEnergyBillForm />
-    </DefaultTemplateV2>
+        <ConsumerUnitCreateForm />
+        <ConsumerUnitEditForm />
+        <ConsumerUnitRenewContractForm />
+        <SuccessNotification />
+        <FailNotification />
+        <CreateEditEnergyBillForm />
+      </DefaultTemplateV2>
+    </>
   );
 };
 
