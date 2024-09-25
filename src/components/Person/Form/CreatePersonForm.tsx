@@ -111,7 +111,21 @@ const CreatePersonComponent = () => {
       university: universityId,
     };
 
-    await createPerson(body);
+    const response = await createPerson(body);
+
+    if (
+      response.error &&
+      response.error.data.email[0] ===
+        "user with this Email is required already exists."
+    ) {
+      console.log("EMAIL REPETIDO: " + response.error.data.email[0]);
+      dispatch(
+        setIsErrorNotificationOpen({
+          isOpen: true,
+          text: "Email já existente.",
+        })
+      );
+    }
   };
 
   //Notificações
