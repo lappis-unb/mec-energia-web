@@ -1,14 +1,10 @@
-import { ReactNode, useMemo } from "react";
-import { useRouter } from "next/router";
+import { ReactNode } from "react";
 
 import { AppBar, Box, Toolbar, Typography } from "@mui/material";
 
-import { getRouteByPathname } from "@/routes";
+import { Route } from "@/types/router";
 
-const Header = ({ children }: { children?: ReactNode }) => {
-  const { pathname } = useRouter();
-  const route = useMemo(() => getRouteByPathname(pathname), [pathname]);
-
+const Header = ({ children, route }: { children?: ReactNode, route: Route }) => {
   return (
     <AppBar
       position="sticky"

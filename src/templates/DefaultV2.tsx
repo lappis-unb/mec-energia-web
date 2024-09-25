@@ -5,6 +5,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useSelector } from "react-redux";
 import { selectIsDrawerOpen } from "@/store/appSlice";
+import { Route } from "@/types/router";
 
 type DefaultTemplateProps = {
   headerAction?: ReactNode;
@@ -12,6 +13,7 @@ type DefaultTemplateProps = {
   contentHeader?: ReactNode;
   contentContainerMaxWidth?: ContainerProps["maxWidth"];
   children?: ReactNode;
+  route: Route;
 };
 
 const DefaultTemplateV2 = ({
@@ -20,6 +22,7 @@ const DefaultTemplateV2 = ({
   contentHeader,
   contentContainerMaxWidth,
   children,
+  route,
 }: DefaultTemplateProps) => {
   const isDrawerOpen = useSelector(selectIsDrawerOpen);
   const [width, setWidth] = useState("calc(100vw - 64px)");
@@ -33,7 +36,7 @@ const DefaultTemplateV2 = ({
       <Drawer />
 
       <Box width={width} flexGrow={1}>
-        <Header>{headerAction}</Header>
+        <Header route={route}>{headerAction}</Header>
 
         <Box display="flex">
           {secondaryDrawer && (
