@@ -17,7 +17,6 @@ import { useGetConsumerUnitQuery } from "@/api";
 
 interface Props {
   recommendedContract: RecommendationContract;
-  currentContract: RecommendationContract;
 }
 
 interface InfoRows {
@@ -28,7 +27,6 @@ interface InfoRows {
 
 export const RecommendedContractTable = ({
   recommendedContract,
-  currentContract,
 }: Props) => {
   const consumerUnitId = useSelector(selectActiveConsumerUnitId);
   const { data: consumerUnit } = useGetConsumerUnitQuery(
@@ -47,18 +45,18 @@ export const RecommendedContractTable = ({
   const greenRows = [
     {
       label: "Demanda contratada - carga",
-      recommended: currentContract.peakDemandInKw + " kW",
+      recommended: recommendedContract.peakDemandInKw + " kW",
     },
   ];
 
   const blueRows = [
     {
       label: "Demanda contratada no horário de ponta - carga",
-      recommended: currentContract.peakDemandInKw + " kW",
+      recommended: recommendedContract.peakDemandInKw + " kW",
     },
     {
       label: "Demanda contratada no horário fora de ponta - carga",
-      recommended: currentContract.offPeakDemandInKw + " kW",
+      recommended: recommendedContract.offPeakDemandInKw + " kW",
     },
   ];
 
