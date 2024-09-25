@@ -789,7 +789,7 @@ const ConsumerUnitEditForm = () => {
                     <NumericFormat
                       value={value}
                       customInput={TextField}
-                      label="Dem. Fora Pta *"
+                      label="Dem. Fora Ponta *"
                       fullWidth
                       InputProps={{
                         endAdornment: (
