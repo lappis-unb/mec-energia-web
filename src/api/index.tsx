@@ -161,7 +161,7 @@ export const mecEnergiaApi = createApi({
       invalidatesTags: ["Distributors"],
     }),
     createConsumerUnit: builder.mutation<
-      string,
+      ConsumerUnit,
       CreateConsumerUnitRequestPayload
     >({
       query: (body) => ({

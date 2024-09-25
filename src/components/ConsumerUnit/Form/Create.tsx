@@ -26,6 +26,8 @@ import { NumericFormat } from "react-number-format";
 
 import {
   selectIsConsumerUnitCreateFormOpen,
+  setActiveConsumerUnitId,
+  setConsumerUnitInvoiceActiveFilter,
   setIsConsumerUnitCreateFormOpen,
   setIsErrorNotificationOpen,
   setIsSuccessNotificationOpen,
@@ -51,6 +53,7 @@ import { isInSomeSubgroups } from "@/utils/validations/form-validations";
 import FormDrawerV2 from "@/components/Form/DrawerV2";
 import FormFieldError from "@/components/FormFieldError";
 import { minimumDemand } from "@/utils/tariff";
+import { useRouter } from "next/router";
 
 const defaultValues: CreateConsumerUnitForm = {
   name: "",
@@ -67,6 +70,7 @@ const defaultValues: CreateConsumerUnitForm = {
 };
 
 const ConsumerUnitCreateForm = () => {
+  const router = useRouter();
   //Sessão
   const { data: session } = useSession();
 
@@ -227,8 +231,15 @@ const ConsumerUnitCreateForm = () => {
         },
       };
 
-      await createConsumerUnit(body);
-    },
+      const createdUc = await createConsumerUnit(body);
+
+      if('data' in createdUc)
+        router.push(`/uc/${createdUc.data.id ?? null}`).then(() => {
+          dispatch(setActiveConsumerUnitId(createdUc.data.id ?? null));
+          dispatch(setConsumerUnitInvoiceActiveFilter("pending"));
+        });
+      },
+
     [createConsumerUnit, session?.user.universityId]
   );
 
