@@ -49,7 +49,7 @@ const FormDrawerV2 = ({
             <Box display="flex" alignItems="center">
               <IconButton
                 edge="start"
-                style={{ color: '#000000DE' }}
+                color="inherit"
                 aria-label="Fechar formulário"
                 onClick={handleCloseDrawer}
               >

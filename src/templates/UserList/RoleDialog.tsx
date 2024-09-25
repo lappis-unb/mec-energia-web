@@ -26,7 +26,7 @@ const UserRoleDialog = () => {
 
   return (
     <>
-      <IconButton style={{ color: '#000000DE' }} onClick={handleDialogOpen}>
+      <IconButton color="inherit" onClick={handleDialogOpen}>
         <HelpRounded />
       </IconButton>
 
